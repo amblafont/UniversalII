@@ -30,7 +30,6 @@ Preservation of the relation by weakening
       (((₁ Γm) M.▶ (₁ Exm)) M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm))
       (M.liftT (₁ Γm) (₁ Δm) (₁ Exm) Bm) 
 
-  liftT~ Γw Γm Δw Δm Exw Exm Bw wBw Bm = {!!}
 
   -- shortcut
   wkT~ : ∀ {Γp} Γw (Γm : (Σ _ (Con~' Γp Γw)))
@@ -43,7 +42,23 @@ Preservation of the relation by weakening
   wkT~ Γw Γm Exw Exm Aw Am wAw = liftT~ Γw Γm {∙p} Γw
     (M.∙t (₁ Γm) , refl) Exw Exm Aw wAw (₁ Am) (₂ Am)
 
+  liftt~ : ∀ {Γp} {Γw} (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
+    {Ep} Ew (Em : Σ _ (Ty~' Γp Ep Ew (₁ Γm)) )
+    {Bp} Bm
+
+    {tp} tw
+    wtw
+    tm
+    → Tm~' (Γp ^^ Δp) Bp tp tw
+    ((₁ Γm) M.^^ (₁ Δm)) Bm tm
+    → Tm~' ((Γp ▶p Ep)^^ (wkC Δp)) (liftT ∣ Δp ∣ Bp) (liftt ∣ Δp ∣ tp)
+    wtw
+    -- (liftVw {Ap = Ep} Ew Δp {Bp = Bp} {tp} tw )
+    (((₁ Γm) M.▶ (₁ Em)) M.^^ M.wkC (₁ Γm) (₁ Em) (₁ Δm)) (M.liftT (₁ Γm) (₁ Δm) (₁ Em) Bm) (M.liftt (₁ Γm) (₁ Δm) (₁ Em) Bm tm)
+
       -- let us start form minmal requirement
+
   liftV~ : ∀ {Γp} {Γw} (Γm : Σ _ (Con~' Γp Γw))
         {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
       {Exp} Exw (Exm : Σ _ (Ty~' Γp Exp Exw (₁ Γm)) )
@@ -97,6 +112,15 @@ Preservation of the relation by weakening
     (trCon~' (▶w Γw Aw) ΓAw (₁ Γm M.▶ ₁ Am)
       (Γm , (Am , refl)))
 
+{-
+  ΣTelescope~▶ : ∀ {Γp}{Γw : Conw Γp}
+    {Ap} {Aw : Tyw Γp Ap}
+    (Γm : Σ M.Con (Con~' Γp Γw))
+    (Am   : Σ (M.Ty (₁ Γm)) (Ty~' Γp Ap Aw (₁ Γm)))
+    (ΓAw :
+    Conw (Γp ▶p Ap)) → Σ M.Con (Con~' (Γp ▶p Ap) ΓAw)
+    -}
+
 -- this is also induced by ΣliftT~'
   ΣwkTy~' : ∀ {Γp}{Γw : Conw Γp}{Ap} {Aw : Tyw Γp Ap}{Bp}{Bw : Tyw Γp Bp}
       (Γm : Σ M.Con (Con~' Γp Γw))
@@ -137,6 +161,62 @@ Preservation of the relation by weakening
 
   ΣliftT~' Γw Γm {Δp} Δw Δm Ew Em Aw Am =
     M.liftT (₁ Γm) (₁ Δm)(₁ Em) (₁ Am) , liftT~ _ Γm {Δp} _  Δm Ew Em  Aw (liftTw Ew Δp Aw) (₁ Am) (₂ Am)  
+  
+  Σliftt~' :  ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
+    {Ep}Ew (Em : Σ _ (Ty~' Γp Ep Ew (₁ Γm) ))
+    {Ap} Am
+    {tp} tw (tm : Σ _ (Tm~' (Γp ^^ Δp) Ap tp tw (₁ Γm M.^^ ₁ Δm) Am  ))
+    → Σ _ (Tm~' (Γp ▶p Ep ^^ wkC Δp) (liftT ∣ Δp ∣ Ap)
+    (liftt ∣ Δp ∣ tp) (lifttw Ew Δp tw)  (₁ Γm M.▶ ₁ Em M.^^ M.wkC (₁ Γm) (₁ Em) (₁ Δm) )
+    (M.liftT (₁ Γm) (₁ Δm)(₁ Em) Am)
+    )
+  Σliftt~' Γw Γm {Δp} Δw Δm Ew Em Am tw tm = 
+    (M.liftt (₁ Γm) (₁ Δm) (₁ Em) Am (₁ tm)) ,
+    (liftt~ Γm Δw Δm Ew Em Am tw (lifttw Ew Δp tw) (₁ tm) (₂ tm))
+
+  ΣliftV~' :  ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
+    {Ep}Ew (Em : Σ _ (Ty~' Γp Ep Ew (₁ Γm) ))
+    {Ap} Am
+    {xp} xw (xm : Σ _ (Var~' (Γp ^^ Δp) Ap xp xw (₁ Γm M.^^ ₁ Δm) Am  ))
+    → Σ _ (Var~' (Γp ▶p Ep ^^ wkC Δp) (liftT ∣ Δp ∣ Ap)
+        (liftV ∣ Δp ∣ xp) (liftVw Ew Δp xw)  (₁ Γm M.▶ ₁ Em M.^^ M.wkC (₁ Γm) (₁ Em) (₁ Δm) )
+        (M.liftT (₁ Γm) (₁ Δm)(₁ Em) Am)
+      )
+  ΣliftV~' Γw Γm {Δp} Δw Δm Ew Em Am xw xm = 
+    (M.liftt (₁ Γm) (₁ Δm) (₁ Em) Am (₁ xm)) ,
+    (liftV~ Γm Δw Δm Ew Em Am xw (liftVw Ew Δp xw) (₁ xm) (₂ xm))
+
+  liftT~ {Γp} Γw Γm {Δp} Δw Δm {Exp} Exw Exm {.Up} (Uw .(Γp ^^ Δp) Δw') (Uw .(Γp ▶p Exp ^^ wkC Δp) ΓEΔw) .(Model.U (₁ Γm Model.^^ ₁ Δm)) refl
+    = refl
+    -- M.liftU  (₁ Δm) (₁ Exm) (but ok with rewrite rules)
+
+  liftT~ {Γp} Γw Γm {Δp} Δw Δm {Exp} Exw Exm {.(ΠΠp (Elp _) _)} (Πw Δw' Aw Bw) (Πw ΓEΔw Aw' wBw) .(Model.ΠΠ (₁ Γm Model.^^ ₁ Δm) (₁ am) (₁ Bm')) (am , Bm' , refl)
+    rewrite prop-has-all-paths Aw' (lifttw Exw Δp Aw)
+    | prop-has-all-paths wBw (liftTw Exw (Δp ▶p Elp _) Bw)
+    =
+    Σliftt~' Γw Γm Δw Δm Exw Exm (M.U _) Aw am , 
+    ΣliftT~' _ Γm (▶w Δw (Elw Δw' Aw))
+      (Σ▶t~ _ Γm _ Δm {Elp _} (Elw Δw' Aw) (_ , am , refl))
+      Exw Exm  Bw  Bm'
+        ,
+        M.liftΠ (₁ Δm) (₁ Exm) _ (₁ Bm') 
+
+  liftT~ {Γp} Γw Γm {Δp} Δw Δm {Exp} Exw Exm {.(Elp _)} (Elw Δw' aw) (Elw Γw₁ waw) _ (am , refl)
+    rewrite prop-has-all-paths waw (lifttw Exw Δp aw) =
+
+    -- (Σliftt~' _ Γm _ Δm Exw Exm {Up} (M.U _) {!aw!} {!!})
+    Σliftt~' _ Γm _ Δm Exw Exm {Up} (M.U _) aw  am
+    ,
+    refl
+
+  liftt~ {Γp} {Γw} Γm {Δp} Δw Δm Ew Em {Bp} Bm {.(V _)} (vw xw) (vw wxw) tm tr =
+     liftV~ Γm Δw Δm Ew Em Bm xw wxw tm tr
+     -- {!liftV~ Γm Δw Δm Ew Em Bm xw wxw tm tr!}
+
+  liftt~ {Γp} {Γw} Γm {Δp} Δw Δm Ew Em {.(l-subT 0 u Bp)} Bm {.(app t u)} (appw .(Γp ^^ Δp) Γw₁ ap₁ tw Bp Bw t tw₁ u tw₂) wtw tm tr
+     = {!wtw!}
 
     
 
@@ -211,74 +291,83 @@ and we would like to show that
 
     Γ  ▶ E ^ wkΔ ▶ wk A ⊢ v0 : wkA ~ Γₘ ▶ Eₘ ^ wk ΔAₘ ⊢ xₘ
 
+liftV~ {Γp} (Γm , Γr) {Δp ▶p Ap} (▶w Δw Aw) (.(₁ Δm M.▶t ₁ Am') , Δm , Am' , refl) {Exp} Exw Exm Bm (V0w .(Γp ^^ Δp) ΓΔw .Ap Aw') wxw xm (ΓΔm , Am , eq)
+--  we know that Δw = ΓΔw and ΓΔm = (Σ^^~ _ (Γm , Γr) _ Δm) by hProp-itude
+-- the first is replaced with the second
+rewrite prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm , Γr) _ Δm)
+| prop-has-all-paths Aw' Aw | prop-path (TyP _ _ Aw (Γm M.^^ ₁ Δm)) Am Am'
 
 -}
-  liftV~ {Γp} (Γm , Γr) {Δp ▶p Ap} (▶w Δw Aw) (.(₁ Δm M.▶t ₁ Am') , Δm , Am' , refl) {Exp} Exw Exm Bm (V0w .(Γp ^^ Δp) ΓΔw .Ap Aw') wxw xm (ΓΔm , Am , eq) rewrite prop-has-all-paths Δw ΓΔw
-  -- with eqΓΔm
-  -- ...  |  e
-    =
-    -- here we need that:
-    -- (liftT (S ∣ Δp ∣) (liftT 0 Ap)) = liftT 0 Ap (lift |Δp| Ap)
-    tr (λ Ap' →
-      (wxw : Varw ((Γp ▶p _ ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap) Ap' 0) →
-      Var~' ((Γp ▶p _ ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap) Ap' 0 wxw (Γm M.▶ ₁ Exm M.^^ M.wkC Γm (₁ Exm) (₁ Δm M.▶t ₁ Am'))
-      (M.liftT Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm) (M.liftt Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm xm))
-      (! (comm_liftT ∣ Δp ∣ Ap))
-     ( 
-      λ wxw →
-      
-      trVar~' {xp = from-nat 0} 
-      (V0w (Γp ▶p _ ^^ wkC Δp) (wkCw' Exw Δp ΓΔw)
-      (liftT ∣ Δp ∣ Ap) (liftTw Exw Δp Aw))
-      wxw
-      {!xm!}
-      -- première composante:
-      -- j'ai Γ ^ Δ ~ ΓΔₘ
-      -- et Γ ⊢ E ~ Γₘ ⊢ Eₘ
-      -- et je veux Γ ▶ E ^ Δ  ~  ??
-      -- la solution est  ?? := Γₘ ▶ Eₘ ^ wk Δₘ
-      -- TODO: faire un lemme séparé de ça
-      (Σ^^wk~ _ (Γm , Γr) ΓΔw Δm Exw Exm
-      ,
-      -- TODO faire une def séparée
-      ΣliftT~' _ (Γm , Γr) ΓΔw Δm Exw Exm Aw Am' , 
-      -- ((M.liftT Γm (₁ Δm)(₁ Exm) (₁ Am'))
-      --     , {!ΣliftT~ !}) ,
-          -- liftT~ _ (Γm , Γr) _ Δm Exw Exm {Ap} Aw (liftTw Exw Δp Aw) (₁ Am') (₂ Am')  ) ,
 
-      {-
-      I have Γₘ ^ (Δₘ ▶ Aₘ') ⊢ Bₘ
-      I know that
-        Γₘ ^^ (Δₘ ▶ Aₘ') = ΓΔm ▶ Am
-        Bm = wk_Am Am
-        xm = V0
-      and I want to show that:
-        (Γₘ ▶ Eₘ) ^ (Δₘ ▶ Aₘ') ⊢ lift_Em Bm
-        = ((Γₘ ▶ Eₘ) ^ Δₘ) ▶ Aₘ' ⊢ wk (lift_Em Bm)
-      (and another equation for xm = V0)
-      But to use the given equations, I need to know that ΓΔₘ = Γₘ ^^ Δₘ and Aₘ = Aₘ'
-      which may be could be proven by using the fact they both relate to the same syntactic counterpart ?
-      -}
-      {!!}
-      
-    -- ( (M.liftT Γm (₁ Δm)(₁ Exm) (₁ Am')) , {!!}) ,
-      -- {!pair=!}
-      )
-      )
-      
-      
-      wxw
+  liftV~ {Γp} (Γm , Γr) {Δp ▶p Ap} (▶w Δw Aw) (.(₁ Δm M.▶t ₁ Am') , Δm , Am' , refl) {Exp} Exw Exm Bm (V0w .(Γp ^^ Δp) ΓΔw .Ap Aw') wxw xm (ΓΔm , Am , eq)
+  --  we know that Δw = ΓΔw and ΓΔm = (Σ^^~ _ (Γm , Γr) _ Δm) by hProp-itude
+  -- the first is replaced with the second
+    rewrite
+       prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm , Γr) _ Δm)
+      | prop-has-all-paths Aw' Aw | prop-path (TyP _ _ Aw (Γm M.^^ ₁ Δm)) Am Am'
+      -- this says that
+      | (comm_liftT ∣ Δp ∣ Ap)
+
+      = 
+      tr (λ Bxm → statment wxw (₁ Bxm) (₂ Bxm)) (! (₁triple= eq))
+        (trVar~' {xp = from-nat (from-nat (from-nat 0))}
+        (V0w (Γp ▶p _ ^^ wkC Δp) (wkCw' Exw Δp ΓΔw) (liftT ∣ Δp ∣ Ap) (liftTw Exw Δp Aw))
+        wxw _
+        (Σ^^wk~ _ (Γm , Γr) ΓΔw Δm Exw Exm ,
+        ΣliftT~' _ (Γm , Γr) ΓΔw Δm Exw Exm Aw Am' , 
+          ₁mk-triple= (M.lift-wkT {Δ = ₁ Δm}(₁ Am') (₁ Am')(₁ Exm))
+            (M.liftV0 _ (₁ Δm) (₁ Am') (₁ Exm))
+         ))
     where
-      eqΓΔm : ΓΔm ≡ Σ^^~ _ (Γm , Γr) _ Δm
-      eqΓΔm = prop-has-all-paths _ _
-      P : (YBxm : Σ (Σ _ M.Ty) λ x → M.Tm (₁ x) (₂ x)) → Set α
-      P YBxm = {!!}
-             -- Var~' ((Γp ▶p .Exp ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap)
-      --   (liftT (S ∣ Δp ∣) (liftT 0 Ap)) 0 wxw
-      --   (Γm M.▶ ₁ Exm M.^^ M.wkC Γm (₁ Exm) (₁ ΔAm))
-      --   (M.liftT Γm (₁ ΔAm) (₁ Exm) Bm) (M.liftt Γm (₁ ΔAm) (₁ Exm) Bm xm)
+      statment : ∀ wxw Bm xm  → Set _
+      statment wxw Bm xm  =
+        Var~' ((Γp ▶p Exp ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap)
+        (liftT 0 (liftT ∣ Δp ∣ Ap)) 0 wxw               
+        (Γm M.▶ ₁ Exm M.^^ M.wkC Γm (₁ Exm) (₁ Δm) M.▶  
+        M.liftT Γm (₁ Δm) (₁ Exm) (₁ Am'))             
+        (M.liftT Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm)       
+        (M.liftt Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm xm)    
 
-  liftV~ Γm {Δp ▶p Ap} Δw Δm Exw Exm Bm (VSw .(_ ^^ Δp) Γw .Ap Aw Bp Bw xp xw) wxw xm xr = {!!}
+      
 
 
-
+  liftV~ Γm {Δp ▶p Ap} (▶w Δw' Aw') (_ , Δm , Am' , refl) Exw Exm Bm (VSw .(_ ^^ Δp) Δw .Ap Aw Bp Bw xp xw) wxw xm
+    (ΓΔm , Am , Bm' , xm' , eq)
+    rewrite prop-has-all-paths Aw' Aw
+    | prop-has-all-paths Δw' Δw
+    | prop-has-all-paths ΓΔm  (Σ^^~ _ Γm _ Δm)
+    | prop-path (TyP _ _ Aw (₁ Γm M.^^ ₁ Δm)) Am Am'
+    | comm_liftT ∣ Δp ∣ Bp
+    | prop-has-all-paths wxw
+        (VSw (_ ▶p _ ^^ wkC Δp) (wkCw' Exw Δp Δw) (liftT ∣ Δp ∣ Ap)
+        (liftTw Exw Δp Aw) (liftT ∣ Δp ∣ Bp) (liftTw Exw Δp Bw) (liftV ∣ Δp ∣ xp)
+          (liftVw Exw Δp xw))
+    = 
+      Σ^^wk~ _ Γm _ Δm Exw Exm ,
+        (ΣliftT~' _ Γm Δw Δm Exw Exm Aw Am' ) ,
+        ((ΣliftT~' _ Γm Δw Δm Exw Exm Bw Bm'  ) ,
+        ΣliftV~' _ Γm Δw Δm Exw Exm (₁ Bm') xw xm' ,
+        tr statment (! (₁triple= eq))
+        (₁mk-triple= (M.lift-wkT {Δ = ₁ Δm}(₁ Am')(₁ Bm') (₁ Exm))
+        (M.lift-wkt (₁ Δm) (₁ Am') (₁ Bm') (₁ Exm) (₁ xm'))))
+    where
+     statment : Σ _ (M.Tm (₁ Γm M.^^ ₁ Δm M.▶ ₁ Am')) → Set _
+     statment (Bm , xm) = 
+      ((₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm) M.▶
+      M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Am'))
+      , M.liftT (₁ Γm) (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm)
+      , M.liftt (₁ Γm) (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm xm
+      ≡
+      ((₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm) M.▶
+      M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Am'))
+      ,
+      M.liftT (₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm))
+      (M.∙t (₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm)))
+      (M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Am'))
+      (M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Bm')))
+      ,
+      M.liftt (₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm))
+      (M.∙t (₁ Γm M.▶ ₁ Exm M.^^ M.wkC (₁ Γm) (₁ Exm) (₁ Δm)))
+      (M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Am'))
+      (M.liftT (₁ Γm) (₁ Δm) (₁ Exm) (₁ Bm'))
+      (M.liftt (₁ Γm) (₁ Δm) (₁ Exm) (₁ Bm') (₁ xm'))

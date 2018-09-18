@@ -54,7 +54,7 @@ module Relation {α} where
     λ Bm → Σ (Σ _ (Tm~' _ _ t tw Δm (M.ΠΠ Δm _ (₁ Bm))))
     λ tm → Σ (Σ _ (Tm~' _ _ u uw Δm (M.El Δm (₁ am))))
     λ um → (Cm , zm) ≡ M.subT Δm (M.El Δm (₁ am)) (₁ um) (₁ Bm) ,
-    M.app Δm (M.El Δm (₁ am)) (₁ Bm) (₁ tm) (₁ um)
+    M.app Δm (₁ am) (₁ Bm) (₁ tm) (₁ um)
 
   Var~' .(Γp ▶p Ap) .(liftT 0 Ap) .0 (V0w Γp Γw Ap Aw) Δm Cm zm =
     Σ (Σ _ (Con~' Γp Γw ))
@@ -88,6 +88,7 @@ module Relation {α} where
   mkΣTm Γ A t = ((Γ , A) , t)
 
   -- todo: utiliser ces lemmes avant, par exemple dans v1
+  -- todo : reformuler en utilisant des rewrites
   trVar~' : {Γp : Conp}{Ap : Typ}{xp : ℕ}(xw : Varw Γp Ap xp)
     (xw' : Varw Γp Ap xp)
     {Δm : M.Con}{Cm : M.Ty Δm}(zm : M.Tm _ Cm)  → Var~' _ _ _ xw _ _ zm → Var~' _ _ _ xw' _ _ zm
@@ -107,8 +108,19 @@ module Relation {α} where
     (((₁ Γm M.^^ ₁ Δm) , (^^~ Γw Γm Δw Δm )) , Am , refl)
 
 
+  ▶t~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
+    {Ap} Aw (Am : Σ _ (Ty~' (Γp ^^ Δp) Ap Aw (₁ Γm M.^^ ₁ Δm) ))
+    → Telescope~ {Γp} (Δp ▶p Ap) (▶w Δw Aw) (₁ Γm) (₁ Δm M.▶t ₁ Am)
+
+  ▶t~ Γw Γm Δw Δm Aw Am = Δm , Am , refl
 
 
+  Σ▶t~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
+    {Ap} Aw (Am : Σ _ (Ty~' (Γp ^^ Δp) Ap Aw (₁ Γm M.^^ ₁ Δm) ))
+    → Σ _ (Telescope~ {Γp} (Δp ▶p Ap) (▶w Δw Aw) (₁ Γm))
+  Σ▶t~ Γw Γm Δw Δm Aw Am =  _ , ▶t~ Γw Γm Δw Δm Aw Am
 
 
 -- I think the following is deprecated

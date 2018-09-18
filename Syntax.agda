@@ -331,9 +331,12 @@ syn = record {
 instance
   ConwP : (Γp : Conp) → is-prop (Conw Γp)
   TywP : (Γp : Conp)(Ap : Typ)  → is-prop (Tyw Γp Ap)
+  TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Tmw Γp Ap tp)
   VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Varw Γp Ap xp)
 
   ConwP = ?
   TywP = ?
+  TmwP = ?
   VarwP = ?
+
 
