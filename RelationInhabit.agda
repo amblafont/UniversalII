@@ -66,7 +66,7 @@ module RelationInhabit {α} where
               ((₁ Γm M.▶ M.El (₁ Γm) (₁ am)) , Γm , (M.El (₁ Γm) (₁ am) , am , refl) , refl)
   ...    | um | Bm
       with Tm~el Γp Γw (ΠΠp (Elp ap) Bp) (Πw Γw aw Bw) t tw Γm
-              (M.ΠΠ (₁ Γm) (M.El (₁ Γm) (₁ am)) (₁ Bm) , am , Bm , refl)
+              (M.ΠΠ (₁ Γm) (₁ am) (₁ Bm) , am , Bm , refl)
   ...    | tm =
 
   -- inferred by the las tequality
@@ -76,7 +76,7 @@ module RelationInhabit {α} where
        (M.subT (₁ Γm) (M.El (₁ Γm) (₁ am)) (₁ um) (₁ Bm))
        (subT~ Γw Γm (Elw Γw' aw)
         (M.El (₁ Γm) (₁ am) , am , refl) Bw Bm uw um Bsw))
-      (M.app (₁ Γm) (M.El (₁ Γm) (₁ am)) (₁ Bm) (₁ (tm)) (₁ um))
+      (M.app (₁ Γm) (₁ am) (₁ Bm) (₁ (tm)) (₁ um))
     ,
    (am , Bm , tm , um
     ,
@@ -92,7 +92,7 @@ module RelationInhabit {α} where
              (M.El (₁ Γm) (₁ am) , am , refl) Bw Bm uw um Bsw))
            {v =
             M.app (₁ Γm)
-            (M.El (₁ Γm) (₁ am)) (₁ Bm) (₁ (tm)) (₁ um)}
+            ( ₁ am) (₁ Bm) (₁ (tm)) (₁ um)}
            refl)))
 
   Var~el .(Γp ▶p Ap) wΓw .(liftT 0 Ap) wAw .0 (V0w Γp Γw Ap Aw) Γm Am
@@ -115,7 +115,9 @@ module RelationInhabit {α} where
       Γm' , Am' ,
       pair=
         (ConTy~path Γm (▶w Γw Aw) _ (Γm' , Am' , refl) {Aw = wAw} Am
-         (M.wkT _ _ _) (wkT~ Γw Γm' Aw Am' Aw Am' wAw))
+         (M.wkT (₁ Γm')(₁ Am')(₁ Am'))
+         -- (M.wkT _ _ _)
+         (wkT~ Γw Γm' Aw Am' Aw Am' wAw))
          (from-transp! {A = Σ _ M.Ty}(λ x → M.Tm (₁ x) (₂ x))
          (ConTy~path Γm (▶w  Γw  Aw) _
          (Γm' , Am' , refl)
@@ -124,7 +126,7 @@ module RelationInhabit {α} where
          Am
          -- (wkTw Aw Aw)
          -- wAw
-         (M.wkT _ _ _)
+         (M.wkT (₁ Γm')(₁ Am')(₁ Am'))
          ((wkT~ Γw Γm' Aw Am' Aw Am' wAw
          )))
          {v = M.V0 (₁ Γm') (₁ Am')}
@@ -159,7 +161,7 @@ module RelationInhabit {α} where
           (Γm' , (Am' , refl)) {Aw = wAw} Am
           -- or wkTw .. .. ?
           -- wAw
-          (M.wkT _ _ _)
+          (M.wkT (₁ Γm') (₁ Am') (₁ Bm'))
           (wkT~ Γw Γm' Aw Am' Bw Bm' wAw))
         (
         (from-transp! {A = Σ _ M.Ty}(λ x → M.Tm (₁ x) (₂ x))
@@ -167,7 +169,7 @@ module RelationInhabit {α} where
             (Γm' , (Am' , refl)) {Aw = wAw} Am
               -- or wkTw .. .. ?
               -- wAw
-              (M.wkT _ _ _)
+              (M.wkT (₁ Γm') (₁ Am') (₁ Bm'))
             (wkT~ Γw Γm' Aw Am' Bw Bm' wAw))
         {v = (M.wkt (₁ Γm') (₁ Am') (₁ Bm') (₁ xm))} 
         )
