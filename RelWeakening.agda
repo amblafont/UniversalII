@@ -239,22 +239,28 @@ Preservation of the relation by weakening
 
     
 
- -- TODO: refaire plus proprement sans utiliser v1~'
-  liftV~ (Ym , Yr) {∙p} Δw (.(M.∙t Ym) , refl) Exw Exm Bm (V0w Γp Γw Ap Aw) wxw xm (Γm , Am , eq)
-    = tr P (! eq ) Prefl Exm
-     where
-      P : (YBxm : Σ (Σ _ M.Ty) λ x → M.Tm (₁ x) (₂ x)) → Set α
-      P YBxm = 
-        (Exm' : Σ (M.Ty (₁ (₁ YBxm)))(Ty~' (Γp ▶p Ap) _ Exw (₁ (₁ YBxm)))) →
-        Var~' (Γp ▶p Ap ▶p _) (liftT 0 (liftT 0 Ap)) 1 wxw
-        ((₁ (₁ YBxm)) M.▶ ₁ Exm' M.^^ M.wkC (₁ (₁ YBxm)) (₁ Exm') (M.∙t (₁ (₁ YBxm))))
-        (M.liftT (₁ (₁ YBxm)) (M.∙t (₁ (₁ YBxm))) (₁ Exm') (₂ (₁ YBxm)))
-        (M.liftt (₁ (₁ YBxm)) (M.∙t (₁ (₁ YBxm))) (₁ Exm') (₂ (₁ YBxm)) (₂ YBxm))
+  liftV~ {Γw = Γw'} (Ym , Yr) {∙p} Δw (.(Model.∙t Ym) , refl) {Exp} Exw Exm Bm (V0w Γp Γw Ap Aw) wxw xm (Γm , Am , eq)
+      = 
+      tr P (! eq )
+       Prefl
+       Exm
+      where
+        P : (YBxm : Σ (Σ _ M.Ty) λ x → M.Tm (₁ x) (₂ x)) → Set α
+        P YBxm = 
+          (Exm' : Σ (M.Ty (₁ (₁ YBxm)))(Ty~' (Γp ▶p Ap) _ Exw (₁ (₁ YBxm)))) →
+          Var~' (Γp ▶p Ap ▶p _) (liftT 0 (liftT 0 Ap)) 1 wxw
+          ((₁ (₁ YBxm)) M.▶ ₁ Exm' M.^^ M.wkC (₁ (₁ YBxm)) (₁ Exm') (M.∙t (₁ (₁ YBxm))))
+          (M.liftT (₁ (₁ YBxm)) (M.∙t (₁ (₁ YBxm))) (₁ Exm') (₂ (₁ YBxm)))
+          (M.liftt (₁ (₁ YBxm)) (M.∙t (₁ (₁ YBxm))) (₁ Exm') (₂ (₁ YBxm)) (₂ YBxm))
+        Prefl : _
+        Prefl Exm'
+          rewrite prop-has-all-paths wxw (VSw _ (▶w Γw Aw) _ Exw (wkT Ap) (wkTw Aw Aw) O (V0w Γp Γw Ap Aw))
+          = (_ , Γm , Am , refl) ,
+          (Exm' ,
+          ((ΣwkTy~' Γm Am Am) ,
+          ((_ , Γm , Am , refl) ,
+          refl)))
 
-      Prefl : P (((₁ Γm M.▶ ₁ Am) , M.wkT (₁ Γm) (₁ Am) (₁ Am)) , M.V0 (₁ Γm) (₁ Am))
-      Prefl Exm' =
-        v1~' Γw Aw Exw wxw Γm Am (wkT~ _ Γm Aw Am Aw Am (wkTw Aw Aw)  ) Exm' _ _ _
-        refl
      
   liftV~ (Ym , Yr) {∙p} Δw (.(M.∙t Ym) , refl) Exw Exm Bm (VSw Γp Γw Ap Aw Bp Bw xp xw) wxw xm (Γm , Am , Bm' , xm' , eq)
    = tr P (! eq)  Prefl Exm
@@ -269,13 +275,13 @@ Preservation of the relation by weakening
       Prefl :  P
         (((₁ Γm M.▶ ₁ Am) , M.wkT (₁ Γm) (₁ Am) (₁ Bm')) ,
         M.wkt (₁ Γm) (₁ Am) (₁ Bm') (₁ xm'))
-      Prefl Exm' =
-          trVar~'
+      Prefl Exm'
+        rewrite prop-has-all-paths wxw 
           (VSw (Γp ▶p Ap) Δw _ Exw _
             (wkTw Aw Bw)
             (S xp)
             (VSw Γp Γw Ap Aw Bp Bw xp xw))
-          wxw _
+        =
           (ΣCon~'▶ {Γw = Γw} {Aw = Aw} Γm Am Δw ,
           Exm' ,
           ΣwkTy~' {Γw = Γw} {Aw = Aw} {Bw = Bw}

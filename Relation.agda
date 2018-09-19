@@ -127,50 +127,7 @@ module Relation {α} where
            Σ _ (Ty~' Γp (Elp tp) (Elw Γw tw) (₁ Γm))
   ΣEl~ Γw Γm tp tw Am = _ , Am , refl
 
+  -- Σ▶~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
 
--- I think the following is deprecated
--- helper to inhabit v1 ~ zm
-  v1~ : ∀ {Γp : Conp}(Γw : Conw Γp){Ap}(Aw : Tyw Γp Ap){Exp}(Exw : Tyw (Γp ▶p Ap) Exp) →
-    ∀ (Γm : Σ _ (Con~' Γp Γw))
-       (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm)))
-       -- this will be deduced later (weakening preserves the relation)
-       (Ar : Ty~' _ _ (wkTw Aw Aw) (₁ Γm M.▶ ₁ Am) (M.wkT (₁ Γm) (₁ Am) (₁ Am)))
-       (Exm : Σ _ (Ty~' _ _ Exw (₁ Γm M.▶ ₁ Am))) → 
-    ∀ Δm Cm zm → 
-     mkΣTm Δm Cm zm ≡
-         ((((₁ Γm M.▶ (₁ Am)) M.▶ (₁ Exm)) , M.wkT _ (₁ Exm) (M.wkT _ (₁ Am) (₁ Am)) ) ,
-          M.wkt _ (₁ Exm) _ (M.V0 _ (₁ Am))) 
-     →
-    Var~' _ _ _
-       (VSw _ (▶w Γw Aw) _ Exw _ (wkTw Aw Aw) 0 (V0w _ Γw _ Aw)) Δm Cm zm
-  v1~ Γw Aw Exw Γm Am Ar Exm Δm Cm zm eq =
-    transport!
-    {A = Σ (Σ _ M.Ty) λ x → M.Tm (₁ x) (₂ x) }
-    (λ x →
-      Var~' _ _ _
-      (VSw _ (▶w Γw Aw) _ Exw _ (wkTw Aw Aw) 0 (V0w _ Γw _ Aw)) (₁ (₁ x)) (₂ (₁ x)) (₂ x)
-    ) eq
-    (
-    ((_ , Γm , Am , refl)) , 
-    Exm , (((M.wkT _ (₁ Am)(₁ Am)) , Ar) ,
-    (M.V0 (₁ Γm) (₁ Am) , Γm , Am , refl) , refl))
 
-  v1~' : ∀ {Γp : Conp}(Γw : Conw Γp){Ap}(Aw : Tyw Γp Ap){Exp}(Exw : Tyw (Γp ▶p Ap) Exp) 
-    (wxw : Varw (Γp ▶p Ap ▶p Exp) (wkT (wkT Ap)) (1)) →
-    ∀ (Γm : Σ _ (Con~' Γp Γw))
-    (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm)))
-    -- this will be deduced later (weakening preserves the relation)
-    (Ar : Ty~' _ _ (wkTw Aw Aw) (₁ Γm M.▶ ₁ Am) (M.wkT (₁ Γm) (₁ Am) (₁ Am)))
-    (Exm : Σ _ (Ty~' _ _ Exw (₁ Γm M.▶ ₁ Am))) → 
-    ∀ Δm Cm zm → 
-    mkΣTm Δm Cm zm ≡
-    ((((₁ Γm M.▶ (₁ Am)) M.▶ (₁ Exm)) , M.wkT _ (₁ Exm) (M.wkT _ (₁ Am) (₁ Am)) ) ,
-    M.wkt _ (₁ Exm) _ (M.V0 _ (₁ Am))) 
-    →
-    Var~' _ _ _
-    wxw Δm Cm zm
-
-  v1~' Γw Aw Exw wxw with prop-path (VarwP _ _ _) wxw (VSw _ (▶w Γw Aw) _ Exw _ (wkTw Aw Aw) 0 (V0w _ Γw _ Aw)) 
-  v1~' Γw Aw Exw .(VSw (_ ▶p _) (▶w Γw Aw) _ Exw (liftT 0 _) (liftTw Aw ∙p Aw) 0 (V0w _ Γw _ Aw)) | refl
-    = v1~ Γw Aw Exw
 
