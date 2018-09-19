@@ -241,7 +241,7 @@ liftTw Aw Δp (Elw Γw {ap = ap} aw) = Elw (wkCw' Aw Δp Γw) (lifttw Aw Δp aw)
 lifttw Aw Δp (vw xw) = vw (liftVw Aw Δp xw)
 lifttw Aw Δp (appw .(_ ^^ Δp) Γw ap aw Bp Bw t tw u uw) =
    
-   HoTT.transport (λ x → Tmw _ x _) ?
+   HoTT.transport (λ x → Tmw _ x _) {!!}
    (appw _ (wkCw' Aw Δp Γw) _ (lifttw Aw Δp aw) _ (liftTw Aw (Δp ▶p Elp ap) Bw)
    (liftt ∣ Δp ∣ t) (lifttw Aw Δp tw) (liftt ∣ Δp ∣ u) (lifttw Aw Δp uw)
    )
@@ -254,10 +254,10 @@ liftVw Aw ∙p (VSw Γp Γw Ap Aw' Bp Bw xp xw) =
   VSw _ (▶w Γw Aw') _ Aw _ (liftTw Aw' ∙p Bw) _ (VSw Γp Γw Ap Aw' Bp Bw xp xw)
 
 liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (V0w .(_ ^^ Δp) Γw .Bp Aw) =
-  HoTT.transport (λ x → Varw (((Γp ▶p T) ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Bp) x 0) ?
+  HoTT.transport (λ x → Varw (((Γp ▶p T) ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Bp) x 0) {!!}
      (V0w ((Γp ▶p T) ^^ wkC Δp) (wkCw' Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Aw))
 liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (VSw .(_ ^^ Δp) Γw .Bp Bw Ap Aw xp xw) =
-  HoTT.transport (λ x → Varw _ x _)  ?
+  HoTT.transport (λ x → Varw _ x _)  {!!}
    (VSw ((Γp ▶p T) ^^ wkC Δp) (wkCw' Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Bw)
    _ (liftTw Tw Δp Aw) _ (liftVw Tw Δp xw))
    
@@ -272,10 +272,15 @@ TODO: demander à Theo
 
 -}
 comm_liftV : ∀ p q → liftV (S p) (liftV 0 q) ≡ liftV 0 (liftV p q)
-comm_liftV p q = ?
+comm_liftV p q = {!!}
 
 comm_liftT : ∀ p q → liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
-comm_liftT p q = ?
+comm_liftT p q = {!!}
+
+-- TODO: faire un schema
+lift-subT : ∀ p u B → liftT p (subT u B) ≡ subT (liftt p u)(liftT (S p) B)
+
+lift-subT p u B = {!!}
 
 
 -- wktw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap){tp}{Bp}(tw : Tmw Γp Bp tp) → Tmw (Γp ▶p Ap) (liftT 1 Bp) (liftt 1 tp)
@@ -334,9 +339,9 @@ instance
   TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Tmw Γp Ap tp)
   VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Varw Γp Ap xp)
 
-  ConwP = ?
-  TywP = ?
-  TmwP = ?
-  VarwP = ?
+  ConwP = {!!}
+  TywP = {!!}
+  TmwP = {!!}
+  VarwP = {!!}
 
 

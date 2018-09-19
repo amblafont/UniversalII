@@ -122,6 +122,11 @@ module Relation {α} where
     → Σ _ (Telescope~ {Γp} (Δp ▶p Ap) (▶w Δw Aw) (₁ Γm))
   Σ▶t~ Γw Γm Δw Δm Aw Am =  _ , ▶t~ Γw Γm Δw Δm Aw Am
 
+  ΣEl~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+           tp tw (Am : Σ _ (Tm~' Γp Up tp tw (₁ Γm) (M.U _))) →
+           Σ _ (Ty~' Γp (Elp tp) (Elw Γw tw) (₁ Γm))
+  ΣEl~ Γw Γm tp tw Am = _ , Am , refl
+
 
 -- I think the following is deprecated
 -- helper to inhabit v1 ~ zm

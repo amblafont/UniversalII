@@ -16,6 +16,7 @@ module Model {ℓ}  where
   -- PathOver' B e u v = u == v [ B ↓ e ] 
 
 
+
   postulate
     Con  : Set ℓ
     Telescope : Con → Set ℓ
@@ -77,8 +78,20 @@ module Model {ℓ}  where
     V0 : (Γ : Con)(A : Ty Γ) → Tm (Γ ▶ A) (wkT Γ A A)
     -- VS : (Γ : Con)(Ex : Ty Γ)(A : Ty Γ) (x : Var Γ A) → Var (Γ ▶ Ex) (wkT Γ Ex A)
 
-    subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
-    subt : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → (A : Ty (Γ ▶ Ex) ) (u : Tm _ A )→ Tm Γ (subT Γ Ex t A)
+    -- note that this is weaker that we could naively require (z : Tm (Γ ^^ Δ) (weakening de E))
+    -- mais comemnt exprimer ce weakening?
+    l-subT : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope Γ) (z : Tm Γ Ex)
+      (A : Ty ((Γ ▶ Ex) ^^ (wkC _ Ex Δ))) → Ty (Γ ^^ Δ)
+
+  subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
+  subT Γ Ex = l-subT Ex (∙t _)
+
+
+  postulate
+
+    subt : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → (A : Ty (Γ ▶ Ex) ) (u : Tm _ A )→
+      -- Tm Γ (subT Γ Ex t A)
+      Tm Γ (l-subT Ex (∙t _) t A)
 
     -- v : (Γ : Con)(A : Ty Γ)(x : Var Γ A) → Tm Γ A
     app : (Γ : Con)(A : Tm Γ (U _))(B : Ty (Γ ▶ El _ A)) (t : Tm Γ (ΠΠ Γ A B)) (u : Tm Γ (El _ A)) →
@@ -96,6 +109,7 @@ module Model {ℓ}  where
     liftU : {Γ : Con}(Δ : Telescope Γ)(E : Ty Γ) →
       liftT Γ Δ E (U _) ↦ U _
 
+
   {-# REWRITE liftU  #-}
 
   postulate
@@ -103,12 +117,13 @@ module Model {ℓ}  where
     liftEl : {Γ : Con}(Δ : Telescope Γ)(E : Ty Γ)(a : Tm (Γ ^^ Δ) (U _)) →
       liftT Γ Δ E (El _ a) ↦ El (Γ ▶ E ^^ wkC Γ E Δ) (liftt Γ Δ E (U _) a)
   {-# REWRITE liftEl  #-}
+
   postulate
     -- definitional in the syntax
     -- we can deal without definitional equation?
     liftΠ : {Γ : Con}(Δ : Telescope Γ)(E : Ty Γ)(A : Tm (Γ ^^ Δ) (U _))
       (B : Ty ((Γ ^^ Δ) ▶ (El _ A))) →
-      liftT Γ Δ E (ΠΠ _ A B) ≡
+      liftT Γ Δ E (ΠΠ _ A B) ↦
         ΠΠ _ (liftt Γ Δ E _ A) (liftT Γ (Δ ▶t (El _ A)) E B)
 
 
@@ -123,5 +138,55 @@ module Model {ℓ}  where
         wkt (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftT Γ Δ Ex A) (liftT Γ Δ Ex B)
         (liftt Γ Δ Ex B t) [ Tm _ ↓ lift-wkT {Δ = Δ} A B Ex ]
 
+  {-# REWRITE liftΠ  #-}
 
       
+-- for the application case of lifttw
+-- remove to show Nicolas the pb
+  postulate
+    subU : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) →
+      l-subT Ex (∙t _) t (U _) ↦ U _
+  {-# REWRITE subU  #-}
+  postulate
+    subEl : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) (u : Tm (Γ ▶ Ex) (U _)) →
+      l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+
+      -- TODO: decomment after this rewrite pb has been solved
+      {-
+  {-# REWRITE subEl  #-}
+  postulate
+    -- counter part of the syntax lift-sub
+    lift-subT : {Γ : Con}(Δ : Telescope Γ)(Ex : Ty Γ) (A : Ty (Γ ^^ Δ))(B : Ty ((Γ ^^ Δ) ▶ A))
+      (t : Tm (Γ ^^ Δ) A) →
+      liftT Γ Δ Ex (subT _ _ t B) ≡ subT _ _ (liftt Γ Δ Ex _ t) (liftT Γ (Δ ▶t A) Ex B)
+
+    --definitional in the syntax ?
+    lift-app : {Γ : Con}(Δ : Telescope Γ)(Ex : Ty Γ)
+      (A : Tm _ (U (Γ ^^ Δ)))(B : Ty ((Γ ^^ Δ) ▶ El _ A))
+      (t : Tm _ (ΠΠ _ A B)) (u : Tm _ (El _ A)) →
+      liftt Γ Δ Ex _ (app _ A B t u) ==
+        app (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftt Γ Δ Ex _ A) (liftT Γ (Δ ▶t El _ A) Ex B )
+          (liftt Γ Δ Ex _ t) (liftt Γ Δ Ex _ u)
+        [ Tm _ ↓ lift-subT Δ Ex _ B u ]
+
+    -- definitional in the syntax
+     {-
+    sub-app : {Γ : Con}(E : Ty Γ)
+       (A : Tm (Γ ▶ E) (U _))(B : Ty (Γ ▶ E ▶ (El _ A)))
+       (t : Tm _ (ΠΠ (Γ ▶ E) A B)) (u : Tm _ (El _ A))
+       (z : Tm _ E) →
+       subt _ E z (subT _ (El _ A) u B) (app _ A B t u) ≡
+       app Γ (subt _ E z _ A) {! !} {!subt _ E z!} (subt _ E z (El _ A) u)
+    --    -}
+
+
+    -- not needed in the syntax??
+    lift-subt : {Γ : Con}(Δ : Telescope Γ)(Ex : Ty Γ) (A : Ty (Γ ^^ Δ))(B : Ty ((Γ ^^ Δ) ▶ A))
+      (t : Tm (Γ ^^ Δ) A)(u : Tm _ B) →
+      liftt Γ Δ Ex (subT _ _ t B) (subt _ _ t B u) ==
+        subt _ _ (liftt Γ Δ Ex _ t)(liftT Γ (Δ ▶t A) Ex B)(liftt Γ (Δ ▶t A) Ex B u)
+        [ Tm _ ↓ lift-subT Δ Ex A B t ]
+
+
+
+-- -}

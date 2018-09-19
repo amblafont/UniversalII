@@ -1,4 +1,4 @@
-{-# OPTIONS  --rewriting --allow-unsolved-metas #-}
+{-# OPTIONS  --rewriting  #-}
 
 -- proof that is 
 open import Level 
@@ -89,19 +89,10 @@ Preservation of the relation by weakening
     ( M.wkC (₁ Γm) (₁ Em) (₁ Δm) , wkTelescope~ Γw Γm Δw Δm Ew Em) ,
     (M.liftT (₁ Γm) (₁ Δm)(₁ Em) (₁ Am) , liftT~ Γw Γm Δw Δm Ew Em Aw (liftTw Ew Δp Aw) (₁ Am) (₂ Am)) ,
     refl
-        -- let us start form minmal requirement
-  -- ^^~ : ∀ {Γp} Γw Γm
-  -- wkTelescope~ : ∀ {Γp} Γm
-  --       -- (Γm : Σ _ Con~' Γp Γw)
-  --       {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw Γm ))
-  --       {Exp} Exw (Exm : Σ _ (Ty~' Γp Exp Exw Γm) )
-  --       → Telescope~ {((Γp ▶p Exp)^^ (wkC Δp)) ?
-  --         ((Γm M.▶ (₁ Exm)) M.^^ M.wkC Γm (₁ Exm) (₁ Δm))
-
-  -- wkTelescope~ {Γp} Γm Δw Δm {Exp} Exw Exm = ?
 
 
 -- Σ means we bundle the model stuff and its relational proof together in a Σ type in the conclusion
+-- these are shortcuts that use the true recursive functions wkC, lift*~
   ΣCon~'▶ : ∀ {Γp}{Γw : Conw Γp}{Ap} {Aw : Tyw Γp Ap}
     (Γm : Σ M.Con (Con~' Γp Γw))
     (Am   : Σ (M.Ty (₁ Γm)) (Ty~' Γp Ap Aw (₁ Γm)))
@@ -112,14 +103,7 @@ Preservation of the relation by weakening
     (trCon~' (▶w Γw Aw) ΓAw (₁ Γm M.▶ ₁ Am)
       (Γm , (Am , refl)))
 
-{-
-  ΣTelescope~▶ : ∀ {Γp}{Γw : Conw Γp}
-    {Ap} {Aw : Tyw Γp Ap}
-    (Γm : Σ M.Con (Con~' Γp Γw))
-    (Am   : Σ (M.Ty (₁ Γm)) (Ty~' Γp Ap Aw (₁ Γm)))
-    (ΓAw :
-    Conw (Γp ▶p Ap)) → Σ M.Con (Con~' (Γp ▶p Ap) ΓAw)
-    -}
+
 
 -- this is also induced by ΣliftT~'
   ΣwkTy~' : ∀ {Γp}{Γw : Conw Γp}{Ap} {Aw : Tyw Γp Ap}{Bp}{Bw : Tyw Γp Bp}
@@ -196,27 +180,62 @@ Preservation of the relation by weakening
     rewrite prop-has-all-paths Aw' (lifttw Exw Δp Aw)
     | prop-has-all-paths wBw (liftTw Exw (Δp ▶p Elp _) Bw)
     =
+    -- Aw is smaller than the principal argument (Πw Δw' Aw Bw)
     Σliftt~' Γw Γm Δw Δm Exw Exm (M.U _) Aw am , 
     ΣliftT~' _ Γm (▶w Δw (Elw Δw' Aw))
+      -- this function is not part of the recursive block
       (Σ▶t~ _ Γm _ Δm {Elp _} (Elw Δw' Aw) (_ , am , refl))
-      Exw Exm  Bw  Bm'
+      Exw Exm
+      -- Bw is smaller than the principal argument
+      Bw
+      Bm'
         ,
-        M.liftΠ (₁ Δm) (₁ Exm) _ (₁ Bm') 
+        refl
+        -- M.liftΠ (₁ Δm) (₁ Exm) _ (₁ Bm') 
 
+  -- principal argument  Elw Δw' aw
   liftT~ {Γp} Γw Γm {Δp} Δw Δm {Exp} Exw Exm {.(Elp _)} (Elw Δw' aw) (Elw Γw₁ waw) _ (am , refl)
     rewrite prop-has-all-paths waw (lifttw Exw Δp aw) =
-
-    -- (Σliftt~' _ Γm _ Δm Exw Exm {Up} (M.U _) {!aw!} {!!})
+    -- aw is smaller than the principal argument
     Σliftt~' _ Γm _ Δm Exw Exm {Up} (M.U _) aw  am
     ,
     refl
 
   liftt~ {Γp} {Γw} Γm {Δp} Δw Δm Ew Em {Bp} Bm {.(V _)} (vw xw) (vw wxw) tm tr =
+  -- xw is smaller than the principal argument
      liftV~ Γm Δw Δm Ew Em Bm xw wxw tm tr
      -- {!liftV~ Γm Δw Δm Ew Em Bm xw wxw tm tr!}
 
-  liftt~ {Γp} {Γw} Γm {Δp} Δw Δm Ew Em {.(l-subT 0 u Bp)} Bm {.(app t u)} (appw .(Γp ^^ Δp) Γw₁ ap₁ tw Bp Bw t tw₁ u tw₂) wtw tm tr
-     = {!wtw!}
+  -- Γ ^ Δ ⊢ t : Π A B ~ tm
+  -- Γ ^ Δ ⊢ u : A ~ um
+  -- B ~ Bm
+  -- A ~ am
+  liftt~ {Γp} {Γw} Γm {Δp} Δw Δm {Ep} Ew Em {.(l-subT 0 u Bp)} .(Model.subT (₁ Γm Model.^^ ₁ Δm) (Model.El (₁ Γm Model.^^ ₁ Δm) (₁ am)) (₁ um) (₁ Bm)) {.(app t u)} (appw .(Γp ^^ Δp) Δw' A aw Bp Bw t tw u uw) waw .(Model.app (₁ Γm Model.^^ ₁ Δm) (₁ am) (₁ Bm) (₁ tm) (₁ um)) (am , Bm , tm , um , refl)
+   rewrite lift-subT ∣ Δp ∣ u Bp
+    | prop-has-all-paths waw
+         (appw (Γp ▶p Ep ^^ wkC Δp ) (wkCw' Ew Δp Δw') (liftt ∣ Δp ∣ A) (lifttw Ew Δp aw) (liftT (S ∣ Δp ∣) Bp ) (liftTw {Γp} {Ap = Ep } Ew (Δp ▶p Elp A ) Bw)
+        (liftt ∣ Δp ∣ t)
+        (lifttw Ew Δp {Bp = ΠΠp (Elp A) Bp} tw)
+        (liftt ∣ Δp ∣ u)
+        (lifttw Ew Δp {Bp = Elp A} uw))
+    = (Σliftt~' _ Γm _ Δm Ew Em {Ap = Up} (M.U _) aw am) ,
+    -- ?? Σ▶t~
+    (ΣliftT~' _ Γm (▶w Δw (Elw Δw aw))
+       (Σ▶t~ _ Γm _ Δm {Ap = Elp A} (Elw Δw aw) (ΣEl~ Δw (Σ^^~ Γw Γm Δw Δm) _ aw am))
+       Ew Em Bw Bm) ,
+      Σliftt~' _ Γm _ Δm Ew Em (M.ΠΠ (₁ Γm M.^^ ₁ Δm) (₁ am) (₁ Bm)) tw tm ,
+    (Σliftt~' _ Γm _ Δm Ew Em _ uw um) ,
+    finaleq
+   where
+    finaleq : _
+    -- I need sub El = El sub and lift El = El lift. I require definitional equalities here in the model because
+    -- I don't know how to handle this sigma equality nicely
+    finaleq =
+    pair= (M.lift-subT (₁ Δm)(₁ Em) _ (₁ Bm) (₁ um))
+    {!M.
+    !}
+    -- M.lift-subt (₁ Δm)(₁ Em) _ (₁ Bm) (₁ um) !}
+
 
     
 
@@ -299,7 +318,8 @@ rewrite prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm ,
 
 -}
 
-  liftV~ {Γp} (Γm , Γr) {Δp ▶p Ap} (▶w Δw Aw) (.(₁ Δm M.▶t ₁ Am') , Δm , Am' , refl) {Exp} Exw Exm Bm (V0w .(Γp ^^ Δp) ΓΔw .Ap Aw') wxw xm (ΓΔm , Am , eq)
+ -- principal argument : V0w ..
+  liftV~ {Γp} (Γm , Γr) {Δp ▶p Ap} (▶w Δw Aw') (.(₁ Δm M.▶t ₁ Am') , Δm , Am' , refl) {Exp} Exw Exm Bm (V0w .(Γp ^^ Δp) ΓΔw .Ap Aw) wxw xm (ΓΔm , Am , eq)
   --  we know that Δw = ΓΔw and ΓΔm = (Σ^^~ _ (Γm , Γr) _ Δm) by hProp-itude
   -- the first is replaced with the second
     rewrite

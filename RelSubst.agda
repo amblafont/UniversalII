@@ -28,5 +28,34 @@ Preservation of the relation by substitution
       (Bsw : Tyw Γp (subT up Bp) )
       → Ty~' Γp (subT up Bp) Bsw (₁ Γm)
         (M.subT (₁ Γm)(₁ Am) (₁ um)  (₁ Bm))
-  subT~ = {!!}
 
+
+
+  -- si Γ ⊢ u : A ~ Γm  ⊢ um  : Am
+  --  et Γ , A ⊢ t : B avec t ~ tm, Bm
+  -- alors Γ ⊢ u[t] : B[t] ~ um[tm], Bm[tm]
+  subt~ : ∀ {Γp} Γw (Γm : (Σ _ (Con~' Γp Γw))) →
+    ∀{Ap} Aw (Am : (Σ _ (Ty~' Γp Ap Aw (₁ Γm))))
+    {Bp} (Bm : M.Ty (₁ Γm M.▶ ₁ Am))
+    {tp} tw (tm : (Σ _ (Tm~' (Γp ▶p Ap) Bp tp tw (₁ Γm M.▶ ₁ Am) Bm)))
+    {up} uw (um : (Σ _ (Tm~' Γp Ap up uw (₁ Γm) (₁ Am))))
+    (tsw : Tmw Γp (subT up Bp) (subt up tp) )
+    → Tm~' Γp (subT up Bp)(subt up tp) tsw (₁ Γm)
+    (M.subT (₁ Γm)(₁ Am) (₁ um)  Bm)
+    (M.subt (₁ Γm)(₁ Am) (₁ um)  Bm (₁ tm))
+
+
+  -- subT~ {Γw} Γw Γm {Ap} Aw Am {Bp} Bw Bm {up} uw um Bsw = {!!}
+  subT~ {.Γp} Γw Γm {Ap} Aw Am {.Up} (Uw .(Γp ▶p Ap) Γw₁) (.(Model.U (₁ Γm Model.▶ ₁ Am)) , refl) {up} uw um (Uw Γp Γw₂) = refl
+
+  subT~ {Γp} Γw Γm {Ap} Aw Am {.(ΠΠp (Elp ap) Bp)} (Πw ΓAw {ap} aw {Bp} Bw) (.(Model.ΠΠ (₁ Γm Model.▶ ₁ Am) (₁ am) (₁ Bm)) , am , Bm , refl) {up} uw um (Πw Γw' Asw Bsw) =
+    (_ , subt~ Γw Γm Aw Am (M.U _) aw am uw um Asw) ,
+    ?
+
+  --  Γ ▶ A ⊢ B : U   ~ Bm
+  -- Γ ⊢ u : A   ~ um
+  subT~ {Γp} Γw Γm {Ap} Aw Am {.(Elp Bp)} (Elw Γw₁ {Bp} Bw) (.(M.El (₁ Γm M.▶ ₁ Am) (₁ Bm)) , Bm , refl) {up} uw um (Elw Γw₂ aw₁) =
+    (_ , subt~ Γw Γm Aw Am {Up} (M.U _) Bw Bm uw um aw₁) ,
+      refl
+
+  subt~ {Γp} Γw Γm {Ap} Aw Am {Bp} Bm {tp} tw tm {up} uw um tsw = {!!}
