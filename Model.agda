@@ -1,5 +1,7 @@
-{-# OPTIONS  --rewriting  #-}
+{-# OPTIONS  --rewriting  --allow-unsolved-metas #-}
 -- an attempt with rewrite rules, but by postulating the model rather than defining a record (because rewrite rules don't work)
+
+-- probably a lot of statments of rewrite rules about subT should be generalized to l-subT
 
 open import Level 
 open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
@@ -65,6 +67,7 @@ module Model {ℓ}  where
       (wkC Γ Ex (Δ ▶t A)) ↦ ((wkC Γ Ex Δ) ▶t liftT Γ Δ Ex A)
 
 
+    
 
   {-# REWRITE wk▶t  #-}
 
@@ -78,20 +81,43 @@ module Model {ℓ}  where
     V0 : (Γ : Con)(A : Ty Γ) → Tm (Γ ▶ A) (wkT Γ A A)
     -- VS : (Γ : Con)(Ex : Ty Γ)(A : Ty Γ) (x : Var Γ A) → Var (Γ ▶ Ex) (wkT Γ Ex A)
 
-    -- note that this is weaker that we could naively require (z : Tm (Γ ^^ Δ) (weakening de E))
-    -- mais comemnt exprimer ce weakening?
-    l-subT : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope Γ) (z : Tm Γ Ex)
-      (A : Ty ((Γ ▶ Ex) ^^ (wkC _ Ex Δ))) → Ty (Γ ^^ Δ)
 
-  subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
-  subT Γ Ex = l-subT Ex (∙t _)
+{-
+    -- needed for l-subT
+    subTel : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex)) (z : Tm Γ Ex) → Telescope Γ
+
+    sub∙t : (Γ : Con)(Ex : Ty Γ)(z : Tm Γ Ex) → subTel Ex (∙t _) z ↦ ∙t _
+
+-- note that this is weaker that we could naively require (z : Tm (Γ ^^ Δ) (weakening de E))
+-- mais comemnt exprimer ce weakening?
+-- Also, note that this generalized version of substitution is not required for defining
+-- the functional relation, but to show that this relation is preserved by substitution
+-- this is also the case of lifts
+-- Γ ⊢ t : E     Γ , E ⊢ Δ      Γ , E , Δ ⊢ A  
+-- then
+-- Γ , Δ[t] ⊢ A[t] 
+    l-subT : {Γ : Con}(E : Ty Γ)(Δ : Telescope (Γ ▶ E)) (z : Tm Γ E)
+      (A : Ty ((Γ ▶ E) ^^ Δ)) → Ty (Γ ^^ subTel E Δ z)
+
+
+    sub▶t : (Γ : Con)(Ex : Ty Γ)(z : Tm Γ Ex) 
+       (Δ : Telescope (Γ ▶ Ex) ) (A : Ty ((Γ ▶ Ex) ^^ Δ)) 
+       → subTel Ex (Δ ▶t A) z ↦ (subTel Ex Δ z ▶t l-subT Ex Δ z A)
+  {-# REWRITE sub∙t  #-}
+  {-# REWRITE sub▶t  #-}
+  -}
+
+
+  postulate
+    subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
+  -- subT Γ Ex = l-subT Ex (∙t _)
 
 
   postulate
 
     subt : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → (A : Ty (Γ ▶ Ex) ) (u : Tm _ A )→
       -- Tm Γ (subT Γ Ex t A)
-      Tm Γ (l-subT Ex (∙t _) t A)
+      Tm Γ (subT _ Ex  t A)
 
     -- v : (Γ : Con)(A : Ty Γ)(x : Var Γ A) → Tm Γ A
     app : (Γ : Con)(A : Tm Γ (U _))(B : Ty (Γ ▶ El _ A)) (t : Tm Γ (ΠΠ Γ A B)) (u : Tm Γ (El _ A)) →
@@ -106,6 +132,7 @@ module Model {ℓ}  where
 
 
      -- definitional in the syntax
+
     liftU : {Γ : Con}(Δ : Telescope Γ)(E : Ty Γ) →
       liftT Γ Δ E (U _) ↦ U _
 
@@ -140,20 +167,30 @@ module Model {ℓ}  where
 
   {-# REWRITE liftΠ  #-}
 
+{-
       
 -- for the application case of lifttw
 -- remove to show Nicolas the pb
   postulate
     subU : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) →
-      l-subT Ex (∙t _) t (U _) ↦ U _
+      -- l-subT Ex (∙t _) t (U _) ↦ U _
+      subT Γ Ex  t (U _) ↦ U _
+
   {-# REWRITE subU  #-}
   postulate
     subEl : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) (u : Tm (Γ ▶ Ex) (U _)) →
-      l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+      subT _ Ex  t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+      -- l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
 
-      -- TODO: decomment after this rewrite pb has been solved
-      {-
   {-# REWRITE subEl  #-}
+  postulate
+    subΠ : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex)
+        (A : Tm (Γ ▶ Ex) (U _))(B : Ty (Γ ▶ Ex ▶ (El _ A))) →
+        l-subT Ex (∙t _) t (ΠΠ _ A B) ↦ ΠΠ Γ (subt Γ Ex t _ A)
+        (l-subT Ex (∙t _ ▶t (El _ A)) t B)
+   {-# REWRITE subΠ  #-}
+   -}
+
   postulate
     -- counter part of the syntax lift-sub
     lift-subT : {Γ : Con}(Δ : Telescope Γ)(Ex : Ty Γ) (A : Ty (Γ ^^ Δ))(B : Ty ((Γ ^^ Δ) ▶ A))
@@ -169,15 +206,18 @@ module Model {ℓ}  where
           (liftt Γ Δ Ex _ t) (liftt Γ Δ Ex _ u)
         [ Tm _ ↓ lift-subT Δ Ex _ B u ]
 
-    -- definitional in the syntax
-     {-
+{-
     sub-app : {Γ : Con}(E : Ty Γ)
        (A : Tm (Γ ▶ E) (U _))(B : Ty (Γ ▶ E ▶ (El _ A)))
        (t : Tm _ (ΠΠ (Γ ▶ E) A B)) (u : Tm _ (El _ A))
        (z : Tm _ E) →
        subt _ E z (subT _ (El _ A) u B) (app _ A B t u) ≡
-       app Γ (subt _ E z _ A) {! !} {!subt _ E z!} (subt _ E z (El _ A) u)
-    --    -}
+       -- we want that Γ ⊢ B[u][z] is equal to Γ ⊢ B[z][u[z]]
+       {!
+        app Γ (subt _ E z _ A)
+         (l-subT E (∙t _ ▶t (El _ A)) z B) 
+          {!subt _ E z!} (subt _ E z (El _ A) u)
+       !}
 
 
     -- not needed in the syntax??
@@ -189,4 +229,5 @@ module Model {ℓ}  where
 
 
 
+-- -}
 -- -}

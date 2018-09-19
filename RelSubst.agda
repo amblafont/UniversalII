@@ -50,7 +50,7 @@ Preservation of the relation by substitution
 
   subT~ {Γp} Γw Γm {Ap} Aw Am {.(ΠΠp (Elp ap) Bp)} (Πw ΓAw {ap} aw {Bp} Bw) (.(Model.ΠΠ (₁ Γm Model.▶ ₁ Am) (₁ am) (₁ Bm)) , am , Bm , refl) {up} uw um (Πw Γw' Asw Bsw) =
     (_ , subt~ Γw Γm Aw Am (M.U _) aw am uw um Asw) ,
-    ?
+    {!!}
 
   --  Γ ▶ A ⊢ B : U   ~ Bm
   -- Γ ⊢ u : A   ~ um

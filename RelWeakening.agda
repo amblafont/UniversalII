@@ -231,10 +231,10 @@ Preservation of the relation by weakening
     -- I need sub El = El sub and lift El = El lift. I require definitional equalities here in the model because
     -- I don't know how to handle this sigma equality nicely
     finaleq =
-    pair= (M.lift-subT (₁ Δm)(₁ Em) _ (₁ Bm) (₁ um))
-    {!M.
-    !}
-    -- M.lift-subt (₁ Δm)(₁ Em) _ (₁ Bm) (₁ um) !}
+      pair= (M.lift-subT (₁ Δm)(₁ Em) _ (₁ Bm) (₁ um))
+      (M.lift-app {₁ Γm} (₁ Δm) (₁ Em) (₁ am) (₁ Bm) (₁ tm)
+       (₁ um)
+      )
 
 
     
