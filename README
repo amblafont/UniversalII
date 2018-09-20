@@ -1,2 +1,17 @@
-RelationInhabit inhabits the functional relation
-UniversalIIT is the old file that was split into all these pieces
+Formalisation of the universal datatype which is hoped to be enough to encode any Inductive-Inductive datatype.
+
+This universal datatype can be described as an Inductive-Inductive-Recursive datatype, or as un Quotient-Inductive-Inductive Datatype. Here, we formalize it in agda using UIP and even rewrite rules (useful to tame the coherence hell) as an indexed datatype (preterms and then typing judgements). The aim is to produce the non dependent recursor and prove its unicity
+
+List of files
+- Syntax: the syntax of the universal datatype
+- Model: axiomatization of a model (using rewrite rules)
+- Relation: definition of the functional relation enjoyed by the non dependent recursor
+- RelationProp: proof that any syntax term relates to at most one model term (uses UIP)
+- RelationWeakening: proof that weakening preserves the relation
+- RelationSubst: proof that substitution preserves the relation (WIP)
+- RelationInhabit: proof that any syntax term relates to a model term. Hence the relation is functional.
+
+- UniversalIIT: deprecated old file 
+
+TODO:
+finish RelationSubst

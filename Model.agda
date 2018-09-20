@@ -27,6 +27,8 @@ module Model {ℓ}  where
     -- Var   : (Γ : Con) → Ty Γ → Set ℓ
 
     ∙    : Con
+
+    -- redundant with ▶t and ^^
     _▶_  : (Γ : Con) → Ty Γ → Con
 
 
@@ -82,7 +84,6 @@ module Model {ℓ}  where
     -- VS : (Γ : Con)(Ex : Ty Γ)(A : Ty Γ) (x : Var Γ A) → Var (Γ ▶ Ex) (wkT Γ Ex A)
 
 
-{-
     -- needed for l-subT
     subTel : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex)) (z : Tm Γ Ex) → Telescope Γ
 
@@ -105,12 +106,11 @@ module Model {ℓ}  where
        → subTel Ex (Δ ▶t A) z ↦ (subTel Ex Δ z ▶t l-subT Ex Δ z A)
   {-# REWRITE sub∙t  #-}
   {-# REWRITE sub▶t  #-}
-  -}
 
 
-  postulate
-    subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
-  -- subT Γ Ex = l-subT Ex (∙t _)
+  -- postulate
+  subT : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → Ty (Γ ▶ Ex) → Ty Γ
+  subT Γ Ex = l-subT Ex (∙t _)
 
 
   postulate
@@ -167,20 +167,19 @@ module Model {ℓ}  where
 
   {-# REWRITE liftΠ  #-}
 
-{-
       
--- for the application case of lifttw
+-- for the substitution
 -- remove to show Nicolas the pb
   postulate
     subU : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) →
-      -- l-subT Ex (∙t _) t (U _) ↦ U _
-      subT Γ Ex  t (U _) ↦ U _
+      l-subT Ex (∙t _) t (U _) ↦ U _
+      -- subT Γ Ex  t (U _) ↦ U _
 
   {-# REWRITE subU  #-}
   postulate
     subEl : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) (u : Tm (Γ ▶ Ex) (U _)) →
-      subT _ Ex  t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
-      -- l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+      -- subT _ Ex  t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+      l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
 
   {-# REWRITE subEl  #-}
   postulate
@@ -188,8 +187,7 @@ module Model {ℓ}  where
         (A : Tm (Γ ▶ Ex) (U _))(B : Ty (Γ ▶ Ex ▶ (El _ A))) →
         l-subT Ex (∙t _) t (ΠΠ _ A B) ↦ ΠΠ Γ (subt Γ Ex t _ A)
         (l-subT Ex (∙t _ ▶t (El _ A)) t B)
-   {-# REWRITE subΠ  #-}
-   -}
+  {-# REWRITE subΠ  #-}
 
   postulate
     -- counter part of the syntax lift-sub
