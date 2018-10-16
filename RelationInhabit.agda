@@ -23,7 +23,12 @@ module RelationInhabit {α} where
     {Ap Aw} (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm))) -- Aw'
     Am'
     → Ty~' Γp Ap Aw Γm' Am' →   (₁ Γm , ₁ Am) ≡ (Γm' , Am')
-  ConTy~path = {!!}
+  ConTy~path {Γp}{Γw}Γm Γw' Γm' Γr' {Ap}{Aw} Am Am' Ar' rewrite prop-has-all-paths Γw' Γw
+   = aux (Γm' , Γr') (Am' , Ar')
+    where
+      aux : (Γm' : Σ _ (Con~' Γp Γw)) → (Am' : Σ _ (Ty~' Γp _ Aw (₁ Γm'))) →
+        (₁ Γm , ₁ Am) ≡ (₁ Γm' , ₁ Am')
+      aux Γm' Am' rewrite prop-has-all-paths Γm' Γm | prop-has-all-paths Am' Am = refl
 
   -- ConTy~path' : ∀ {Γp Γw} (Γm : Σ _ (Con~' Γp Γw)) Γm' Γw' (Γr' : Con~' Γp Γw' Γm')
   --   {Ap Aw} (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm))) Aw Am'
