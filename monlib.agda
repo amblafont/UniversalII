@@ -32,9 +32,17 @@ instance
     (b , c) ≡ (b' , c')
   ₁triple= refl = refl
 
+
   ₁mk-triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C :  (Σ _ B)  → Set δ}
     {a : A}{b b' : B a} {c : C (a , b)} {c' : C (a , b')}
     (eb : b ≡ b')
     (ec : c == c' [ _ ↓ eb ]) →
      pair {B = C} ((a , b)) c ≡ pair {B = C} ((a , b')) c' 
   ₁mk-triple= refl refl = refl
+
+  -- same, but we ask for a sigma equality
+  -- ₁pair-triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C :  (Σ _ B)  → Set δ}
+  --   {a : A}{b b' : B a} {c : C (a , b)} {c' : C (a , b')}
+  --   (eb : (b , c) ≡ b' , c') →
+  --   pair {B = C} ((a , b)) c ≡ pair {B = C} ((a , b')) c' 
+  -- ₁pair-triple= refl = refl

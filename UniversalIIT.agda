@@ -351,11 +351,11 @@ Lemmas about commutations of lift
 TODO: demander à Theo
 
 -}
-comm_liftV : ∀ p q → liftV (S p) (liftV 0 q) ≡ liftV 0 (liftV p q)
-comm_liftV p q = {!!}
+comm-liftV : ∀ p q → liftV (S p) (liftV 0 q) ≡ liftV 0 (liftV p q)
+comm-liftV p q = {!!}
 
-comm_liftT : ∀ p q → liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
-comm_liftT p q = {!!}
+comm-liftT : ∀ p q → liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
+comm-liftT p q = {!!}
 
 
 -- wktw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap){tp}{Bp}(tw : Tmw Γp Bp tp) → Tmw (Γp ▶p Ap) (liftT 1 Bp) (liftt 1 tp)
@@ -917,7 +917,7 @@ and we would like to show that
       (wxw : Varw ((Γp ▶p _ ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap) Ap' 0) →
       Var~' ((Γp ▶p _ ^^ wkC Δp) ▶p liftT ∣ Δp ∣ Ap) Ap' 0 wxw (Γm M.▶ ₁ Exm M.^^ M.wkC Γm (₁ Exm) (₁ Δm M.▶t ₁ Am'))
       (M.liftT Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm) (M.liftt Γm (₁ Δm M.▶t ₁ Am') (₁ Exm) Bm xm))
-      (! (comm_liftT ∣ Δp ∣ Ap))
+      (! (comm-liftT ∣ Δp ∣ Ap))
      ( 
       λ wxw →
       

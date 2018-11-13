@@ -9,10 +9,11 @@ List of files
 - Relation: definition of the functional relation enjoyed by the non dependent recursor
 - RelationProp: proof that any syntax term relates to at most one model term (uses UIP)
 - RelationWeakening: proof that weakening preserves the relation
-- RelationSubst: proof that substitution preserves the relation (WIP)
+- RelationSubst: proof that substitution preserves the relation 
 - RelationInhabit: proof that any syntax term relates to a model term. Hence the relation is functional.
 
 - UniversalIIT: deprecated old file 
 
 TODO:
-finish RelationSubst
+- rename commutation lemmas in Syntax (subt-wkt and so on) and Model
+- define model morphism and use RelationInhabit to prove existence and uniqueness of it

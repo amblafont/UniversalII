@@ -108,6 +108,11 @@ module Relation {α} where
     (((₁ Γm M.^^ ₁ Δm) , (^^~ Γw Γm Δw Δm )) , Am , refl)
 
 
+  Σ^^~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
+    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) )) →
+    Σ _ (Con~' _ Δw )
+  Σ^^~ Γw Γm Δw Δm = _ , ^^~ Γw Γm Δw Δm
+
   ▶t~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
     {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
     {Ap} Aw (Am : Σ _ (Ty~' (Γp ^^ Δp) Ap Aw (₁ Γm M.^^ ₁ Δm) ))

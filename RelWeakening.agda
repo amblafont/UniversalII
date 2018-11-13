@@ -119,10 +119,6 @@ Preservation of the relation by weakening
 
 
 
-  Σ^^~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
-    {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) )) →
-    Σ _ (Con~' _ Δw )
-  Σ^^~ Γw Γm Δw Δm = _ , ^^~ Γw Γm Δw Δm
 
   Σ^^wk~ : ∀ {Γp} Γw (Γm : Σ _ (Con~' Γp Γw))
           {Δp} Δw (Δm : Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm) ))
@@ -332,7 +328,7 @@ rewrite prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm ,
        prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm , Γr) _ Δm)
       | prop-has-all-paths Aw' Aw | prop-path (TyP _ _ Aw (Γm M.^^ ₁ Δm)) Am Am'
       -- this says that
-      | (comm_liftT ∣ Δp ∣ Ap)
+      | (comm-liftT ∣ Δp ∣ Ap)
 
       = 
       tr (λ Bxm → statment wxw (₁ Bxm) (₂ Bxm)) (! (₁triple= eq))
@@ -363,7 +359,7 @@ rewrite prop-has-all-paths Δw ΓΔw | prop-has-all-paths ΓΔm  (Σ^^~ _ (Γm ,
     | prop-has-all-paths Δw' Δw
     | prop-has-all-paths ΓΔm  (Σ^^~ _ Γm _ Δm)
     | prop-path (TyP _ _ Aw (₁ Γm M.^^ ₁ Δm)) Am Am'
-    | comm_liftT ∣ Δp ∣ Bp
+    | comm-liftT ∣ Δp ∣ Bp
     | prop-has-all-paths wxw
         (VSw (_ ▶p _ ^^ wkC Δp) (wkCw' Exw Δp Δw) (liftT ∣ Δp ∣ Ap)
         (liftTw Exw Δp Aw) (liftT ∣ Δp ∣ Bp) (liftTw Exw Δp Bw) (liftV ∣ Δp ∣ xp)

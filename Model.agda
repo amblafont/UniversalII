@@ -1,4 +1,4 @@
-{-# OPTIONS  --rewriting  --allow-unsolved-metas #-}
+{-# OPTIONS  --rewriting   #-}
 -- an attempt with rewrite rules, but by postulating the model rather than defining a record (because rewrite rules don't work)
 
 -- probably a lot of statments of rewrite rules about subT should be generalized to l-subT
@@ -114,10 +114,16 @@ module Model {ℓ}  where
 
 
   postulate
+    l-subt : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex))(t : Tm Γ Ex) →
+      (A : Ty (Γ ▶ Ex ^^ Δ) ) (u : Tm _ A )→
+      Tm (Γ ^^ (subTel Ex Δ t)) (l-subT Ex Δ  t A)
 
-    subt : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → (A : Ty (Γ ▶ Ex) ) (u : Tm _ A )→
-      -- Tm Γ (subT Γ Ex t A)
-      Tm Γ (subT _ Ex  t A)
+  subt : (Γ : Con)(Ex : Ty Γ)(t : Tm Γ Ex) → (A : Ty (Γ ▶ Ex) ) (u : Tm _ A )→
+    -- Tm Γ (subT Γ Ex t A)
+    Tm (Γ ^^ (∙t Γ)) (l-subT Ex (∙t _)  t A)
+  subt Γ Ex t A u = l-subt Ex (∙t _) t A u
+
+  postulate
 
     -- v : (Γ : Con)(A : Ty Γ)(x : Var Γ A) → Tm Γ A
     app : (Γ : Con)(A : Tm Γ (U _))(B : Ty (Γ ▶ El _ A)) (t : Tm Γ (ΠΠ Γ A B)) (u : Tm Γ (El _ A)) →
@@ -171,23 +177,24 @@ module Model {ℓ}  where
 -- for the substitution
 -- remove to show Nicolas the pb
   postulate
-    subU : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) →
-      l-subT Ex (∙t _) t (U _) ↦ U _
-      -- subT Γ Ex  t (U _) ↦ U _
+    l-subU : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex))(t : Tm Γ Ex) →
+      l-subT Ex Δ t (U _) ↦ U _
 
-  {-# REWRITE subU  #-}
+  {-# REWRITE l-subU  #-}
   postulate
-    subEl : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex) (u : Tm (Γ ▶ Ex) (U _)) →
+    l-subEl : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex))(t : Tm Γ Ex)
+      (u : Tm (Γ ▶ Ex ^^ Δ) (U _)) →
       -- subT _ Ex  t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
-      l-subT Ex (∙t _) t (El _ u) ↦ El Γ (subt Γ Ex t (U _) u)
+      l-subT Ex Δ t (El _ u) ↦ El (Γ ^^ (subTel Ex Δ t)) (l-subt Ex Δ t (U _) u)
 
-  {-# REWRITE subEl  #-}
+  {-# REWRITE l-subEl  #-}
   postulate
-    subΠ : {Γ : Con}(Ex : Ty Γ)(t : Tm Γ Ex)
-        (A : Tm (Γ ▶ Ex) (U _))(B : Ty (Γ ▶ Ex ▶ (El _ A))) →
-        l-subT Ex (∙t _) t (ΠΠ _ A B) ↦ ΠΠ Γ (subt Γ Ex t _ A)
-        (l-subT Ex (∙t _ ▶t (El _ A)) t B)
-  {-# REWRITE subΠ  #-}
+    l-subΠ : {Γ : Con}(Ex : Ty Γ)(Δ : Telescope (Γ ▶ Ex))(t : Tm Γ Ex)
+        (A : Tm (Γ ▶ Ex ^^ Δ) (U _))(B : Ty (Γ ▶ Ex ^^ Δ ▶ (El _ A))) →
+        l-subT Ex Δ t (ΠΠ _ A B) ↦ ΠΠ (Γ ^^ (subTel Ex Δ t)) (l-subt Ex Δ t _ A)
+        (l-subT Ex (Δ ▶t (El _ _)) t B)
+
+  {-# REWRITE l-subΠ  #-}
 
   postulate
     -- counter part of the syntax lift-sub
@@ -203,6 +210,54 @@ module Model {ℓ}  where
         app (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftt Γ Δ Ex _ A) (liftT Γ (Δ ▶t El _ A) Ex B )
           (liftt Γ Δ Ex _ t) (liftt Γ Δ Ex _ u)
         [ Tm _ ↓ lift-subT Δ Ex _ B u ]
+
+    -- counter part of the syntax l-subT-subT
+    l-subT-subT : {Γ : Con}(E : Ty Γ)(Δ : Telescope (Γ ▶ E)) (z : Tm _ E)
+      (A : Ty (Γ ▶ E ^^ Δ)) (a : Tm _ A)  (B : Ty (Γ ▶ E ^^ Δ ▶ A)) →
+      l-subT E Δ z (subT (Γ ▶ E ^^ Δ) A a B) ≡
+        subT (Γ ^^ subTel E Δ z) (l-subT E Δ z A) (l-subt E Δ z _ a)
+          (l-subT E (Δ ▶t A) z B)
+    --definitional in the syntax ?
+    sub-app : {Γ : Con}(E : Ty Γ)(Δ : Telescope (Γ ▶ E))(z : Tm _ E)
+       (A : Tm _ (U (Γ ▶ E ^^ Δ)))(B : Ty ((Γ ▶ E ^^ Δ) ▶ El _ A))
+       (t : Tm _ (ΠΠ _ A B)) (u : Tm _ (El _ A)) 
+      → l-subt E Δ z _ (app _ _ _ t u)  == app _ _ _ (l-subt E Δ z _ t) (l-subt E Δ z _ u)
+        [ Tm _ ↓ l-subT-subT E Δ z (El (Γ ▶ E ^^ Δ) A) u B  ]
+
+    {-
+    counter part of the syntax l-subT-wkT/l-subt-wkt
+
+    -}
+    l-subT-wkT : {Γ : Con} {E : Ty Γ}(z : Tm _ E)
+      {Δ : Telescope (Γ ▶ E)}(A : Ty (Γ ▶ E ^^ Δ))(C : Ty (Γ ▶ E ^^ Δ)) →
+      l-subT E (Δ ▶t C) z (wkT (Γ ▶ E ^^ Δ) C A) ≡
+         wkT (Γ ^^ subTel E Δ z) (l-subT E Δ z C) (l-subT E Δ z A) 
+
+    l-subt-wkt : {Γ : Con} {E : Ty Γ}(z : Tm _ E)
+      {Δ : Telescope (Γ ▶ E)}{A : Ty (Γ ▶ E ^^ Δ)}(t : Tm _ A)(C : Ty (Γ ▶ E ^^ Δ)) →
+      l-subt E (Δ ▶t C) z (wkT (Γ ▶ E ^^ Δ) C A) (wkt (Γ ▶ E ^^ Δ) C A t) ==
+        wkt _ _ _ (l-subt E Δ z A t) [ Tm _ ↓ l-subT-wkT z {Δ = Δ} A C  ]
+
+    -- counter part of the syntax lemma subT-wkT
+    subT-wkT : {Γ : Con} {E : Ty Γ}(z : Tm _ E) (A : Ty Γ) →
+      subT Γ E z (wkT Γ E A) ≡ A
+
+    subt-wkt : {Γ : Con} {E : Ty Γ}(z : Tm _ E) {A : Ty Γ}(t : Tm _ A) →
+      subt Γ E z (wkT Γ E A) (wkt Γ E A t) == t [ Tm _ ↓ subT-wkT z A  ]
+
+
+    -- l-subt 0 u v0 = u (definitional in the syntax)
+    subt-v0 : {Γ : Con} {E : Ty Γ} (z : Tm _ E) →
+      subt Γ E z (wkT Γ E E) (V0 _ E) == z [ Tm _ ↓ subT-wkT z E ]
+      
+
+    -- l-subt (S n) u v0 = v0 (definitional in the syntax)
+    Sn-subt-v0 : {Γ : Con} {E : Ty Γ} (z : Tm _ E)
+      {Δ : Telescope (Γ ▶ E)}(A : Ty (Γ ▶ E ^^ Δ)) →
+      l-subt {Γ = Γ} E (Δ ▶t A) z _ (V0 _ _) == V0 _ _
+        [ Tm _ ↓ l-subT-wkT z {Δ = Δ } A A ]
+    
+    
 
 {-
     sub-app : {Γ : Con}(E : Ty Γ)
