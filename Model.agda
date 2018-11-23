@@ -9,6 +9,7 @@ open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transp
 
 
 module Model {ℓ}  where
+
   infixl 5 _▶_
   infixl 5 _^^_
   -- syntax PathOver B p u v = u == v [ B ↓ p ]
@@ -29,6 +30,9 @@ module Model {ℓ}  where
     ∙    : Con
 
     -- redundant with ▶t and ^^
+    -- indeed, Γ ▶ A could be defined as (Γ ^^ (∙t ▶t A)).
+    -- but then the rewrite rule ^^▶t would introduce a loop:
+    -- (Γ ^^ (Δ ▶t A)) ↦ (Γ ^^ Δ) ^^ (∙t ▶t A) ↦ Γ ^^ Δ ^^ ∙t ^^ (∙t ▶t A) ↦ ...
     _▶_  : (Γ : Con) → Ty Γ → Con
 
 

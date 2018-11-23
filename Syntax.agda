@@ -138,9 +138,9 @@ subV = l-subV 0
 {-
 
 Lemmas about commutations of lift
-TODO: demander à Theo
 
 -}
+-- auxiliary lemmas to proof comm-lift*
 n-comm-liftT : ∀ n p q → liftT (S (n + p)) (liftT n q) ≡ liftT n (liftT (n + p) q)
 n-comm-liftt : ∀ n p q → liftt (S (n + p)) (liftt n q) ≡ liftt n (liftt (n + p) q)
 n-comm-liftV : ∀ n p q → liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
@@ -169,6 +169,8 @@ n-comm-liftV (S n) p (S x) rewrite n-comm-liftV n p x = refl
 
 -- TODO: faire un schema
 -- TODO généraliser à l-subT
+
+-- auxiliary lemmas to prove subT-wkT
 n-subT-wkT : ∀ n A z → l-subT n z (liftT n A) ≡ A 
 n-subt-wkt : ∀ n t z → l-subt n z (liftt n t) ≡ t 
 n-subV-wkV : ∀ n x z → l-subV n z (liftV n x) ≡ V x 
@@ -190,6 +192,7 @@ n-subV-wkV (S n) O z = refl
 n-subV-wkV O (S x) z = refl
 n-subV-wkV (S n) (S x) z rewrite n-subV-wkV n x z = refl
 
+-- auxiliary lemmas to prove lift-subT
 lift-l-subT : ∀ n p u B → liftT (n + p) (l-subT n u B) ≡ l-subT n (liftt p u)(liftT (S (n + p)) B)
 lift-l-subt : ∀ n p u t → liftt (n + p) (l-subt n u t) ≡ l-subt n (liftt p u)(liftt (S (n + p)) t)
 lift-l-subV : ∀ n p u x → liftt (n + p) (l-subV n u x) ≡ l-subV n (liftt p u)(liftV (S (n + p)) x)
@@ -217,6 +220,7 @@ lift-l-subV (S n) p u (S x) rewrite comm-liftt (n + p) (l-subV n u x)
   | lift-l-subV n p u x
   = refl
 
+-- auxiliary lemmas to prove l-subT-wkT / l-subt-wkt
 l-subT-liftT : ∀ Δ u n B → l-subT (S (n + Δ)) u (liftT n B) ≡ liftT n (l-subT (n + Δ) u B)
 l-subt-liftt : ∀ Δ u n t → l-subt (S (n + Δ)) u (liftt n t) ≡ liftt n (l-subt (n + Δ) u t)
 l-subV-liftV : ∀ Δ u n x → l-subV (S (n + Δ)) u (liftV n x) ≡ liftt n (l-subV (n + Δ) u x)
