@@ -43,36 +43,36 @@ instance
 
 -- stuff for ModelRecord
 tr2 :
-∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
-{a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
-{b₀ : B a₀}{b₁ : B a₁}(b₂ : tr B a₂ b₀ ≡ b₁)
-→ C a₀ b₀ → C a₁ b₁
+  ∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
+  {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
+  {b₀ : B a₀}{b₁ : B a₁}(b₂ : tr B a₂ b₀ ≡ b₁)
+  → C a₀ b₀ → C a₁ b₁
 tr2 {B = B} C {a₀}{.a₀} refl refl c₀ = c₀
 
 -- can't find this in Hott Lib...
 transpose-tr! :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x ≡ y)
-{a : B y} {b : B x} (e : a ≡ tr B p b) → tr B (! p) a ≡ b  
+  {a : B y} {b : B x} (e : a ≡ tr B p b) → tr B (! p) a ≡ b  
 transpose-tr!  B refl e = e
 
 -- stuff for ModelMorphism
 
 -- can't find this in Hott Lib...
-  transpose-tr :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : y ≡ x)
-    {a : B y} {b : B x} (e : a ≡ tr B (! p) b) → tr B p a ≡ b  
-  transpose-tr  B refl e = e
+transpose-tr :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : y ≡ x)
+  {a : B y} {b : B x} (e : a ≡ tr B (! p) b) → tr B p a ≡ b  
+transpose-tr  B refl e = e
 
-  tr-swap :  ∀ {i j k} {A : Type i} {B : A → Type j}{C : A → Type k} (f : ∀ a → B a → C a) {x y : A} (p : x ≡ y)
-    (b : B x)→ f _ (tr B p b) ≡ tr C p (f _ b)
-  tr-swap f refl b = refl
+tr-swap :  ∀ {i j k} {A : Type i} {B : A → Type j}{C : A → Type k} (f : ∀ a → B a → C a) {x y : A} (p : x ≡ y)
+  (b : B x)→ f _ (tr B p b) ≡ tr C p (f _ b)
+tr-swap f refl b = refl
 
 
-  uip : ∀ {i} {A : Type i} {x y : A} (p q : x ≡ y) → p ≡ q
-  uip refl refl = refl
+uip : ∀ {i} {A : Type i} {x y : A} (p q : x ≡ y) → p ≡ q
+uip refl refl = refl
 
-  uip-coe : ∀ {i }  {x y : Type i} (p q : x ≡ y)  {b : x}  →
-    coe p b ≡ coe q b
-  uip-coe refl refl = refl
+uip-coe : ∀ {i }  {x y : Type i} (p q : x ≡ y)  {b : x}  →
+  coe p b ≡ coe q b
+uip-coe refl refl = refl
 
-  coe-∙2' : ∀ {i } {A B C D : Type i} (p : A ≡ B) (q : B ≡ C)(r : C ≡ D) (a : A)
-    → coe r (coe q (coe p a)) ≡ coe (p ◾ q ◾ r) a
-  coe-∙2' refl refl q a = refl
+coe-∙2' : ∀ {i } {A B C D : Type i} (p : A ≡ B) (q : B ≡ C)(r : C ≡ D) (a : A)
+  → coe r (coe q (coe p a)) ≡ coe (p ◾ q ◾ r) a
+coe-∙2' refl refl q a = refl

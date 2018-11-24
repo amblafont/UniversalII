@@ -1,9 +1,11 @@
 
+
 open import Level 
 open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import ModelRecord
 open import monlib
 -- Then, a definition of model morphism, based on a definition of model without rewrite rules
+-- The big proofs : wkTᴹ and subTᴹ because they deal with horrible transports
 module ModelMorphism where
 
 
