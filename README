@@ -24,8 +24,10 @@ List of files
 - ModelMorRew : postulation of a model morphism from the syntax to the postulated model, using rewrite rules
 - ModelMorRewRel : proof that this postulated model morphism satisfies the functional relation
 
+- ModelMorUnique : proof that this postulated model is pointwise equal to the one constructed in InitialMorphism*
+
 - UniversalIIT: deprecated old file 
 
 TODO:
 - rename commutation lemmas in Syntax (subt-wkt and so on) and Model
-- prove uniqueness of the initial model morphism (by postulating it)
+- prove also the uniqueness related to telescope
