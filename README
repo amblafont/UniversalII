@@ -1,3 +1,4 @@
+-question for ambrus : how do you do local modules (module M = ..) as an alias ?
 Formalisation of the universal datatype which is hoped to be enough to encode any Inductive-Inductive datatype.
 
 This universal datatype can be described as an Inductive-Inductive-Recursive datatype, or as un Quotient-Inductive-Inductive Datatype. Here, we formalize it in agda using UIP and even rewrite rules (useful to tame the coherence hell) as an indexed datatype (preterms and then typing judgements). The aim is to produce the non dependent recursor and prove its unicity

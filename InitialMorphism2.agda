@@ -20,11 +20,8 @@ module InitialMorphism2 {l}  where
   open import InitialMorphism1 {l}
 
   iniV0ᴹ : ∀ (Γ : S1.Con)(A : S1.Ty Γ) →
-     -- morTm {Γ S1.▶ A}{S1.wkT Γ A A}(S1.V0 Γ A)
-     -- {!refl {a = morTm {Γ S1.▶ A}{S1.wkT Γ A A}(S1.V0 Γ A)}  !}
      morTm {Γ S1.▶ A}{S1.wkT Γ A A}(S1.V0 Γ A)
      ≡
-      -- MM.tr2-Tm⁻¹ refl
         (MM.tr-Tm (! (wkTᴹ syntax2 m2 iniMor1 {Γ = Γ}{A}{A}))
           (N.V0  (morCon Γ) (morTy {Γ} A)))
   -- use of uip

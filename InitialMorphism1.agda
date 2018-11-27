@@ -141,16 +141,23 @@ module InitialMorphism1 {l} where
        (N.wkC (morCon Γ) (morTy {Γ = Γ} E) (morTel {Γ = Γ} Δ))
         (wkTelescope~ (₂ Γ) (ΣmorCon Γ) (₂ Δ) (ΣmorTel {Γ = Γ} Δ) (₂ E)
         (ΣmorTy {Γ = Γ} E))
+   -- this was already defined in ModelMorphism
+  ini▶wkCᴹ : ∀ Γ Δ E →
+    morCon (Γ S1.▶ E S1.^^ S1.wkC Γ E Δ) ≡
+    (morCon Γ N.▶ morTy {Γ} E N.^^ N.wkC (morCon Γ) (morTy {Γ} E) (morTel {Γ} Δ))
+  ini▶wkCᴹ Γ Δ E =
+      ini^^ᴹ (Γ S1.▶ E)(S1.wkC Γ E Δ) ◾ ap (MM._^^_ (morCon Γ MM.▶ morTy {Γ = Γ} E)) (iniwkCᴹ Γ E Δ)
+
 
   iniliftTᴹ : 
     (Γ : Σ Conp Conw) (Δ : Σ Conp (λ Δ₁ → Conw (₁ Γ ^^ Δ₁)))
     (E : Σ Typ (Tyw (₁ Γ))) (A : Σ Typ (Tyw (₁ Γ ^^ ₁ Δ))) →
     morTy {Γ = (Γ S1.▶ E) S1.^^ (S1.wkC Γ E Δ)} (S1.liftT Γ Δ E A) ≡
     MM.tr-Ty
-    (! (ini^^ᴹ (Γ S1.▶ E)(S1.wkC Γ E Δ) ◾ ap (MM._^^_ (morCon Γ MM.▶ morTy {Γ = Γ} E)) (iniwkCᴹ Γ E Δ)))
+    (! (ini▶wkCᴹ Γ Δ E ))
 
     (MM.liftT (morCon Γ) (morTel {Γ = Γ} Δ) (morTy {Γ = Γ} E)
-    (MM.tr-Ty (ini^^ᴹ Γ Δ)  (morTy {Γ = Γ S1.^^ Δ} A)))
+      (MM.tr-Ty (ini^^ᴹ Γ Δ)  (morTy {Γ = Γ S1.^^ Δ} A)))
 
   iniliftTᴹ Γ Δ E A =
     -- myadmit 3
@@ -173,8 +180,8 @@ module InitialMorphism1 {l} where
       ≡
       
       MM.tr2-Tm⁻¹
-      (ini^^ᴹ (Γ S1.▶ E) (S1.wkC Γ E Δ) ◾
-      ap (MM._^^_ (morCon Γ MM.▶ morTy {Γ} E)) (iniwkCᴹ Γ E Δ))
+      (ini▶wkCᴹ Γ Δ E )
+      
       (MM.tr-Tm
       (!
       (transpose-tr MM.Ty
@@ -269,7 +276,7 @@ module InitialMorphism1 {l} where
       zm = ΣmorTm {Γ} {E} z
       sΔm = ΣmorTel {Γ } (S1.subTel {Γ} E Δ z) 
 
-  -- these lemmas are defined in fact in ModelMorphism
+  -- this lemma is defined in fact in ModelMorphism
   ^^subTel : ∀  Γ  E  Δ  z  → _
   ^^subTel Γ  E  Δ  z  = ini^^ᴹ Γ (S1.subTel  {Γ}  E Δ z) ◾ ap (MM._^^_ (morCon Γ)) (inisubTelᴹ Γ E Δ z)
 
