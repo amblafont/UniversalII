@@ -37,6 +37,30 @@ module ModelMorUnique {l} where
       (ΣmorTy {Γ = Γ} A) 
       _
       (Tyᴹ~ Γ (₂ A))
+
+-- todo: move to Relation
+  ConTelescope~path : ∀ {Γp Γw} (Γm : Σ _ (Con~' Γp Γw)) Γw' Γm' (Γr' : Con~' Γp Γw' Γm')
+      {Δp Δw} (Δm : Σ _ (Telescope~ {Γp = Γp} Δp Δw (₁ Γm))) -- Δw'
+      Δm'
+      → Telescope~ Δp Δw Γm' Δm' →   (₁ Γm , ₁ Δm) ≡ (Γm' , Δm')
+  ConTelescope~path {Γp}{Γw}Γm Γw' Γm' Γr' {Δp}{Δw} Δm Δm' Δr' rewrite prop-has-all-paths Γw' Γw
+      = aux (Γm' , Γr') (Δm' , Δr')
+      where
+      aux : (Γm' : Σ _ (Con~' Γp Γw)) → (Δm' : Σ _ (Telescope~ _ Δw (₁ Γm'))) →
+        (₁ Γm , ₁ Δm) ≡ (₁ Γm' , ₁ Δm')
+      aux Γm' Δm' rewrite prop-has-all-paths Γm' Γm | prop-has-all-paths Δm' Δm = refl
+
+  Telescope= : ∀ (Γ : S1.Con)(Δ : S1.Telescope Γ) →
+      pair {B = MOR1.N.Telescope} (MOR1.Conᴹ Γ) (MOR1.Telescopeᴹ {Γ = Γ} Δ) ≡
+      (MOR2.Conᴹ Γ , MOR2.Telescopeᴹ {Γ = Γ} Δ)
+  Telescope= Γ Δ =
+     
+        ConTelescope~path (ΣmorCon Γ) (₂ Γ) _
+        (Conᴹ~ (₂ Γ))
+        (ΣmorTel {Γ = Γ} Δ) 
+        _
+        (Telescopeᴹ~ Γ (₂ Δ))
+        
   
   -- TODO: move to Relation
   ConTyTm~path : ∀ {Γp Γw} (Γm : Σ _ (Con~' Γp Γw))  Γm' (Γr' : Con~' Γp Γw Γm')

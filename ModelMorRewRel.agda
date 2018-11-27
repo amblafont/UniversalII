@@ -24,7 +24,9 @@ module ModelMorRewRel {l} where
 
 
   Conᴹ~ : ∀ {Γp}Γw → let Γ = Γp , Γw in Con~' _ (₂ Γ) (Conᴹ Γ)
+  Telescopeᴹ~ : ∀ (Γ : S1.Con){Δp}Δw → let Δ = Δp , Δw in Telescope~ Δp   (₂ Δ) (Conᴹ Γ)(Telescopeᴹ {Γ} Δ)
   Tyᴹ~ : ∀ (Γ : S1.Con){Ap}Aw → let A = Ap , Aw in Ty~' _ _ (₂ A) (Conᴹ Γ)(Tyᴹ {Γ} A)
+
   Tmᴹ~ : ∀ (Γ : S1.Con)(A : S1.Ty Γ)
     {tp}tw →
     -- (t : S1.Tm Γ A)
@@ -44,6 +46,15 @@ module ModelMorRewRel {l} where
     (_ , Γr) ,
     (_ , Ar) ,
     refl 
+
+  Telescopeᴹ~ Γ {∙p} Δw rewrite prop-has-all-paths Δw (₂ Γ) = refl
+  Telescopeᴹ~ Γ {Δp ▶p Ap} (▶w Δw Aw) =
+    (_ , Telescopeᴹ~ Γ Δw),
+    (_ ,  tr2 (Ty~' _ _ _)
+      (^^ᴹ Γ (_ , Δw)) refl
+      (Tyᴹ~ (_ , Δw) Aw)
+    ) ,
+    refl
 
   -- this rewrite is necessary so that the rewrite rule applies
   Tyᴹ~ Γ {.Up}  (Uw _ Γw) rewrite prop-has-all-paths Γw (₂ Γ) = refl
