@@ -178,19 +178,12 @@ module InitialMorphism1 {l} where
     (t : S1.Tm (Γ S1.^^ Δ) A) →
     morTm {(Γ S1.▶ E) S1.^^ (S1.wkC Γ E Δ)} {S1.liftT Γ Δ E A} (S1.liftt Γ Δ E A t)
       ≡
-      
-      MM.tr2-Tm⁻¹
-      (ini▶wkCᴹ Γ Δ E )
-      
-      (MM.tr-Tm
-      (!
-      (transpose-tr MM.Ty
-      (ini^^ᴹ (Γ S1.▶ E) (S1.wkC Γ E Δ) ◾
-      ap (MM._^^_ (morCon Γ MM.▶ morTy {Γ} E)) (iniwkCᴹ Γ E Δ))
-      (iniliftTᴹ Γ Δ E A)))
+      tr2 N.Tm 
+      (! (ini▶wkCᴹ Γ Δ E ))
+      (! (iniliftTᴹ Γ Δ E A))
       (MM.liftt (morCon Γ) (morTel {Γ} Δ) (morTy {Γ} E)
       (MM.tr-Ty (ini^^ᴹ Γ Δ) (morTy {Γ S1.^^ Δ} A))
-      (MM.tr2-Tm (ini^^ᴹ Γ Δ) (morTm {Γ S1.^^ Δ} {A} t))))
+      (MM.tr2-Tm (ini^^ᴹ Γ Δ) (morTm {Γ S1.^^ Δ} {A} t)))
       
   inilifttᴹ  Γ  Δ  E  A  t  =
   -- myadmit 4
@@ -198,43 +191,19 @@ module InitialMorphism1 {l} where
     lAm lt
     ltm
     _
-    (
-     
-    tr3 (Tm~' (₁ ΓEΔ) (₁ lA) (₁ lt) (₂ lt) )
-    (! eΓEΔ)
-    (! (iniliftTᴹ Γ Δ E A))
-
--- here I use UIP to simplify (brutally using uip-coe), although it may not be necessary
-    (
-      
-       uip-coe
-        (ap (λ x → N.Tm (₁ x)(₂ x)) (pair= (! eΓEΔ) (from-transp _ (! eΓEΔ) (! (iniliftTᴹ Γ Δ E A)))))
-        (p1 ◾ p2)
-        
-        
-      
-      ◾
-      coe-∙
-        p1
-        p2
-
-        (MM.liftt (morCon Γ) (morTel {Γ} Δ) (morTy  {Γ} E)
-          (MM.tr-Ty (ini^^ᴹ Γ Δ) (₁ Am))
-          (MM.tr2-Tm (ini^^ᴹ Γ Δ) (₁ tm)))
-
-    )
-
-    ( liftt~ (ΣmorCon Γ) (₂ Δ) (ΣmorTel {Γ} Δ) _
-    (ΣmorTy {Γ} E) {₁ A}
-    (tr N.Ty (ini^^ᴹ Γ Δ) (morTy {Γ S1.^^ Δ} A))
-    (₂ t) (₂ lt)
-    (MM.tr2-Tm (ini^^ᴹ Γ Δ) (₁ tm))
-    (J
-       (λ Γm' eΓ →
-          Tm~' (₁ Γ ^^ ₁ Δ) (₁ A) (₁ t) (₂ t) Γm' (tr N.Ty eΓ (₁ Am))
-          (MM.tr2-Tm eΓ (₁ tm)))
-       (₂ tm) (ini^^ᴹ Γ Δ))
-    ))
+    (tr3 (Tm~' (₁ ΓEΔ) (₁ lA) (₁ lt) (₂ lt)) (! eΓEΔ)
+       (! (iniliftTᴹ Γ Δ E A))
+       refl
+       (liftt~ (ΣmorCon Γ) (₂ Δ) (ΣmorTel {Γ} Δ)
+       _  ( ΣmorTy {Γ} E) (tr N.Ty (ini^^ᴹ Γ Δ) (morTy {Γ S1.^^ Δ} A) ) (₂ t) (₂ lt)
+         (MM.tr2-Tm (ini^^ᴹ Γ Δ) (₁ tm)) 
+         (
+          J 
+          (λ Γm' eΓ → 
+          Tm~' (₁ Γ ^^ ₁ Δ) (₁ A) (₁ t) (₂ t) Γm' (tr N.Ty eΓ (₁ Am)) 
+          (MM.tr2-Tm eΓ (₁ tm))) 
+          (₂ tm) (ini^^ᴹ Γ Δ)
+         )))
 
      where
       ΓΔ = Γ S1.^^ Δ
@@ -422,6 +391,7 @@ module InitialMorphism1 {l} where
         ; wkCᴹ = λ {Γ}{E}{Δ} → iniwkCᴹ Γ E Δ
         ; liftTᴹ = λ {Γ}{Δ}{E}{A} → iniliftTᴹ Γ Δ E A
         ; lifttᴹ = λ {Γ} {Δ} {E} {A} t → inilifttᴹ Γ Δ E A t
+        -- inilifttᴹ Γ Δ E A t
 
         ; subTelᴹ = λ {Γ}{E}{Δ}{z} → inisubTelᴹ Γ E Δ z
         ; l-subTᴹ = λ {Γ}{E}{Δ}{z}{A} → inil-subTᴹ Γ E Δ z A

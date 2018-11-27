@@ -22,6 +22,7 @@ List of files
 - InitialMorphism* : definition of the model morphism between the syntax and the model with rewrite rules 
 
 - ModelMorRew : postulation of a model morphism from the syntax to the postulated model, using rewrite rules
+- ModelMorRewRel : proof that this postulated model morphism satisfies the functional relation
 
 - UniversalIIT: deprecated old file 
 

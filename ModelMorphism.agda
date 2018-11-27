@@ -66,6 +66,11 @@ module _ {ℓ₁} {ℓ₂} {A1 : Model1 {ℓ₁}} (A2 : Model2 A1) {B1 : Model1 
 
       lifttᴹ : ∀ {Γ}{Δ}{E : M.Ty Γ}{A : M.Ty (Γ M.^^ Δ)}(t : M.Tm _ A) →
         Tmᴹ (M.liftt _ _ E A t) ≡
+        tr2 N.Tm (! ▶wkCᴹ)
+         (! liftTᴹ)
+         (N.liftt _ _ (Tyᴹ E)(N.tr-Ty ^^ᴹ (Tyᴹ A))
+         (N.tr2-Tm ^^ᴹ (Tmᴹ t)))
+        {-
         N.tr2-Tm⁻¹
           {Δ =
           N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E))
@@ -74,6 +79,7 @@ module _ {ℓ₁} {ℓ₂} {A1 : Model1 {ℓ₁}} (A2 : Model2 A1) {B1 : Model1 
             (N.tr-Tm (! ((transpose-tr N.Ty ▶wkCᴹ liftTᴹ)) )
           (N.liftt _ _ (Tyᴹ E)(N.tr-Ty ^^ᴹ (Tyᴹ A))
             (N.tr2-Tm ^^ᴹ (Tmᴹ t))))
+            -}
 
       -- needed for l-subT
       subTelᴹ : ∀ {Γ : M.Con}{Ex : M.Ty Γ}{Δ : M.Telescope (Γ M.▶ Ex)}

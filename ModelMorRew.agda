@@ -134,18 +134,11 @@ module ModelMorRew {l} where
       (t : S1.Tm (Γ S1.^^ Δ) A) →
       Tmᴹ {(Γ S1.▶ E) S1.^^ (S1.wkC Γ E Δ)} {S1.liftT Γ Δ E A} (S1.liftt Γ Δ E A t)
       ≡
-      M1.tr2-Tm⁻¹
-      (▶wkCᴹ Γ Δ E )
-
-      (MM.tr-Tm
-      (!
-      (transpose-tr MM.Ty
-      (^^ᴹ (Γ S1.▶ E) (S1.wkC Γ E Δ) ◾
-      ap (MM._^^_ (Conᴹ Γ MM.▶ Tyᴹ {Γ} E)) (wkCᴹ Γ E Δ))
-      (liftTᴹ Γ Δ E A)))
+      tr2 N.Tm (! (▶wkCᴹ Γ Δ E ))
+      (! (liftTᴹ Γ Δ E A))
       (MM.liftt (Conᴹ Γ) (Telescopeᴹ {Γ} Δ) (Tyᴹ {Γ} E)
       (MM.tr-Ty (^^ᴹ Γ Δ) (Tyᴹ {Γ S1.^^ Δ} A))
-      (MM.tr2-Tm (^^ᴹ Γ Δ) (Tmᴹ {Γ S1.^^ Δ} {A} t))))
+      (MM.tr2-Tm (^^ᴹ Γ Δ) (Tmᴹ {Γ S1.^^ Δ} {A} t)))
 
   -- this lemma is defined in fact in ModelMorphism
   ^^subTel : ∀  Γ  E  Δ  z  → _
