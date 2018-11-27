@@ -8,10 +8,12 @@ open import monlib
 module ModelRecord   where
 
 
+
 -- tr-tp : ∀ {i j} {A B : Type i} (p : A ≡ B) (x : A) (C : A → Type j)
 -- (c : )
 
-record Model {ℓ} : Set (Level.suc ℓ) where
+-- I split the definition of model because otherwise agda makes a long time to inhabit it..
+record Model1 {ℓ} : Set (Level.suc ℓ) where
   infixl 5 _▶_
   infixl 5 _^^_
   field
@@ -33,7 +35,7 @@ record Model {ℓ} : Set (Level.suc ℓ) where
 
   tr2-Tm⁻¹ : {Γ : Con} {Δ : Con} {A : Ty Γ} (e : Γ ≡ Δ) →
     (t : Tm  _ (tr-Ty e A) ) → Tm _ A
-  tr2-Tm⁻¹ e t  = tr2 Tm (! e) (! (transp-∙ e (! e) _) ◾ ap (λ x → tr Ty x _) (!-inv-r e) ) t
+  tr2-Tm⁻¹ {Γ}{Δ}{A} e t  = tr2 Tm (! e) (! (transp-∙ e (! e) A) ◾ ap (λ x → tr Ty x A) (!-inv-r e) ) t
   -- tr2 Tm e refl ?
 
 
@@ -98,6 +100,7 @@ record Model {ℓ} : Set (Level.suc ℓ) where
       (ap (_^^_ _) wk∙t ◾  ^^∙t )
       (liftt Γ (∙t Γ) Ex (tr-Ty (! ^^∙t) A) (tr2-Tm(! ^^∙t) t))
 
+
   field
     V0 : (Γ : Con)(A : Ty Γ) → Tm (Γ ▶ A) (wkT Γ A A)
 
@@ -153,22 +156,25 @@ record Model {ℓ} : Set (Level.suc ℓ) where
     app : (Γ : Con)(A : Tm Γ (U _))(B : Ty (Γ ▶ El _ A)) (t : Tm Γ (ΠΠ Γ A B)) (u : Tm Γ (El _ A)) →
       Tm Γ (subT Γ (El _ A) u B)
 
-    -- this is not the right thing but, a first attempt..
+record Model2 {l} (M : Model1 {l}) : Set (lsucc l) where
+  -- allows to use ▶ directly, without prefixing with M
+  open Model1 M
+  field
     -- this is the counter part of com_lift in thee syntax
     -- this statment was designed to fit both lift-V0 and lift-wkt
     lift-wkT : {Γ : Con}{Δ : Telescope Γ}(A : Ty (Γ ^^ Δ))
        (B : Ty (Γ ^^ Δ))
       (Ex : Ty Γ) →
-      tr Ty
-        (ap (_^^_ (Γ ▶ Ex ^^ wkC Γ Ex Δ ▶ liftT Γ Δ Ex A)) wk∙t ◾ ^^∙t)
-        (liftT (Γ ▶ Ex ^^ wkC Γ Ex Δ) (∙t (Γ ▶ Ex ^^ wkC Γ Ex Δ))
-        (liftT Γ Δ Ex A) (tr Ty (! ^^∙t) (liftT Γ Δ Ex B)))
-      ≡
       tr Ty (ap (_^^_ (Γ ▶ Ex)) wk▶t ◾ ^^▶t)
         (liftT Γ (Δ ▶t A) Ex
         (tr Ty (! ^^▶t)
         (tr Ty (ap (_^^_ (Γ ^^ Δ ▶ A)) wk∙t ◾ ^^∙t)
         (liftT (Γ ^^ Δ) (∙t (Γ ^^ Δ)) A (tr Ty (! ^^∙t) B)))))
+        ≡
+      tr Ty
+        (ap (_^^_ (Γ ▶ Ex ^^ wkC Γ Ex Δ ▶ liftT Γ Δ Ex A)) wk∙t ◾ ^^∙t)
+        (liftT (Γ ▶ Ex ^^ wkC Γ Ex Δ) (∙t (Γ ▶ Ex ^^ wkC Γ Ex Δ))
+        (liftT Γ Δ Ex A) (tr Ty (! ^^∙t) (liftT Γ Δ Ex B)))
 
       -- liftT Γ (Δ ▶t A) E
       -- ( tr-Ty (! ^^▶t) (wkT (Γ ^^ Δ) A B) )
@@ -207,21 +213,14 @@ record Model {ℓ} : Set (Level.suc ℓ) where
 
     -- I did not need this equation in the syntax (because it was immediate ?)
     liftV0 : (Γ : Con)(Δ : Telescope Γ) (A : Ty (Γ ^^ Δ))(Ex : Ty Γ) →
-      -- tr2-Tm {Δ = (Γ ▶ Ex ^^ wkC Γ Ex Δ ▶ liftT Γ Δ Ex A)}
-      -- ( ap (_^^_ _) (wk▶t _ _ _ _)  ◾ ^^▶t
-      -- )
+      tr2-Tm {Γ = (Γ ▶ Ex ^^ wkC Γ Ex (Δ ▶t A))}
+      (ap (_^^_ _)
+        wk▶t ◾ ^^▶t)
       (liftt Γ (Δ ▶t A)  Ex (tr-Ty (! ^^▶t) (wkT (Γ ^^ Δ) A A))
         (tr2-Tm (! ^^▶t) (V0 (Γ ^^ Δ) A) ))
-        ≡
-        -- (λ x → {!!})
-        (tr2-Tm⁻¹ {Γ = (Γ ▶ Ex ^^ wkC Γ Ex (Δ ▶t A))}
-        -- (ap (_^^_ _) (wk▶t _ _ _ _)  ◾ ^^▶t)
-        (ap (_^^_ _)
-          wk▶t ◾ ^^▶t)
-        (
-        tr-Tm (lift-wkT A A Ex )
-        (V0 (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftT Γ Δ Ex A) ) )
-        )
+        ==
+        V0 (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftT Γ Δ Ex A)  
+        [(Tm _) ↓  lift-wkT A A Ex  ]
         
 
        -- [ Tm _ ↓ ? ]
@@ -232,7 +231,7 @@ record Model {ℓ} : Set (Level.suc ℓ) where
         liftt Γ (Δ ▶t A) Ex (tr-Ty (! ^^▶t) (wkT (Γ ^^ Δ) A B)) (tr2-Tm (! ^^▶t) (wkt (Γ ^^ Δ) A B t)) ==
         tr2-Tm (! (    ap (_^^_ _) wk▶t ◾ ^^▶t)) (wkt (Γ ▶ Ex ^^ wkC Γ Ex Δ) (liftT Γ Δ Ex A) (liftT Γ Δ Ex B)
         (liftt Γ Δ Ex B t)) 
-        [ Tm _ ↓  ! (transpose-tr! _ _ (lift-wkT {Δ = Δ} A B Ex )) ]
+        [ Tm _ ↓ transpose-tr!' _ _  (lift-wkT {Δ = Δ} A B Ex ) ]
 
 
 
@@ -274,7 +273,9 @@ record Model {ℓ} : Set (Level.suc ℓ) where
               ◾ ^^▶t)
           (liftT Γ (Δ ▶t El _ A) Ex (tr-Ty (! ^^▶t) B) ))
         (tr-Tm ((liftΠ _ _ _ _ )) (liftt Γ Δ Ex _ t) ) (tr-Tm (liftEl _ _ _) (liftt Γ Δ Ex _ u))
-        [ Tm _ ↓ lift-subT Δ Ex _ B u ◾
+        -- this ∙' instead of ■ allows to reduce the second equality to refl nicely
+        -- when showing that the postulated model is a model
+        [ Tm _ ↓ lift-subT Δ Ex _ B u ∙'
         
           J
             (λ E e →
@@ -394,3 +395,4 @@ record Model {ℓ} : Set (Level.suc ℓ) where
         [ Tm _ ↓ l-subT-wkT z {Δ = Δ } A A ]
 
    
+-- -}

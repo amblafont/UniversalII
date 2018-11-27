@@ -1,6 +1,6 @@
 {-# OPTIONS  --rewriting  #-}
 
--- proof that is 
+-- proof #~el
 open import Level 
 open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
@@ -36,15 +36,24 @@ module RelationInhabit {α} where
   -- ConTy~path' = {!!}
 
   Con~el : ∀ Γp Γw → (Σ _ (Con~' Γp Γw))
+  Telescope~el : ∀ Γp Γw Δp Δw (Γm : (Σ _ (Con~' Γp Γw))) → (Σ _ (Telescope~ {Γp} Δp Δw (₁ Γm)))
   Ty~el : ∀ Γp Γw Ap Aw (Γm : (Σ _ (Con~' Γp Γw)))→ (Σ _ (Ty~' Γp Ap Aw (₁ Γm)))
   Tm~el : ∀ Γp Γw Ap Aw tp tw (Γm : (Σ _ (Con~' Γp Γw))) (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm)))
     → (Σ _ (Tm~' Γp Ap tp tw (₁ Γm) (₁ Am)))
   Var~el : ∀ Γp Γw Ap Aw xp xw (Γm : (Σ _ (Con~' Γp Γw))) (Am : Σ _ (Ty~' Γp Ap Aw (₁ Γm)))
     → (Σ _ (Var~' Γp Ap xp xw (₁ Γm) (₁ Am)))
 
+
   Con~el .∙p ∙w = _ , refl
   Con~el .(Γp ▶p Ap) (▶w {Γp} Γw {Ap} Aw) =
     _ , Con~el _ Γw , Ty~el _ Γw _ Aw (Con~el _ Γw) , refl
+
+  Telescope~el Γp Γw ∙p Δw Γm = _ , refl
+  -- Telescope~el .(_ ▶p _) Γw ∙p (▶w Δw Aw) Γm = _ , refl
+  Telescope~el Γp Γw (Δp ▶p x) (▶w Δw Aw) Γm =
+     _ , Telescope~el Γp Γw Δp Δw Γm ,
+     Ty~el _ Δw _ Aw (Σ^^~ Γw Γm Δw (Telescope~el Γp Γw Δp Δw Γm )) ,
+     refl
 
   Ty~el Γp Γw' .Up (Uw .Γp Γw) Γm  = _ , refl
   Ty~el Γp Γw' .(ΠΠp (Elp ap) Bp) (Πw  Γw {ap} Aw {Bp} Bw) Γm =

@@ -41,20 +41,50 @@ instance
   ₁mk-triple= refl refl = refl
 
 
--- stuff for ModelRecord
+-- stuff for ModelRecord (picken from Ambrus'repo)
 tr2 :
   ∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
   {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
   {b₀ : B a₀}{b₁ : B a₁}(b₂ : tr B a₂ b₀ ≡ b₁)
   → C a₀ b₀ → C a₁ b₁
-tr2 {B = B} C {a₀}{.a₀} refl refl c₀ = c₀
+tr2 {B = B} C {a₀} a₂ b₂ c₀ = tr (λ x → C (₁ x) (₂ x)) (pair= a₂ (from-transp _ a₂ b₂)) c₀
+
+-- this is for InitialMorphism
+tr3 : 
+  ∀ {i j k l}{A : Set i}{B : A → Set j}{C : ∀ a → B a → Set k}
+  (D : ∀ a b → C a b → Set l)
+  {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
+  {b₀ : B a₀}{b₁ : B a₁}(b₂ : tr B a₂ b₀ ≡ b₁)
+  {c₀ : C _ b₀}{c₁ : C _ b₁}(c₂ : tr2 C a₂ b₂ c₀  ≡ c₁)
+  → D a₀ b₀ c₀ → D a₁ b₁ c₁
+tr3 {B = B} {C = C} D refl refl refl c₀ = c₀
+
+-- -- this is for InitialMorphism
+-- tr2=tr :
+--   ∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
+--   {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
+--   {b₀ : B a₀}{b₁ : B a₁}(b₂ : tr B a₂ b₀ ≡ b₁)
+--   → (c : C a₀ b₀) → tr2 C a₂ b₂ c ≡ tr (λ x → C (₁ x) (₂ x)) (pair= a₂ (from-transp _ a₂ b₂)) c
+-- tr2=tr {B = B} C {a₀}{.a₀} refl refl c₀ = refl
 
 -- can't find this in Hott Lib...
 transpose-tr! :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x ≡ y)
   {a : B y} {b : B x} (e : a ≡ tr B p b) → tr B (! p) a ≡ b  
 transpose-tr!  B refl e = e
 
+-- this is for ModelRecord
+transpose-tr!' :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x ≡ y)
+  {a : B y} {b : B x} (e : tr B p b ≡ a ) → b ≡ tr B (! p) a
+transpose-tr!' B refl e = e
+
 -- stuff for ModelMorphism
+
+-- custom datatype not enjoying eta to block the reduction
+-- of a function which takes an argument of this type ⊤' and
+-- performs a pattern matching on it (then it won't reduce
+-- unless we give it explicitely the constructor)
+data ⊤' {i}: Type i  where
+  unit' : ⊤'
 
 -- can't find this in Hott Lib...
 transpose-tr :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : y ≡ x)
@@ -76,3 +106,9 @@ uip-coe refl refl = refl
 coe-∙2' : ∀ {i } {A B C D : Type i} (p : A ≡ B) (q : B ≡ C)(r : C ≡ D) (a : A)
   → coe r (coe q (coe p a)) ≡ coe (p ◾ q ◾ r) a
 coe-∙2' refl refl q a = refl
+
+-- stuff for InitialMorphism2
+-- I can't find this in Hott Lib, only the coe! version..
+transport-! : ∀ {i j} {A : Type i}(C : A → Type j) {x y : A} (p : x ≡ y)
+  (b : C y) → tr C (! p) b ≡ transport! C p b
+transport-! C refl b = refl
