@@ -1,4 +1,3 @@
-{-# OPTIONS --rewriting #-}
 -- a definition of model, without rewrite rules. It exactly follows the rewrite rule version.
 
 open import Level 
