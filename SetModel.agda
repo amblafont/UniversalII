@@ -1,4 +1,4 @@
--- a definition of model, without rewrite rules. It exactly follows the rewrite rule version.
+-- first part of the set model
 
 open import Level 
 open import monlib
