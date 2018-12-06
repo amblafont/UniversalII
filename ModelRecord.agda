@@ -13,7 +13,7 @@ module ModelRecord   where
 -- (c : )
 
 -- I split the definition of model because otherwise agda makes a long time to inhabit it..
-record Model1 {ℓ} : Set (Level.suc ℓ) where
+record Model1 {ℓ}{ℓ₂} : Set (Level.suc (lmax ℓ ℓ₂)) where
   infixl 5 _▶_
   infixl 5 _^^_
   field
@@ -21,7 +21,7 @@ record Model1 {ℓ} : Set (Level.suc ℓ) where
     Con  : Set ℓ
     Telescope : Con → Set ℓ
     Ty   : Con → Set ℓ
-    Tm   : (Γ : Con) → Ty Γ → Set ℓ
+    Tm   : (Γ : Con) → Ty Γ → Set ℓ₂
 
   tr-Tm : {Γ : Con}  {A : Ty Γ}{B : Ty Γ} (e : A ≡ B)(t : Tm _ A) → Tm _ B
   tr-Tm {Γ} = tr (Tm Γ)
@@ -156,7 +156,7 @@ record Model1 {ℓ} : Set (Level.suc ℓ) where
     app : (Γ : Con)(A : Tm Γ (U _))(B : Ty (Γ ▶ El _ A)) (t : Tm Γ (ΠΠ Γ A B)) (u : Tm Γ (El _ A)) →
       Tm Γ (subT Γ (El _ A) u B)
 
-record Model2 {l} (M : Model1 {l}) : Set (lsucc l) where
+record Model2 {l}{ℓ₂} (M : Model1 {l}{ℓ₂}) : Set (lsucc (lmax l ℓ₂)) where
   -- allows to use ▶ directly, without prefixing with M
   open Model1 M
   field
