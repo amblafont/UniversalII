@@ -8,11 +8,22 @@ module Syntax where
 -- Presyntax
 --------------------------------------------------------------------------------
 
+
+-- I can't find this in the HoTT library
+-- TODO move to monlib.
+olookup : ∀ {a} {A : Set a} (xs : List A) → ℕ → A → A
+olookup nil n e = e
+olookup (x :: xs) O e = x
+olookup (x :: xs) (S n) e = olookup xs n e
+
+
 infixl 6 _▶p_
 
 data Conp : Set
 data Typ  : Set
 data Tmp : Set
+
+
 -- data Varp : Set
 
 data Conp where
@@ -28,7 +39,25 @@ data Tmp where
   V : ℕ → Tmp
   -- I need also to give the types so that the typing judgment is hprop
   app : Tmp → Tmp → Tmp
+  -- this is to flag when a substitituion resutled in an error
+  err : Tmp
 
+Subp = List Tmp
+keep : Subp → Subp
+keep s = (V 0) :: s
+
+_[_]V : ℕ → Subp → Tmp
+n [ s ]V = olookup s n err
+
+_[_]t : Tmp → Subp → Tmp
+V x [ s ]t = x [ s ]V
+app t u [ s ]t = app (t [ s ]t) (u [ s ]t)
+err [ s ]t = err
+
+_[_]T : Typ → Subp → Typ
+Up [ s ]T = Up
+Elp x [ s ]T = Elp (x [ s ]t)
+ΠΠp A B [ s ]T = ΠΠp (A [ s ]T) (B [ keep s ]T)
 
 ∣_∣ : Conp → ℕ
 ∣ ∙p ∣ = 0
@@ -52,6 +81,7 @@ liftT p (ΠΠp A B) = ΠΠp (liftT p A) (liftT (1 + p) B)
 
 liftt n (V x) = V (liftV n x)
 liftt n (app t u) = app (liftt n t)(liftt n u)
+liftt n err = err
 
 -- x if x < n and S x otherwise
 liftV O x = S x
@@ -306,6 +336,28 @@ wkC Γ n A =
 
 
 
+-- weakening from Γ ^ Δ to Γ
+-- the first argumet is the length of Γ
+-- the seond argument is the length of Δ
+liftₛ : ℕ → ℕ → Subp
+liftₛ 0 p = nil
+liftₛ (S n) p = V p :: (liftₛ n (S p))
+
+-- liftₛ' : ℕ → ℕ → Subp → Subp
+-- liftₛ' 0 p = nil
+-- liftₛ' (S n) p = V p :: (liftₛ n (S p))
+
+-- length of the context
+wkₛ : ℕ → Subp
+wkₛ n = liftₛ n 0
+
+-- -- the substitution from Γ , Δ to Γ , A , Δ
+-- liftₛ : ℕ → ℕ → Subp
+-- liftₛ Γ O = wkₛ Γ
+-- liftₛ Γ (S Δ) = V 0 :: liftₛ Γ Δ
+
+
+
   
 -- Well-formedness predicates
 --------------------------------------------------------------------------------
@@ -316,6 +368,7 @@ data Conw : (Γp : Conp) → Set
 data Tyw  : Conp → (Ap : Typ)   → Set
 data Tmw : Conp → Typ →   Tmp → Set
 data Varw : Conp → Typ → ℕ → Set
+
 
 
 data Conw where
@@ -340,6 +393,34 @@ data Varw where
      (Bp : Typ) (Bw : Tyw Γp Bp)(xp : ℕ)(xw : Varw Γp Bp xp)
      → Varw (Γp ▶p Ap) (wkT Bp) (1 + xp)
  
+data Subw (Γ : Conp) : Conp → Subp → Set where
+  nilw : Subw Γ ∙p nil
+  ,sw : ∀ {Δp}
+  -- (Δw : Conw Δp)
+    {σp}(σw : Subw Γ Δp σp){Ap}(Aw : Tyw Δp Ap){tp}
+     (tw : Tmw Γ (Ap [ σp ]T) tp) →
+     Subw Γ (Δp ▶p Ap) (tp :: σp)
+  
+
+wkT-wkₛ : ∀ {Γp} {Ap} (Aw : Tyw Γp Ap) → wkT Ap ≡ (Ap [ wkₛ ∣ Γp ∣ ]T)
+wkt-wkₛ : ∀ {Γp} {Ap}{tp} (tw : Tmw Γp Ap tp) → wkt tp ≡ (tp [ wkₛ ∣ Γp ∣ ]t)
+
+wkT-wkₛ (Uw Γp Γw) = refl
+wkT-wkₛ (Πw Γw Aw Bw) rewrite wkt-wkₛ Aw | wkT-wkₛ Bw = {!refl!}
+wkT-wkₛ (Elw Γw aw) rewrite wkt-wkₛ aw = refl
+
+wkt-wkₛ tw = {!!}
+
+-- Tmwₛ : ∀ {Γp}{tp}
+Varwₛ : ∀ {Γp}{xp}{Ap}(xw : Varw Γp Ap xp)
+  {Δp}{σp}(σw : Subw Δp Γp σp) →
+  Tmw Δp (Ap [ σp ]T) (xp [ σp ]V )
+-- Varwₛ {Γp}{xp}{Ap} xw {Δp}{σp}σw = {!!}
+Varwₛ {.∙p} {xp} {Ap} () {Δp} {.nil} nilw
+Varwₛ {.(Γp ▶p Ap)} {.0} {.(liftT 0 Ap)} (V0w Γp Γw Ap Aw₁) {Δp} {.(_ :: _)} (,sw σw Aw tw) = {!tw!}
+Varwₛ {.(Γp ▶p Ap)} {.(S xp)} {.(liftT 0 Bp)} (VSw Γp Γw Ap Aw₁ Bp Bw xp xw) {Δp} {.(_ :: _)} (,sw σw Aw tw) =
+  {!Varwₛ xw σw!}
+
 -- wkTw is not enough : consider the Π case.
 -- what we need : Γ , Δ ⊢ Bp, then Γ , A , wkC Δ ⊢ lift |Δ| Bp
 
@@ -353,6 +434,32 @@ _^^_ : Conp → Conp → Conp
 Γ ^^ ∙p = Γ
 Γ ^^ (Δ ▶p x) =  (Γ ^^ Δ) ▶p x
 
+liftTₛ= : ∀ {Γp} {Ap} (Aw : Tyw Γp Ap){Δp}{Bp} (Bw : Tyw (Γp ^^ Δp) Bp) →
+  liftT ∣ Δp ∣ Bp ≡ (Bp [ liftₛ ∣ Γp ∣ ∣ Δp ∣ ]T)
+lifttₛ= : ∀ {Γp} {Ap} (Aw : Tyw Γp Ap){Δp}{Bp}{tp} (tw : Tmw (Γp ^^ Δp) Bp tp) →
+  liftt ∣ Δp ∣ tp ≡ (tp [ liftₛ ∣ Γp ∣ ∣ Δp ∣ ]t)
+  -- pb: what if Γp = ∙ ??
+liftVₛ= : ∀ {Γp} {Ap} (Aw : Tyw Γp Ap){Δp}{Bp}{xp} (xw : Varw (Γp ^^ Δp) Bp xp) →
+  V (liftV ∣ Δp ∣ xp) ≡ (xp [ liftₛ ∣ Γp ∣ (S ∣ Δp ∣) ]V)
+
+liftTₛ= {Γp} {Ep} Ew {Δp} {.Up} (Uw .(Γp ^^ Δp) Γw) = refl
+liftTₛ= {Γp} {Ep} Ew {Δp} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw)
+  rewrite liftTₛ= Ew Bw | lifttₛ= Ew Aw
+  = {!refl!}
+liftTₛ= {Γp} {Ep} Ew {Δp} {.(Elp _)} (Elw Γw aw) = {!!}
+
+lifttₛ= {Γp} {Ep} Ew {Δp}{Ap}{tp} tw = {!tw!}
+
+liftVₛ= {Γp} {Ep} Ew {∙p} {Ap}{xp} xw = {!!}
+-- liftVₛ= {.(Γp ▶p Ap)} {Ep} Ew {∙p} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) = refl
+-- liftVₛ= {.(Γp ▶p Ap)} {Ep} Ew {∙p} {.(liftT 0 Bp)} {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw) =
+--   {!liftVₛ= !}
+liftVₛ= {Γp} {Ep} Ew {Δp ▶p x} {.(liftT 0 x)} {.0} (V0w .(Γp ^^ Δp) Γw .x Aw) = {!j!}
+liftVₛ= {Γp} {Ep} Ew {Δp ▶p x} {.(liftT 0 Bp)} {.(S xp)} (VSw .(Γp ^^ Δp) Γw .x Aw Bp Bw xp xw) = {!!}
+
+-- lifttₛ= {Γp} {Ep} Ew {Δp}{Ap}{tp} tw = {!tw!}
+
+-- liftVₛ= {Γp} {Ep} Ew {Δp}{Ap}{xp} xw = {!!}
 
 wkC : Conp → Conp
 wkC ∙p = ∙p
