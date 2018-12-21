@@ -26,8 +26,19 @@ List of files
 
 - ModelMorUnique : proof that this postulated model is pointwise equal to the one constructed in InitialMorphism*
 
+- SetModel*  and SetModelComponents : The extended Set model of Ambrus
+
 - UniversalIIT: deprecated old file 
 
 TODO:
+- faire les lemmes dans Syntax d'abord pour les variables, ensuite les termes, ensuite les types
+ de sorte qu'il n'y ait pas l'impression d'une récursion mutuelle.
 - rename commutation lemmas in Syntax (subt-wkt and so on) and Model
-- prove also the uniqueness related to telescope
+
+
+Journal
+12-12-2018
+J'hésite entre repartir de la formalisation d'Andraç avec les substitutions, ou alors les ajouter à la mienne.
+Je pense que le plus rapide serait de les ajouter à la mienne, car la formalisation des jugements de typage chez Andraç ne donne pas des hypothèses de récurrence assez fortes (Cf le répertoire TentativesVariablesRec) pour définir la relation.
+Après réflexion: je vais modifier les règles de typage de la formalsiation d'andraç
+A

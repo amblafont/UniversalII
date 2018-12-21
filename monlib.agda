@@ -112,3 +112,10 @@ coe-∙2' refl refl q a = refl
 transport-! : ∀ {i j} {A : Type i}(C : A → Type j) {x y : A} (p : x ≡ y)
   (b : C y) → tr C (! p) b ≡ transport! C p b
 transport-! C refl b = refl
+
+-- pour Embedding (piqué de Lib.agda)
+_&_ :
+  ∀{i j}{A : Set i}{B : Set j}(f : A → B){a₀ a₁ : A}(a₂ : a₀ ≡ a₁)
+  → f a₀ ≡ f a₁
+f & refl = refl
+infixl 9 _&_
