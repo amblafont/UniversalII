@@ -1,0 +1,11 @@
+In this directory, the model has full substitutions and the recursor construct them
+
+Files (in the order of dependancy)
+
+1. monlib : some useful lemmas, some of them requiring UIP
+2. Syntax : the syntax
+2. ModelCwf : postulated model with rewrite rules
+3. RelationCwf : Relation between the syntax and the postulated model
+4. RelationCwfWeakening : this relation is preserved by lifting/weakening
+5. RelationCwfSubstitution : this relation is preserved by full substitutions
+6. RelationCwfInhabit : construction of a witness of the relation
