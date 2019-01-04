@@ -229,9 +229,6 @@ wkSub~ : ∀
   {A }{Aw : Tyw Γ A} (Am : Σ (M.Ty (₁ Γm)) (Ty~ Aw)) →
   Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
 
-tr-over : ∀ {i j k} {A : Type i} {B : A → Type j}(C : ∀ a → B a → Type k)
-  {x y : A} {p : x ≡ y} {u : B x} {v : B y} (q : u == v [ B ↓ p ]) → C x u → C y v
-tr-over C {p = refl} refl c = c
 
 wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , refl) {E} {Ew} Em = refl , M.εη
 wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {.(_ :: _)} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {tp = tp} tw}  {_}

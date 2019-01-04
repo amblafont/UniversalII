@@ -41,7 +41,7 @@ Var[]~ {Γm} {σw = ,sw  Γw' {σp = σ} σw Aw' {tp = t} tw}
   | prop-has-all-paths eC refl
   | eS
     =
-      tr!-over (λ Em → Tm~ tw {Am = Em}) (M.vz[,s] (₁ σm') (₁ Am') (₁ tm')) (₂ tm')
+      tr!-over (λ Em → Tm~ tw {Am = Em}) (M.vz[,] (₁ σm') (₁ Am') (₁ tm')) (₂ tm')
 
 Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
   (sm , Δm' , σm , Am'' , tm , eC , eS)

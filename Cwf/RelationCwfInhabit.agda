@@ -14,6 +14,8 @@ open import RelationCwf
 open import RelationCwfWeakening
 open import RelationCwfSubstitution
 
+
+
   
 ΣCon~ : {Γp : Conp}(Γw : Conw Γp) → ∃ (Con~ Γw)
 ΣTy~ : ∀ {Γ }{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) {A}(Aw : Tyw Γ A) → ∃ (Ty~ Aw {₁ Γm})

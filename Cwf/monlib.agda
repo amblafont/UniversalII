@@ -34,6 +34,9 @@ tr!-over : ∀ {i j k} {A : Type i} {B : A → Type j}(C : ∀ a → B a → Typ
   {x y : A} {p : x ≡ y} {u : B x} {v : B y} (q : u == v [ B ↓ p ]) → C y v → C x u
 tr!-over C {p = refl} refl c = c
 
+tr-over : ∀ {i j k} {A : Type i} {B : A → Type j}(C : ∀ a → B a → Type k)
+  {x y : A} {p : x ≡ y} {u : B x} {v : B y} (q : u == v [ B ↓ p ]) → C x u → C y v
+tr-over C {p = refl} refl c = c
 
 -- to infer typeclasses
 it : ∀{a}{A : Set a} {{_ : A}} → A
