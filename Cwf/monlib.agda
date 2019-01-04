@@ -228,6 +228,9 @@ _!≅ :
   {a : A}{ b : B}(ebc : b ≅ a) → a ≅ b
 refl≅ !≅ = refl≅
 
+=≅ : {i : ULevel} {A : Type i} → {x : A}{y : A} (e : x ≡ y) → x ≅ y
+=≅ refl = refl≅
+
 -- ≅≡ : ∀ {i } {A : Type i} {x y : A} (p : x ≅ y) → x ≡ y
 
 infixr 10 _≅⟨_⟩_

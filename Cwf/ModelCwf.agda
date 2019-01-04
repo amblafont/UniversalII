@@ -1,5 +1,4 @@
-{-# OPTIONS  --rewriting --allow-unsolved-metas  #-}
--- {-# OPTIONS  --rewriting  #-}
+{-# OPTIONS  --rewriting  #-}
 {- 
 TODO: réfélchir à de meilleures preuves
 
@@ -350,6 +349,7 @@ vz<> {Γ}{A}{t} = ≅↓ helper
     ∘≅
     ↓≅ (from-transp! _ [id]T refl) 
 
+
 -- simple first case (first step)
 [id][]t : {Γ Δ : Con}  {A : Ty Δ} {t : Tm Δ A}{σ : Sub Γ Δ} →
   (t [ id ]t [ σ ]t) == t [ id ∘ σ ]t [ Tm Γ ↓ [][]T ]
@@ -481,6 +481,102 @@ vz[^] {Γ}{Δ}{A}{σ} =
     ≅∎
     )
 
+^∘, : {Γ : Con}{Δ : Con}{A : Ty Δ}{σ : Sub Γ Δ}{Y : Con}
+    -- {δ : Sub Y (Γ ▶ A [ σ ]T)}
+    {δ : Sub Y Γ}
+    {t : Tm Y (A [ σ ]T [ δ ]T)}
+   → (σ ^ A) ∘ (δ ,s t) ≡ σ ∘ δ ,s tr (Tm Y) [][]T t
+^∘, {Γ}{Δ}{A}{σ}{Y}{δ}{t} = helper (from-transp _ [][]T refl)
+  where
+    helper : ∀ {vz[]} vz[]e → (σ ^ A) ∘ (δ ,s t) ≡ σ ∘ δ ,s tr (Tm Y) [][]T t
+    helper {vz[]} vz[]e =
+      ((σ ^ A) ∘ (δ ,s t) )
+
+          -- =⟨ ,∘ {ts = vz[]} vz[]e ◾ {!!} ⟩
+          -- =⟨ ,∘ {ts = vz[]} vz[]e ◾ {!!} ⟩
+          =⟨ ,∘ {ts = vz[]} vz[]e ⟩
+        ((σ ∘ wk) ∘ (δ ,s t) ,s vz[])
+
+          =⟨
+           ap (λ x → ₁ x ,s ₂ x)
+            (pair=
+              esub
+              (≅↓ et))
+           ⟩
+          
+        (σ ∘ δ ,s tr (Tm Y) [][]T t)
+
+        =∎
+      where
+        esub : (σ ∘ wk) ∘ (δ ,s t) ≡ σ ∘ δ
+        esub =  
+                (((σ ∘ wk) ∘ (δ ,s t))
+
+                  =⟨ ass ⟩
+                (σ ∘ (wk ∘ (δ ,s t)))
+
+                  =⟨ ap (_ ∘_) wk∘,s ⟩
+                (σ ∘ δ)
+                  =∎)
+
+        et : vz[] ≅ tr (Tm Y) [][]T t
+        et = 
+          vz[]
+
+            ≅⟨ (↓≅ vz[]e) !≅ ⟩
+          (tr (Tm (Γ ▶ A [ σ ]T)) [][]T vz [ δ ,s t ]t)
+
+              ≅⟨ (↓≅ (ap↓ (_[ δ ,s t ]t) (from-transp (Tm (Γ ▶ A [ σ ]T)) [][]T refl))) !≅ ⟩
+          (vz [ δ ,s t ]t)
+
+          ≅⟨ ↓≅ (vz[,s] _ _ _) ⟩
+            t
+
+          ≅⟨ ↓≅ (from-transp _ [][]T refl )  ⟩
+            tr (Tm Y) [][]T t
+          ≅∎
+        
+
+<>∘ : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{Y}{σ : Sub Y (Γ)} →
+  (< u > ∘ σ) ≡ ((σ ^  A) ∘ < u [ σ ]t > )
+<>∘ {Γ}{A}{u}{Y}{σ} =
+  
+    (< u > ∘ σ)
+
+        =⟨   ,∘ (from-transp (Tm Y) [][]T refl) ⟩
+    (id ∘ σ ,s tr (Tm Y) ([][]T {A = A})(transport! (Tm Γ) [id]T u [ σ ]t))
+
+      =⟨  helper ⟩
+    (σ ∘ id ,s tr (Tm Y) ([][]T {A = A}) (transport! (Tm Y) [id]T (u [ σ ]t)))
+
+      =⟨ ! ( ^∘, {A = A}{σ = σ}{δ = id}) ⟩
+    ((σ ^ A) ∘ < u [ σ ]t >)
+  =∎
+  where
+    helper :
+      (id ∘ σ ,s tr (Tm Y) ([][]T {A = A})(transport! (Tm Γ) [id]T u [ σ ]t))
+      ≡
+      (σ ∘ id ,s tr (Tm Y) ([][]T {A = A}) (transport! (Tm Y) [id]T (u [ σ ]t)))
+    helper =
+      ap (λ x → ₁ x ,s ₂ x)
+        (pair= (idl ◾ ! idr)
+        (≅↓
+         (((↓≅ (from-transp _ [][]T refl)) !≅)
+         ∘≅ (↓≅ (ap↓ (_[ σ ]t) (from-transp! _ [id]T refl)))
+         ∘≅ ((↓≅ (from-transp! _ [id]T refl)) !≅)
+         ∘≅ (↓≅ (from-transp _ [][]T refl))
+         )))
+    
+   
+
+[<>][]T : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{B : Ty (Γ ▶ A)}{Y}{σ : Sub Y (Γ)} →
+  ( B [ < u > ]T [ σ ]T )
+  ≡ ( B [ σ ^ A ]T [ < u [ σ ]t > ]T)
+
+[<>][]T {Γ}{A}{u}{B}{Y}{σ} =
+  [][]T {A =  B}{σ =  σ}{δ = _}
+  ◾ ap   (λ s → (B [ s ]T)) (<>∘ {A = A})
+  ◾ (! ([][]T {A =  B} ))
 
 -- Universe
 --------------------------------------------------------------------------------
@@ -662,15 +758,33 @@ postulate
     (_[_]t {Γ} {Δ} {Π {Δ} a B} t σ)))
     -}
 
+
 _$_ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
 _$_ {Γ} {a} {B} t u = app t [ < u > ]t
 
 -- nécessaire pour le weakening (application)
 $[] : 
   ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
-  → ((t $ u) [ σ ]t) == (t [ σ ]t) $ (u [ σ ]t) [ Tm _ ↓ {!!} ]
+  → ((t $ u) [ σ ]t) == (t [ σ ]t) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
 
-$[] = {!!}
+$[] {Y}{Γ}{σ}{a}{B}{t}{u} =
+  ≅↓
+    (
+      ((t $ u) [ σ ]t)
+
+          ≅⟨ ↓≅ [][]t ⟩
+      (app t [ < u > ∘ σ ]t)
+
+          ≅⟨ ↓≅ (HoTT.apd (app t [_]t) <>∘)  ⟩
+      (app t [ (σ ^ El a) ∘ < u [ σ ]t > ]t)
+
+          ≅⟨ (↓≅ [][]t) !≅  ⟩
+      (app t [ (σ ^ El a) ]t [ < u [ σ ]t > ]t)
+
+          ≅⟨ =≅ (ap (_[  < u [ σ ]t >  ]t) app[]) ⟩
+      (app (t [ σ ]t) [ < u [ σ ]t > ]t )
+      ≅∎
+    )
  {- 
   _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
   (id {z}) {El {z} z₁} (coe {_} {Tm z (El {z} z₁)} {Tm z (_[_]T {z}
@@ -686,32 +800,6 @@ $[] = {!!}
 
 
 
--- somme lemmas named after their use
-app~aux₁ : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{Y}{σ : Sub Y (Γ)} →
-  (< u > ∘ σ) ≡ ((σ ^  A) ∘ < u [ σ ]t > )
-app~aux₁ = {!!}
-
-app~eq₁ : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{B : Ty (Γ ▶ A)}{Y}{σ : Sub Y (Γ)} →
-    ( B [ < u > ]T [ σ ]T )
-    ≡ ( B [ σ ^ A ]T [ < u [ σ ]t > ]T)
-
-app~eq₁ {Γ}{A}{u}{B}{Y}{σ} =
-  [][]T {A =  B}{σ =  σ}{δ = _}
-  ◾ ap   (λ s → (B [ s ]T)) (app~aux₁ {A = A})
-  ◾ (! ([][]T {A =  B} ))
-
-
-app~eq₂ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ (El a))}{t : Tm Γ (Π a B) }{u : Tm Γ (El a)}
-   {Y}{σ : Sub Y Γ} →
-  -- (app (₁ tm) M.[ M.< ₁ um > ]t M.[ ₁ σm ]t)
-  ((t $  u) [ σ ]t)
-  == 
-   (( t [ σ ]t) $ (u [ σ ]t))
-  [ Tm Y ↓ app~eq₁ {Γ}{El a}{u}{B} ]
-
-app~eq₂ = {!!}
-
--- app~e₂ 
 
 {- ------------
 
@@ -817,7 +905,11 @@ lift-wkt : {Γ : Con}(Δ : Tel Γ){A : Ty (Γ ^^ Δ)}
 -- liftT Γ (Δ ▶t A) E (wkT (Γ ^^ Δ) A B) ≡
   liftt {Γ = Γ} (Δ ▶t A) E (t [ wk ]t) == liftt {Γ = Γ} Δ E t [ wk ]t [ Tm _ ↓ lift-wkT Δ B ]
 
-lift-wkt = {!!}
+lift-wkt {Γ}Δ{B}t{E} =
+  ≅↓
+    ((↓≅ [][]t)
+    ∘≅ (↓≅ (apd (t [_]t) ( wk∘longWk {Δ = Δ} B {E} )))
+    ∘≅ ((↓≅ ([][]t)) !≅) )
 
 liftV0 : {Γ : Con}(Δ : Tel Γ) (A : Ty (Γ ^^ Δ))(Ex : Ty Γ) →
   liftt  (Δ ▶t A)  Ex {A [ wk ]T} vz
@@ -830,6 +922,12 @@ liftV0 {Γ} Δ A Ex =
     vz
     ≅∎)
 
+<>∘longWk :
+  {Γ : Con}(Δ : Tel Γ){E : Ty Γ} {A : Ty (Γ ^^ Δ)}
+  {t : Tm (Γ ^^ Δ) A} →
+  (< t > ∘ longWk {E = E} Δ) ≡ (longWk {E = E}(Δ ▶t A) ∘ < t [ longWk Δ ]t >)
+<>∘longWk {Γ}Δ{E}{A}{t} = <>∘
+
 lift-subT : {Γ : Con}(Δ : Tel Γ){E : Ty Γ} {A : Ty (Γ ^^ Δ)}{B : Ty ((Γ ^^ Δ) ▶ A)}
   {t : Tm (Γ ^^ Δ) A} →
   liftT Δ E (B [ < t > ]T) ≡   (liftT (Δ ▶t A) E B) [ < (liftt Δ E t) > ]T
@@ -841,7 +939,7 @@ lift-subT {Γ} Δ {E}{A}{B}{t} =
     =⟨  [][]T {A = B} ⟩
   (B [ < t > ∘ longWk Δ ]T)
 
-    =⟨  ap (B [_]T) {!!} ⟩
+    =⟨  ap (B [_]T) (<>∘longWk  Δ {E = E} ) ⟩
   (B [ longWk (Δ ▶t A) ∘ < t [ longWk Δ ]t > ]T)
 
     =⟨  ! ([][]T {A = B}) ⟩

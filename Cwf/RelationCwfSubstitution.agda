@@ -194,8 +194,9 @@ Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {.(app t u)}
     (_ , Π-B[]~ Γm Δm Δw' σm am Bm) ,
     tm[] ,
     um[] ,
-    M.app~eq₁ {Γ = ₁ Δm}{M.El (₁ am)}{₁ um} {₁ Bm},
-    M.app~eq₂ {Γ = ₁ Δm}{₁ am} {₁ Bm}{₁ tm}
+     M.[<>][]T {Γ = ₁ Δm}{M.El (₁ am)}{₁ um} {₁ Bm} 
+    ,
+     M.$[] {Γ = ₁ Δm}{_}{₁ am} {₁ Bm}{₁ tm} 
    
    where
     am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 

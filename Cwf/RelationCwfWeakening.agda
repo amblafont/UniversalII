@@ -1,4 +1,3 @@
--- {-# OPTIONS  --rewriting --allow-unsolved-metas #-}
 {-# OPTIONS  --rewriting  #-}
 
 -- proof #~el
