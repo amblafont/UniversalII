@@ -1005,11 +1005,24 @@ wk∘, σ t δ rewrite map-∘ (_[ t :: δ ]t) wkt σ =
   -- pw-map= (λ x → {!wkt=wkS!}) σ
 
 idl : ∀ {Γ Δ : Conp}{σ}(σw : Subw Γ Δ σ) → (idp ∣ Δ ∣ ∘p σ) ≡ σ
+-- idl {Γ}{Δ}{σ}σw = {!!}
 idl nilw = refl
 idl {Δ = (Δ ▶p A)}{σ = tp :: σp}(,sw Δw σw Aw tw) =
-  ap (_ ::_)
--- (wkS σ) ∘ (t :: δ) = (σ ∘ δ)
-  (wk∘, (idp ∣ Δ ∣ ) tp σp ◾ idl σw)
+  ap (_ ::_) (wk∘, (idp ∣ Δ ∣ ) tp σp ◾ idl σw)
+
+idr : ∀ {Γ : Conp}{Δ}{σ}(σw : Subw Γ Δ σ) → (σ ∘p idp ∣ Γ ∣ ) ≡ σ
+-- idr {Γ}Γw{Δ}{σ}σw = ?
+idr {Γ} {.∙p} {.nil} nilw = refl
+idr {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw σw Aw tw) = ap2 _::_ ([idp]t tw) (idr σw)
+-- idr {.∙p} ∙w {Δ} {σ} σw = {!!}
+-- idr {.(_ ▶p _)} (▶w Γw Aw) {Δ} {σ} σw = {!!}
+
+ass : ∀ {σ δ ν} → ((σ ∘p δ) ∘p ν) ≡ (σ ∘p (δ ∘p ν)) 
+ass {σ}{δ}{ν} =
+-- pw-map= (λ a → ( [∘]t a δ ν)) σ
+   (map-∘ (_[ ν ]t)(_[ δ ]t) σ ) ◾ pw-map= (λ a → ! ([∘]t a δ ν)) σ
+-- 
+
 
   
 -- needed for the app case ModelCwfInhabit: subT z T = T [ <z> ]T

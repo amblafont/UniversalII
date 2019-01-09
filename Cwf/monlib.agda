@@ -22,6 +22,18 @@ olookup-map f x err nil = refl
 olookup-map f O err (x₁ :: l) = refl
 olookup-map f (S x) err (x₁ :: l) = olookup-map f x err l
 
+-- I can't find this in the HoTT library
+-- TODO move to monlib.
+map-∘ : ∀ {i j k} {A : Type i} {B : Type j} (f : A → B)
+  {C : Type k} (g : C → A)  l → map f (map g l) ≡ map (λ x → f (g x)) l
+map-∘ f g nil = refl
+map-∘ f g (x :: l) = ap (f (g x) ::_) (map-∘ f g l)
+
+pw-map= : ∀ {i j} {A : Type i} {B : Type j} {f g : A → B} (e : ∀ a → f a ≡ g a) →
+  ∀ l → map f l ≡ map g l
+pw-map=  e nil = refl
+pw-map=  e (x :: l) = ap2 _::_ (e x) (pw-map=  e l)
+
 iter : ∀{l }{A : Set l}  (n : ℕ)(f : A → A) → A → A
 iter 0 f  x = x
 iter (S n) f x = f (iter n f x)
@@ -38,6 +50,13 @@ tr-over : ∀ {i j k} {A : Type i} {B : A → Type j}(C : ∀ a → B a → Type
   {x y : A} {p : x ≡ y} {u : B x} {v : B y} (q : u == v [ B ↓ p ]) → C x u → C y v
 tr-over C {p = refl} refl c = c
 
+forget-tr! : ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x == y)
+    (by  : B y)
+     {k}{C : Set k}(g : ∀ {a} → B a → C) →
+    g by ≡ g (transport! B p by)
+
+forget-tr! B refl bx g = refl
+
 -- to infer typeclasses
 it : ∀{a}{A : Set a} {{_ : A}} → A
 it {{x}} = x
@@ -49,17 +68,6 @@ propΣ= : ∀ {l j}{A : Set l} {B : A → Set j}{x y : ∃ B} (e : ₁ x ≡ ₁
   x ≡ y
 propΣ= {B = B}{y = y} e {{ b }} = pair= e (from-transp _ e (prop-path {A = B (₁ y)}  (b (₁ y)) _ _ ))
 
--- I can't find this in the HoTT library
--- TODO move to monlib.
-map-∘ : ∀ {i j k} {A : Type i} {B : Type j} (f : A → B)
-  {C : Type k} (g : C → A)  l → map f (map g l) ≡ map (λ x → f (g x)) l
-map-∘ f g nil = refl
-map-∘ f g (x :: l) = ap (f (g x) ::_) (map-∘ f g l)
-
-pw-map= : ∀ {i j} {A : Type i} {B : Type j} {f g : A → B} (e : ∀ a → f a ≡ g a) →
-  ∀ l → map f l ≡ map g l
-pw-map=  e nil = refl
-pw-map=  e (x :: l) = ap2 _::_ (e x) (pw-map=  e l)
 
 instance
   pathto-is-prop : ∀ {l}{A : Set l} (x : A) → is-prop (Σ A (λ t → t ≡ x))
