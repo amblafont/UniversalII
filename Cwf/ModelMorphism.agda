@@ -66,20 +66,74 @@ record CwFMor {k : Level}{l : Level}(M : CwF {k} {l})
          ==
          ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
           [ Sub _ ↓ ,ʳ  ]
+{-
 
-  π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
-          (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
-          ≡
-          (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+I should do the proof, but now we can deduce that Subʳ commutes with π₁ and π₂
+Indeed:
+Let δ and t such that σ = (δ , t)
 
-  π₂ʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
-          
-          (Tmʳ {Γ} {S._[_]T {Γ} {Δ} A (S.π₁ {Γ} {Δ} {A} σ)}
+Then,
+  Subʳ (δ , t) = (Subʳ δ , Tmʳ t)
+So
+  π₁ (Subʳ (δ , t)) = Subʳ δ
+and
+  π₂ (Subʳ (δ , t)) = Tmʳ t
+
+or equivalently,
+  π₁ (Subʳ σ) = Subʳ (π₁ σ)
+  π₂ (Subʳ σ) = Tmʳ (π₂ σ)
+
+TODO: formalize the proof (it begins after)
+-}
+
+{- 
+module _
+    {k : Level}{l : Level}{M : CwF {k} {l}}
+    {i : Level}{j : Level}{N : CwF {i} {j}}{m : CwFMor M N} where
+ private
+   module S = CwF M
+ open CwF N
+ open CwFMor m
+
+ π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+           (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+           ≡
+           (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₁ʳ {Γ}{Δ}{A}{σ} =
+   
+      (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+
+           =⟨ {!!} ⟩
+       (π₁
+          ((Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ)) ,s tr (Tm _) []Tʳ (Tmʳ (S.π₂ {Γ} {Δ} {A} σ))))
+
+           =⟨ {!!} ⟩
+       (π₁ (Subʳ (S.π₁ σ S.,s S.π₂ σ)))
+
+           =⟨ {!!} ⟩
+      (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+      ∎
+
+   
+ 
+   -- version alternative
+   -- π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ}{t : Tm Γ (A [ σ ]T)} →
+   --         (Subʳ {Γ} {Δ} σ)
+   --         ≡
+   --         (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₂ʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+ 
+         (Tmʳ {Γ} {S._[_]T {Γ} {Δ} A (S.π₁ {Γ} {Δ} {A} σ)}
            (S.π₂ {Γ} {Δ} {A} σ))
            ==
-          (π₂ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A}
+         (π₂ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A}
              (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
-          [ Tm _ ↓ []Tʳ ◾ ap ( _[_]T (Tyʳ _) ) π₁ʳ ]
+         [ Tm _ ↓ []Tʳ ◾ ap ( _[_]T (Tyʳ _) ) π₁ʳ ]
+ 
+ π₂ʳ {Γ}{Δ}{A}{σ} = {!!}
+ -}
 
 module _ 
     {k : Level}{l : Level}{M : CwF {k} {l}}(MM : UnivΠ M)
