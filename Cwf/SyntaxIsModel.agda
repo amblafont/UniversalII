@@ -102,11 +102,13 @@ open Sub public
 
 syntaxCwF : CwF
 syntaxCwF = record
-              { Con = Con
-              ; Ty = Ty
-              ; Tm = Tm
-              ; Sub = Sub
-              ; ∙ = ∙p , ∙w
+              { basecwf =
+                  record { Con = Con
+                          ; Ty = Ty
+                          ; Tm = Tm
+                          ; Sub = Sub } ;
+                nextcwf = record {
+               ∙ = ∙p , ∙w
               ; _▶_ = λ Γ A → ((₁ Γ ▶p ₁ A ) , ▶w (₂ Γ) (₂ A))
               ; _[_]T = λ {Γ}{Δ}A σ → (_ , Tyw[] (₂ A)(₂ Γ)(₂ σ))
               ; id = λ {Γ} → _ , idpw (₂ Γ)
@@ -128,6 +130,7 @@ syntaxCwF = record
               ; πη = λ {Γ}{Δ}{A} → λ { {_ , ,sw Δw σw Aw tw} → Sub= refl } 
               ; εη = λ {Γ} → (λ { {(_ , nilw)} → refl })
               ; π₂β = refl
+              }
               }
 
 
@@ -267,10 +270,14 @@ syntaxUnivΠ = record
                        (keep=^ {Γ = Γ}{Δ = Δ}{A =  El a})) )
                 ; app = λ {Γ}{a}{B}t  →
                    (app (wkt (₁ t)) (V 0)) ,
+                    -- {!appw
+                     -- (₁ Γ ▶p Elp (₁ a)) (▶w (₂ Γ) (Elw (₂ Γ)(₂ a)))
+                     -- _ (wktw (Elw (₂ Γ)(₂ a)) (₂ a))
+                     -- (liftT 1 (₁ B)) (liftTw (Elw (₂ Γ)(₂ a)) (∙p ▶p _) (₂ B))
+                     -- (wkt (₁ t)) (wktw (Elw (₂ Γ)(₂ a) ) (₂ t))
+                     -- (V 0) (vw (V0w _ (₂ Γ) _ (Elw (₂ Γ)(₂ a)) ))!}
                     tr
                      (λ B' → Tmw _ B' _)
-                     -- Γ , A ⊢ B
-                     -- Γ , A , wA ⊢ lift 1 B
                      (helper {B = B})
                      (appw
                      (₁ Γ ▶p Elp (₁ a)) (▶w (₂ Γ) (Elw (₂ Γ)(₂ a)))
@@ -279,9 +286,6 @@ syntaxUnivΠ = record
                      (wkt (₁ t)) (wktw (Elw (₂ Γ)(₂ a) ) (₂ t))
                      (V 0) (vw (V0w _ (₂ Γ) _ (Elw (₂ Γ)(₂ a)) ))
                      )
-                      -- (appw (₁ Γ ▶p Elp (₁ a)) (▶w (₂ Γ) (Elw (₂ Γ)(₂ a))) _ _  (₁ B) {!!}
-                      -- (wkt (₁ t)) {!wktw ? (₂ t)!}
-                      -- (V 0) (vw (V0w _ (₂ Γ) _ (Elw (₂ Γ)(₂ a)) )) )
                 ; app[] = λ {Γ}{Δ}{σ}{a}{B}{t} →
                   Tm=
                    (ap2 app
@@ -306,3 +310,8 @@ syntaxUnivΠ = record
                      ( ap (0 [_]V) (! (keep=^ {σ = σ}{A = El a})) ))
 -- Goal: (0 [ ₁ (σ S.^ (Elp (₁ a) , Elw (₂ Δ) (₂ a))) ]V) == V 0
                 }
+
+module Syn where
+  open CwF syntaxCwF public
+  open UnivΠ syntaxUnivΠ public
+  -- open Telescope RewCwF public

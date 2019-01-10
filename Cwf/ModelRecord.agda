@@ -16,8 +16,29 @@ open import monlib hiding (tr2)
 
 module ModelRecord   where
 
+-- infixl 7 _[_]T
+-- infixl 5 _,s_
+-- infix  6 _∘_
+-- infixl 8 _[_]t
+-- infixl 4 _▶_
 
+record baseCwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
+ field
+  Con : Set i
+  Ty  : Con → Set i
+  Tm  : ∀ Γ → Ty Γ → Set j
+  Sub : Con → Con → Set j
 
+record nextCwF {i : Level}{j : Level}(b : baseCwF {i}{j}) : Set (Level.suc (lmax i j)) where
+ open baseCwF b
+ infixl 7 _[_]T
+ infixl 5 _,s_
+ infix  6 _∘_
+ infixl 8 _[_]t
+ infixl 4 _▶_
+ field
+
+{- 
 record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  infixl 7 _[_]T
  infixl 5 _,s_
@@ -30,6 +51,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
   Ty  : Con → Set i
   Tm  : ∀ Γ → Ty Γ → Set j
   Sub : Con → Con → Set j
+  -}
 
   ∙     : Con
   _▶_   : (Γ : Con) → Ty Γ → Con
@@ -164,6 +186,17 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  -}
 
 
+record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
+ -- infixl 7 _[_]T
+ -- infixl 5 _,s_
+ -- infix  6 _∘_
+ -- infixl 8 _[_]t
+ -- infixl 4 _▶_
+ field
+  basecwf : baseCwF {i}{j}
+  nextcwf : nextCwF basecwf
+ open baseCwF basecwf public
+ open nextCwF nextcwf public
 
 
 

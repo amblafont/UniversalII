@@ -1,4 +1,4 @@
-
+{-# OPTIONS --allow-unsolved-metas #-}
 -- copied from finitaryQiit/modelTemplate
 
 
@@ -19,23 +19,40 @@ module ModelMorphism   where
 
 open import ModelRecord
 
-
-record CwFMor {k : Level}{l : Level}(M : CwF {k} {l})
-    {i : Level}{j : Level}(N : CwF {i} {j}) : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
-
+-- the distinction between base and next is
+-- the idea that the base will be postulated with rewrite rules,
+-- and not the next (when postulating a morphism from the syntax to
+-- a model)
+record baseCwFMor
+    {k : Level}{l : Level}(M : CwF {k} {l})
+    {i : Level}{j : Level}(N : CwF {i} {j}) : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+    where
  private
    module S = CwF M
  open CwF N
-
  field
 
   Conʳ : S.Con → Con
   Tyʳ  : ∀ {Γ} → S.Ty Γ → Ty (Conʳ Γ)
   Tmʳ  : ∀ {Γ A} → S.Tm Γ A → Tm (Conʳ Γ) (Tyʳ A)
   Subʳ : ∀ {Γ Δ} → S.Sub Γ Δ → Sub (Conʳ Γ) (Conʳ Δ)
+  ,ʳ   : ∀ {Γ A} → Conʳ (Γ S.▶ A) ≡ (Conʳ Γ ▶ Tyʳ A)
+
+
+record nextCwFMor
+    {k : Level}{l : Level}{M : CwF {k} {l}}
+    {i : Level}{j : Level}{N : CwF {i} {j}} (m : baseCwFMor M N)
+    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+   where
+
+ private
+   module S = CwF M
+ open CwF N
+ open baseCwFMor m
+
+ field
 
   ∙ʳ   : Conʳ S.∙ ≡ ∙
-  ,ʳ   : ∀ {Γ A} → Conʳ (Γ S.▶ A) ≡ (Conʳ Γ ▶ Tyʳ A)
   []Tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ} →
             _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S._[_]T {Γ} {Δ} A σ))
             (_[_]T {Conʳ Γ} {Conʳ Δ} (Tyʳ {Δ} A) (Subʳ {Γ} {Δ} σ))
@@ -66,6 +83,48 @@ record CwFMor {k : Level}{l : Level}(M : CwF {k} {l})
          ==
          ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
           [ Sub _ ↓ ,ʳ  ]
+
+ <>ʳ : ∀ {Γ : S.Con}{A : S.Ty Γ}{t : S.Tm Γ A} →
+       Subʳ S.< t > == < Tmʳ t > [ Sub _ ↓ ,ʳ ]
+ <>ʳ {Γ}{A}{t} =
+   from-transp _ _
+     (to-transp ,sʳ ◾
+       ,s=
+         idʳ
+         -- here we use UIP
+         (≅↓
+           (
+           ↓≅ ( from-transp (Tm (Conʳ Γ)) []Tʳ refl ) !≅
+           ∘≅ (  ↓≅  (ap↓ Tmʳ {p = S.[id]T}(from-transp! _ _ refl))  
+           ∘≅ ↓≅ (from-transp! (Tm (Conʳ Γ)) [id]T refl) !≅
+           ))))
+
+ [<>]T : ∀ {Γ : S.Con}{A : S.Ty Γ}{u : S.Tm Γ A}{B : S.Ty (Γ S.▶ A)}→
+    Tyʳ (B S.[ S.< u > ]T) ≡ (Tyʳ B [  transport! (Sub _) ,ʳ  < Tmʳ u >  ]T)
+    -- Tyʳ (B S.[ S.< u > ]T) == Tyʳ B [ transport! (Sub _) {!!}  < {!!} > ]T
+
+      
+      -- (tr Ty (,ʳ ◾ ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
+      --  < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
+ [<>]T {Γ}{A}{u} = {!!}
+    -- Tyʳ (B S.[ S.< u > ]T) ==
+    --   (tr Ty (,ʳ ◾ ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
+    --    < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
+
+
+  
+
+
+record CwFMor
+    {k : Level}{l : Level}(M : CwF {k} {l})
+    {i : Level}{j : Level}(N : CwF {i} {j}) 
+    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+   where
+  field
+     basecwfmor : baseCwFMor M N
+     nextcwfmor : nextCwFMor basecwfmor
+  open baseCwFMor basecwfmor public
+  open nextCwFMor nextcwfmor public
 {-
 
 I should do the proof, but now we can deduce that Subʳ commutes with π₁ and π₂
@@ -169,3 +228,12 @@ module _
                 (tr (Tm _) Πʳ (Tmʳ {Γ} {SS.Π {Γ} a B} t)))
                 [ (λ x → Tm (₁ x)(₂ x)) ↓
                   pair= (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (from-transp _ _ refl) ]
+    $ʳ : ∀ {Γ}{a : S.Tm Γ SS.U}{B : S.Ty (Γ S.▶ SS.El a)}(t : S.Tm Γ (SS.Π a B))
+          (u : S.Tm Γ (SS.El a)) → S.Tm Γ (B S.[ S.< u > ]T) →
+        Tmʳ (t SS.$ u) ==
+          (tr (Tm _) Πʳ (Tmʳ t) $
+           tr (Tm _) Elʳ (Tmʳ u)) [ Tm _ ↓  {![<>]T ◾ ?!} ]
+           -- []Tʳ ◾ ap (λ s → Tyʳ B [ s ]T) (to-transp! <>ʳ) ◾ {!!} ]
+
+        -- {!Tmʳ (t SS.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
+    $ʳ = {!!}
