@@ -1,5 +1,4 @@
 {-# OPTIONS  --rewriting  #-}
--- {-# OPTIONS  --rewriting --no-termination-check #-}
 
 -- proof #~el
 open import Level 
@@ -294,4 +293,37 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
       tr!-over (λ A₁ → Tm~ tw {Am = A₁})
         ( from-transp! (M.Tm (₁ Γm)) M.[id]T refl )
         (₂ tm)
-  
+
+
+-- not needed for the inhbaitation
+∘~ : ∀{Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
+      {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw))
+      {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+      {Y}{Yw : Conw Y}(Ym : ∃ (Con~ Yw))
+      {δ}{δw : Subw Y Γ δ}(δm : ∃ (Sub~ δw {₁ Ym}{₁ Γm}))
+      →
+      Sub~ {σ = σ ∘p δ} (∘w σw Yw δw) {₁ Ym}{₁ Δm} (₁ σm M.∘ ₁ δm)
+
+-- ∘~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ}{σw}σm {Y}{Yw}Ym {δ}{δw}δm = {!σw!}
+∘~ {Γ} {Γw} Γm {.∙p} {Δw} Δm {.nil} {nilw} (σm , eC , es) {Y} {Yw} Ym {δ} {δw} δm =
+    eC , from-transp _ _ M.εη
+    -- _∙'ᵈ_ {p' = refl} {!M.εη!} M.εη
+∘~ {Γ} {Γw} Γm {.(_ ▶p _)} {Δw'} (_ , Δ~') {.(_ :: _)} {,sw Δw {σp = σp}σw {Ap = Ap}Aw {tp = tp}tw}
+  (_ , Δm' , σm , Am , tm , refl , refl)
+  {Y} {Yw} Ym {δ} {δw} δm =
+  Δm' ,
+  ((₁ σm M.∘ ₁ δm), ∘~ Γm Δm' σm Ym δm) ,
+  Am ,
+  (tr (M.Tm _) (M.[][]T {A = ₁ Am}) (₁ tm M.[ ₁ δm ]t) , t[]~) ,
+  refl ,
+  M.,∘ (from-transp _ _ refl)
+  where
+    t[]~ : Tm~
+      (tr (λ A → Tmw Y A (tp [ δ ]t)) (! ([∘]T Ap σp δ))
+       (Tmw[] tw Yw δw))
+      (tr (M.Tm (₁ Ym)) (M.[][]T {A = ₁ Am}{σ = ₁ δm}{δ = ₁ σm}) (₁ tm M.[ ₁ δm ]t))
+    t[]~
+      rewrite ( ([∘]T Ap σp δ))
+      = tr2 (λ A → Tm~ (Tmw[] tw Yw δw) {Am = A}) (M.[][]T{A = ₁ Am}) refl
+          (Tm[]~ Ym Γm δm {Am = ₁ Am M.[ ₁ σm ]T}{tw = tw} tm )
+

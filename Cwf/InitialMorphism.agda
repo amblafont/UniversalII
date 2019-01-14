@@ -141,6 +141,19 @@ idʳ {Γ} = fst=
        ap (λ u →  (Subʳ σ) M.,s u)
          ( eq ([]Tʳ {A = A}{σ = σ}) tm )
 
+∘ʳ : {Γ Δ : S.Con} {Σ₁ : S.Con} {σ : S.Sub Δ Σ₁}
+      {δ : S.Sub Γ Δ} →
+      Subʳ (σ S.∘ δ) ≡ Subʳ σ M.∘ Subʳ δ
+
+∘ʳ {Γ}{Δ}{Y}{σ}{δ }  =
+  fst=
+             (prop-has-all-paths
+               (ΣSubʳ (σ S.∘ δ) )
+               (_ , ∘~ (ΣConʳ Δ)(ΣConʳ Y)(ΣSubʳ σ)(ΣConʳ Γ)(ΣSubʳ δ))
+              )
+  
+
+
 iniMor : CwFMor syntaxCwF M.RewCwF
 iniMor = record
            { basecwfmor = record { Conʳ = Conʳ
@@ -156,7 +169,7 @@ iniMor = record
            ; []tʳ = λ{Γ}{Δ}{A}{t}{σ} → []tʳ {t = t}{σ = σ}
            ; idʳ = λ{Γ}→ idʳ {Γ}
            -- tiens? Est-ce nécessaire ?
-           ; ∘ʳ = {!refl!}
+           ; ∘ʳ =  λ {Γ}{Δ}{Y}{σ}{δ } → ∘ʳ{Γ}{Δ}{Y}{σ}{δ} 
            ; εʳ = refl
            -- ça devrait calculer ici par refl ! TODO: réfléchir à pourquoi ce n'est pas le
            -- cas
