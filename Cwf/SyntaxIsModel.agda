@@ -20,6 +20,7 @@ open import ModelRecord
 
 module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
   open CwF MM
+  {-
 
   helper'' : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ ▶ A)} →
         ((B
@@ -31,6 +32,7 @@ module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
      where
        aux : (( (id ∘ wk {A = A} ) ^ A ) ∘ < transport! (λ s → Tm _ (A [ s ]T)) idl vz  >) ≡ id
        aux = ^∘<> ◾ ,s= idl (from-transp! _ _ refl) ◾  πη
+       -}
 
 open import Syntax
 
@@ -55,7 +57,8 @@ record Ty (Γ : Con) : Set  where
 open Ty public
 
 Ty= : ∀ {Γ}{A B : Ty Γ}(e : ₁ A ≡ ₁ B) → A ≡ B
-Ty= {Γ} {A , Aw} {B} e rewrite e | prop-has-all-paths Aw (₂ B) = refl
+Ty= {Γ} {A} {B} refl = ap (_ ,_) (prop-has-all-paths _ _)
+-- rewrite e | prop-has-all-paths Aw (₂ B) = refl
 
 record Tm (Γ : Con)(A : Ty Γ) : Set  where
   constructor _,_
@@ -134,7 +137,6 @@ syntaxCwF = record
               }
 
 
--- -}
 
 {- ------------
 
@@ -143,8 +145,6 @@ Now the UnivΠ part
 
 ------------- -}
 
-wk : ∀ Γ → Subp
-wk Γ = wkS (idp Γ )
 
 
 
@@ -178,50 +178,53 @@ keep=^ {Γ}{Δ}{σ}{A}  =
    (wkS=∘wk (₂ σ) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
 
 
-helper : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)} → subT (V 0) (liftT 1 (₁ B)) ≡ (₁ B)
-helper {Γ}{A}{B} =
-         (subT (V 0) (liftT 1 (₁ B)) 
+{- 
+private
+  helper : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)} → subT (V 0) (liftT 1 (₁ B)) ≡ (₁ B)
+  helper {Γ}{A}{B} =
+          (subT (V 0) (liftT 1 (₁ B)) 
 
-            =⟨ ap (λ C → subT (V 0) (liftT 1 C)) (! ([idp]T (₂ B))) ⟩
-         (subT (V 0) (liftT 1 ((₁ B) [ (idp ∣ ₁ Γ ▶p ₁ A ∣) ]T) ) )
+              =⟨ ap (λ C → subT (V 0) (liftT 1 C)) (! ([idp]T (₂ B))) ⟩
+          (subT (V 0) (liftT 1 ((₁ B) [ (idp ∣ ₁ Γ ▶p ₁ A ∣) ]T) ) )
 
-            -- =⟨ ap (subT (V 0)) {!! ? liftT=wkS 1!} ⟩
-            =⟨ ap (subT (V 0)) (! (liftT=wkS 1 (idp ∣ ₁ Γ ∣) (₁ B))) ⟩
-          subT (V 0) ((₁ B) [ keep (wkS (idp ∣ ₁ Γ  ∣))]T)
-
-
-            =⟨ ! ([<>]T  {Γ = ₁ Γ ▶p ₁ A}
-              (transport! (Tyw _ )
-                (liftT=wkS 1 (idp ∣ ₁ Γ ∣) (₁ B) ◾ ap (liftT 1) ([idp]T (₂ B)) )
-               (liftTw  (₂ A)(∙p ▶p ₁ A) (₂ B) ) )
-               (V 0)) ⟩
-          (((₁ B) [  keep (wkS (idp ∣ ₁ Γ  ∣)) ]T) [ < ∣ ₁ Γ ▶p ₁ A ∣ ⊢ (V 0) > ]T )
+              -- =⟨ ap (subT (V 0)) {!! ? liftT=wkS 1!} ⟩
+              =⟨ ap (subT (V 0)) (! (liftT=wkS 1 (idp ∣ ₁ Γ ∣) (₁ B))) ⟩
+            subT (V 0) ((₁ B) [ keep (wkS (idp ∣ ₁ Γ  ∣))]T)
 
 
-            =⟨ ap2 (λ s1 s2 → (₁ B [ s1 ]T) [ s2 ]T)
-             (ap keep (wkS=∘wk (idpw (₂ Γ))(₂ A)) ◾
-                keep=^ {σ = S.id {Γ = Γ} S.∘ S.wk {A = A} }{A})
-             (<>=<> ( S.vz {Γ = Γ}{A = A} ) ◾ ap (λ x → x :: _)
-                (! ( Tm-tr!=₁ {t = (S.vz {A = A})}{e = S.[id]T}) ◾
-                  forget-tr! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {A = A}) (λ t → ₁ t) ◾
-                  forget-tr! (Tm _) S.[id]T ( transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) )
-                     (λ t → ₁ t) 
+              =⟨ ! ([<>]T  {Γ = ₁ Γ ▶p ₁ A}
+                (transport! (Tyw _ )
+                  (liftT=wkS 1 (idp ∣ ₁ Γ ∣) (₁ B) ◾ ap (liftT 1) ([idp]T (₂ B)) )
+                (liftTw  (₂ A)(∙p ▶p ₁ A) (₂ B) ) )
+                (V 0)) ⟩
+            (((₁ B) [  keep (wkS (idp ∣ ₁ Γ  ∣)) ]T) [ < ∣ ₁ Γ ▶p ₁ A ∣ ⊢ (V 0) > ]T )
+
+
+              =⟨ ap2 (λ s1 s2 → (₁ B [ s1 ]T) [ s2 ]T)
+              (ap keep (wkS=∘wk (idpw (₂ Γ))(₂ A)) ◾
+                  keep=^ {σ = S.id {Γ = Γ} S.∘ S.wk {A = A} }{A})
+              (<>=<> ( S.vz {Γ = Γ}{A = A} ) ◾ ap (λ x → x :: _)
+                  (! ( Tm-tr!=₁ {t = (S.vz {A = A})}{e = S.[id]T}) ◾
+                    forget-tr! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {A = A}) (λ t → ₁ t) ◾
+                    forget-tr! (Tm _) S.[id]T ( transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) )
+                      (λ t → ₁ t) 
+                  )
                 )
-              )
-             ⟩
-          -- (((₁ B) [ ₁ ((S.id {Γ = Γ} S.∘ S.wk {A = A} ) S.^ A) ]T) [ ₁ S.< S.vz {Γ = Γ}{A = A} > ]T )
-          (((₁ B) [ ₁ ((S.id {Γ = Γ} S.∘ S.wk {A = A} ) S.^ A) ]T)
-            [ ₁ S.< transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) > ]T )
-          -- < transport! (λ s → Tm _ (A [ s ]T)) idl vz >
+              ⟩
+            -- (((₁ B) [ ₁ ((S.id {Γ = Γ} S.∘ S.wk {A = A} ) S.^ A) ]T) [ ₁ S.< S.vz {Γ = Γ}{A = A} > ]T )
+            (((₁ B) [ ₁ ((S.id {Γ = Γ} S.∘ S.wk {A = A} ) S.^ A) ]T)
+              [ ₁ S.< transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) > ]T )
+            -- < transport! (λ s → Tm _ (A [ s ]T)) idl vz >
 
-            =⟨ ap ₁ (helper'' syntaxCwF {B = B})  ⟩
-          ₁ B
-
+              =⟨ ap ₁ (helper'' syntaxCwF {B = B})  ⟩
+            ₁ B
 
 
-        ∎)
+
+          ∎)
 
 
+-}
 
 
 
@@ -254,6 +257,22 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
 Π {Γ} a B = _ , Πw (₂ Γ) (₂ a)(₂ B)
 
 
+Π[] : ∀{Γ}{Δ}{σ : Sub Γ Δ}{a}{B} →
+   (Π a B) S.[ σ ]T ≡ Π (a S.[ σ ]t) (B S.[ σ S.^ El a ]T)
+
+
+Π[]{Γ}{Δ}{σ} {a}{B} = 
+    Ty=
+      ( (ap (λ s → ΠΠp (Elp ((₁ a) [ ₁ σ ]t)) (₁ B [ s ]T))
+          (keep=^ {Γ = Γ}{Δ = Δ}{A =  El a})) )
+
+
+-- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
+₁[<>]T : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)}{u : Tm Γ A} →
+  subT (₁ u) (₁ B) == ₁ (B S.[ S.< u > ]T)
+
+₁[<>]T {Γ}{A}{B}{u} = ! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u)
+
 
 syntaxUnivΠ : UnivΠ syntaxCwF
 syntaxUnivΠ = record
@@ -264,54 +283,33 @@ syntaxUnivΠ = record
                 ; El[] = refl
                 ; Π = Π
                 -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
-                ; Π[] = λ {Γ}{Δ}{σ}{a}{B} →
-                  Ty=
-                    ( (ap (λ s → ΠΠp (Elp ((₁ a) [ ₁ σ ]t)) (₁ B [ s ]T))
-                       (keep=^ {Γ = Γ}{Δ = Δ}{A =  El a})) )
-                ; app = λ {Γ}{a}{B}t  →
-                   (app (wkt (₁ t)) (V 0)) ,
-                    -- {!appw
-                     -- (₁ Γ ▶p Elp (₁ a)) (▶w (₂ Γ) (Elw (₂ Γ)(₂ a)))
-                     -- _ (wktw (Elw (₂ Γ)(₂ a)) (₂ a))
-                     -- (liftT 1 (₁ B)) (liftTw (Elw (₂ Γ)(₂ a)) (∙p ▶p _) (₂ B))
-                     -- (wkt (₁ t)) (wktw (Elw (₂ Γ)(₂ a) ) (₂ t))
-                     -- (V 0) (vw (V0w _ (₂ Γ) _ (Elw (₂ Γ)(₂ a)) ))!}
-                    tr
-                     (λ B' → Tmw _ B' _)
-                     (helper {B = B})
-                     (appw
-                     (₁ Γ ▶p Elp (₁ a)) (▶w (₂ Γ) (Elw (₂ Γ)(₂ a)))
-                     _ (wktw (Elw (₂ Γ)(₂ a)) (₂ a))
-                     (liftT 1 (₁ B)) (liftTw (Elw (₂ Γ)(₂ a)) (∙p ▶p _) (₂ B))
-                     (wkt (₁ t)) (wktw (Elw (₂ Γ)(₂ a) ) (₂ t))
-                     (V 0) (vw (V0w _ (₂ Γ) _ (Elw (₂ Γ)(₂ a)) ))
+                ; Π[] = λ {Γ}{Δ}{σ}{a}{B} → Π[]
+                       
+                ; _$_ = λ {Γ}{a}{B}t u  →
+                   (app (₁ t) (₁ u)) ,
+                    
+                    tr (λ B' → Tmw _ B' _ )
+                    (₁[<>]T {A = El a}{B = B}{u} )
+                    (appw
+                     (₁ Γ ) (₂ Γ)
+                     _ (₂ a)
+                     _ (₂ B)
+                     _ (₂ t)
+                     _ (₂ u)
                      )
-                ; app[] = λ {Γ}{Δ}{σ}{a}{B}{t} →
-                  Tm=
-                   (ap2 app
-                     ( wkt[^] {σ = σ}{t = t}{B =  El a}
-                        ◾
-                        
-                             ap wkt
-                           ( Tm-tr=₁
-                           {t = t S.[ σ ]t}
-                           {e = (Ty= {Γ = Γ}
-                           {A = (Π a B) S.[ σ ]T}
-                           {B = Π (a S.[ σ ]t)(B S.[ σ S.^ El a ]T) }
-                           (ap (λ s → ΠΠp (Elp (₁ a [ ₁ σ ]t)) (₁ B [ s ]T))
-                             (keep=^ {Γ = Γ}{A =  El a})
-                             ))}
-                           )
+
+                     
+                ; $[] = λ {Γ}{Δ}{σ}{a}{B}{t}{u} →
+                   Tm=↓ (S.[<>][]T {u = u}{B = B}{σ = σ})
+                   (ap (λ x → app x _)
+                   ( (Tm-tr=₁ {t = t S.[ σ ]t } {e = Π[]})))
                            
                            
-                           
-                           )
-                     -- (wk[,]t (₁ t)_ _ ◾ ap (₁ t [_]t) {x = ₁ σ ∘p ₁ S.wk} (! (wkS=∘wk (₂ σ) {!!})) ◾ {!!})
-                     ( ap (0 [_]V) (! (keep=^ {σ = σ}{A = El a})) ))
--- Goal: (0 [ ₁ (σ S.^ (Elp (₁ a) , Elw (₂ Δ) (₂ a))) ]V) == V 0
                 }
 
 module Syn where
   open CwF syntaxCwF public
   open UnivΠ syntaxUnivΠ public
   -- open Telescope RewCwF public
+
+-- -}

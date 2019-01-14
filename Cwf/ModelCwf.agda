@@ -86,13 +86,13 @@ module Postulats where
 
 
   postulate
-    app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+    app$ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
 
   -- TODO: voir si on peut le demander en définitional: est ce la cas dans la syntaxe ?
-    app[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)}
-      {t : Tm Δ (Π {Δ} a B)} →
-      app t [ _^_  σ  (El a) ]t ≡ app (t [ σ ]t)
+    app$[] :
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
+        → ((app$ t u) [ σ ]t) == ( app$  (t [ σ ]t)  (u [ σ ]t)) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
 
 
 
@@ -106,13 +106,14 @@ module Postulats where
                ; El[] = refl
                ; Π = Π
                ; Π[] = refl
-               ; app = app
-               ; app[] = app[]
+               ; _$_ = app$
+               ; $[] = app$[]
                }
   
   open UnivΠ RewUnivΠ using (_$_)
   
   -- nécessaire pour le weakening (application)
+  {-
   $[] : 
     ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
     → ((t $ u) [ σ ]t) == (t [ σ ]t) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ = Γ}{El a}{u}{B} ]
@@ -136,6 +137,12 @@ module Postulats where
         (app (t [ σ ]t) [ < u [ σ ]t > ]t )
         ≅∎
       )
+
+-}
+
+
+
+
    {- 
     _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
     (id {z}) {El {z} z₁} (coe {_} {Tm z (El {z} z₁)} {Tm z (_[_]T {z}
@@ -153,7 +160,7 @@ module Postulats where
 -- accessibles depuis l'exterieur
 open Postulats public
 open CwF RewCwF public
-open UnivΠ RewUnivΠ using (_$_) public
+open UnivΠ RewUnivΠ using (_$_ ; $[]) public
 open Telescope RewCwF public
 
 

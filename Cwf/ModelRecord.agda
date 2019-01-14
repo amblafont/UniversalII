@@ -776,7 +776,8 @@ record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) wher
         (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}) (_[_]t {Γ}
         {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
         (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))))
-      app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+      -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+      {- 
       app[] :
         {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)}
         {t : Tm Δ (Π {Δ} a B)} → _≡_ {_} {Tm (Γ ▶ El {Γ} (coe {_} {Tm Γ
@@ -819,13 +820,31 @@ record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) wher
         {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
         (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} (Π[] {Γ}
         {Δ} {σ} {a} {B}) (_[_]t {Γ} {Δ} {Π {Δ} a B} t σ)))
+        -}
 
-    _$_ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
+      _$_ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
+      $[] : 
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
+        → ((t $ u) [ σ ]t) == (tr (Tm _) Π[] (t [ σ ]t)) $ tr (Tm _) El[] (u [ σ ]t)
+        -- ∙' plutôt que ◾ so that it computes when the second is refl
+          [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ∙'
+             J (λ el[] eq →
+                (B [ σ ^ El a ]T [ < u [ σ ]t > ]T)
+                ≡
+                (tr (λ x → Ty (Y ▶ x)) eq (B [ σ ^ El a ]T) [
+                  < tr (Tm Y) eq (u [ σ ]t) > ]T) )
+                  refl
+                  El[]
+                 ]
+        -- → ((t $ u) [ σ ]t) == (tr (Tm _) ? (t [ σ ]t)) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
+      -- utilise [][]t
+      {-
     _$_ {z} {z₁} {z₂} t u =
       _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
       (id {z}) {El {z} z₁}
       (transport! (Tm z) [id]T u)
       )
+      -}
 
 {-
 
@@ -860,3 +879,7 @@ record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) wher
     {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U {Γ}})))
 
     -}
+
+module CwFUnivΠ {i}{j}{c : CwF {i}{j}}(cov : UnivΠ c) where
+  open CwF c public
+  open UnivΠ cov public

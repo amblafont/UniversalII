@@ -1077,6 +1077,17 @@ ass {σ}{δ}{ν} =
 [<>]T : ∀ {Γ E A} (Aw : Tyw (Γ ▶p E) A) z →
   (A [ < ∣ Γ ∣  ⊢ z > ]T) ≡ subT  z A
 [<>]T {Γ}{E}{ A} Aw z = [<>]T-n {Γ}{E} {∙p} Aw z
+
+-- strange that i did not use this before InitialMorphism (variable case):
+wk : ∀ Γ → Subp
+wk Γ = wkS (idp Γ )
+
+wk=[wk]T : ∀{Γ}{A}(Aw : Tyw Γ A) → wkT A ≡ A [ wk ∣ Γ ∣ ]T
+wk=[wk]T {Γ}{A}Aw = ! ((wkT=wkS _ _) ◾ ap wkT  ([idp]T Aw)) 
+
+wk=[wk]t : ∀{Γ}{A}{t}(tw : Tmw Γ A t) → wkt t ≡ t [ wk ∣ Γ ∣ ]t
+wk=[wk]t {Γ}{A}{t}tw = ! (wkt=wkS (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw)) 
+  
 {- old stuff -}
 
 -- la substitution sur les types requiert dans le cas du Π de pouvoir affaiblir les substitutions

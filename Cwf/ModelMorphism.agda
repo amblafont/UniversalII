@@ -1,4 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
 -- copied from finitaryQiit/modelTemplate
 
 
@@ -84,6 +83,92 @@ record nextCwFMor
          ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
           [ Sub _ ↓ ,ʳ  ]
 
+{- 
+ -- maybe this is needed for wkʳ ?
+ π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+           (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+           ≡
+           (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₁ʳ {Γ}{Δ}{A}{σ} =
+   
+      (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+
+           =⟨ {!!} ⟩
+       -- (π₁
+       --    ((Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ)) ,s tr (Tm _) []Tʳ (Tmʳ (S.π₂ {Γ} {Δ} {A} σ))))
+       {!!}
+
+
+           =⟨ {!!} ⟩
+       -- (π₁ (Subʳ (S.π₁ σ S.,s S.π₂ σ)))
+       {!!}
+
+           =⟨ {!ap↓!} ⟩
+      (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+      ∎
+
+ wkʳ : ∀ {Γ : S.Con}{A : S.Ty Γ} →
+    Subʳ (S.wk {A = A})== wk {A = Tyʳ A} [ (λ s → Sub s _) ↓ ,ʳ ]
+ wkʳ {Γ}{A} =
+    ≅↓
+    (
+      Subʳ (S.wk {A = A})
+
+           ≅⟨ =≅ π₁ʳ ⟩
+      (π₁   {A = Tyʳ  A} (tr (Sub _) ,ʳ (Subʳ   S.id)))
+
+           ≅⟨ ↓≅
+-- Sub (Conʳ (Γ S.▶ A)) (Conʳ Γ)
+             (
+             apd π₁ {x = (tr (Sub _) ,ʳ (Subʳ   S.id))}{y = id}{!!}
+             -- (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
+              
+             -- ap↓ {B = λ s → Sub s _}{C = λ s → Sub s (Conʳ Γ)}
+             
+             -- (π₁ {A = Tyʳ A})
+             -- {p = ,ʳ {A = A}}
+             --   -- (≅↓ (↓≅ (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl )))
+             --   (≅↓ (↓≅ {!!}))
+               
+              )
+              -- ((≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅)))
+-- Sub (Conʳ Γ ▶ Tyʳ A) (Conʳ Γ)
+             ⟩
+      (π₁   {A = Tyʳ  A} id)
+
+
+      ≅∎
+    )
+    -}
+    -- (↓-cst-in {p = refl}
+     -- (π₁ʳ {σ = S.id {Γ = Γ S.▶ A}}) ◾  ap (λ x → π₁ (tr (Sub (Conʳ (Γ S.▶ A))) ,ʳ x)) idʳ ) ∙ᵈ
+     -- {! 
+     -- ap↓ {C = λ s → Sub s (Conʳ Γ)} (π₁ {A = Tyʳ A})
+     --   -- (≅↓ (↓≅ {! from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl !} !≅))
+     --   (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
+     --   !}
+    -- ≅↓ (↓≅ {! ap↓ {B = (Sub (Conʳ (Γ S.▶ A))) } π₁!})
+    -- ≅↓ (↓≅ {! ap↓ π₁ {p = ,ʳ}!})
+     -- {!J
+     -- (λ B e →
+     --  π₁ (tr (Sub (Conʳ (Γ S.▶ A))) e id)
+     --  == π₁ (id {Γ = B})
+     --  [ (λ s → Sub s (Conʳ Γ)) ↓ e ]
+     -- )!}
+    
+    -- ≅↓ (↓≅ {! ap↓ π₁ (from-transp ? ,ʳ ?)!})
+    
+      -- (wk {A = Tyʳ A})
+
+    -- -- ap↓ π₁ (from-transp _ _ {!!})
+    -- ap↓ {B = λ s → Sub s _} π₁ {p = {!,ʳ!}}
+    --   {u = tr (Sub (Conʳ (S._▶_ Γ A))) ,ʳ (Subʳ S.id)}
+    --   {v = id {Γ = _▶_ (Conʳ Γ) (Tyʳ A)}}
+    --    {!!}
+    -- ∙ᵈ {! !}
+ -- apd Subʳ {!π₁ʳ!} ∙ᵈ {!!}
+
  <>ʳ : ∀ {Γ : S.Con}{A : S.Ty Γ}{t : S.Tm Γ A} →
        Subʳ S.< t > == < Tmʳ t > [ Sub _ ↓ ,ʳ ]
  <>ʳ {Γ}{A}{t} =
@@ -101,15 +186,9 @@ record nextCwFMor
 
  [<>]T : ∀ {Γ : S.Con}{A : S.Ty Γ}{u : S.Tm Γ A}{B : S.Ty (Γ S.▶ A)}→
     Tyʳ (B S.[ S.< u > ]T) ≡ (Tyʳ B [  transport! (Sub _) ,ʳ  < Tmʳ u >  ]T)
-    -- Tyʳ (B S.[ S.< u > ]T) == Tyʳ B [ transport! (Sub _) {!!}  < {!!} > ]T
 
       
-      -- (tr Ty (,ʳ ◾ ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
-      --  < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
- [<>]T {Γ}{A}{u} = {!!}
-    -- Tyʳ (B S.[ S.< u > ]T) ==
-    --   (tr Ty (,ʳ ◾ ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
-    --    < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
+ [<>]T {Γ}{A}{u} = []Tʳ ∙' ap (_[_]T _ ) (to-transp! <>ʳ) 
 
 
   
@@ -196,44 +275,94 @@ module _
 
 module _ 
     {k : Level}{l : Level}{M : CwF {k} {l}}(MM : UnivΠ M)
-    {i : Level}{j : Level}{N : CwF {i} {j}}(NN : UnivΠ N) where
+    {i : Level}{j : Level}{N : CwF {i} {j}}(NN : UnivΠ N)
+    (mor : CwFMor M N)
+     where
+  open CwFMor mor
+  open CwF N
+  open UnivΠ NN
+  private
+    module S = CwFUnivΠ MM
 
-
-  record UnivΠMor (mor : CwFMor M N) : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
-    open CwFMor mor
-    private
-      module S = CwF M
-      module SS = UnivΠ MM
-    open CwF N
-    open UnivΠ NN
-    -- module NN = UnivΠ NN
-
+-- I do Univ and Π parts in different records because
+-- I need [<>^El]Tʳ before app
+  record UnivMor  : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
     field 
-      Uʳ  : {Γ : S.Con} → _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (SS.U {Γ})) U
+      Uʳ  : {Γ : S.Con} → _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.U {Γ})) U
 
-      Elʳ : {Γ : S.Con} {a : S.Tm Γ (SS.U {Γ})} →
-        (Tyʳ {Γ} (SS.El  a)) ≡ (El  (tr (Tm _) Uʳ (Tmʳ   a)))
+      Elʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} →
+        (Tyʳ {Γ} (S.El  a)) ≡ (El  (tr (Tm _) Uʳ (Tmʳ   a)))
 
-      Πʳ : {Γ : S.Con} {a : S.Tm Γ (SS.U {Γ})} {B : S.Ty (Γ S.▶ SS.El {Γ} a)} →
-        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (SS.Π {Γ} a B))
-        (Π {Conʳ Γ} (tr (Tm _) Uʳ (Tmʳ {Γ} {SS.U {Γ}} a))
-          (tr Ty (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ SS.El {Γ} a} B)))
+    [<>^El]Tʳ :
+       ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}
+            (u : S.Tm Γ (S.El a)) →
+      Tyʳ (B S.[ S.< u > ]T) ==
+      (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
+       < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
 
-      appʳ : {Γ : S.Con} {a : S.Tm Γ (SS.U {Γ})} {B : S.Ty (Γ S.▶ SS.El {Γ} a)}
-              {t : S.Tm Γ (SS.Π {Γ} a B)} →
+    [<>^El]Tʳ {Γ}{a}{B}u =
+      [<>]T ∙'
+      
+      J (λ C e →
+          (Tyʳ B [ transport! (Sub (Conʳ Γ)) ,ʳ < Tmʳ u > ]T) ≡
+          (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) e) (Tyʳ B) [
+          < tr (Tm (Conʳ Γ)) e (Tmʳ u) > ]T)
+      )
+      ( 
+      J (λ C e → ∀ <u> →
+        Tyʳ B [ transport! (Sub (Conʳ Γ)) e <u> ]T ≡
+          tr Ty e (Tyʳ B) [ <u> ]T
+      )
+      (λ _ → refl)
+      ,ʳ
+      < Tmʳ u >
+      )
+      Elʳ
+
+
+  record ΠMor (um : UnivMor) : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
+      -- module S = UnivΠ MM
+    -- module NN = UnivΠ NN
+    open UnivMor um
+
+      
+      
+
+    field
+
+
+      Πʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)} →
+        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.Π {Γ} a B))
+        (Π {Conʳ Γ} (tr (Tm _) Uʳ (Tmʳ {Γ} {S.U {Γ}} a))
+          (tr Ty (,ʳ ∙' ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ S.El {Γ} a} B)))
+
+      -- appʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)}
+      --         {t : S.Tm Γ (S.Π {Γ} a B)} →
               
-              (Tmʳ {Γ S.▶ SS.El {Γ} a} {B} (SS.app {Γ} {a} {B} t))
-              ==
-              (app {Conʳ Γ}  
-                (tr (Tm _) Πʳ (Tmʳ {Γ} {SS.Π {Γ} a B} t)))
-                [ (λ x → Tm (₁ x)(₂ x)) ↓
-                  pair= (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (from-transp _ _ refl) ]
-    $ʳ : ∀ {Γ}{a : S.Tm Γ SS.U}{B : S.Ty (Γ S.▶ SS.El a)}(t : S.Tm Γ (SS.Π a B))
-          (u : S.Tm Γ (SS.El a)) → S.Tm Γ (B S.[ S.< u > ]T) →
-        Tmʳ (t SS.$ u) ==
-          (tr (Tm _) Πʳ (Tmʳ t) $
-           tr (Tm _) Elʳ (Tmʳ u)) [ Tm _ ↓  {![<>]T ◾ ?!} ]
+      --         (Tmʳ {Γ S.▶ S.El {Γ} a} {B} (S.app {Γ} {a} {B} t))
+      --         ==
+      --         (app {Conʳ Γ}  
+      --           (tr (Tm _) Πʳ (Tmʳ {Γ} {S.Π {Γ} a B} t)))
+      --           [ (λ x → Tm (₁ x)(₂ x)) ↓
+      --             pair= (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (from-transp _ _ refl) ]
+      $ʳ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a B))
+      -- this q , e is to stop reduction
+            (u : S.Tm Γ (S.El a))
+            →
+            let e = [<>^El]Tʳ u in
+            -- {e}(q : e ≡ [<>^El]Tʳ u)→ 
+          Tmʳ (t S.$ u) ==
+            (tr (Tm _) Πʳ (Tmʳ t) $
+            tr (Tm _) Elʳ (Tmʳ u)) [ Tm _ ↓  e
+            -- [<>^El]Tʳ u
+            ]
            -- []Tʳ ◾ ap (λ s → Tyʳ B [ s ]T) (to-transp! <>ʳ) ◾ {!!} ]
 
-        -- {!Tmʳ (t SS.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
-    $ʳ = {!!}
+        -- {!Tmʳ (t S.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
+    -- $ʳ = {!!}
+  record UnivΠMor : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
+    field
+      univmor : UnivMor
+      Πmor : ΠMor univmor
+    open UnivMor univmor public
+    open ΠMor Πmor public

@@ -15,6 +15,18 @@ open import RelationCwfWeakening
 open import RelationCwfSubstitution
 
 
+Σ▶~ : ∀ {Γ}{Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
+   {A}{Aw : Tyw Γ A}(Am : ∃ (Ty~ Aw {₁ Γm}))
+   → ∃ (Con~ (▶w Γw Aw))
+Σ▶~ Γm Am = _ , Γm , Am , refl
+
+Σ▶El~ : ∀ {Γ}{Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
+   {A}
+   -- I don't know why this is not inferred..
+   (Aw : Tmw Γ Up A)(Am : ∃ (Tm~ Aw {₁ Γm}{M.U }))
+   → ∃ (Con~ (▶w Γw (Elw Γw Aw)))
+Σ▶El~ {Γ}{Γw}Γm{A}Aw Am = Σ▶~ Γm {Aw = Elw Γw Aw}(_ , Am , refl)
+
 
   
 ΣCon~ : {Γp : Conp}(Γw : Conw Γp) → ∃ (Con~ Γw)
@@ -33,7 +45,7 @@ open import RelationCwfSubstitution
 ΣCon~ ∙w = _ , lift refl
 ΣCon~ (▶w Γw Aw) =
   let Γm = ΣCon~ Γw in
-  _ , Γm , ΣTy~ Γm Aw , refl
+  Σ▶~ Γm (ΣTy~ Γm Aw) 
 
 -- ΣTy~ Aw Γm = {!!}
 ΣTy~ Γm (Uw Γp Γw') = _ , lift refl
@@ -41,7 +53,7 @@ open import RelationCwfSubstitution
   let am = ΣTm~ Γm {Aw = (Uw _ Γw)} (_ , lift refl) Aw  in
   _ , am  ,
    ΣTy~ {Γw = (▶w Γw (Elw Γw Aw))}
-    (_ , Γm , (_ , am , refl) , refl)
+    ( Σ▶El~ Γm  Aw am )
       Bw  ,
       refl
 ΣTy~ Γm (Elw Γw aw) = _ , ΣTm~ Γm { Aw = Uw _ Γw} (_ , lift refl) aw  , refl
@@ -58,7 +70,8 @@ open import RelationCwfSubstitution
     am = ΣTm~ Γm {Aw = (Uw Γp Γw)} (_ , lift refl) aw 
 
     Γam : ∃ (Con~ Γaw)
-    Γam = _ , Γm , (_ , am , refl) , refl
+    -- Γam = _ , Γm , (_ , am , refl) , refl
+    Γam = Σ▶El~ Γm aw am
 
     Bm = ΣTy~ {Γw = Γaw} Γam  Bw   
     tm = ΣTm~ Γm {Aw = (Πw Γw aw Bw)} (_ , am , Bm , refl) tw   
@@ -91,12 +104,10 @@ open import RelationCwfSubstitution
   where
     Γm = ΣCon~ Γw
     Am = ΣTy~ Γm Aw
-    ΓAm~ : ∀ Γw' → Con~ Γw' (₁ Γm M.▶ ₁ Am)
-    ΓAm~ (▶w Γw' Aw') rewrite
-      prop-has-all-paths Γw' Γw
-      | prop-has-all-paths Aw' Aw
+    ΓAm~ : Con~ Γw' (₁ Γm M.▶ ₁ Am)
+    ΓAm~  rewrite prop-has-all-paths Γw' (▶w Γw Aw)
       = Γm , Am , refl
-    eC = fst=  (prop-has-all-paths Cm (_ , ΓAm~ Γw'))
+    eC = fst=  (prop-has-all-paths Cm (_ , ΓAm~ ))
     wE~ : Ty~ wkEw
           (transport! M.Ty eC (₁ Am M.[ M.wk ]T))
     wE~ =
@@ -147,7 +158,7 @@ open import RelationCwfSubstitution
    Am ,
    ΣTm~ Γm {Aw = Tyw[] Aw Γw σw} A[]m tw    ,
    eC ,
-    from-transp! (M.Sub (₁ Γm)) eC refl 
+     from-transp! (M.Sub (₁ Γm)) eC refl 
    where
      Δm = ΣCon~ Δw
      Am = ΣTy~ Δm Aw 
@@ -160,8 +171,12 @@ open import RelationCwfSubstitution
 
      -- ΔA~ : ∀ (Cw' : Conw (Δp ▶p A)) → Con~ Cw'  (₁ Δm M.▶ ₁ Am)
      ΔA~  : Con~ Cw  (₁ Δm M.▶ ₁ Am)
-     ΔA~ rewrite prop-has-all-paths Cw (▶w  Δw Aw) =
-       Δm , Am , refl
+     ΔA~ = 
+      -- prop-has-all-paths Cw (▶w  Δw Aw)
+      tr (λ w → Con~ w (₁ Δm M.▶ ₁ Am)) 
+       (prop-has-all-paths (▶w Δw Aw) Cw)
+        (Δm , Am , refl) 
+       
 
      eC : ₁ Cm ≡ (₁ Δm M.▶ ₁ Am)
      eC = fst= (prop-has-all-paths Cm (_ , ΔA~ ))
