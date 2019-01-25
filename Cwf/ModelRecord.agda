@@ -74,18 +74,15 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
       _≡_ {_} {Ty Γ} (_[_]T {Γ} {Δ} (_[_]T {Δ} {Σ} A δ) σ)
       (_[_]T {Γ} {Σ} A (_∘_ {Γ} {Δ} {Σ} δ σ))
 
-  idl   : {Γ Δ : Con} {σ : Sub Γ Δ} → _≡_ {j} {Sub Γ Δ} (_∘_ {Γ} {Δ} {Δ} (id {Δ}) σ) σ
-  idr   : {Γ Δ : Con} {σ : Sub Γ Δ} → _≡_ {j} {Sub Γ Δ} (_∘_ {Γ} {Γ} {Δ} σ (id {Γ})) σ
+  idl   : {Γ Δ : Con} {σ : Sub Γ Δ} →  (id ∘ σ) ≡ σ
+  idr   : {Γ Δ : Con} {σ : Sub Γ Δ} →  (σ ∘ id) ≡ σ
 
   ass   : {Γ Δ : Con} {Σ : Con} {Ω : Con} {σ : Sub Σ Ω} {δ : Sub Δ Σ}
-    {ν : Sub Γ Δ} →
-    _≡_ {_} {Sub Γ Ω} (_∘_ {Γ} {Δ} {Ω} (_∘_ {Δ} {Σ} {Ω} σ δ) ν)
-    (_∘_ {Γ} {Σ} {Ω} σ (_∘_ {Γ} {Δ} {Σ} δ ν))
+    {ν : Sub Γ Δ} → (σ ∘ δ) ∘ ν ≡ σ ∘ (δ ∘ ν)
 
    
 
 
--- this requires eta for pairs to be definitional in Set..
 {- 
   π₁∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
     {Y}{δ : Sub Y Γ} →
@@ -184,6 +181,24 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
          ∘≅ ↓≅ et))
 
  -}
+ π₁∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
+    {Y}{δ : Sub Y Γ} →
+    π₁ (σ ∘ δ) ≡ (π₁ σ ∘ δ )  
+ π₁∘ {Γ}{Δ}{A}{σ}{Y}{δ} =
+   -- tr (λ s → π₁ (s ∘ δ) ≡ π₁ s ∘ δ) πη (π₁,∘ ◾ ap (λ s → s ∘ δ) (! π₁β))
+   ap (λ s → π₁ (s ∘ δ)) (! πη) ◾ π₁,∘
+   -- (π₁,∘ ◾ ap (λ s → s ∘ δ) (! π₁β))
+
+ π₂∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
+    {Y}{δ : Sub Y Γ} →
+    π₂ (σ ∘ δ) == (π₂ σ [ δ ]t)  [ Tm _ ↓ ap (A [_]T) π₁∘ ◾ ! [][]T ]
+ π₂∘ {Γ}{Δ}{A}{σ}{Y}{δ} =
+   -- use of uip for simplicty
+   ≅↓ (
+   -- tr (λ s → π₂ (_∘_ s δ) ≅ _[_]t (π₂ σ) δ) πη
+   ↓≅ (apd (λ s → π₂( s ∘ δ)) (! πη))
+   ∘≅
+   (↓≅ π₂,∘))
 
 
 record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
@@ -226,6 +241,11 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
      π₁ (σ ,s t) =⟨ π₁β ⟩
      σ
      ∎
+ wk∘ : ∀ {Γ Δ}{A : Ty Δ} {σ : Sub Γ (Δ ▶ A)}  →
+   wk ∘ σ  ≡ π₁ σ
+ wk∘{Γ}{Δ}{A}{σ} =
+   ap (λ s → wk ∘ s) (! πη) ◾ wk∘,
+
 
  wk[]T : ∀ {Γ}{Δ}{A : Ty Δ}{σ : Sub Γ Δ}{t : Tm Γ (A [ σ ]T)}
    {B : Ty Δ}

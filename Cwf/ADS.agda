@@ -4,13 +4,14 @@ Paper: section 4, section 6
 
 This file defines algebras, displayed algebras and sections of displayed algebras for QIITs.
 -}
+-- copied from ADS.agda
 
 
 {- Algebra-Displayed Algebra-Section model of the theory of signatures -}
 
 module ADS where
 
-infixl 9 ap
+-- infixl 9 ap
 open import Level 
 open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_ ; Lift)
@@ -19,6 +20,8 @@ open import monlib
 -- import StrictLib hiding (id; _∘_)
 
 module AM where
+
+open import ModelRecord
 
 -- open import StrictLib hiding (id; _∘_)
 
@@ -456,3 +459,42 @@ postulate
 {-# REWRITE []tʳEl #-}
 
 -}
+
+adsCwF : CwF
+adsCwF = record {
+   basecwf = record { Con = Con ; Ty = Ty ; Tm = Tm ; Sub = Sub } ;
+   nextcwf = record
+               { ∙ = ∙
+               ; _▶_ = _▶_
+               ; _[_]T = _[_]T
+               ; id = id
+               ; _∘_ = _∘_
+               ; ε = ε
+               ; _,s_ = _,s_
+               ; π₁ = π₁
+               ; _[_]t = _[_]t
+               ; π₂ = π₂
+               ; [id]T = refl
+               ; [][]T = refl
+               ; idl = refl
+               ; idr = refl
+               ; ass = refl
+               ; π₁,∘ = refl
+               ; π₂,∘ = refl
+               ; π₁β = refl
+               ; πη = refl
+               ; εη = refl
+               ; π₂β = refl
+               } }
+
+adsUnivΠ : UnivΠ adsCwF
+adsUnivΠ = record
+             { U = U
+             ; U[] = refl
+             ; El = El
+             ; El[] = refl
+             ; Π = Π
+             ; Π[] = refl
+             ; _$_ = λ {Γ}{A}{B}t u →  app {Γ}{A}{B}t [ < u > ]t 
+             ; $[] = refl
+             }
