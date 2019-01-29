@@ -154,7 +154,7 @@ module RelationCwf  where
       Σ₁-×-comm ∘e Σ-emap-r λ eC →
       Σ₁-×-comm
       )
-      {{
+      {{ 
         Σ-level it λ Γm' →
         Σ-level it λ Am' →
         Σ-level it λ eC' →
@@ -173,7 +173,7 @@ module RelationCwf  where
       Σ₁-×-comm
 
       )
-      {{
+      {{ 
          Σ-level it λ Γm' →
           Σ-level it λ Am' →
           Σ-level it λ Bm' →
@@ -191,7 +191,7 @@ module RelationCwf  where
       equiv-preserves-level
       Σ₁-×-comm
 
-      {{
+      {{ 
       Σ-level it λ eC' →
         pathOverto-is-prop _ _ _
        }}
@@ -206,7 +206,7 @@ module RelationCwf  where
       Σ₁-×-comm ∘e Σ-emap-r λ tm' →
       Σ₁-×-comm
       )
-       {{
+       {{ 
          Σ-level it λ Δm' →
          Σ-level it λ σm' →
          Σ-level it λ Am' →
