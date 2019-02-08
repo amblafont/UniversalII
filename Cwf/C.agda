@@ -12,19 +12,14 @@ CwF part of the initial algebra construction.
 -- copied from InitialAlg/
 
 
-open import SyntaxIsModel using (module Syn)
+open import SyntaxIsModel using () renaming (module Syn to S)
 import SyntaxIsModel as SM
+open import Syntax using (keep)
+
 open import monlib
 
-module C (funext : ∀ {i}{j} → funext-statment {i}{j})(Ω : Syn.Con) where
+module C (funext : ∀ {i}{j} → funext-statment {i}{j})(cheat : ∀{i}{A : Set i} → A)(Ω : S.Con) where
 
-
-
-
-
-
-private
-  module S = Syn
 
 -- infixl 9 ap
 open import Level 
@@ -32,8 +27,8 @@ open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to 
   hiding (_∘_ ; _⁻¹ ; Π ; _$_ ; Lift ; Ω)
 
 
+open import ModelMorphism
 
-import ADS as ADS
 -- open import ADS using ( mkCon; mkTy; mkTm; mkSub ; i ; j)
 open import ADS using ( i ; j ; ᴬ ; ᴰ ; ˢ)
 -- open import ADS using ( i ; j )
@@ -58,11 +53,11 @@ record Con : Set i where
     ᴬᴰˢ : ADS.Con
     ᶜ : (e : S.Sub Ω  ⁱ) → ᴬ ᴬᴰˢ 
 
-  -- open ADS.Con ᴬᴰˢ public
+  open ADS.Con ᴬᴰˢ public
 
 
 mkCon : (ⁱ₁ : SyntaxIsModel.Con) (ᴬ₁ : Set₁) (ᴰ₁ : ᴬ₁ → Set₁)
-        (ˢ₁ : (γ : ᴬ₁) → ᴰ₁ γ → Set) (ᶜ₁ : Syn.Sub Ω ⁱ₁ → ᴬ₁) →
+        (ˢ₁ : (γ : ᴬ₁) → ᴰ₁ γ → Set) (ᶜ₁ : S.Sub Ω ⁱ₁ → ᴬ₁) →
     Con
 mkCon = λ ⁱ₁ ᴬ₁ ᴰ₁ ˢ₁ ᶜ₁ → record { ᴬᴰˢ = ADS.mkCon ᴬ₁ ᴰ₁ ˢ₁ ; ⁱ = ⁱ₁ ; ᶜ = ᶜ₁ }
 
@@ -487,6 +482,9 @@ cCwF = record {
               ; π₂β =  λ {Γ}{Δ}{A}{σ}{t} → π₂β {Γ}{Δ}{A}{σ}{t}
               } }
 
+private 
+  module C = CwF cCwF
+
 U : {Γ : Con} → Ty Γ
 U {Γ} = mkTy S.U ADS.U (λ v a → S.Tm Ω (S.El a))
 
@@ -538,7 +536,13 @@ El[] : {Γ Δ : Con} {σ : Sub  Γ Δ}
 El[]{Γ}{Δ}{σ}{a} =
   
       ((El  a) [ σ ]T)
-        =⟨ ap (mkTy _ _) {!!} ⟩
+        =⟨ ap (mkTy _ _)
+         -- this is an equality between (λ v t → lift t) and itself (modulo transports)
+         -- because []Tᶜ (El a) σ is (modulo transports)
+         --   λ v t → (ᶜ (El a) (ⁱ σ S.∘ v) t)
+         -- ~ λ v t → (lift t)
+          cheat
+          ⟩
       El (mkTm (ⁱ a S.[ ⁱ σ ]t)(ᴬᴰˢ a ADS.[ ᴬᴰˢ σ ]t ) _
          -- (tr
          -- (λ X →
@@ -554,10 +558,71 @@ El[]{Γ}{Δ}{σ}{a} =
 
 Π {Γ}a B = mkTy (S.Π (ⁱ a) (ⁱ B)) (ADS.Π (ᴬᴰˢ a) (ᴬᴰˢ B))
              (λ v t α → 
-               tr (ᴬ B) {!!}
-               (ᶜ B (v S.,s coe {!!} α)(coe {!!} (t S.$ coe {!!} α))))
+             -- this relies on the π₁β and π₂β
+               tr (ᴬ B) cheat
+               (ᶜ B (v S.,s coe (! (ᶜ a v)) α)
+               {-
+      (((ⁱ B) S.[ keep v ]T)) S.[ S.< coe (! (ᶜ a v)) α > ]T)
+      == Tm Ω (ⁱ B S.[ v S.,s coe (! (ᶜ a v)) α ]T)
+               -}
+               (tr (S.Tm Ω)
+               (  S.[][]T {A = ⁱ B} ◾ ap (λ s → S._[_]T (ⁱ B) s)
+                 ( 
+                 -- keep v = v ^ A
+                 cheat
+                 
+                  ◾ S.^∘<> {σ = v}{t = coe (! (ᶜ a v)) α}
+                  )
+                  )
+               (t S.$ coe (! (ᶜ a v)) α))))
 
   -- rewrite Tm-tr= (funext _)(a [ σ ]t)  = {!!}
+  -- ■∙ 
+
+Π[] : ∀ {Γ Δ : Con } {σ : Sub Γ Δ}
+      {a : Tm Δ U} {B : Ty ((Δ ▶ El a) )} →
+      (Π a B  [ σ ]T)  ≡
+      Π (tr (Tm Γ) (U[] {σ = σ}) ((a [ σ ]t) ))
+      (tr (λ x → Ty ((Γ ▶ x) )) ( El[] {σ = σ}{a = a})
+       (B [ (σ C.^ (El a)) ]T))
+
+Π[] {Γ}{Δ}{σ}{a}{B} = cheat
+
+_$_ :  {Γ : Con} {a : Tm Γ U} {B : Ty (Γ ▶ El a)} →
+      Tm Γ (Π a B) → (u : Tm Γ (El a)) → Tm Γ (B [ C.< u > ]T)
+
+_$_ {Γ}{a}{B} t  u =
+  -- tr (λ tru → Tm Γ (B [ id {Γ = Γ} ,s tru ]T)) {y = transport! (Tm _) [id]T u}
+  --   {!!} {!!}
+  mkTm
+    (tr  (λ s → S.Tm (ⁱ Γ) (S._[_]T (ⁱ B) s))
+    -- it is the fact that ⁱ < u > == S.< ⁱ u >
+       cheat
+       (ⁱ t S.$ ⁱ u))
+    (tr  (λ s → ADS.Tm (ᴬᴰˢ Γ) (ADS._[_]T (ᴬᴰˢ B) s))
+    -- it is the fact that ᴬᴰˢ < u > == ADS.< ᴬᴰˢ u >
+        cheat
+        -- (ᴬᴰˢ t ADS.$ ᴬᴰˢ u))
+        (ADS._$_ {ᴬᴰˢ Γ}{ᴬᴰˢ a}{ᴬᴰˢ B} (ᴬᴰˢ t)  (ᴬᴰˢ u)))
+    {-
+    modulo transports, this is:
+    ∀ v, (ᶜ B (ⁱ < u > S.∘ v) ((ⁱ t $ ⁱ u) [v]t) ≡ ((ᴬ t $ ᴬ u) (ᶜ Γ v))
+    and the rhs is really ((̂ᴬ t (ᶜ Γ v)) (ᴬ u (ᶜ Γ v)) ) 
+
+    Using ᶜ t v and ᶜ u v, the r.h.s rewrites
+
+      ᶜ (Π a B) v (ⁱ t S.[ v ]t) (ᶜ (El a) v (ⁱ u S.[ v ]t))
+    which is (modulo transports)
+      ᶜ B (v ,s (ⁱ u S.[ v ]t)) ((ⁱ t S.[ v ]t) S.$ (ⁱ u S.[ v ]t))
+
+   and (v ,s (ⁱ u S.[ v ]t)) ≡ (ⁱ < u > S.∘ v) (indeed, see <>∘)
+   so we are good.
+    
+
+    )
+    -}
+    λ v →  cheat
+
 
 cUnivΠ : UnivΠ cCwF
 cUnivΠ = record
@@ -565,8 +630,12 @@ cUnivΠ = record
            ; U[] = λ {Γ}{Δ}{σ} → U[]{Γ}{Δ}{σ}
            ; El = El
            ; El[] = λ {Γ}{Δ}{σ}{a} → El[]{Γ}{Δ}{σ}{a}
-           ; Π = {!!}
-           ; Π[] = {!!}
-           ; _$_ = {!!}
-           ; $[] = {!!}
+           ; Π = Π
+           ; Π[] = cheat
+           ; _$_ = λ {Γ}{a}{B}t u → _$_ {Γ}{a}{B} t u
+           ; $[] = cheat
            }
+
+postulate 
+ CBaseMor : CwFMor SM.syntaxCwF cCwF
+ CUnivΠMor : UnivΠMor SM.syntaxUnivΠ cUnivΠ CBaseMor
