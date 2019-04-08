@@ -23,6 +23,11 @@ open import ModelRecord
 
 open import Syntax
 open import SyntaxIsModel renaming (module Syn to S)
+
+  -- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
+ex1 : Con 
+ex1 = ?
+
 import ModelCwf as M
 
 open import ModelMorphism

@@ -487,6 +487,9 @@ adsCwF = record {
                ; π₂β = refl
                } }
 
+
+_$_ = λ {Γ}{A}{B}t u →  app {Γ}{A}{B}t [ < u > ]t  
+
 adsUnivΠ : UnivΠ adsCwF
 adsUnivΠ = record
              { U = U
@@ -495,6 +498,6 @@ adsUnivΠ = record
              ; El[] = refl
              ; Π = Π
              ; Π[] = refl
-             ; _$_ = λ {Γ}{A}{B}t u →  app {Γ}{A}{B}t [ < u > ]t 
+             ; _$_ =  λ {Γ}{A}{B}t u → _$_ {Γ}{A}{B} t u
              ; $[] = refl
              }

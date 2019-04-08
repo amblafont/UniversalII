@@ -307,9 +307,51 @@ syntaxUnivΠ = record
                            
                 }
 
+
 module Syn where
   open CwF syntaxCwF public
   open UnivΠ syntaxUnivΠ public
   -- open Telescope RewCwF public
 
 -- -}
+private
+  module M = Syn
+
+-- simple arrow
+S→ : {Γ : M.Con} (A : M.Tm Γ M.U)(B : M.Ty Γ) → M.Ty Γ
+S→ {Γ} A B = M.Π A (B M.[ M.wk {A = M.El A}]T)
+-- (S1.wkT Γ (S1.El Γ A) B)
+
+--non dependent application
+Sa : {Γ : M.Con} {A : M.Tm Γ (M.U )}{B : M.Ty Γ}
+    (t : M.Tm Γ (S→ A B))
+    (u : M.Tm Γ (M.El A)) → M.Tm Γ B
+Sa {Γ} {A} {B} t u = tr (Tm _)
+   (M.[][]T {σ =  M.< u >}{δ = M.wk {A = M.El A}} ◾ ap (λ s → B M.[ s ]T) M.wk∘<> ◾ M.[id]T) (t M.$ u)
+--   = 
+--     tr (λ B' → Σ Tmp (Tmw (₁ Γ) B'))
+--     (Syntax.subT-wkT (₁ B) (₁ u))
+--     (S1.app Γ A (S1.wkT Γ (S1.El Γ A) B) t u )
+
+-- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
+{- 
+ex1 : M.Con 
+-- ex1 = M.∙ M.▶ {!? M.▶ ?!}
+A,B,∙ = M.∙ M.▶ M.U M.▶ M.Π M.vz M.U M.▶
+   M.El (M.vs M.vz)
+
+A,B,∙⊢A : M.Tm A,B,∙ M.U
+A,B,∙⊢A = (M.vs (M.vs M.vz))
+
+ex1 = A,B,∙
+   M.▶
+   M.Π A,B,∙⊢A
+   (S→ (Sa (M.vs (M.vs M.vz)) M.vz) (M.El (M.vs A,B,∙⊢A)))
+   M.▶
+   -- u
+   M.Π (M.vs A,B,∙⊢A) (M.El {!!})
+   M.▶
+   {!!}
+   -}
+
+

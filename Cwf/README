@@ -1,3 +1,4 @@
+Works with Agda 2.5.4.1
 In this directory, the model has full substitutions and the recursor construct them
 
 Files (in the order of dependancy)
@@ -9,3 +10,15 @@ Files (in the order of dependancy)
 4. RelationCwfWeakening : this relation is preserved by lifting/weakening
 5. RelationCwfSubstitution : this relation is preserved by full substitutions
 6. RelationCwfInhabit : construction of a witness of the relation
+
+
+TODO: actuellement,  Pi A B [s] = Pi A[s] B[s ^ A]
+      ç remplacer par Pi A[s] B[s o wk] pour que Pi[] soit definitionnel
+
+      rendre _$_ primitif plutôt que app. Peut etre cela rendrait app[] plus definitionel dans le model
+      -- pas sur de cette dernière idée...
+
+DO i use the fact that the morphism preserve composition when showing uniqueness ?
+Probably, but if not, can I show it ?
+
+TODO remove subT
