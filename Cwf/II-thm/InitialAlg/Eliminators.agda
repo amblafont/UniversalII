@@ -12,7 +12,7 @@ module InitialAlg.Eliminators (Ω : S.Con) where
 open import InitialAlg.CwF      Ω public
 open import InitialAlg.ElU      Ω public
 open import InitialAlg.Pi       Ω public
-open import InitialAlg.Identity Ω public
+-- open import InitialAlg.Identity Ω public
 open import InitialAlg.PiNI     Ω public
 
 -- Eliminators
@@ -125,13 +125,13 @@ postulate
            {Tyᶜ {Γ S.▶ S.El {Γ} a} B} {t} (Tmᶜ {Γ} {S.Π {Γ} a B} t))
 {-# REWRITE appᶜ #-}
 
-postulate
-  Idᶜ : {Γ : S.Con} (a : S.Tm Γ (S.U {Γ})) (t u : S.Tm Γ (S.El {Γ} a)) →
-        _≡_ {j} {Ty {Γ} (Conᶜ Γ) (S.Id {Γ} a t u)}
-        (Tyᶜ {Γ} (S.Id {Γ} a t u))
-        (Id {Γ} {Conᶜ Γ} {a} (Tmᶜ {Γ} {S.U {Γ}} a) {t}
-         (Tmᶜ {Γ} {S.El {Γ} a} t) {u} (Tmᶜ {Γ} {S.El {Γ} a} u))
-{-# REWRITE Idᶜ #-}
+-- postulate
+--   Idᶜ : {Γ : S.Con} (a : S.Tm Γ (S.U {Γ})) (t u : S.Tm Γ (S.El {Γ} a)) →
+--         _≡_ {j} {Ty {Γ} (Conᶜ Γ) (S.Id {Γ} a t u)}
+--         (Tyᶜ {Γ} (S.Id {Γ} a t u))
+--         (Id {Γ} {Conᶜ Γ} {a} (Tmᶜ {Γ} {S.U {Γ}} a) {t}
+--          (Tmᶜ {Γ} {S.El {Γ} a} t) {u} (Tmᶜ {Γ} {S.El {Γ} a} u))
+-- {-# REWRITE Idᶜ #-}
 
 postulate
   ΠNIᶜ : {Γ : S.Con} (A : Set) (B : A → S.Ty Γ) →

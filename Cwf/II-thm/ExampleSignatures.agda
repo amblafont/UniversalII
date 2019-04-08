@@ -53,12 +53,12 @@ Nat = ∙
 open import Data.Nat
 
 -- Integers (we import natural numbers from the metatheory)
-Int : Con
-Int = ∙
-    ▶ U
-    ▶ ℕ ⇒̂ ℕ ⇒̂ El v0
-    ▶ ΠNI (ℕ × ℕ × ℕ × ℕ) λ {(a , b , c , d)   -- we bind 4 numbers at once for brevity
-      → (a + d ≡ b + c) ⇒̂ Id v1 (v0 $̂ a $̂ b) (v0 $̂ c $̂ d)}
+-- Int : Con
+-- Int = ∙
+--     ▶ U
+--     ▶ ℕ ⇒̂ ℕ ⇒̂ El v0
+--     ▶ ΠNI (ℕ × ℕ × ℕ × ℕ) λ {(a , b , c , d)   -- we bind 4 numbers at once for brevity
+--       → (a + d ≡ b + c) ⇒̂ Id v1 (v0 $̂ a $̂ b) (v0 $̂ c $̂ d)}
 
 -- The ConTy example from section 3.2 doesn't typecheck in reasonable time.
 -- Context extension _▶_ already kills Agda.

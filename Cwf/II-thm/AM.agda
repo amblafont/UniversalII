@@ -194,6 +194,7 @@ El[] = refl
 
 -- Identity
 --------------------------------------------------------------------------------
+-- not needed for II
 
 Id   : ∀ {Γ}(a : Tm Γ U) → Tm Γ (El a) → Tm Γ (El a) → Ty Γ
 Id {Γᴬ , Γᴹ} (aᴬ , aᴹ) (tᴬ , tᴹ) (uᴬ , uᴹ) =
@@ -466,10 +467,10 @@ postulate
            (Tmʳ {Γ} {S.Π {Γ} a B} t))
 {-# REWRITE appʳ #-}
 
-postulate
-  Idʳ : {Γ : S.Con} (a : S.Tm Γ S.U)(t u : S.Tm Γ (S.El a)) →
-        Tyʳ (S.Id a t u) ≡ Id {Conʳ Γ}(Tmʳ a)(Tmʳ t)(Tmʳ u)
-{-# REWRITE Idʳ #-}
+-- postulate
+--   Idʳ : {Γ : S.Con} (a : S.Tm Γ S.U)(t u : S.Tm Γ (S.El a)) →
+--         Tyʳ (S.Id a t u) ≡ Id {Conʳ Γ}(Tmʳ a)(Tmʳ t)(Tmʳ u)
+-- {-# REWRITE Idʳ #-}
 
 postulate
   ΠNIʳ : {Γ : S.Con} (A : Set) → (B : A → S.Ty Γ)
