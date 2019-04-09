@@ -768,7 +768,7 @@ module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
     =∎
 
 
-record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) where
+record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (lmax j k)))) where
     open CwF M
     field 
       U    : ∀{Γ} → Ty Γ
@@ -856,6 +856,19 @@ record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) wher
                   refl
                   El[]
                  ]
+
+      ΠNI : ∀{Γ}{T : Set k}(B : T → Ty Γ) → Ty Γ
+      ΠNI[] : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Ty Δ} →
+        (ΠNI {Δ} B) [ σ ]T ≡ (ΠNI {Γ} {T} λ a → B a [ σ ]T)
+
+      _$NI_ : ∀ {Γ}{T : Set k}{B : T → Ty Γ}(t : Tm Γ (ΠNI B))(u : T) → Tm Γ (B u)
+      $NI[] :
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T}
+        → ((t $NI u) [ σ ]t) ≡ (  (tr (Tm _) ΠNI[] (t [ σ ]t)) $NI u )
+
+
+
+
         -- → ((t $ u) [ σ ]t) == (tr (Tm _) ? (t [ σ ]t)) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
       -- utilise [][]t
       {-
@@ -900,6 +913,6 @@ record UnivΠ {i : _}{j : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i j))) wher
 
     -}
 
-module CwFUnivΠ {i}{j}{c : CwF {i}{j}}(cov : UnivΠ c) where
+module CwFUnivΠ {i}{j}{k}{c : CwF {i}{j}}(cov : UnivΠ {k = k} c) where
   open CwF c public
   open UnivΠ cov public

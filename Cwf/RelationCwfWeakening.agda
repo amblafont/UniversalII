@@ -4,12 +4,12 @@
 open import Level 
 open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
-import ModelCwf as M
 open import Syntax as S
 
-module RelationCwfWeakening  where
+module RelationCwfWeakening {k : Level} where
 
 
+import ModelCwf {k = k} as M
 open import RelationCwf
 
 
@@ -73,6 +73,10 @@ liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(ΠΠp (Elp _) _)} {Πw Γw 
       Bm)) ,
   refl
 
+liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm  {_} {ΠNIw Γw {T}{Bp} Bw} (_ , Bm , refl) =
+  (λ a →  _ , liftT~ Γm Em Δm (Bm a)) ,
+   refl
+
 liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(Elp _)} {Elw Γw aw} (_ , am , refl) =
   (_ , (liftt~ Γm Em Δm {tw = aw} am)) ,
   refl
@@ -106,6 +110,11 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(app t u)} {.(l-subT 0 u Bp)
     -- eapp : {!(((₁ tm) M.$ (₁ um)) M.[ M.longWk (₁ Δm) ]t ) ≅ ?!}
     eapp = ↓≅ M.$[]
 
+liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appNIw Γw {T} {Bp} Bw tw u} {_}
+  (_ , Bm , tm , refl , refl)
+ = (λ a → _ , liftT~ Γm Em Δm (Bm a)) ,
+ (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
+ refl , refl 
 -- liftV~ {.(Γp ▶p Ap)} {Γw} Γm {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Ap)} Am {.0} {V0w Γp Γw₁ Ap Aw} xm = {!!}
 
 -- liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} ((Δm , ΔT) , Δr) {_} Am  {.0} {V0w Γp Γw Ap Aw}  (xm , Γm' , Am' , eC , eE , ex)
@@ -230,7 +239,7 @@ wkSub~ : ∀
   Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
 
 
-wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , refl) {E} {Ew} Em = refl , M.εη
+wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , HoTT.lift refl) {E} {Ew} Em = refl ,  HoTT.lift M.εη 
 wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {.(_ :: _)} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {tp = tp} tw}  {_}
   (_ , Δm , σm , Am , tm , refl , refl)
     {E} {Ew} Em
@@ -253,6 +262,7 @@ wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {.(_ :: _)} {,sw Δw {σp = σp} σw {Ap = A
         tr-over (λ A t → Tm~ (lifttw Ew ∙p tw) {Am = A} t)
            etm
         (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , HoTT.lift refl) {tw = tw} tm)
+
 
 
 

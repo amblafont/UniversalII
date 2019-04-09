@@ -5,14 +5,14 @@ open import Level
 -- open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
-import ModelCwf as M
-open import Syntax as S
 
-module RelationCwfInhabit  where
+module RelationCwfInhabit {k : Level} where
 
-open import RelationCwf
-open import RelationCwfWeakening
-open import RelationCwfSubstitution
+import ModelCwf {k} as M
+open import Syntax {k} as S
+open import RelationCwf {k = k}
+open import RelationCwfWeakening {k = k}
+open import RelationCwfSubstitution {k = k}
 
 
 Σ▶~ : ∀ {Γ}{Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
@@ -56,6 +56,11 @@ open import RelationCwfSubstitution
     ( Σ▶El~ Γm  Aw am )
       Bw  ,
       refl
+ΣTy~ {Γw = Γw} Γm (ΠNIw Γw' Bw) =
+  _ , (λ a → ΣTy~ Γm (Bw a)) , refl
+  -- {!_!} ,
+  -- {!!}
+
 ΣTy~ Γm (Elw Γw aw) = _ , ΣTm~ Γm { Aw = Uw _ Γw} (_ , lift refl) aw  , refl
 
 -- ΣTm~ Γw' Aw' tw Γm Am = {!tw!}
@@ -96,6 +101,29 @@ open import RelationCwfSubstitution
 
     eE = fst=  (prop-has-all-paths Em (_ , B[]~))
   
+ΣTm~ {Γw = Γw} Γm' {Aw =  B[]w} Em (appNIw Γw' Bw tw u) =
+-- ΣTm~ {Γw = Γw'} Γm' {Aw =  B[]w} Em (appNIw Γw Bw tw u) =
+  _ ,
+  Bm ,
+  tm  ,
+  eE ,
+  from-transp! _ _ refl
+ where
+    Γm : ∃ (Con~ Γw)
+    Γm = Γm'
+    -- Γm = (₁ Γm' , tr (λ x → Con~ x _) (prop-has-all-paths _ _) (₂ Γm'))
+
+    Bm = λ a → ΣTy~ Γm (Bw a) 
+    tm = ΣTm~ Γm {Aw = (ΠNIw Γw Bw)} (_ , Bm , refl) tw   
+
+    B[]~ : Ty~ B[]w (₁ (Bm u))
+    B[]~
+      rewrite
+         -- ! ( [<>]T Bw u )
+          prop-has-all-paths B[]w (Bw u)
+      -- = {!₂ (  Bm u )!}
+      = ₂ (  Bm u )
+    eE =  fst=  (prop-has-all-paths Em (_ , B[]~)) 
 
 -- ΣVar~ Γw' Ew' xw Γm Em = {!xw!}
 ΣVar~ {Γw = Γw'} Cm {Aw = wkEw} Em (V0w Γp Γw Ap Aw)   = 
@@ -150,7 +178,7 @@ open import RelationCwfSubstitution
 
 -- ΣSub~ {Γ}{Γw}Γm {C}{Cw}Cm σw = ?
 ΣSub~ {Γ} {Γw} Γm {.∙p} {∙w} (_ , HoTT.lift refl) nilw =
-  M.ε , refl , refl
+  M.ε , refl , HoTT.lift refl
 ΣSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {Cw} Cm (,sw {Δp = Δp} Δw {σp = σ}σw{Ap = A} Aw{tp = t} tw) =
   _ ,
    Δm ,

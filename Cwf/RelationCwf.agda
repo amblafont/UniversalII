@@ -6,9 +6,10 @@
 open import Level
 open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
-import ModelCwf  as M
-open import Syntax as S
-module RelationCwf  where
+module RelationCwf {k : Level.Level}  where
+
+  open import Syntax {k} as S
+  import ModelCwf {k}  as M
 
 
   -- module M = Model {α}
@@ -24,32 +25,38 @@ module RelationCwf  where
   -- the advantage : I won't need to show that Ty~' implies Con~'
   -- However I would still need to prove that _w are HProp (consider you would state
   --   the main theorem for Ty~' and the case of context extension)
-  Con~ : {Γp : Conp}(Γw : Conw Γp) → M.Con → Set (lmax M.i M.j)
-  Ty~ : ∀ {Γ A} (Aw : Tyw Γ A) {Γm} (Am : M.Ty Γm) → Set (lmax M.i M.j)
-  Tm~ : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i M.j)
-  Var~ : ∀ {Γ A x} (xw : Varw Γ A x) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i M.j)
+  Con~ : {Γp : Conp}(Γw : Conw Γp) → M.Con → Set (lmax M.i (lmax M.j k))
+  Ty~ : ∀ {Γ A} (Aw : Tyw Γ A) {Γm} (Am : M.Ty Γm) → Set (lmax M.i (lmax M.j k))
+  Tm~ : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
+  Var~ : ∀ {Γ A x} (xw : Varw Γ A x) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
 
 -- Con~ {Γ}Γw Γm = {!!}
 -- Sub~ {Γ}{Δ}{σ}σw {Γm}{Δm}σm = {!!}
   Con~ {.∙p} ∙w Γm =
-    HoTT.Lift { j = M.j} (Γm ≡ M.∙)
+    HoTT.Lift { j = lmax M.j k} (Γm ≡ M.∙)
+    -- HoTT.Lift { j = M.j} (Γm ≡ M.∙)
   Con~ {.(_ ▶p _)} (▶w Γw Aw) Δm =
     Σ (∃ (Con~ Γw)) λ Γm →
     Σ (∃ (Ty~ Aw {₁ Γm})) λ Am →
     Δm ≡ (₁ Γm M.▶ ₁ Am )
 
 -- Ty~ {Γ}{E} Ew {Cm} Em = {!Ew!}
-  Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = HoTT.Lift {j = M.j} (Em ≡ M.U )
+  Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = HoTT.Lift {j = lmax M.j k} (Em ≡ M.U )
   Ty~ {Γ} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) {Cm} Em =
     Σ (∃ (Tm~ Aw {Cm} {M.U})) λ am →
     Σ (∃ (Ty~ Bw {Cm M.▶ M.El (₁ am)} )) λ Bm →
       Em ≡ M.Π (₁ am) (₁ Bm)
+  Ty~ {Γ}  (ΠNIw Γw {T}{Bp} Bw) {Cm} Em =
+    Σ (∀ a → ∃ (Ty~ (Bw a) {Cm} )) λ Bm →
+      Em ≡ M.ΠNI  (λ a → ₁ (Bm a) )
+     
   Ty~ {Γ} {.(Elp _)} (Elw Γw aw) {Cm} Em =
     Σ (∃ (Tm~ aw {Cm} {M.U})) λ am →
-      Em ≡ M.El (₁ am)
+      -- HoTT.Lift (Em ≡ M.El (₁ am))
+      (Em ≡ M.El (₁ am))
 
 
-  Tm~ {Γ} {E} {.(V _)} (vw xw) {Cm} {Em} zm = Var~ xw zm
+  Tm~ {Γ} {E} {.(V _)} (vw xw) {Cm} {Em} zm = (Var~ xw zm)
   Tm~ {.Γp} {.(l-subT 0 u Bp)} {.(app t u)} (appw Γp Γw ap aw Bp Bw t tw u uw) {Δm} {Em} zm =
     Σ (∃ (Tm~ aw {Δm} {M.U })) λ am →
     Σ (∃ (Ty~ Bw {Δm M.▶ M.El (₁ am)})) λ Bm →
@@ -58,6 +65,13 @@ module RelationCwf  where
     Σ (∃ (Tm~ uw {Δm} {M.El  (₁ am)})) λ um →
     Σ (Em ≡ (₁ Bm M.[ M.< ₁ um > ]T) ) λ eC →
       zm == (₁ tm) M.$ (₁ um) [ M.Tm Δm ↓ eC ]
+  Tm~   {t = appNI t u} (appNIw Γw {T} {Bp} Bw tw u) {Δm} {Em} zm =
+    
+    Σ (∀ a → ∃ (Ty~ (Bw a) {Δm} )) λ Bm →
+    Σ (∃ (Tm~ tw {Δm} {M.ΠNI  (λ a → ₁ (Bm a))})) λ tm →
+    Σ (Em ≡ (₁ (Bm u)) ) λ eC →
+      zm == (₁ tm) M.$NI u [ M.Tm Δm ↓ eC ]
+    
 
 -- Var~ {Γ}{E}{x} xw {Cm}{Em} xm = {!Ew!}
   Var~ {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Cm} {Em} xm =
@@ -83,10 +97,10 @@ module RelationCwf  where
     -- M.app Δm (₁ am) (₁ Bm) (₁ tm) (₁ um)
 
 
-  Sub~ : ∀ {Γ Δ σ} (σw : Subw Γ Δ σ) {Γm Δm} (σm : M.Sub Γm Δm) → Set (lmax M.i M.j)
+  Sub~ : ∀ {Γ Δ σ} (σw : Subw Γ Δ σ) {Γm Δm} (σm : M.Sub Γm Δm) → Set (lmax M.i (lmax M.j k))
   -- Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm = {!(Δm , σm) ≡ (M.∙ , M.ε )!}
   Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm =
-    Σ (Δm ≡ M.∙ ) λ eC → σm == M.ε [ M.Sub Γm ↓ eC ]
+    Σ (Δm ≡ M.∙ ) λ eC → HoTT.Lift {j = k} (σm == M.ε [ M.Sub Γm ↓ eC ])
   -- _,_ {A = M.Con}{ M.Sub Γm} Δm σm ≡ (M.∙ , M.ε )
   Sub~ {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw σw Aw tw) {Γm} {Cm} sm =
     Σ (∃ (Con~ Δw)) λ Δm →
@@ -120,6 +134,18 @@ module RelationCwf  where
       {{ Σ-level (TmP Aw {Γm} M.U) λ Am' →
           it
          }}
+    TyP {Γ}  (ΠNIw Γw {T}{Bp} Bw) Γm =
+      
+      equiv-preserves-level
+      (
+      Σ₁-×-comm
+      -- ∘e Σ-emap-r λ Am' → {!!}
+      )
+      -- This needs funext actually
+      {{  Σ-level (Π-level (λ a → it)) λ Am' → it }}
+      
+      -- Σ-emap-r λ Am' →
+      -- ?
 
     TyP {Γ} {.(Elp _)} (Elw Γw aw) Γm =
 
@@ -145,6 +171,21 @@ module RelationCwf  where
           Σ-level it λ eC' → pathOverto-is-prop (M.Tm Γm) eC' _
           -- raise-level ⟨-2⟩ {!!}
           }}
+    TmP   {t = appNI t u} (appNIw Γw {T}{Bp} Bw tw u) {Γm} Am =
+      
+       equiv-preserves-level
+       (
+      Σ₁-×-comm ∘e Σ-emap-r λ Am' →
+      Σ₁-×-comm ∘e Σ-emap-r λ Bm' →
+      Σ₁-×-comm 
+       )
+       {{ Σ-level (Π-level (λ a → it)) λ Bm' →
+          
+          Σ-level (TmP tw _) λ tm' →
+          Σ-level it λ eC' →
+          pathOverto-is-prop (M.Tm Γm) eC' _
+          
+        }}
 
     VarP {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Γm} Am =
       equiv-preserves-level
@@ -187,13 +228,13 @@ module RelationCwf  where
     SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
     -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
     SubP {Γ} {.∙p} {.nil} nilw Γm Δm =
-
+      
       equiv-preserves-level
       Σ₁-×-comm
 
       {{ 
       Σ-level it λ eC' →
-        pathOverto-is-prop _ _ _
+        Lift-pathOverto-is-prop _ eC' M.ε
        }}
 
     SubP {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw sw Aw tw) Γm Δm =
@@ -344,10 +385,10 @@ module RelationCwf  where
 -- en effet, dans ce cas, je dois pouvoir montrer que si le telescope est en relation
 -- alors le contexte sous jacent l'est, et j'ai la flemme de le montrer.
 -- Il semble cependant, j'en ai vraiment besoin dans l e cas liftV0 ∙p V0w
-  Tel~ : {Γp : Conp}{Δp : Conp}(Δw : Telw Γp Δp) → {Γm : M.Con} → M.Tel Γm → Set (lmax M.i M.j)
+  Tel~ : {Γp : Conp}{Δp : Conp}(Δw : Telw Γp Δp) → {Γm : M.Con} → M.Tel Γm → Set (lmax M.i (lmax M.j k))
   -- Tel~ Δw Δm = Con~ Δw (₁ Δm)
   -- Tel~ {Δp = Δp} Δw Δm = {!!}
-  Tel~ {Δp = ∙p} Δw Δm = HoTT.Lift {j  = M.j}(Δm ≡ M.∙t _)
+  Tel~ {Δp = ∙p} Δw Δm = HoTT.Lift {j  = lmax k M.j}(Δm ≡ M.∙t _)
   Tel~ {Γ} {Δp = Δp ▶p Ap} (▶w Δw Aw) {Γm = Γm} Cm =
     Σ (∃ (Tel~ {Γp = Γ }Δw {Γm}))
     (λ Δm → Σ (∃ (Ty~ Aw {Γm M.^^ (₁ Δm)}))

@@ -15,26 +15,26 @@ open import monlib hiding (tr2)
 
 
 
-module InitialMorphism   where
+module InitialMorphism {k : Level}  where
 
 
 open import ModelRecord
 
 
-open import Syntax
-open import SyntaxIsModel renaming (module Syn to S)
+open import Syntax {i = k}
+open import SyntaxIsModel {k = k} renaming (module Syn to S)
 
   -- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
 ex1 : Con 
-ex1 = ?
+ex1 = {!!}
 
-import ModelCwf as M
+import ModelCwf {k = k} as M
 
 open import ModelMorphism
-open import RelationCwfInhabit
-open import RelationCwf
-open import RelationCwfSubstitution
-import ModelMorRew as Mor
+open import RelationCwfInhabit {k = k}
+open import RelationCwf {k = k}
+open import RelationCwfSubstitution {k = k}
+import ModelMorRew {k = k} as Mor
 
 ΣConʳ : ∀ (Γ : S.Con) → ∃ (Con~ (₂ Γ))
 ΣConʳ Γ = ΣCon~ (₂ Γ)
@@ -242,6 +242,22 @@ $ʳ {Γ}{a}{B}t u e
         (prop-has-all-paths {{  TmP (₂ (t S.$ u)) (Tyʳ (B S.[ S.< u > ]T) )  }}
         (ΣTmʳ (t S.$ u))
         (_ , tu~))
+
+$NIʳ : ∀ {Γ}{T : Set k}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
+      (u : T)  → 
+    Tmʳ (t S.$NI u)
+    -- ₁ (ΣTm~ (ΣCon~ (₂ Γ)) (ΣTy~ (ΣCon~ (₂ Γ)) (₂ (B S.[ S.< u > ]T)))
+    --   (
+    --   tr (λ B' → Tmw (₁ Γ) B' (app (₁ t) (₁ u))) (₁[<>]T {A = El a}{B = B}{u} )
+    --   (appw (₁ Γ) (₂ Γ) (₁ a) (₂ a) (₁ B) (₂ B) (₁ t) (₂ t) (₁ u) (₂ u)))
+    -- )
+    -- ==
+    ≡
+      ((Tmʳ {A = (S.ΠNI B)}t) M.$NI u)
+      -- [ M.Tm _ ↓ e]
+
+$NIʳ {T = T}{B = B}t u =
+  ap (λ e → coe! e (M._$NI_ (Tmʳ t) u)) {y = refl} (uip _ _)
    
 
 iniMorUnivΠ : UnivΠMor syntaxUnivΠ M.RewUnivΠ iniMor
@@ -259,7 +275,9 @@ iniMorUnivΠ = record {
   -- $ʳ = {!λ {Γ}{a}{b}t u → $ʳ {Γ}{a}{b} t u!} }
   -- So slow!!!
   -- $ʳ = λ {Γ}{a}{b}t u {e} q → $ʳ {Γ}{a}{b} t u _
-  $ʳ = λ {Γ}{a}{b}t u → $ʳ {Γ}{a}{b} t u _
+  $ʳ = λ {Γ}{a}{b}t u → $ʳ {Γ}{a}{b} t u _ ;
+  ΠNIʳ = refl ;
+  $NIʳ = λ t u → $NIʳ t u
   }
   }
 

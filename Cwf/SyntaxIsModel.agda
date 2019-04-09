@@ -14,9 +14,10 @@ open import monlib hiding (tr2)
 
 
 
-module SyntaxIsModel   where
+module SyntaxIsModel {k : Level}  where
 
 open import ModelRecord
+open import Syntax {i = k}
 
 module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
   open CwF MM
@@ -34,21 +35,20 @@ module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
        aux = ^∘<> ◾ ,s= idl (from-transp! _ _ refl) ◾  πη
        -}
 
-open import Syntax
 
 -- Con = ∃ Conw
 
 -- I defined it as a record rather than using Σ because otherwise
 -- inferences may fail
 -- I don't know if it helps though...
-record Con : Set  where
+record Con : Set (suc k)  where
   constructor _,_
   field
     ₁ : Conp
     ₂ : Conw ₁
 open Con public
 
-record Ty (Γ : Con) : Set  where
+record Ty (Γ : Con) : Set (suc k)  where
   constructor _,_
   field
     ₁ : Typ
@@ -60,7 +60,7 @@ Ty= : ∀ {Γ}{A B : Ty Γ}(e : ₁ A ≡ ₁ B) → A ≡ B
 Ty= {Γ} {A} {B} refl = ap (_ ,_) (prop-has-all-paths _ _)
 -- rewrite e | prop-has-all-paths Aw (₂ B) = refl
 
-record Tm (Γ : Con)(A : Ty Γ) : Set  where
+record Tm (Γ : Con)(A : Ty Γ) : Set (suc k) where
   constructor _,_
   field
     ₁ : Tmp
@@ -87,7 +87,7 @@ Tm-tr!=₁ : ∀ {Γ}{A}{t : Tm Γ A}{B : Ty Γ}{e : B ≡ A} →
   ₁ t ≡ ₁ (transport! (Tm Γ) e t)
 Tm-tr!=₁ {t = t}{e = e} = forget-tr! (Tm _) e t (λ {A} u → ₁ u)
 
-record Sub (Γ : Con)(Δ : Con) : Set  where
+record Sub (Γ : Con)(Δ : Con) : Set (suc k)  where
   constructor _,_
   field
     ₁ : Subp
@@ -266,6 +266,10 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
       ( (ap (λ s → ΠΠp (Elp ((₁ a) [ ₁ σ ]t)) (₁ B [ s ]T))
           (keep=^ {Γ = Γ}{Δ = Δ}{A =  El a})) )
 
+Π-NI : {Γ : Con} {T : Set k} →
+   (T → Ty Γ) → Ty Γ
+Π-NI {Γ} {T} B = _ , ΠNIw (₂ Γ) (λ a → (₂ (B a)))
+
 
 -- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
 ₁[<>]T : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)}{u : Tm Γ A} →
@@ -274,7 +278,7 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
 ₁[<>]T {Γ}{A}{B}{u} = ! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u)
 
 
-syntaxUnivΠ : UnivΠ syntaxCwF
+syntaxUnivΠ : UnivΠ {k = k} syntaxCwF
 syntaxUnivΠ = record
                 { U = U
                 ; U[] = refl
@@ -284,6 +288,9 @@ syntaxUnivΠ = record
                 ; Π = Π
                 -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
                 ; Π[] = λ {Γ}{Δ}{σ}{a}{B} → Π[]
+                ; ΠNI = Π-NI 
+                -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
+                ; ΠNI[] = refl
                        
                 ; _$_ = λ {Γ}{a}{B}t u  →
                    (app (₁ t) (₁ u)) ,
@@ -303,7 +310,10 @@ syntaxUnivΠ = record
                    Tm=↓ (S.[<>][]T {u = u}{B = B}{σ = σ})
                    (ap (λ x → app x _)
                    ( (Tm-tr=₁ {t = t S.[ σ ]t } {e = Π[]})))
+                ; _$NI_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appNIw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u 
+                ; $NI[] = refl
                            
+
                            
                 }
 

@@ -34,7 +34,7 @@ open import monlib hiding (tr2)
 
 
 
-module ModelCwf   where
+module ModelCwf {k : Level.Level}   where
 
 open import ModelRecord
 
@@ -95,10 +95,28 @@ module Postulats where
         → ((app$ t u) [ σ ]t) == ( app$  (t [ σ ]t)  (u [ σ ]t)) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
 
 
+  -- Non-Inductive function
+  --------------------------------------------------------------------------------
+  postulate
+    ΠNI : ∀{Γ}{T : Set k}(B : T → Ty Γ) → Ty Γ
+    ΠNI[] :
+      {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Ty Δ} →
+      ((ΠNI B) [ σ ]T) ↦ ΠNI  (λ b → (B b) [ σ ]T)
+  {-# REWRITE ΠNI[]  #-}
 
 
+  postulate
+    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+    app$NI : ∀ {Γ}{T : Set k}{B : T → Ty Γ}(t : Tm Γ (ΠNI B))(u : T) → Tm Γ (B u)
 
-  RewUnivΠ : UnivΠ  RewCwF
+    app$NI[] :
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T}
+        → ((app$NI t u) [ σ ]t) ↦ ( app$NI  (t [ σ ]t)  u)
+
+  {-# REWRITE app$NI[]  #-}
+
+
+  RewUnivΠ : UnivΠ {k = k} RewCwF
   RewUnivΠ = record
                { U = U
                ; U[] = refl
@@ -108,9 +126,11 @@ module Postulats where
                ; Π[] = refl
                ; _$_ = app$
                ; $[] = app$[]
+               ; _$NI_ = app$NI
+               ; $NI[] = refl
                }
   
-  open UnivΠ RewUnivΠ using (_$_)
+  open UnivΠ RewUnivΠ using (_$_ ; _$NI_)
   
   -- nécessaire pour le weakening (application)
   {-
@@ -160,7 +180,7 @@ module Postulats where
 -- accessibles depuis l'exterieur
 open Postulats public
 open CwF RewCwF public
-open UnivΠ RewUnivΠ using (_$_ ; $[]) public
+open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ) public
 open Telescope RewCwF public
 
 

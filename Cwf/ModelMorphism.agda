@@ -273,9 +273,9 @@ module _
  π₂ʳ {Γ}{Δ}{A}{σ} = {!!}
  -}
 
-module _ 
-    {k : Level}{l : Level}{M : CwF {k} {l}}(MM : UnivΠ M)
-    {i : Level}{j : Level}{N : CwF {i} {j}}(NN : UnivΠ N)
+module _   {ll : Level}
+    {k : Level}{l : Level}{M : CwF {k} {l}}(MM : UnivΠ {k = ll} M)
+    {i : Level}{j : Level}{N : CwF {i} {j}}(NN : UnivΠ {k = ll} N)
     (mor : CwFMor M N)
      where
   open CwFMor mor
@@ -320,7 +320,7 @@ module _
       Elʳ
 
 
-  record ΠMor (um : UnivMor) : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
+  record ΠMor (um : UnivMor) : Set (Level.suc (lmax ll (lmax (lmax i j)(lmax k l))) ) where
       -- module S = UnivΠ MM
     -- module NN = UnivΠ NN
     open UnivMor um
@@ -358,9 +358,18 @@ module _
             ]
            -- []Tʳ ◾ ap (λ s → Tyʳ B [ s ]T) (to-transp! <>ʳ) ◾ {!!} ]
 
+      ΠNIʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Ty Γ} →
+        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.ΠNI B))
+        (ΠNI {Conʳ Γ} {T = T} λ a → Tyʳ (B a))
+          -- (tr Ty (,ʳ ∙' ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ S.El {Γ} a} B)))
+      $NIʳ : ∀ {Γ}{T : Set ll}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
+            (u : T)
+            →
+          Tmʳ (t S.$NI u) ≡ tr (Tm _) ΠNIʳ (Tmʳ t) $NI u
+
         -- {!Tmʳ (t S.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
     -- $ʳ = {!!}
-  record UnivΠMor : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
+  record UnivΠMor : Set (Level.suc (lmax ll (lmax (lmax i j)(lmax k l)) )) where
     field
       univmor : UnivMor
       Πmor : ΠMor univmor

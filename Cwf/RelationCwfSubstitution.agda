@@ -6,15 +6,15 @@ open import HoTT renaming (_∙_ to _◾_ ; idp to refl ; transport to tr ; fst 
 open import monlib
 -- open import Lib2 using (_&_)
 -- import Lib2 using (_⁻¹)
-import ModelCwf as M
 open import Syntax as S
 
-module RelationCwfSubstitution  where
+module RelationCwfSubstitution {k : Level} where
 
 
 
+import ModelCwf {k = k} as M
 open import RelationCwf
-open import RelationCwfWeakening
+open import RelationCwfWeakening {k = k}
 
 
 Var[]~ : ∀ 
@@ -56,8 +56,19 @@ Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
   | prop-has-all-paths eC refl
   | eS
   =
-    tr!-over (λ Em → Tm~ (Varw[] xw σw) {Am = Em}) {p = M.wk[]T}M.wk[]t
-      (Var[]~ σm xm)
+    tr!-over (λ Em → Tm~ (Varw[] xw σw) {Am = Em})
+      {x = M._[_]T (M._[_]T (₁ Bm) (M.π₁ M.id)) (M._,s_ (₁ σm) (₁ tm))}
+      {y = M._[_]T (₁ Bm) (₁ σm)}
+      {p = M.wk[]T {σ  = ₁ σm} {t = ₁ tm} {B = ₁ Bm}}
+      (M.wk[]t {σ = ₁ σm}{t = ₁ tm}{B = ₁ Bm}{b = ₁ xm})
+      xm[]~
+    -- {! tr!-over (λ Em → Tm~ (Varw[] xw σw) {Am = Em}) {p = M.wk[]T} M.wk[]t xm[]~ !}
+    where
+      xm[]~ : Tm~ (Varw[] xw σw) (₁ xm M.[ ₁ σm ]t)
+      xm[]~ = Var[]~ σm xm
+
+    -- (λ Em → Tm~ (Varw[] xw σw) {Am = Em}) {p = M.wk[]T}M.wk[]t
+    --   (Var[]~ σm xm)
 
 Tm[]~ : ∀ 
       {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
@@ -169,6 +180,9 @@ Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp (Elp _) _)} {Πw Δw' Aw
     am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
     am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
 
+Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {_} {ΠNIw Δw'  Bw} (_ , Bm , refl) =
+ (λ a → _ , Ty[]~ Γm Δm σm (Bm a)) ,
+   refl
 
 
 Ty[]~ {Γ}{Γw}Γm {Δ}{Δw'}Δm  {σ} {σw} σm {.(Elp _)} {Elw Δw aw} (_ , am , refl) =
@@ -201,6 +215,13 @@ Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {.(app t u)}
     am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
     am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
 
+Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_}
+   {appNIw Δw'  Bw tw u}
+   (_ , Bm , tm , refl , refl)
+   =
+   (λ a → _ , Ty[]~ Γm Δm σm (Bm a)) ,
+      (_ ,  Tm[]~ Γm Δm σm {tw = tw} tm ) ,
+     refl , refl
 
 
 
@@ -238,7 +259,7 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
 
 id~ : ∀ {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) → Sub~ (idpw Γw) (M.id {₁ Γm})
 -- id~ {Γ}{Γw} Γm = {!!}
-id~ {.∙p} {∙w} (_ , HoTT.lift refl) = refl , M.εη
+id~ {.∙p} {∙w} (_ , HoTT.lift refl) = refl , HoTT.lift M.εη
 id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
   Γm ,
    (_ , wkSub~ Γm (M.id , id~ Γm) Am) ,
@@ -306,7 +327,7 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
 
 -- ∘~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ}{σw}σm {Y}{Yw}Ym {δ}{δw}δm = {!σw!}
 ∘~ {Γ} {Γw} Γm {.∙p} {Δw} Δm {.nil} {nilw} (σm , eC , es) {Y} {Yw} Ym {δ} {δw} δm =
-    eC , from-transp _ _ M.εη
+    eC , HoTT.lift (from-transp _ _ M.εη )
     -- _∙'ᵈ_ {p' = refl} {!M.εη!} M.εη
 ∘~ {Γ} {Γw} Γm {.(_ ▶p _)} {Δw'} (_ , Δ~') {.(_ :: _)} {,sw Δw {σp = σp}σw {Ap = Ap}Aw {tp = tp}tw}
   (_ , Δm' , σm , Am , tm , refl , refl)

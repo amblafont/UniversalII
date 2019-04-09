@@ -41,6 +41,9 @@ iter (S n) f x = f (iter n f x)
 funext-statment : ∀ {i j} → Set _
 funext-statment {i}{j} = {A : Set i}{B : A → Set j}{f g : (a : A) → B a}(e : (a : A) → f a ≡ g a) → f ≡ g
 
+postulate
+  funext : ∀ {i}{j}{A : Set i}{B : A → Set j}{f g : (a : A) → B a}(e : (a : A) → f a ≡ g a) → f ≡ g
+
 -- j'ai pas trouvé dans la libraire HoTT..
 -- transport sur PathOver
 tr!-over : ∀ {i j k} {A : Type i} {B : A → Type j}(C : ∀ a → B a → Type k)
@@ -85,8 +88,20 @@ instance
         to-transp!-equiv _ _ ⁻¹ )
 
   Lift-pathto-is-prop : ∀ {l j}{A : Set l} (x : A) → is-prop (Σ A (λ t → HoTT.Lift {j = j} (t ≡ x)))
-  Lift-pathto-is-prop {A = A} x = equiv-preserves-level {A = Σ A (λ t → t ≡ x) }
+  Lift-pathto-is-prop {A = A} x =
+    equiv-preserves-level {A = Σ A (λ t → t ≡ x) }
     (Σ-emap-r (λ x₁ → lift-equiv))
+
+  Lift-pathOverto-is-prop : 
+    ∀ {i j k} {A : Type i} (B : A → Type j)
+    {x y : A} (p : x ≡ y) (u : B y)  → is-prop (∃ (λ t → HoTT.Lift {j = k}(t == u [ B ↓ p ])))
+  Lift-pathOverto-is-prop B p u =
+     
+      equiv-preserves-level {A = Σ _ (λ t → t == u [ B ↓ p ]) }
+      (Σ-emap-r (λ x₁ → lift-equiv))
+      {{ pathOverto-is-prop B p u }}
+     
+      -- (Σ-emap-r (λ x₁ → lift-equiv))
   -- {{ it }}
   -- raise-level ⟨-2⟩ it
 
