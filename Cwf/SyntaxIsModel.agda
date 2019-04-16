@@ -4,8 +4,7 @@ some complementary lemmas about the syntax
 
 
 open import Level 
-open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
+open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 
 
@@ -117,7 +116,7 @@ syntaxCwF = record
               ; id = λ {Γ} → _ , idpw (₂ Γ)
               ; _∘_ = λ {Γ}{Δ}{Y}σ δ → _ , ∘w (₂ σ)(₂ Γ)(₂ δ)
               ; ε = λ {Γ} → _ , nilw
-              ; _,s_ = λ {Γ}{Δ}σ{A}t → (₁ t :: ₁ σ) , ,sw (₂ Δ) ((₂ σ)) (₂ A) (₂ t)
+              ; _,s_ = λ {Γ}{Δ}σ{A}t → (₁ t ∷ ₁ σ) , ,sw (₂ Δ) ((₂ σ)) (₂ A) (₂ t)
               ; π₁ = λ {Γ}{Δ}{A} →  λ { (_ , ,sw Δw σw Aw tw) → _ , σw }
               ; _[_]t = λ {Γ}{Δ}{A}t σ → _ , Tmw[](₂ t)(₂ Γ)(₂ σ)
               ; π₂ = λ {Γ}{Δ}{A} →  λ { (_ , ,sw Δw σw Aw tw) → _ , tw }
@@ -158,7 +157,7 @@ private
     open CwF syntaxCwF public
 
 <>=<> : ∀ {Γ}{A}(t : Tm Γ A) →  < ∣ ₁ Γ ∣  ⊢ ₁ t > ≡ ₁ S.< t >
-<>=<> {Γ}{A}t = ap (_:: _) (Tm-tr!=₁ {t = t})
+<>=<> {Γ}{A}t = ap (_∷ _) (Tm-tr!=₁ {t = t})
 
 wk=wk : ∀{Γ}{A : Ty Γ} → wk ∣ ₁ Γ ∣ ≡ ₁ (S.wk {A = A})
 wk=wk = refl
@@ -170,7 +169,7 @@ keep=^ {Γ}{Δ}{σ}{A}  =
        B = Tm ((₁ Γ ▶p (₁ A [ ₁ σ ]T)) , ▶w (₂ Γ) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
        v = tr B p S.vz
   in
-  ap2 _::_
+  ap2 _∷_
     (Tm-tr=₁ {t = S.vz {Γ = Γ}{A = A S.[ σ ]T}}{e = p})
         -- (↓-cst-out {p = p} ( ap↓ {B = B} Tm.₁ {p = p}{u = S.vz {Γ = Γ}{A = A S.[ σ ]T}} {v = v}
         --   (from-transp _ _ refl) ))
@@ -203,7 +202,7 @@ private
               =⟨ ap2 (λ s1 s2 → (₁ B [ s1 ]T) [ s2 ]T)
               (ap keep (wkS=∘wk (idpw (₂ Γ))(₂ A)) ◾
                   keep=^ {σ = S.id {Γ = Γ} S.∘ S.wk {A = A} }{A})
-              (<>=<> ( S.vz {Γ = Γ}{A = A} ) ◾ ap (λ x → x :: _)
+              (<>=<> ( S.vz {Γ = Γ}{A = A} ) ◾ ap (λ x → x ∷ _)
                   (! ( Tm-tr!=₁ {t = (S.vz {A = A})}{e = S.[id]T}) ◾
                     forget-tr! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {A = A}) (λ t → ₁ t) ◾
                     forget-tr! (Tm _) S.[id]T ( transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) )
@@ -273,7 +272,7 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
 
 -- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
 ₁[<>]T : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)}{u : Tm Γ A} →
-  subT (₁ u) (₁ B) == ₁ (B S.[ S.< u > ]T)
+  subT (₁ u) (₁ B) ≡ ₁ (B S.[ S.< u > ]T)
 
 ₁[<>]T {Γ}{A}{B}{u} = ! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u)
 

@@ -41,11 +41,6 @@ iter : ∀{l }{A : Set l}  (n : ℕ)(f : A → A) → A → A
 iter 0 f  x = x
 iter (S n) f x = f (iter n f x)
 
-funext-statment : ∀ {i j} → Set _
-funext-statment {i}{j} = {A : Set i}{B : A → Set j}{f g : (a : A) → B a}(e : (a : A) → f a ≡ g a) → f ≡ g
-
-postulate
-  funext : ∀ {i}{j}{A : Set i}{B : A → Set j}{f g : (a : A) → B a}(e : (a : A) → f a ≡ g a) → f ≡ g
 
 -- j'ai pas trouvé dans la libraire HoTT..
 -- transport sur PathOver
@@ -188,8 +183,6 @@ tr-swap :  ∀ {i j k} {A : Type i} {B : A → Type j}{C : A → Type k} (f : �
 tr-swap f refl b = refl
 
 
-uip : ∀ {i} {A : Type i} {x y : A} (p q : x ≡ y) → p ≡ q
-uip refl refl = refl
 
 instance
   uip-prop : ∀ {i} {A : Type i} {x y : A} → is-prop (x ≡ y)

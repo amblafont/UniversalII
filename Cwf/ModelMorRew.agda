@@ -5,11 +5,11 @@ Postulate a model morphism with rewrite rules, show that it is related to the sy
 {-# OPTIONS  --rewriting  #-}
 
 open import Level 
-open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
+open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 
 
+open import Data.Nat renaming (suc to S)
 
 open import monlib hiding (tr2)
 
@@ -279,7 +279,7 @@ module _   where
       (_ , morTm~ Γw (Uw _ Γw) aw  ) ,
       refl  
 
-    morCon~ {.∙p} ∙w = HoTT.lift m.∙ʳ
+    morCon~ {.∙p} ∙w = Level.lift m.∙ʳ
     morCon~ {.(_ ▶p _)} (▶w Γw Aw) =
       (_ , morCon~ Γw) ,
       (_ , morTy~ Γw Aw) ,
@@ -379,7 +379,7 @@ module _   where
           Γ = (Γp , Γw)
           A = (Ap , Aw)
           eT : Tyʳ {Γ = ((Γp ▶p Ap) , ▶w Γw Aw)}
-            (liftT 0 Ap , wAw) == (m.Tyʳ {Γ = (_ , Γw)}A M.[ M.π₁ M.id ]T)
+            (liftT 0 Ap , wAw) ≡ (m.Tyʳ {Γ = (_ , Γw)}A M.[ M.π₁ M.id ]T)
           eT = ap m.Tyʳ (Ty= (wk=[wk]T Aw)) ◾ m.[]Tʳ {A = A }{σ = S.wk} ◾ ap (λ s → M._[_]T (m.Tyʳ A) s) wkʳ
           -- eT = ap m.Tyʳ (Ty= {!!}) ◾ ?
 
@@ -415,7 +415,7 @@ module _   where
       A = (Ap , Aw)
       B = (Bp , Bw)
       eT : Tyʳ {Γ = ((Γp ▶p Ap) , ▶w Γw Aw)}
-         (liftT 0 Bp , Cw) == (m.Tyʳ {Γ = (_ , Γw)}(Bp , Bw) M.[ M.π₁ M.id ]T)
+         (liftT 0 Bp , Cw) ≡ (m.Tyʳ {Γ = (_ , Γw)}(Bp , Bw) M.[ M.π₁ M.id ]T)
       eT = ap m.Tyʳ (Ty= (wk=[wk]T Bw)) ◾ m.[]Tʳ {A = B }{σ = S.wk} ◾ ap (λ s → M._[_]T (m.Tyʳ B) s) wkʳ
       x = (V xp , vw xw)
       sx = (V (S xp) , vw (VSw Γp Γw Ap Aw Bp Bw xp xw))
@@ -437,10 +437,10 @@ module _   where
     morSub~ : ∀ {Γ}Γw{Δ}(Δw : Conw Δ){σ}(σw : Subw Γ Δ σ) → Sub~ σw (m.Subʳ {Γ = (Γ , Γw)}{(Δ , Δw)} (σ , σw))
     -- morSub~ {Γ}Γw{Δ}Δw {σ}σw = ?
     morSub~ {Γ} Γw {.∙p} ∙w {.nil} nilw = m.∙ʳ ,
-       HoTT.lift (from-transp _ _ M.εη)
+       Level.lift (from-transp _ _ M.εη)
     
     -- {!m.∙ʳ!} , {!!}
-    morSub~ {Γp} Γw {.(_ ▶p _)} ΔAw {.(_ :: _)} (,sw Δw σw Aw tw)
+    morSub~ {Γp} Γw {.(_ ▶p _)} ΔAw  (,sw Δw σw Aw tw)
      rewrite prop-has-all-paths ΔAw (▶w Δw Aw)
       =
 

@@ -54,7 +54,7 @@ Interaction between weakening/telescope substitutions:
 Interaction with full substitution between these and full substitutions:
 
   wk=wkS :  (A [ (wkS σ) ] ) ≡ wk (A [ σ ])
-  wk[,] : ((wk A ) [ t :: σ ]) ≡ (A [ σ ])
+  wk[,] : ((wk A ) [ t ∷ σ ]) ≡ (A [ σ ])
   sub[] : (sub z A [ σ ])   ≡ sub (z [ σ ]t) (A [ keep σ ])
 
 
@@ -70,9 +70,10 @@ Complements lemmas and definitions:
 -}
 
 open import Level 
-open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
-  hiding (_∘_)
+-- open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂) hiding (_∘_)
+open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂ ; λ= to funext) hiding (_∘_)
 open import monlib
+open import Data.Nat renaming (suc to S)
  
 module Syntax  {i : _} where
 
@@ -121,8 +122,8 @@ data Conp where
 -- first integer : we don't touch variables below
 liftV : ℕ → ℕ → ℕ
 -- x if x < n and S x otherwise
-liftV O x = S x
-liftV (S n) O = 0
+liftV 0 x = S x
+liftV (S n) 0 = 0
 liftV (S n) (S x) = S (liftV n x)
 
 
@@ -166,9 +167,9 @@ l-subV : (p : ℕ)(l : Tmp) (x : ℕ) → Tmp
 
 
 -- don't touch if it is below p
-l-subV O l O = l
-l-subV O l (S x) = V x
-l-subV (S p) l O = V 0
+l-subV 0 l 0 = l
+l-subV 0 l (S x) = V x
+l-subV (S p) l 0 = V 0
 -- Γ , C , p+1 ⊢ x+1   (and Γ ⊢ t : C)
 -- donc Γ , C , p ⊢  x   (and Γ ⊢ t : C)
 -- donc Γ , p ⊢ l-sub p t x
@@ -215,10 +216,10 @@ Lemmas about commutations of lift
 -- auxiliary lemmas to proof lift-lift*
 n-lift-liftV : ∀ n p q → liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
 
-n-lift-liftV O p O = refl
-n-lift-liftV (S n) O O = refl
-n-lift-liftV (S n) (S p) O = refl
-n-lift-liftV O p (S x) = refl
+n-lift-liftV 0 p 0 = refl
+n-lift-liftV (S n) 0 0 = refl
+n-lift-liftV (S n) (S p) 0 = refl
+n-lift-liftV 0 p (S x) = refl
 n-lift-liftV (S n) p (S x) rewrite n-lift-liftV n p x = refl
 
 n-lift-liftt : ∀ n p q → liftt (S (n + p)) (liftt n q) ≡ liftt n (liftt (n + p) q)
@@ -253,9 +254,9 @@ lift-liftt = n-lift-liftt 0
 -- auxiliary lemmas to prove subT-wkT
 n-subV-wkV : ∀ n x z → l-subV n z (liftV n x) ≡ V x 
 
-n-subV-wkV O O z = refl
-n-subV-wkV (S n) O z = refl
-n-subV-wkV O (S x) z = refl
+n-subV-wkV 0 0 z = refl
+n-subV-wkV (S n) 0 z = refl
+n-subV-wkV 0 (S x) z = refl
 n-subV-wkV (S n) (S x) z rewrite n-subV-wkV n x z = refl
 
 n-subt-wkt : ∀ n t z → l-subt n z (liftt n t) ≡ t 
@@ -282,10 +283,10 @@ subt-wkt = n-subt-wkt 0
 -- auxiliary lemmas to prove lift-subT
 lift-l-subV : ∀ n p u x → liftt (n + p) (l-subV n u x) ≡ l-subV n (liftt p u)(liftV (S (n + p)) x)
 
-lift-l-subV O p u (S x) = refl
+lift-l-subV 0 p u (S x) = refl
 lift-l-subV (S n) p u (S x) rewrite lift-liftt (n + p) (l-subV n u x) | lift-l-subV n p u x = refl
-lift-l-subV O p u O = refl
-lift-l-subV (S n) p u O = refl
+lift-l-subV 0 p u 0 = refl
+lift-l-subV (S n) p u 0 = refl
 
 -- note : l-subT-wkT and lift-subT are particular cases of a more general one
 -- note lift-subT and l-subT-liftT are not the same case because subT is l-subT 0
@@ -318,9 +319,9 @@ lift-subT = lift-l-subT 0
 -- auxiliary lemmas to prove l-subT-wkT / l-subt-wkt
 l-subV-liftV : ∀ Δ u n x → l-subV (S (n + Δ)) u (liftV n x) ≡ liftt n (l-subV (n + Δ) u x)
 
-l-subV-liftV Δ u O O = refl
-l-subV-liftV Δ u (S n) O = refl
-l-subV-liftV Δ u O (S x) = refl
+l-subV-liftV Δ u 0 0 = refl
+l-subV-liftV Δ u (S n) 0 = refl
+l-subV-liftV Δ u 0 (S x) = refl
 l-subV-liftV Δ u (S n) (S x) rewrite l-subV-liftV Δ u n x = ! (lift-liftt n (l-subV (n + Δ) u x))
 
 l-subt-liftt : ∀ Δ u n t → l-subt (S (n + Δ)) u (liftt n t) ≡ liftt n (l-subt (n + Δ) u t)
@@ -356,9 +357,9 @@ l-subt-wkt Δ u = l-subt-liftt Δ u 0
 
 l-subV-l-subV : ∀ n p z u x → l-subt (n + p) z (l-subV n u x) ≡ l-subt n (l-subt p z u)(l-subV (S (n + p)) z x)
 
-l-subV-l-subV O p z u O = refl
-l-subV-l-subV (S n) p z u O = refl
-l-subV-l-subV O p z u (S x) rewrite n-subt-wkt 0 (l-subV p z x) (l-subt p z u) = refl
+l-subV-l-subV 0 p z u 0 = refl
+l-subV-l-subV (S n) p z u 0 = refl
+l-subV-l-subV 0 p z u (S x) rewrite n-subt-wkt 0 (l-subV p z x) (l-subt p z u) = refl
 l-subV-l-subV (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (l-subV n u x)
   | l-subt-wkt n (l-subt p z u) (l-subV (S (n + p)) z x)
   | l-subV-l-subV n p z u x
@@ -403,7 +404,7 @@ wkS = map wkt
 -- Γ ⊢ σ : Δ
 -- Γ , A[σ] ⊢ keep σ : Δ,A
 keep : Subp → Subp
-keep σ = (V 0) :: (wkS σ)
+keep σ = (V 0) ∷ (wkS σ)
 
 _[_]V : ℕ → Subp → Tmp
 n [ s ]V = olookup s n err
@@ -437,8 +438,8 @@ liftV=wkS : ∀ n σp xp → (xp [ iter n keep (wkS σp) ]V ) ≡  (liftt n (xp 
 
 -- wkV=wkS n σp xp = ?
 
-liftV=wkS O l xp = olookup-map (liftt 0) xp err l
--- wkV=wkS O (x :: σp) (S xp) = {!olookup-map (liftt 0) xp err σp!}
+liftV=wkS 0 l xp = olookup-map (liftt 0) xp err l
+-- wkV=wkS 0 (x ∷ σp) (S xp) = {!olookup-map (liftt 0) xp err σp!}
 
 -- x[(wkS (keep^n nil))] = liftt (S n) (x[(wkS (keep^n nil)))])
 -- or on sait que l.h.s = liftt 0 (x[keep^n nil])
@@ -449,19 +450,19 @@ liftV=wkS O l xp = olookup-map (liftt 0) xp err l
 Γ, Δ[] ⊢ keep^n+1 nil : Δ_n+1
 Δ
 
-olookup (map (liftt 0) (iter n (λ σ → V 0 :: map (liftt 0) σ) nil)) xp err
+olookup (map (liftt 0) (iter n (λ σ → V 0 ∷ map (liftt 0) σ) nil)) xp err
 
 liftt (S n)
-(olookup (map (liftt 0) (iter n (λ σ → V 0 :: map (liftt 0) σ) nil)) xp err)
+(olookup (map (liftt 0) (iter n (λ σ → V 0 ∷ map (liftt 0) σ) nil)) xp err)
 
   il faut faire commuter olookup et liftt
   et alors le r.h.s devient:
 
-(olookup (map (liftt (S n) . liftt 0) (iter n (λ σ → V 0 :: map (liftt 0) σ) nil)) xp err)
+(olookup (map (liftt (S n) . liftt 0) (iter n (λ σ → V 0 ∷ map (liftt 0) σ) nil)) xp err)
 
 et par lift-liftt, c'est
 
-(olookup (map (liftt 0 . liftt n) (iter n (λ σ → V 0 :: map (liftt 0) σ) nil)) xp err)
+(olookup (map (liftt 0 . liftt n) (iter n (λ σ → V 0 ∷ map (liftt 0) σ) nil)) xp err)
 
 -}
 liftV=wkS (S n) l (S xp)
@@ -469,10 +470,10 @@ liftV=wkS (S n) l (S xp)
   | olookup-map (liftt 0) xp err (iter n keep (wkS l))
   =
   ap (liftt 0) (liftV=wkS n l xp) ◾ ! (lift-liftt n _)
-liftV=wkS (S n) σp O = refl
+liftV=wkS (S n) σp 0 = refl
 -- wkV=wkS n l 0 = {!j!}
 
--- wkV=wkS n (x :: σp) (S xp) = {!!}
+-- wkV=wkS n (x ∷ σp) (S xp) = {!!}
 
 
 liftt=wkS : ∀ n σp tp → (tp [ iter n keep (wkS σp) ]t ) ≡ liftt n (tp [ iter n keep σp ]t)
@@ -505,21 +506,21 @@ wkV=wkS = liftV=wkS 0
 
 
 -- cas général de wk[,]T
-liftₛV : ∀ n xp σp tp → (liftV n xp [ iter n keep (tp :: σp) ]V) ≡ (xp [ iter n keep σp ]V)
+liftₛV : ∀ n xp σp tp → (liftV n xp [ iter n keep (tp ∷ σp) ]V) ≡ (xp [ iter n keep σp ]V)
 
-liftₛV O x σ z = refl
-liftₛV (S n) O σ z = refl
-liftₛV (S n) (S x) σ z rewrite olookup-map (liftt 0) (liftV n x) err (iter n keep (z :: σ))
+liftₛV 0 x σ z = refl
+liftₛV (S n) 0 σ z = refl
+liftₛV (S n) (S x) σ z rewrite olookup-map (liftt 0) (liftV n x) err (iter n keep (z ∷ σ))
   | liftₛV n x σ z = ! (olookup-map (liftt 0) x err (iter n keep ( σ)))
 
-liftₛt : ∀ n up σp tp → (liftt n up [ iter n keep (tp :: σp) ]t) ≡ (up [ iter n keep σp ]t)
+liftₛt : ∀ n up σp tp → (liftt n up [ iter n keep (tp ∷ σp) ]t) ≡ (up [ iter n keep σp ]t)
 
 liftₛt n (V x) σp tp = liftₛV  n x σp tp
 liftₛt n (app tp up) σp zp rewrite liftₛt n tp σp zp | liftₛt n up σp zp = refl
 liftₛt n (appNI tp up) σp zp rewrite liftₛt n tp σp zp = refl
 liftₛt n err σp zp = refl
 
-liftₛT : ∀ n Ap σp tp → (liftT n Ap [ iter n keep (tp :: σp) ]T) ≡ (Ap [ iter n keep σp ]T)
+liftₛT : ∀ n Ap σp tp → (liftT n Ap [ iter n keep (tp ∷ σp) ]T) ≡ (Ap [ iter n keep σp ]T)
 
 liftₛT n Up σp' tp = refl
 liftₛT n (Elp x) σp' tp rewrite liftₛt n x σp' tp  = refl
@@ -529,14 +530,14 @@ liftₛT n (ΠNI Bp) σp' tp
   = ap ΠNI  (funext (λ a → liftₛT n (Bp a) σp' tp ))
 
 -- cas particuler: needed to prove that substittion on variables presreve typing : Varw[]
-wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp :: σp ]T) ≡ (Ap [ σp ]T)
+wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp ∷ σp ]T) ≡ (Ap [ σp ]T)
 -- wk[,]T Ap tp σp  = {!Ap!}
 wk[,]T Ap tp σp = liftₛT 0 Ap σp tp
 
-wk[,]t : ∀ zp tp σp  → (wkt zp [ tp :: σp ]t) ≡ (zp [ σp ]t)
+wk[,]t : ∀ zp tp σp  → (wkt zp [ tp ∷ σp ]t) ≡ (zp [ σp ]t)
 wk[,]t zp tp σp = liftₛt 0 zp σp tp
 
-wk[,]V : ∀ xp tp σp  → (S xp [ tp :: σp ]V) ≡ (xp [ σp ]V)
+wk[,]V : ∀ xp tp σp  → (S xp [ tp ∷ σp ]V) ≡ (xp [ σp ]V)
 wk[,]V xp tp σp = liftₛV 0 xp σp tp
 
 -- cas général de sub[]T
@@ -561,13 +562,13 @@ l-sub[]V : ∀ n x z σ
   -- (r : n < length σ)
   →
   (l-subV n z x [ iter n keep σ ]t) ≡ l-subt n (z [ σ ]t) (x [ iter (S n) keep σ ]V)
-l-sub[]V O O z σ = refl
--- l-sub[]V O (S x) z nil  = refl
-l-sub[]V O (S x) z σ rewrite olookup-map (liftt 0) x err σ
+l-sub[]V 0 0 z σ = refl
+-- l-sub[]V 0 (S x) z nil  = refl
+l-sub[]V 0 (S x) z σ rewrite olookup-map (liftt 0) x err σ
   = ! (subt-wkt (x [ σ ]V) (z [ σ ]t))
 
   -- (subt-wkt (x [ σ ]V) (z [ σ ]t))
-l-sub[]V (S n) O z σ = refl
+l-sub[]V (S n) 0 z σ = refl
 -- l-sub[]V (S n) (S x) z σ = wk[,]t (l-subV n z x) (V 0) (wkS (iter n keep σ))
 -- wk[,]t (l-subV n z x) (V 0) (wkS (iter n keep σ))
 -- ◾ {!l-sub[]V n x z σ!}
@@ -667,7 +668,7 @@ data Subw (Γ : Conp) : Conp → Subp → Set (lsucc i) where
     (Δw : Conw Δp)
     {σp}(σw : Subw Γ Δp σp){Ap}(Aw : Tyw Δp Ap){tp}
      (tw : Tmw Γ (Ap [ σp ]T) tp) →
-     Subw Γ (Δp ▶p Ap) (tp :: σp)
+     Subw Γ (Δp ▶p Ap) (tp ∷ σp)
 
 
 
@@ -709,7 +710,7 @@ liftTw Aw Δp (Elw Γw {ap = ap} aw) = Elw (wkTelw Aw Δp Γw) (lifttw Aw Δp aw
 
 lifttw Aw Δp (vw xw) = vw (liftVw Aw Δp xw)
 lifttw Aw Δp (appw .(_ ^^ Δp) Γw ap aw Bp Bw t tw u uw) =
-   HoTT.transport (λ x → Tmw _ x _) (! (lift-subT ∣ Δp ∣ u Bp ))
+   tr (λ x → Tmw _ x _) (! (lift-subT ∣ Δp ∣ u Bp ))
    (appw _ (wkTelw Aw Δp Γw) _ (lifttw Aw Δp aw) _ (liftTw Aw (Δp ▶p Elp ap) Bw)
    (liftt ∣ Δp ∣ t) (lifttw Aw Δp tw) (liftt ∣ Δp ∣ u) (lifttw Aw Δp uw)
    )
@@ -724,10 +725,10 @@ liftVw Aw ∙p (VSw Γp Γw Ap Aw' Bp Bw xp xw) =
   VSw _ (▶w Γw Aw') _ Aw _ (liftTw Aw' ∙p Bw) _ (VSw Γp Γw Ap Aw' Bp Bw xp xw)
 
 liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (V0w .(_ ^^ Δp) Γw .Bp Aw) =
-  HoTT.transport (λ x → Varw (((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp) x 0) (! (lift-liftT ∣ Δp ∣ Bp))
+  tr (λ x → Varw (((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp) x 0) (! (lift-liftT ∣ Δp ∣ Bp))
      (V0w ((Γp ▶p T) ^^ wkTel Δp) (wkTelw Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Aw))
 liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (VSw .(_ ^^ Δp) Γw .Bp Bw Ap Aw xp xw) =
-  HoTT.transport (λ x → Varw _ x _)  (! (lift-liftT ∣ Δp ∣ Ap))
+  tr (λ x → Varw _ x _)  (! (lift-liftT ∣ Δp ∣ Ap))
    (VSw ((Γp ▶p T) ^^ wkTel Δp) (wkTelw Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Bw)
    _ (liftTw Tw Δp Aw) _ (liftVw Tw Δp xw))
    
@@ -810,10 +811,10 @@ Varw[] : ∀ {Γp}{xp}{Ap}(xw : Varw Γp Ap xp)
   Tmw Δp (Ap [ σp ]T) (xp [ σp ]V )
 -- Varw[] {Γp}{xp}{Ap} xw {Δp}{σp}σw = {!!}
 Varw[] {.∙p} {xp} {Ap} () {Δp} {.nil} nilw
-Varw[] {.(Γp ▶p Ap)} {.0} {.(liftT 0 Ap)} (V0w Γp Γw Ap Aw₁) {Δp} {(tp :: σp)} (,sw Δw σw Aw tw)
+Varw[] {.(Γp ▶p Ap)} {.0} {.(liftT 0 Ap)} (V0w Γp Γw Ap Aw₁) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
   -- rewrite wk[,]T Ap tp σp
   =  transport! (λ A → Tmw _ A _) (wk[,]T Ap tp σp) tw 
-Varw[] {.(Γp ▶p Ap)} {.(S xp)} {.(liftT 0 Bp)} (VSw Γp Γw Ap Aw₁ Bp Bw xp xw) {Δp} {(tp :: σp)} (,sw Δw σw Aw tw)
+Varw[] {.(Γp ▶p Ap)} {.(S xp)} {.(liftT 0 Bp)} (VSw Γp Γw Ap Aw₁ Bp Bw xp xw) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
   rewrite wk[,]T Bp tp σp
   =  Varw[] xw σw 
 
@@ -976,7 +977,7 @@ instance
 Subw= : (Γp : Conp)(Δp : Conp)(s : Subp)  → has-all-paths (Subw Γp Δp s)
 -- Subw= Γ Δ s sw1 sw2 = {!!}
 Subw= Γ .∙p .nil nilw nilw = refl
-Subw= Γ .(_ ▶p _) .(_ :: _) (,sw Δw sw Aw tw) (,sw Δw' sw' Aw' tw') =
+Subw= Γ .(_ ▶p _) .(_ ∷ _) (,sw Δw sw Aw tw) (,sw Δw' sw' Aw' tw') =
   ap4 (λ a b c → ,sw a b c)
   (prop-has-all-paths _ _)
   (Subw= Γ _ _ sw sw')
@@ -1082,23 +1083,23 @@ idpw {(Γ ▶p A)} (▶w Γw Aw) = ,sw Γw (wkSw (idpw Γw) Aw) Aw
 
 -- idr : ∀ {Γ Δ : Conp}{σ}(σw : Subw Γ Δ σ) → (σ ∘p idp ∣ Γ ∣) ≡ σ
 -- idr nilw = refl
--- idr (,sw σw Aw tw) = ap2 _::_ ([idp]t tw) (idr σw)
+-- idr (,sw σw Aw tw) = ap2 _∷_ ([idp]t tw) (idr σw)
 
-wk∘, : ∀ σ t δ → ((wkS σ) ∘p (t :: δ)) ≡ (σ ∘p δ)
-wk∘, σ t δ rewrite map-∘ (_[ t :: δ ]t) wkt σ =
+wk∘, : ∀ σ t δ → ((wkS σ) ∘p (t ∷ δ)) ≡ (σ ∘p δ)
+wk∘, σ t δ rewrite map-∘ (_[ t ∷ δ ]t) wkt σ =
   pw-map= (λ x → wk[,]t x t δ ) σ
   -- pw-map= (λ x → {!wkt=wkS!}) σ
 
 idl : ∀ {Γ Δ : Conp}{σ}(σw : Subw Γ Δ σ) → (idp ∣ Δ ∣ ∘p σ) ≡ σ
 -- idl {Γ}{Δ}{σ}σw = {!!}
 idl nilw = refl
-idl {Δ = (Δ ▶p A)}{σ = tp :: σp}(,sw Δw σw Aw tw) =
-  ap (_ ::_) (wk∘, (idp ∣ Δ ∣ ) tp σp ◾ idl σw)
+idl {Δ = (Δ ▶p A)}{σ = tp ∷ σp}(,sw Δw σw Aw tw) =
+  ap (_ ∷_) (wk∘, (idp ∣ Δ ∣ ) tp σp ◾ idl σw)
 
 idr : ∀ {Γ : Conp}{Δ}{σ}(σw : Subw Γ Δ σ) → (σ ∘p idp ∣ Γ ∣ ) ≡ σ
 -- idr {Γ}Γw{Δ}{σ}σw = ?
 idr {Γ} {.∙p} {.nil} nilw = refl
-idr {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw σw Aw tw) = ap2 _::_ ([idp]t tw) (idr σw)
+idr {Γ} {.(_ ▶p _)} {.(_ ∷ _)} (,sw Δw σw Aw tw) = ap2 _∷_ ([idp]t tw) (idr σw)
 -- idr {.∙p} ∙w {Δ} {σ} σw = {!!}
 -- idr {.(_ ▶p _)} (▶w Γw Aw) {Δ} {σ} σw = {!!}
 
@@ -1112,7 +1113,7 @@ ass {σ}{δ}{ν} =
   
 -- needed for the app case ModelCwfInhabit: subT z T = T [ <z> ]T
 <_⊢_> : ∀ n t → Subp
-< Γ ⊢ t > = t :: (idp Γ) 
+< Γ ⊢ t > = t ∷ (idp Γ) 
 
 <>w : ∀{Γ}(Γw : Conw Γ){A}(Aw : Tyw Γ A){t} → Tmw Γ A t → Subw Γ (Γ ▶p A) < ∣ Γ ∣ ⊢ t >
 <>w {Γ}Γw{A}Aw{t}tw = ,sw Γw (idpw Γw) Aw (transport! (λ A₁ → Tmw Γ A₁ t) ([idp]T Aw) tw)
@@ -1181,13 +1182,13 @@ wk=[wk]t {Γ}{A}{t}tw = ! (wkt=wkS (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw))
 
 -- la substitution sur les types requiert dans le cas du Π de pouvoir affaiblir les substitutions
 -- le lemme de substitution sur les variables requiert
--- - wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp :: σp ]T) ≡ (Ap [ σp ]T)
+-- - wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp ∷ σp ]T) ≡ (Ap [ σp ]T)
 --    Note: dans metacoq, ou chez Théo, la substitution sur les types (par exemple) est définie
 --            comme un fold_left de subT.
 --            du coup le lemme précédent devient un corrolaire de subT (wkT Ap) = Ap.
 --            Mais je préfère une version qui calcule sur les constructeurs de type
 -- lequel requiert:
--- - liftₛT : ∀ Ap σp tp σp'  → (liftT (length σp) Ap [ σp ++ (tp :: σp') ]T) ≡ (Ap [ σp ++ σp' ]T)
+-- - liftₛT : ∀ Ap σp tp σp'  → (liftT (length σp) Ap [ σp ++ (tp ∷ σp') ]T) ≡ (Ap [ σp ++ σp' ]T)
 
 
 -- au lieu d'avoir la syntaxe well scoped (c'est à dire indexée par un entier qui indique la taille maximale
@@ -1207,11 +1208,11 @@ wk=[wk]t {Γ}{A}{t}tw = ! (wkt=wkS (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw))
 -- the seond argument is the length of Δ
 liftₛ : ℕ → ℕ → Subp
 liftₛ 0 p = nil
-liftₛ (S n) p = V p :: (liftₛ n (S p))
+liftₛ (S n) p = V p ∷ (liftₛ n (S p))
 
 -- liftₛ' : ℕ → ℕ → Subp → Subp
 -- liftₛ' 0 p = nil
--- liftₛ' (S n) p = V p :: (liftₛ n (S p))
+-- liftₛ' (S n) p = V p ∷ (liftₛ n (S p))
 
 -- length of the context
 wkₛ : ℕ → Subp
@@ -1220,7 +1221,7 @@ wkₛ n = liftₛ n 0
 
 -- -- the substitution from Γ , Δ to Γ , A , Δ
 -- liftₛ : ℕ → ℕ → Subp
--- liftₛ Γ O = wkₛ Γ
--- liftₛ Γ (S Δ) = V 0 :: liftₛ Γ Δ
+-- liftₛ Γ 0 = wkₛ Γ
+-- liftₛ Γ (S Δ) = V 0 ∷ liftₛ Γ Δ
 
 -- -}
