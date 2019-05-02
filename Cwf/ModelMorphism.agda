@@ -2,8 +2,7 @@
 
 
 open import Level 
-open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
+open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 
 
@@ -296,7 +295,7 @@ module _   {ll : Level}
     [<>^El]Tʳ :
        ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}
             (u : S.Tm Γ (S.El a)) →
-      Tyʳ (B S.[ S.< u > ]T) ==
+      Tyʳ (B S.[ S.< u > ]T) ≡
       (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
        < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
 

@@ -5,8 +5,9 @@ some complementary lemmas about the syntax
 {-# OPTIONS  --rewriting  #-}
 
 open import Level 
-open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
+-- open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
+--   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 
 

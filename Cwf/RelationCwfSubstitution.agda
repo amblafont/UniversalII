@@ -2,7 +2,7 @@
 
 -- proof #~el
 open import Level 
-open import HoTT renaming (_∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Hott renaming (_∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
 -- open import Lib2 using (_&_)
 -- import Lib2 using (_⁻¹)
@@ -163,7 +163,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   -- TODO factoriser avec app
    -- σar = keep~ Γm Δm σm (M.El (₁ am) , am , refl)
 
-Ty[]~ {Γ}{Γw}Γm {_}{Δw'}Δm  {σ} {σw} σm {.Up} {Uw Δ Δw} (_ , HoTT.lift refl) = HoTT.lift refl
+Ty[]~ {Γ}{Γw}Γm {_}{Δw'}Δm  {σ} {σw} σm {.Up} {Uw Δ Δw} (_ , Level.lift refl) = Level.lift refl
 
 Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp (Elp _) _)} {Πw Δw' Aw Bw} (_ , am , Bm , refl) =
    -- this was factorized by Π-B[]~
@@ -259,7 +259,7 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
 
 id~ : ∀ {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) → Sub~ (idpw Γw) (M.id {₁ Γm})
 -- id~ {Γ}{Γw} Γm = {!!}
-id~ {.∙p} {∙w} (_ , HoTT.lift refl) = refl , HoTT.lift M.εη
+id~ {.∙p} {∙w} (_ , Level.lift refl) = refl , Level.lift M.εη
 id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
   Γm ,
    (_ , wkSub~ Γm (M.id , id~ Γm) Am) ,
@@ -316,7 +316,7 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
         (₂ tm)
 
 
--- not needed for the inhbaitation
+-- not needed for the inhabitation
 ∘~ : ∀{Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
       {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw))
       {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
@@ -327,9 +327,9 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
 
 -- ∘~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ}{σw}σm {Y}{Yw}Ym {δ}{δw}δm = {!σw!}
 ∘~ {Γ} {Γw} Γm {.∙p} {Δw} Δm {.nil} {nilw} (σm , eC , es) {Y} {Yw} Ym {δ} {δw} δm =
-    eC , HoTT.lift (from-transp _ _ M.εη )
+    eC , Level.lift (from-transp _ _ M.εη )
     -- _∙'ᵈ_ {p' = refl} {!M.εη!} M.εη
-∘~ {Γ} {Γw} Γm {.(_ ▶p _)} {Δw'} (_ , Δ~') {.(_ :: _)} {,sw Δw {σp = σp}σw {Ap = Ap}Aw {tp = tp}tw}
+∘~ {Γ} {Γw} Γm {.(_ ▶p _)} {Δw'} (_ , Δ~') {_} {,sw Δw {σp = σp}σw {Ap = Ap}Aw {tp = tp}tw}
   (_ , Δm' , σm , Am , tm , refl , refl)
   {Y} {Yw} Ym {δ} {δw} δm =
   Δm' ,

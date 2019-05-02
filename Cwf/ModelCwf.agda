@@ -22,9 +22,9 @@ indeed B is in an extended context)
 
 
 open import Level 
-open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
-  hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+open import Hott
+   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+-- open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
 
 
 -- open import HoTT using (ap)

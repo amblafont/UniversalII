@@ -4,7 +4,8 @@
 
 -- open import HoTT.Base
 open import Level
-open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
+open import Data.Nat renaming (suc to S)
 open import monlib
 module RelationCwf {k : Level.Level}  where
 
@@ -33,7 +34,7 @@ module RelationCwf {k : Level.Level}  where
 -- Con~ {Γ}Γw Γm = {!!}
 -- Sub~ {Γ}{Δ}{σ}σw {Γm}{Δm}σm = {!!}
   Con~ {.∙p} ∙w Γm =
-    HoTT.Lift { j = lmax M.j k} (Γm ≡ M.∙)
+    Lift { ℓ = lmax M.j k} (Γm ≡ M.∙)
     -- HoTT.Lift { j = M.j} (Γm ≡ M.∙)
   Con~ {.(_ ▶p _)} (▶w Γw Aw) Δm =
     Σ (∃ (Con~ Γw)) λ Γm →
@@ -41,7 +42,7 @@ module RelationCwf {k : Level.Level}  where
     Δm ≡ (₁ Γm M.▶ ₁ Am )
 
 -- Ty~ {Γ}{E} Ew {Cm} Em = {!Ew!}
-  Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = HoTT.Lift {j = lmax M.j k} (Em ≡ M.U )
+  Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = Lift {ℓ = lmax M.j k} (Em ≡ M.U )
   Ty~ {Γ} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) {Cm} Em =
     Σ (∃ (Tm~ Aw {Cm} {M.U})) λ am →
     Σ (∃ (Ty~ Bw {Cm M.▶ M.El (₁ am)} )) λ Bm →
@@ -100,9 +101,9 @@ module RelationCwf {k : Level.Level}  where
   Sub~ : ∀ {Γ Δ σ} (σw : Subw Γ Δ σ) {Γm Δm} (σm : M.Sub Γm Δm) → Set (lmax M.i (lmax M.j k))
   -- Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm = {!(Δm , σm) ≡ (M.∙ , M.ε )!}
   Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm =
-    Σ (Δm ≡ M.∙ ) λ eC → HoTT.Lift {j = k} (σm == M.ε [ M.Sub Γm ↓ eC ])
+    Σ (Δm ≡ M.∙ ) λ eC → Lift {ℓ  = k} (σm == M.ε [ M.Sub Γm ↓ eC ])
   -- _,_ {A = M.Con}{ M.Sub Γm} Δm σm ≡ (M.∙ , M.ε )
-  Sub~ {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw σw Aw tw) {Γm} {Cm} sm =
+  Sub~ {Γ} {.(_ ▶p _)}  (,sw Δw σw Aw tw) {Γm} {Cm} sm =
     Σ (∃ (Con~ Δw)) λ Δm →
     Σ (∃ (Sub~ σw {Γm} {₁ Δm})) λ σm →
     Σ (∃ (Ty~ Aw {₁ Δm})) λ Am →
@@ -237,7 +238,7 @@ module RelationCwf {k : Level.Level}  where
         Lift-pathOverto-is-prop _ eC' M.ε
        }}
 
-    SubP {Γ} {.(_ ▶p _)} {.(_ :: _)} (,sw Δw sw Aw tw) Γm Δm =
+    SubP {Γ} {.(_ ▶p _)}  (,sw Δw sw Aw tw) Γm Δm =
 
       equiv-preserves-level
       (
@@ -388,7 +389,7 @@ module RelationCwf {k : Level.Level}  where
   Tel~ : {Γp : Conp}{Δp : Conp}(Δw : Telw Γp Δp) → {Γm : M.Con} → M.Tel Γm → Set (lmax M.i (lmax M.j k))
   -- Tel~ Δw Δm = Con~ Δw (₁ Δm)
   -- Tel~ {Δp = Δp} Δw Δm = {!!}
-  Tel~ {Δp = ∙p} Δw Δm = HoTT.Lift {j  = lmax k M.j}(Δm ≡ M.∙t _)
+  Tel~ {Δp = ∙p} Δw Δm = Lift {ℓ   = lmax k M.j}(Δm ≡ M.∙t _)
   Tel~ {Γ} {Δp = Δp ▶p Ap} (▶w Δw Aw) {Γm = Γm} Cm =
     Σ (∃ (Tel~ {Γp = Γ }Δw {Γm}))
     (λ Δm → Σ (∃ (Ty~ Aw {Γm M.^^ (₁ Δm)}))
@@ -398,7 +399,7 @@ module RelationCwf {k : Level.Level}  where
    {Δp : Conp}{Δw : Telw Γp Δp} {Δm : M.Tel (₁ Γm)} →
    (Δr : Tel~ {Γp = Γp}{Δp} Δw Δm) → Con~ Δw (₁ Γm M.^^ Δm)
    -- Tel^^Con~{Γp}{Γw}Γm{Δp}{Δw}{Δm}Δr  = {!Δp!}
-  ^^~ {Γp} {Γw} Γm {∙p} {Δw} {_} (HoTT.lift refl) rewrite prop-has-all-paths Δw Γw = ₂ Γm
+  ^^~ {Γp} {Γw} Γm {∙p} {Δw} {_} (lift refl) rewrite prop-has-all-paths Δw Γw = ₂ Γm
   ^^~ {Γp} {Γw} Γm {Δp ▶p Ap} {▶w Δw Aw}  (Δm , Am , refl) =
      (_ , ^^~ Γm (₂ Δm)) ,
      (Am , refl)

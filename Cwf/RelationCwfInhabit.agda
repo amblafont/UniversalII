@@ -3,7 +3,7 @@
 -- proof Σ#~
 open import Level 
 -- open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
-open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Hott renaming ( _∙_ to _◾_ ; transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
 
 module RelationCwfInhabit {k : Level} where
@@ -141,7 +141,7 @@ open import RelationCwfSubstitution {k = k}
     wE~ =
       tr!-over (λ a → Ty~ wkEw {a}) ( from-transp! M.Ty eC refl )
         (tr (λ w → Ty~ w (₁ Am M.[ M.wk {A = ₁ Am} ]T)) (prop-has-all-paths (wkTw Aw Aw) wkEw)
-          (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , HoTT.lift refl) Am))
+          (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , Level.lift refl) Am))
 
     eE = from-transp! _ _
       -- (fst=  (prop-has-all-paths Em (_ , {!wE~!})))
@@ -166,7 +166,7 @@ open import RelationCwfSubstitution {k = k}
    wE~ =
     tr!-over (λ a → Ty~ wkEw {a}) ( from-transp! M.Ty eC refl )
     (tr (λ w → Ty~ w (₁ Bm M.[ M.wk {A = ₁ Am} ]T)) (prop-has-all-paths (wkTw Aw Bw) wkEw)
-      (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , HoTT.lift refl) Bm))
+      (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , Level.lift refl) Bm))
 
    eE = from-transp! _ _
     (fst=  (prop-has-all-paths Em (_ , wE~)))
@@ -177,8 +177,8 @@ open import RelationCwfSubstitution {k = k}
      {σ}(σw : Subw Γ Δ σ) → ∃ (Sub~ σw {₁ Γm}{₁ Δm})
 
 -- ΣSub~ {Γ}{Γw}Γm {C}{Cw}Cm σw = ?
-ΣSub~ {Γ} {Γw} Γm {.∙p} {∙w} (_ , HoTT.lift refl) nilw =
-  M.ε , refl , HoTT.lift refl
+ΣSub~ {Γ} {Γw} Γm {.∙p} {∙w} (_ , Level.lift refl) nilw =
+  M.ε , refl , Level.lift refl
 ΣSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {Cw} Cm (,sw {Δp = Δp} Δw {σp = σ}σw{Ap = A} Aw{tp = t} tw) =
   _ ,
    Δm ,

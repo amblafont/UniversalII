@@ -2,7 +2,7 @@
 
 -- proof #~el
 open import Level 
-open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
 open import Syntax as S
 
@@ -52,7 +52,7 @@ liftV~ :
   Var~ (liftVw Ew Δ xw) (M.liftt (₁ Δm) (₁ Em) (₁ xm))
 
 -- wkTel~ {Γ}{Γw}Γm{E}{Ew}Em{Δ}{Δw}Δm = ?
-wkTel~ {Γ} {Γw} Γm {E} {Ew} Em {∙p} {Δw} (_ , HoTT.lift refl) = HoTT.lift refl
+wkTel~ {Γ} {Γw} Γm {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl) = Level.lift refl
 
 wkTel~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p A} {▶w Δw Aw} (_ , Δm , Am , refl) =
    (_ , (wkTel~ Γm Em Δm)) ,
@@ -62,7 +62,7 @@ wkTel~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p A} {▶w Δw Aw} (_ , Δm , Am , refl
 
 
 -- liftT~ {Γ}{Γw}Γm{E}{Ew}Em{Δ}{Δw}Δm{T}{Tw}Tm = {!!}
-liftT~ {Γ} {Γw} Γm {E} {Ew} Em {Δ} {Δw} Δm {.Up} {Uw .(Γ ^^ Δ) Γw₁} (_ , HoTT.lift refl) = HoTT.lift refl
+liftT~ {Γ} {Γw} Γm {E} {Ew} Em {Δ} {Δw} Δm {.Up} {Uw .(Γ ^^ Δ) Γw₁} (_ , Level.lift refl) = Level.lift refl
 liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(ΠΠp (Elp _) _)} {Πw Γw Aw Bw} (_ , am , Bm , refl)
   rewrite prop-has-all-paths Δw Γw
   =
@@ -118,7 +118,7 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appNIw Γw {T
 -- liftV~ {.(Γp ▶p Ap)} {Γw} Γm {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Ap)} Am {.0} {V0w Γp Γw₁ Ap Aw} xm = {!!}
 
 -- liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} ((Δm , ΔT) , Δr) {_} Am  {.0} {V0w Γp Γw Ap Aw}  (xm , Γm' , Am' , eC , eE , ex)
-liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} (_ , HoTT.lift refl) {_}
+liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl) {_}
     {xw = V0w Γp Γw Ap Aw} {Am = Am} (xm , Γm' , Am' , eC , eE , ex)
    rewrite
        prop-has-all-paths Γw' Γw
@@ -138,11 +138,11 @@ liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙
     (refl , refl , refl))
     -- ({!!} , {!!} , {!!}))
     where
-     wAm = (₁ Am' M.[ M.wk ]T) , liftT~ Γm Am' {∙p} {Γw} (_ , HoTT.lift refl) Am'
+     wAm = (₁ Am' M.[ M.wk ]T) , liftT~ Γm Am' {∙p} {Γw} (_ , Level.lift refl) Am'
 
 -- liftV~ {.(Γp ▶p Ap)} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Bp)} Am {.(S xp)} {VSw Γp Γw' Ap Aw Bp Bw xp xw} (zm , Γm' , Am' , Bm , xm , eC , eE , ezm) =
 -- here I can't destruct eC for a reason I don't know (agda bug ?)
-liftV~ {.(Γp ▶p Ap)} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} (_ , HoTT.lift refl)  
+liftV~ {.(Γp ▶p Ap)} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl)  
    {xw = VSw Γp Γw' Ap Aw Bp Bw xp xw} {Am = Am} (zm , Γm' , Am' , Bm , xm , eC , eE , ezm) =
      helper Γm Γr Em Am zm Γm' Am' Bm xm eC eE ezm 
   where
@@ -239,8 +239,8 @@ wkSub~ : ∀
   Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
 
 
-wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , HoTT.lift refl) {E} {Ew} Em = refl ,  HoTT.lift M.εη 
-wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {.(_ :: _)} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {tp = tp} tw}  {_}
+wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , Level.lift refl) {E} {Ew} Em = refl ,  Level.lift M.εη 
+wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {_} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {tp = tp} tw}  {_}
   (_ , Δm , σm , Am , tm , refl , refl)
     {E} {Ew} Em
   = Δm ,
@@ -261,7 +261,7 @@ wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {.(_ :: _)} {,sw Δw {σp = σp} σw {Ap = A
       tm'₂ rewrite wkT=wkS σp Ap =
         tr-over (λ A t → Tm~ (lifttw Ew ∙p tw) {Am = A} t)
            etm
-        (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , HoTT.lift refl) {tw = tw} tm)
+        (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , Level.lift refl) {tw = tw} tm)
 
 
 
