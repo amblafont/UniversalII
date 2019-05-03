@@ -843,7 +843,7 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
       $[] : 
         ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
         → ((t $ u) [ σ ]t) == (transport (Tm _) Π[] (t [ σ ]t)) $ transport (Tm _) El[] (u [ σ ]t)
-        -- ∙' plutôt que ◾ so that it computes when the second is refl
+        -- ∙' rather than ◾ so that it computes when the second is refl
           [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ∙'
              J (λ el[] eq →
                 (B [ σ ^ El a ]T [ < u [ σ ]t > ]T)
@@ -862,6 +862,19 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
       $NI[] :
         ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T}
         → ((t $NI u) [ σ ]t) ≡ (  (transport (Tm _) ΠNI[] (t [ σ ]t)) $NI u )
+
+      ΠInf : ∀{Γ}{T : Set k}(B : T → Tm Γ U) → Tm Γ U
+      ΠInf[] : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
+        (((ΠInf {Δ} B) [ σ ]t) == (ΠInf {Γ} {T} (λ a → transport (Tm _) U[] ((B a) [ σ ]t))) [ Tm _ ↓ U[] ])
+
+      _$Inf_ : ∀ {Γ}{T : Set k}{B : T → Tm Γ U}(t : Tm Γ (El (ΠInf B)))(u : T) → Tm Γ (El (B u))
+      $Inf[] :
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Tm Γ U}{t : Tm Γ (El (ΠInf B))}{u : T}
+        → ((t $Inf u) [ σ ]t) ==
+             transport (Tm Y) (El[] ◾ ap El (to-transp ΠInf[])) (t [ σ ]t)
+             $Inf u [ Tm _ ↓ El[] ]
+
+     
 
 
 

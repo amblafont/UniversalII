@@ -215,15 +215,25 @@ Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {.(app t u)}
     am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
     am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
 
-Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_}
-   {appNIw Δw'  Bw tw u}
+Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_} {appNIw Δw'  Bw tw u}
    (_ , Bm , tm , refl , refl)
    =
    (λ a → _ , Ty[]~ Γm Δm σm (Bm a)) ,
       (_ ,  Tm[]~ Γm Δm σm {tw = tw} tm ) ,
      refl , refl
 
+Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_} {appInfw Δw'  Bw tw u}
+   (_ , Bm , tm , refl , refl)
+   =
+   (λ a → _ , Tm[]~ Γm Δm σm {tw = Bw a} (Bm a)) ,
+     (_ ,  Tm[]~ Γm Δm σm {tw = tw} tm ) ,
+       refl , refl
 
+
+Tm[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {_}{_}{_} {ΠInfw Δw'  Bw}
+  (_ , Bm , refl , refl) =
+  (λ a → _ , Tm[]~ Γm Δm σm {tw = Bw a} (Bm a)) ,
+    refl , refl
 
 -- keep~ {Γ}Γw{Δ}{σ}{σw}{Γm}{Δm}σm{A}{Aw}Am =
 -- note that this keep~ is not defined by induction

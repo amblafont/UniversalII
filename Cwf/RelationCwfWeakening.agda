@@ -108,13 +108,24 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(app t u)} {.(l-subT 0 u Bp)
     eapp : (((₁ tm) M.$ (₁ um)) M.[ M.longWk {E = ₁ Em}(₁ Δm) ]t ) ≅
       ((₁ tm) M.[ M.longWk {E = ₁ Em} (₁ Δm) ]t) M.$ (₁ um M.[ M.longWk (₁ Δm) ]t)
     -- eapp : {!(((₁ tm) M.$ (₁ um)) M.[ M.longWk (₁ Δm) ]t ) ≅ ?!}
-    eapp = ↓≅ M.$[]
+    eapp =  ↓≅ ( M.$[] {σ =  M.longWk (₁ Δm) }{t = ₁ tm}{u = ₁ um}) 
 
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appNIw Γw {T} {Bp} Bw tw u} {_}
   (_ , Bm , tm , refl , refl)
  = (λ a → _ , liftT~ Γm Em Δm (Bm a)) ,
  (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
  refl , refl 
+
+liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appInfw Γw {T} {Bp} Bw tw u} {_}
+  (_ , Bm , tm , refl , refl)
+ =
+ (λ a → _ , liftt~ Γm Em Δm {tw = Bw a} (Bm a)) ,
+    (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
+      (refl , refl)
+
+liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {ΠInf B} {_} {ΠInfw Γw {T}{Bp} Bw} {_} 
+  (_ , Bm , refl , refl)
+  = (λ a →  _ , liftt~ Γm Em Δm {tw = Bw a}(Bm a)) , refl , refl
 -- liftV~ {.(Γp ▶p Ap)} {Γw} Γm {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Ap)} Am {.0} {V0w Γp Γw₁ Ap Aw} xm = {!!}
 
 -- liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} ((Δm , ΔT) , Δr) {_} Am  {.0} {V0w Γp Γw Ap Aw}  (xm , Γm' , Am' , eC , eE , ex)

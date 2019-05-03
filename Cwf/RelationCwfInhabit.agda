@@ -125,6 +125,30 @@ open import RelationCwfSubstitution {k = k}
       = ₂ (  Bm u )
     eE =  fst=  (prop-has-all-paths Em (_ , B[]~)) 
 
+ΣTm~ {Γw = Γw} Γm' {Aw = Elw Γw'' aw} (_ , am , refl) (appInfw Γw' Bw tw u) =
+  _ ,
+  Bm ,
+  tm ,
+  -- {!eB am!} ,
+  eB am ,
+  from-transp! _ (eB am) refl
+  -- from-transp _ _ refl
+  
+ where
+    Γm : ∃ (Con~ Γw)
+    Γm = Γm'
+    -- Γm = (₁ Γm' , tr (λ x → Con~ x _) (prop-has-all-paths _ _) (₂ Γm'))
+
+    Bm = λ a → ΣTm~ Γm {Aw = Uw _  Γw'}(_ , lift refl) (Bw a) 
+    tm = ΣTm~ Γm {Aw = Elw Γw (ΠInfw Γw Bw)} (_ , (_ , Bm , refl , refl) , refl ) tw   
+    eB : (am' : Σ (M.Tm (₁ Γm') M.U) (Tm~ aw))  → M.El (₁ am') ≡ M.El (₁ (Bm u))
+    eB rewrite prop-has-all-paths aw (Bw u) = λ am' →
+       ap M.El ( fst= (prop-has-all-paths  {{ TmP (Bw u) _ }} am' (Bm u)) )
+
+
+ΣTm~ {Γw = Γw} Γm' {Aw = Uw Γp Γw''} (_ , lift refl) (ΠInfw Γw' Bw) =
+  _ , (λ a → ΣTm~ Γm' {Aw = Uw _ Γw'} (_ , lift refl) (Bw a)  ) , refl , refl
+
 -- ΣVar~ Γw' Ew' xw Γm Em = {!xw!}
 ΣVar~ {Γw = Γw'} Cm {Aw = wkEw} Em (V0w Γp Γw Ap Aw)   = 
   _ , Γm , Am , eC , eE ,

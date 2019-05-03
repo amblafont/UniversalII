@@ -247,18 +247,20 @@ $ʳ {Γ}{a}{B}t u e
 $NIʳ : ∀ {Γ}{T : Set k}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
       (u : T)  → 
     Tmʳ (t S.$NI u)
-    -- ₁ (ΣTm~ (ΣCon~ (₂ Γ)) (ΣTy~ (ΣCon~ (₂ Γ)) (₂ (B S.[ S.< u > ]T)))
-    --   (
-    --   tr (λ B' → Tmw (₁ Γ) B' (app (₁ t) (₁ u))) (₁[<>]T {A = El a}{B = B}{u} )
-    --   (appw (₁ Γ) (₂ Γ) (₁ a) (₂ a) (₁ B) (₂ B) (₁ t) (₂ t) (₁ u) (₂ u)))
-    -- )
-    -- ==
     ≡
       ((Tmʳ {A = (S.ΠNI B)}t) M.$NI u)
       -- [ M.Tm _ ↓ e]
 
 $NIʳ {T = T}{B = B}t u =
   ap (λ e → coe! e (M._$NI_ (Tmʳ t) u)) {y = refl} (uip _ _)
+
+$Infʳ : ∀ {Γ}{T : Set k}{B : T → S.Tm Γ S.U}(t : S.Tm Γ (S.El (S.ΠInf B)))
+      (u : T)  → 
+    Tmʳ (t S.$Inf u)
+    ≡
+      ((Tmʳ {A = (S.El (S.ΠInf B))}t) M.$Inf u)
+$Infʳ {T = T}{B = B}t u =
+   ap (λ e → coe! e (M._$Inf_ (Tmʳ t) u)) {y = refl} (uip _ _) 
    
 
 iniMorUnivΠ : UnivΠMor syntaxUnivΠ M.RewUnivΠ iniMor
@@ -278,7 +280,9 @@ iniMorUnivΠ = record {
   -- $ʳ = λ {Γ}{a}{b}t u {e} q → $ʳ {Γ}{a}{b} t u _
   $ʳ = λ {Γ}{a}{b}t u → $ʳ {Γ}{a}{b} t u _ ;
   ΠNIʳ = refl ;
-  $NIʳ = λ t u → $NIʳ t u
+  $NIʳ = λ t u → $NIʳ t u ;
+  ΠInfʳ = refl ;
+  $Infʳ = λ t u → $Infʳ t u
   }
   }
 

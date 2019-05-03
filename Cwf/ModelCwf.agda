@@ -115,6 +115,26 @@ module Postulats where
 
   {-# REWRITE app$NI[]  #-}
 
+  -- Infinitary parameters
+  --------------------------------------------------------------------------------
+  postulate
+    ΠInf : ∀{Γ}{T : Set k}(B : T → Tm Γ U) → Tm Γ U
+    ΠInf[] :
+      {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
+      ((ΠInf B) [ σ ]t) ↦ ΠInf  (λ b → (B b) [ σ ]t)
+  {-# REWRITE ΠInf[]  #-}
+
+
+  postulate
+    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
+    app$Inf : ∀ {Γ}{T : Set k}{B : T → Tm Γ U}(t : Tm Γ (El (ΠInf B)))(u : T) → Tm Γ (El (B u))
+
+    app$Inf[] :
+        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Tm Γ U}{t : Tm Γ (El (ΠInf B))}{u : T}
+        → ((app$Inf t u) [ σ ]t) ↦ ( app$Inf  (t [ σ ]t)  u)
+
+  {-# REWRITE app$Inf[]  #-}
+
 
   RewUnivΠ : UnivΠ {k = k} RewCwF
   RewUnivΠ = record
@@ -128,9 +148,11 @@ module Postulats where
                ; $[] = app$[]
                ; _$NI_ = app$NI
                ; $NI[] = refl
+               ; _$Inf_ = app$Inf
+               ; $Inf[] = refl
                }
   
-  open UnivΠ RewUnivΠ using (_$_ ; _$NI_)
+  open UnivΠ RewUnivΠ using (_$_ ; _$NI_ ; _$Inf_)
   
   -- nécessaire pour le weakening (application)
   {-
@@ -180,7 +202,7 @@ module Postulats where
 -- accessibles depuis l'exterieur
 open Postulats public
 open CwF RewCwF public
-open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ) public
+open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public
 open Telescope RewCwF public
 
 

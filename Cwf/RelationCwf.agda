@@ -72,7 +72,18 @@ module RelationCwf {k : Level.Level}  where
     Σ (∃ (Tm~ tw {Δm} {M.ΠNI  (λ a → ₁ (Bm a))})) λ tm →
     Σ (Em ≡ (₁ (Bm u)) ) λ eC →
       zm == (₁ tm) M.$NI u [ M.Tm Δm ↓ eC ]
+  Tm~   {t = appNI t u} (appInfw Γw {T} {Bp} Bw tw u) {Δm} {Em} zm =
     
+    Σ (∀ a → ∃ (Tm~ (Bw a) {Δm} )) λ Bm →
+    Σ (∃ (Tm~ tw {Δm} {M.El (M.ΠInf  (λ a → ₁ (Bm a)))})) λ tm →
+    Σ (Em ≡ M.El (₁ (Bm u)) ) λ eC →
+    zm == (₁ tm) M.$Inf u [ M.Tm Δm ↓ eC ]
+    
+  Tm~ {Γ} (ΠInfw Γw {T}{Bp} Bw) {Cm} {Em} zm =
+     Σ (∀ a → ∃ (Tm~ (Bw a) {Cm} )) λ Bm →
+      Σ (Em ≡ M.U) λ eE →
+      zm == M.ΠInf  (λ a → ₁ (Bm a) ) [ M.Tm _ ↓ eE ] 
+
 
 -- Var~ {Γ}{E}{x} xw {Cm}{Em} xm = {!Ew!}
   Var~ {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Cm} {Em} xm =
@@ -187,6 +198,31 @@ module RelationCwf {k : Level.Level}  where
           pathOverto-is-prop (M.Tm Γm) eC' _
           
         }}
+    TmP   {t = appNI t u} (appInfw Γw {T}{Bp} Bw tw u) {Γm} Am =
+      
+       equiv-preserves-level
+       (
+      Σ₁-×-comm ∘e Σ-emap-r λ Am' →
+      Σ₁-×-comm ∘e Σ-emap-r λ Bm' →
+      Σ₁-×-comm 
+       )
+       {{ Σ-level (Π-level (λ a → TmP (Bw a) M.U)) λ Bm' →
+          
+          Σ-level (TmP tw _) λ tm' →
+          Σ-level it λ eC' →
+          pathOverto-is-prop (M.Tm Γm) eC' _
+          
+        }}
+    TmP {Γ}  (ΠInfw Γw {T}{Bp} Bw) {Γm} Am =
+      equiv-preserves-level
+       (
+          Σ₁-×-comm ∘e Σ-emap-r λ Am' →
+          Σ₁-×-comm 
+       )
+      -- This needs funext actually
+       {{ Σ-level (Π-level (λ a → TmP (Bw a) _)) λ Bm' →
+            Σ-level it λ eT →
+             pathOverto-is-prop (M.Tm Γm) eT _ }}
 
     VarP {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Γm} Am =
       equiv-preserves-level

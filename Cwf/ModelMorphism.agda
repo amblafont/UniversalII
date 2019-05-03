@@ -366,6 +366,16 @@ module _   {ll : Level}
             →
           Tmʳ (t S.$NI u) ≡ tr (Tm _) ΠNIʳ (Tmʳ t) $NI u
 
+      ΠInfʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Tm Γ S.U} →
+       (Tmʳ {Γ} (S.ΠInf B)) == 
+        (ΠInf {Conʳ Γ} {T = T} λ a → tr (Tm _)  Uʳ (Tmʳ (B a)) ) [ Tm _ ↓ Uʳ ]
+
+      $Infʳ : ∀ {Γ}{T : Set ll}{B : T → S.Tm Γ S.U}(t : S.Tm Γ (S.El (S.ΠInf B)))
+            (u : T)
+            →
+          Tmʳ (t S.$Inf u) ==  ( (tr (Tm _) (Elʳ ◾ ap El (to-transp ΠInfʳ)) (Tmʳ t)) $Inf u)
+            [ Tm _ ↓ Elʳ ]
+
         -- {!Tmʳ (t S.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
     -- $ʳ = {!!}
   record UnivΠMor : Set (Level.suc (lmax ll (lmax (lmax i j)(lmax k l)) )) where

@@ -207,17 +207,37 @@ postulate
           (u : T) → 
         Tmʳ (t S.$NI u) ≡ ((Tmʳ t) M.$NI  u)
 
--- postulate
---     $ʳ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a B))
---           (u : S.Tm Γ (S.El a)) → 
---         Tmʳ (t S.$ u) == ((Tmʳ t) M.$  (Tmʳ u)) [ M.Tm _ ↓  CwFMor.[<>]T m1 {u = u}{B = B} ]
+postulate
+    ΠInfʳ : ∀{Γ}
+          {T : Set k}
+          {Bp : T → Tmp}{Bw : ∀ (a : T) → Tmw (₁ Γ) Up (Bp a)} →
+          -- let Γ = (Γp , Γw) in
+          let B = λ a → _ , (Bw a) in
+             
+          (Tmʳ {Γ} {U}
+            (_ , ΠInfw (₂ Γ) Bw))
+          ↦
+          (M.ΠInf {Conʳ Γ} {T}
+          -- (Tmʳ {Γ} {S.U {Γ}} a)
+            (
+            -- tr M.Ty (nextCwFMor.,ʳ m1next {A = S.El a} )
+            (λ a → Tmʳ {_}{U} (B a))))
+
+{-# REWRITE ΠInfʳ  #-}
+
+postulate
+    $Infʳ : ∀ {Γ}{T : Set k}{B : T → S.Tm Γ U}(t : S.Tm Γ (S.El (S.ΠInf B)))
+          (u : T) → 
+        Tmʳ (t S.$Inf u) ≡ ((Tmʳ t) M.$Inf  u)
+
 
 m2 : UnivΠMor {ll = k} syntaxUnivΠ M.RewUnivΠ m1
 m2 = record { univmor =
   record { Uʳ = refl ; Elʳ = refl } ;
   Πmor = record
      { Πʳ = refl ; $ʳ = (λ  {Γ} {a} {B} t u →  $ʳ t u    ) ;
-       ΠNIʳ = refl ; $NIʳ = $NIʳ 
+       ΠNIʳ = refl ; $NIʳ = $NIʳ ;
+       ΠInfʳ = refl ; $Infʳ = $Infʳ 
   } }
   {- 
   nextCwFMor.[]Tʳ m1next ∙'
@@ -269,11 +289,8 @@ module _   where
       (_ , morTy~ (▶w Γw' (Elw Γw' Aw))  Bw) ,
       refl
 
-    morTy~ {Γ} Γw'  (ΠNIw Γw Bw)
-        rewrite prop-has-all-paths Γw Γw' 
-      =
-      (λ a → _ , morTy~ Γw' (Bw a)) ,
-      refl
+    morTy~ {Γ} Γw'  (ΠNIw Γw Bw) rewrite prop-has-all-paths Γw Γw' 
+      = (λ a → _ , morTy~ Γw' (Bw a)) , refl
 
     morTy~ {Γ} Γw' {.(Elp _)} (Elw Γw aw) rewrite prop-has-all-paths Γw' Γw =
       (_ , morTm~ Γw (Uw _ Γw) aw  ) ,
@@ -361,6 +378,27 @@ module _   where
         et :
           Tmʳ (appNI t u , appNIw Γw' Bw tw u) ≡ M.app$NI (m.Tmʳ {A = _ , ΠNIw Γw' Bw} (t , tw)) u
         et = $NIʳ (_ , tw) u
+
+    morTm~ {Γp} Γw  sBw  (appInfw Γw'  Bw {t = t}tw u)
+      rewrite prop-has-all-paths sBw (Elw Γw' (Bw u))
+        | prop-has-all-paths Γw Γw'
+      =
+       ((λ a → _ , morTm~ Γw' (Uw _ Γw') (Bw a)) ,
+       ((_ , morTm~ Γw' (Elw Γw' (ΠInfw Γw' Bw)) tw) ,
+       (refl ,
+       et)))
+
+      where
+        et :
+          Tmʳ (appNI t u , appInfw Γw' Bw tw u) ≡ M.app$Inf (m.Tmʳ {A = _ , Elw Γw' (ΠInfw Γw' Bw)} (t , tw)) u
+        et = $Infʳ (_ , tw) u
+
+    morTm~ {.Γp} Γw' (Uw Γp Γw'') (ΠInfw Γw Bw)
+       rewrite prop-has-all-paths Γw'' Γw'
+             | prop-has-all-paths Γw Γw'
+             =
+      -- (λ a → {! (? , ?)!}) , {!!}
+      (λ a →  (_ , morTm~ Γw' (Uw _ Γw') (Bw a))) , (refl , refl)
       
           
 

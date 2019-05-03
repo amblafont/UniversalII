@@ -269,6 +269,10 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
    (T → Ty Γ) → Ty Γ
 Π-NI {Γ} {T} B = _ , ΠNIw (₂ Γ) (λ a → (₂ (B a)))
 
+Π-Inf : {Γ : Con} {T : Set k} →
+   (T → Tm Γ U) → Tm Γ U
+Π-Inf {Γ} {T} B = _ , ΠInfw (₂ Γ) (λ a → (₂ (B a)))
+
 
 -- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
 ₁[<>]T : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)}{u : Tm Γ A} →
@@ -288,8 +292,9 @@ syntaxUnivΠ = record
                 -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
                 ; Π[] = λ {Γ}{Δ}{σ}{a}{B} → Π[]
                 ; ΠNI = Π-NI 
-                -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
                 ; ΠNI[] = refl
+                ; ΠInf = Π-Inf 
+                ; ΠInf[] = refl
                        
                 ; _$_ = λ {Γ}{a}{B}t u  →
                    (app (₁ t) (₁ u)) ,
@@ -309,8 +314,14 @@ syntaxUnivΠ = record
                    Tm=↓ (S.[<>][]T {u = u}{B = B}{σ = σ})
                    (ap (λ x → app x _)
                    ( (Tm-tr=₁ {t = t S.[ σ ]t } {e = Π[]})))
+
                 ; _$NI_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appNIw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u 
                 ; $NI[] = refl
+
+                ; _$Inf_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appInfw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u 
+                ; $Inf[] = refl
+
+
                            
 
                            
