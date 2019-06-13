@@ -452,11 +452,14 @@ module _ {i} where
       prop-has-all-paths {{c}} x y = prop-path c x y
 
     {- The type of paths to a fixed point is contractible -}
+    pathto-is-contr : (x : A) → is-contr (Σ A (λ t → t == x))
+    pathto-is-contr x = has-level-in ((x , idp) , pathto-unique-path) where
+      pathto-unique-path : {u : A} (pp : Σ A (λ t → t == u)) → (u , idp) == pp
+      pathto-unique-path (u , idp) = idp
+
     instance
-      pathto-is-contr : (x : A) → is-contr (Σ A (λ t → t == x))
-      pathto-is-contr x = has-level-in ((x , idp) , pathto-unique-path) where
-        pathto-unique-path : {u : A} (pp : Σ A (λ t → t == u)) → (u , idp) == pp
-        pathto-unique-path (u , idp) = idp
+      i-pathto-is-contr : {x : A} → is-contr (Σ A (λ t → t == x))
+      i-pathto-is-contr = pathto-is-contr _
 
 
 -- Function.agda
@@ -845,17 +848,22 @@ module _ {i j} {A : Type i} {B : A → Type j} where
           (λ pq → pair= (fst=-β (fst pq) (snd pq)) (snd=-β (fst pq) (snd pq)))
 
 
+Σ-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {P : A → Type j}
+  → has-level n A → ((x : A) → has-level n (P x))
+    → has-level n (Σ A P)
+Σ-level {n = ⟨-2⟩} p q = has-level-in ((contr-center p , (contr-center (q (contr-center p)))) , lemma)
+  where abstract lemma = λ y → pair= (contr-path p _) (from-transp! _ _ (contr-path (q _) _))
+Σ-level {n = S n} p q = has-level-in lemma where
+  abstract
+    lemma = λ x y → equiv-preserves-level (=Σ-econv x y)
+      {{Σ-level (has-level-apply p _ _) (λ _ →
+        equiv-preserves-level ((to-transp-equiv _ _)⁻¹) {{has-level-apply (q _) _ _}})}}
+
 instance
-  Σ-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {P : A → Type j}
-    → has-level n A → ((x : A) → has-level n (P x))
+  i-Σ-level : ∀ {i j} {n : ℕ₋₂} {A : Type i} {P : A → Type j}
+    → { p : has-level n A} → {{ q : {x : A} → has-level n (P x) }}
       → has-level n (Σ A P)
-  Σ-level {n = ⟨-2⟩} p q = has-level-in ((contr-center p , (contr-center (q (contr-center p)))) , lemma)
-    where abstract lemma = λ y → pair= (contr-path p _) (from-transp! _ _ (contr-path (q _) _))
-  Σ-level {n = S n} p q = has-level-in lemma where
-    abstract
-      lemma = λ x y → equiv-preserves-level (=Σ-econv x y)
-        {{Σ-level (has-level-apply p _ _) (λ _ →
-          equiv-preserves-level ((to-transp-equiv _ _)⁻¹) {{has-level-apply (q _) _ _}})}}
+  i-Σ-level {p = p} {{ q }} = Σ-level p (λ x → q {x = x})
 
 -- Equivalences in a Σ-type
 
@@ -944,15 +952,19 @@ module _ {i}{A : Type i}{j} {P : A → Type j} {f g : Π A P} where
       λ=-is-equiv = is-eq λ= app= (λ b → uip _ _) λ a → λ= λ _ → uip _ _  
 
 -- Pi.agda
+Π-level : ∀ {i j} {A : Type i} {B : A → Type j} {n : ℕ₋₂}
+  → ((x : A) → has-level n (B x)) → has-level n (Π A B)
+Π-level {n = ⟨-2⟩} p = has-level-in ((λ x → contr-center (p x)) , lemma)
+  where abstract lemma = λ f → λ= (λ x → contr-path (p x) (f x))
+Π-level {n = S n} p = has-level-in lemma where
+  abstract
+    lemma = λ f g →
+      equiv-preserves-level λ=-equiv {{Π-level (λ x → has-level-apply (p x) (f x) (g x))}}
+
 instance
-  Π-level : ∀ {i j} {A : Type i} {B : A → Type j} {n : ℕ₋₂}
-    → ((x : A) → has-level n (B x)) → has-level n (Π A B)
-  Π-level {n = ⟨-2⟩} p = has-level-in ((λ x → contr-center (p x)) , lemma)
-    where abstract lemma = λ f → λ= (λ x → contr-path (p x) (f x))
-  Π-level {n = S n} p = has-level-in lemma where
-    abstract
-      lemma = λ f g →
-        equiv-preserves-level λ=-equiv {{Π-level (λ x → has-level-apply (p x) (f x) (g x))}}
+  i-Π-level : ∀ {i j} {A : Type i} {B : A → Type j} {n : ℕ₋₂}
+    → {{ _ : {x : A} → has-level n (B x) }} → has-level n (Π A B)
+  i-Π-level {{ p }} = Π-level (λ x → p {x})
 
 
 -- Lift.agda

@@ -2,7 +2,7 @@
 Postulate a model morphism with rewrite rules, show that it is related to the syntax
            -}
 
-{-# OPTIONS  --rewriting  #-}
+{-# OPTIONS  --rewriting --prop #-}
 
 open import Level 
 open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )

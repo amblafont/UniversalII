@@ -1,4 +1,5 @@
-{-# OPTIONS --rewriting  #-}
+{-# OPTIONS --rewriting   #-}
+-- --overlapping-instances
 -- an attempt with rewrite rules, but by postulating the model rather than defining a record (because rewrite rules don't work)
 -- in this file: definition of the functional relation, and proof that the relation is indeed functional
 
@@ -122,11 +123,22 @@ module RelationCwf {k : Level.Level}  where
       Σ (Cm ≡ (₁ Δm M.▶ ₁ Am)) λ eC →
       sm == ₁ σm M.,s ₁ tm [ M.Sub Γm ↓ eC ]
 
+  ConP : ∀ {Γp} Γw → is-prop (∃ (Con~ {Γp} Γw))
+  TyP : ∀ {Γ A} (Aw : Tyw Γ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
+  TmP : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
+  VarP : ∀ {Γ A x} (x : Varw Γ A x) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
+
+  -- new version of Agda does not support explicit arguments for instances
   instance
-    ConP : ∀ {Γp} Γw → is-prop (∃ (Con~ {Γp} Γw))
-    TyP : ∀ {Γ A} (Aw : Tyw Γ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
-    TmP : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
-    VarP : ∀ {Γ A x} (x : Varw Γ A x) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
+    i-ConP : ∀ {Γp} {Γw} → is-prop (∃ (Con~ {Γp} Γw))
+    i-TyP : ∀ {Γ A} {Aw : Tyw Γ A} {Γm} → is-prop (∃ (Ty~ Aw {Γm}))
+    i-TmP : ∀ {Γ A t} {tw : Tmw Γ A t} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Tm~ tw {Γm}{Am}))
+    i-VarP : ∀ {Γ A x} {x : Varw Γ A x} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Var~ x {Γm}{Am}))
+
+    i-ConP {Γw = Γw} = ConP Γw 
+    i-TyP {Aw = Aw}{Γm = Γm} = TyP Aw Γm
+    i-TmP {tw = tw}{Am = Am} = TmP tw Am 
+    i-VarP {Am = Am} = VarP _ Am
   -- Var~ : ∀ {Γ A x} (xw : Varw Γ A x) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i M.j)
 
     ConP {.∙p} ∙w =  Lift-pathto-is-prop M.∙
@@ -134,6 +146,7 @@ module RelationCwf {k : Level.Level}  where
      equiv-preserves-level
       (Σ₁-×-comm   ∘e
       Σ-emap-r λ Γm → Σ₁-×-comm)
+      {{  it  }}
 
 -- TyP {Γ}{ A} Aw Γm = {!!}
     TyP {.Γp} {.Up} (Uw Γp Γw) Γm = Lift-pathto-is-prop M.U
@@ -262,38 +275,43 @@ module RelationCwf {k : Level.Level}  where
        }}
 
 
-    SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
-    -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
-    SubP {Γ} {.∙p} {.nil} nilw Γm Δm =
-      
-      equiv-preserves-level
-      Σ₁-×-comm
+  SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
 
+  instance
+    i-SubP : ∀ {Γ Δ s} {sw : Subw Γ Δ s} {Γm} {Δm} → is-prop (∃ (Sub~ sw {Γm}{Δm}))
+    i-SubP {sw = sw}{Γm = Γm}{Δm = Δm} = SubP sw Γm Δm
+
+  -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
+  SubP {Γ} {.∙p} {.nil} nilw Γm Δm =
+
+    equiv-preserves-level
+    Σ₁-×-comm
+
+    {{ 
+    Σ-level it λ eC' →
+      Lift-pathOverto-is-prop _ eC' M.ε
+      }}
+
+  SubP {Γ} {.(_ ▶p _)}  (,sw Δw sw Aw tw) Γm Δm =
+
+    equiv-preserves-level
+    (
+    Σ₁-×-comm ∘e Σ-emap-r λ Δm' →
+    Σ₁-×-comm ∘e Σ-emap-r λ σm' →
+    Σ₁-×-comm ∘e Σ-emap-r λ Am' →
+    Σ₁-×-comm ∘e Σ-emap-r λ tm' →
+    Σ₁-×-comm
+    )
       {{ 
-      Σ-level it λ eC' →
-        Lift-pathOverto-is-prop _ eC' M.ε
-       }}
-
-    SubP {Γ} {.(_ ▶p _)}  (,sw Δw sw Aw tw) Γm Δm =
-
-      equiv-preserves-level
-      (
-      Σ₁-×-comm ∘e Σ-emap-r λ Δm' →
-      Σ₁-×-comm ∘e Σ-emap-r λ σm' →
-      Σ₁-×-comm ∘e Σ-emap-r λ Am' →
-      Σ₁-×-comm ∘e Σ-emap-r λ tm' →
-      Σ₁-×-comm
-      )
-       {{ 
-         Σ-level it λ Δm' →
-         Σ-level it λ σm' →
-         Σ-level it λ Am' →
-         Σ-level (TmP tw (₁ Am' M.[ ₁ σm' ]T)) λ tm' →
-         Σ-level it λ eC' →
-          pathOverto-is-prop _ _ _
+        Σ-level it λ Δm' →
+        Σ-level it λ σm' →
+        Σ-level it λ Am' →
+        Σ-level (TmP tw (₁ Am' M.[ ₁ σm' ]T)) λ tm' →
+        Σ-level it λ eC' →
+        pathOverto-is-prop _ _ _
 
 
-       }}
+      }}
 
 
 

@@ -66,66 +66,110 @@ it {{x}} = x
 ∃ : ∀ {a b} {A : Set a} → (A → Set b) → Set (lmax a b)
 ∃ = Σ _
 
-propΣ= : ∀ {l j}{A : Set l} {B : A → Set j}{x y : ∃ B} (e : ₁ x ≡ ₁ y) → {{ b : ∀ x → is-prop (B x) }} →
+propΣ= : ∀ {l j}{A : Set l} {B : A → Set j}{x y : ∃ B} (e : ₁ x ≡ ₁ y) → {{ b : ∀ {x} → is-prop (B x) }} →
   x ≡ y
-propΣ= {B = B}{y = y} e {{ b }} = pair= e (from-transp _ e (prop-path {A = B (₁ y)}  (b (₁ y)) _ _ ))
+propΣ= {B = B}{y = y} e {{ b }} = pair= e (from-transp _ e (prop-path {A = B (₁ y)}  (b {₁ y}) _ _ ))
+
+
+{-
+New version of agda does not support implicit arguments
+for typeclasse instances !
+Thus I make two version of the following lemmas: the original one with explicit arguments,
+and a new one with implicit arguments.
+Yet, the instances do not seem to be inferred as well as before...
+-}
+
+pathto-is-prop : ∀ {l}{A : Set l} (x : A) → is-prop (Σ A (λ t → t ≡ x))
+-- we know it is contractile, thus uses typeclass resolution
+pathto-is-prop x = raise-level ⟨-2⟩ (pathto-is-contr _)
 
 
 instance
-  pathto-is-prop : ∀ {l}{A : Set l} (x : A) → is-prop (Σ A (λ t → t ≡ x))
+  i-pathto-is-prop : ∀ {l}{A : Set l} {x : A} → is-prop (Σ A (λ t → t ≡ x))
   -- we know it is contractile, thus uses typeclass resolution
-  pathto-is-prop x = raise-level ⟨-2⟩ it
+  i-pathto-is-prop  = pathto-is-prop _
 
-  pathOverto-is-prop : 
-    ∀ {i j} {A : Type i} (B : A → Type j)
-    {x y : A} (p : x ≡ y) (u : B y)  → is-prop (∃ (λ t → t == u [ B ↓ p ]))
+pathOverto-is-prop : 
+  ∀ {i j} {A : Type i} (B : A → Type j)
+  {x y : A} (p : x ≡ y) (u : B y)  → is-prop (∃ (λ t → t == u [ B ↓ p ]))
 
-  pathOverto-is-prop B p u =
-    equiv-preserves-level (
-      Σ-emap-r λ tm' →
-        to-transp!-equiv _ _ ⁻¹ )
-
-  Lift-pathto-is-prop : ∀ {l j}{A : Set l} (x : A) → is-prop (Σ A (λ t → Lift {ℓ = j} (t ≡ x)))
-  Lift-pathto-is-prop {A = A} x =
-    equiv-preserves-level {A = Σ A (λ t → t ≡ x) }
-    (Σ-emap-r (λ x₁ → lift-equiv))
-
-  Lift-pathOverto-is-prop : 
-    ∀ {i j k} {A : Type i} (B : A → Type j)
-    {x y : A} (p : x ≡ y) (u : B y)  → is-prop (∃ (λ t → Lift {ℓ  = k}(t == u [ B ↓ p ])))
-  Lift-pathOverto-is-prop B p u =
+pathOverto-is-prop B p u =
+  equiv-preserves-level (
+    Σ-emap-r λ tm' →
+      to-transp!-equiv _ _ ⁻¹ )
+      {{ pathto-is-prop _ }}
+      -- before, this was inferred,
+      -- {{ {!!} }}
      
+      -- {{ pathto-is-prop _ }}
+
+
+instance
+  i-pathOverto-is-prop : 
+    ∀ {i j} {A : Type i} {B : A → Type j}
+    {x y : A} {p : x ≡ y} {u : B y}  → is-prop (∃ (λ t → t == u [ B ↓ p ]))
+
+  i-pathOverto-is-prop = pathOverto-is-prop _ _ _
+
+Lift-pathto-is-prop : ∀ {l j}{A : Set l} (x : A) → is-prop (Σ A (λ t → Lift {ℓ = j} (t ≡ x)))
+Lift-pathto-is-prop {A = A} x =
+  equiv-preserves-level {A = Σ A (λ t → t ≡ x) }
+  (Σ-emap-r (λ x₁ → lift-equiv))
+  {{ pathto-is-prop _ }}
+
+
+instance
+
+  i-Lift-pathto-is-prop : ∀ {l j}{A : Set l} {x : A} → is-prop (Σ A (λ t → Lift {ℓ = j} (t ≡ x)))
+  i-Lift-pathto-is-prop {A = A} {x} = Lift-pathto-is-prop _ 
+
+Lift-pathOverto-is-prop : 
+  ∀ {i j k} {A : Type i} (B : A → Type j)
+  {x y : A} (p : x ≡ y) (u : B y)  → is-prop (∃ (λ t → Lift {ℓ  = k}(t == u [ B ↓ p ])))
+Lift-pathOverto-is-prop B p u =
       equiv-preserves-level {A = Σ _ (λ t → t == u [ B ↓ p ]) }
       (Σ-emap-r (λ x₁ → lift-equiv))
       {{ pathOverto-is-prop B p u }}
+
+instance
+
+  i-Lift-pathOverto-is-prop : 
+    ∀ {i j k} {A : Type i} {B : A → Type j}
+    {x y : A} {p : x ≡ y} {u : B y}  → is-prop (∃ (λ t → Lift {ℓ  = k}(t == u [ B ↓ p ])))
+  i-Lift-pathOverto-is-prop = Lift-pathOverto-is-prop _ _ _
      
       -- (Σ-emap-r (λ x₁ → lift-equiv))
   -- {{ it }}
   -- raise-level ⟨-2⟩ it
 
+-- this needs uip (not contractile although)
+Σpathto-is-prop : ∀ {l l'}{A : Set l}{P : A → Set l'}(x : A)(y : Σ A P) → is-prop (Σ (P x) ( λ z → x , z ≡ y) )
+Σpathto-is-prop x y = all-paths-is-prop  λ { (a , refl) (.a , refl) → refl  }
+
+instance
   -- this needs uip (not contractile although)
-  Σpathto-is-prop : ∀ {l l'}{A : Set l}{P : A → Set l'}(x : A)(y : Σ A P) → is-prop (Σ (P x) ( λ z → x , z ≡ y) )
-  Σpathto-is-prop x y = all-paths-is-prop  λ { (a , refl) (.a , refl) → refl  }
+  i-Σpathto-is-prop : ∀ {l l'}{A : Set l}{P : A → Set l'}{x : A}{y : Σ A P} → is-prop (Σ (P x) ( λ z → x , z ≡ y) )
+  i-Σpathto-is-prop = Σpathto-is-prop _ _
 
-  -- this needs uip
-  ₁snd= : ∀ {α β}{A : Set α}{B : A → Set β} {a : A}{b b' : B a}(e : _,_ {B = B} a b  ≡ _,_ {B = B} a b') → b ≡ b'
-  ₁snd= refl = refl
+-- this needs uip
+₁snd= : ∀ {α β}{A : Set α}{B : A → Set β} {a : A}{b b' : B a}(e : _,_ {B = B} a b  ≡ _,_ {B = B} a b') → b ≡ b'
+₁snd= refl = refl
 
-  -- this needs uip
-  ₁triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C : ∀ a → B a → Set δ}
-    {a : A}{b b' : B a} {c : C a b} {c' : C a b'}
-    (e : _,_ {A = Σ A B}{B = λ ab  → C (₁ ab) (₂ ab)} ((a , b)) c ≡
-    _,_ {A = Σ A B}{B = λ ab  → C (₁ ab) (₂ ab)} ((a , b')) c') →
-    (b , c) ≡ (b' , c')
-  ₁triple= refl = refl
+-- this needs uip
+₁triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C : ∀ a → B a → Set δ}
+  {a : A}{b b' : B a} {c : C a b} {c' : C a b'}
+  (e : _,_ {A = Σ A B}{B = λ ab  → C (₁ ab) (₂ ab)} ((a , b)) c ≡
+  _,_ {A = Σ A B}{B = λ ab  → C (₁ ab) (₂ ab)} ((a , b')) c') →
+  (b , c) ≡ (b' , c')
+₁triple= refl = refl
 
 
-  ₁mk-triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C :  (Σ _ B)  → Set δ}
-    {a : A}{b b' : B a} {c : C (a , b)} {c' : C (a , b')}
-    (eb : b ≡ b')
-    (ec : c == c' [ _ ↓ eb ]) →
-     _,_ {B = C} ((a , b)) c ≡ _,_ {B = C} ((a , b')) c' 
-  ₁mk-triple= refl refl = refl
+₁mk-triple= : ∀ {α β δ}{A : Set α}{B : A → Set β}{C :  (Σ _ B)  → Set δ}
+  {a : A}{b b' : B a} {c : C (a , b)} {c' : C (a , b')}
+  (eb : b ≡ b')
+  (ec : c == c' [ _ ↓ eb ]) →
+    _,_ {B = C} ((a , b)) c ≡ _,_ {B = C} ((a , b')) c' 
+₁mk-triple= refl refl = refl
 
 
 -- stuff for ModelRecord (picken from Ambrus'repo)
@@ -188,10 +232,19 @@ instance
   uip-prop : ∀ {i} {A : Type i} {x y : A} → is-prop (x ≡ y)
   uip-prop = all-paths-is-prop uip
 
-  uip-over-prop :
-    ∀ {i j} {A : Type i} (B : A → Type j)
-    {x y : A} (p : x ≡ y)(v : B x) (u : B y)   → is-prop (v == u [ B ↓ p ])
-  uip-over-prop B p u v = equiv-preserves-level (to-transp!-equiv _ _ ⁻¹)
+uip-over-prop :
+  ∀ {i j} {A : Type i} (B : A → Type j)
+  {x y : A} (p : x ≡ y)(v : B x) (u : B y)   → is-prop (v == u [ B ↓ p ])
+uip-over-prop B p u v = equiv-preserves-level (to-transp!-equiv _ _ ⁻¹)
+-- Jesper
+  {{ uip-prop }}
+  -- {{ uip-prop }}
+
+instance
+  i-uip-over-prop :
+    ∀ {i j} {A : Type i} {B : A → Type j}
+    {x y : A} {p : x ≡ y}{v : B x} {u : B y}   → is-prop (v == u [ B ↓ p ])
+  i-uip-over-prop = uip-over-prop _ _ _ _
 
 uip-coe : ∀ {i }  {x y : Type i} (p q : x ≡ y)  {b : x}  →
   coe p b ≡ coe q b
@@ -264,3 +317,5 @@ _ ≅⟨ refl≅ ⟩ refl≅ = refl≅
 
 _≅∎ : ∀ {i} {A : Type i} (x : A) → x ≅ x
 _ ≅∎ = refl≅
+
+-- -}
