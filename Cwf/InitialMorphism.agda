@@ -73,7 +73,7 @@ Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
       Δm = (ΣCon~ (₂ Δ))
   in
   fst=
-    (prop-has-all-paths 
+    (prop-path (TyP _ _)
       (ΣTyʳ (A S.[ σ ]T))
       -- ΣTy~ (ΣCon~ (₂ Γ)) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
       (_ , Ty[]~ Γm Δm (ΣSub~ Γm Δm (₂ σ))(ΣTy~ Δm (₂ A)))
@@ -110,7 +110,7 @@ Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
      
 idʳ : {Γ : S.Con} → Subʳ {Γ = Γ} S.id ≡ M.id
 idʳ {Γ} = fst=
-             (prop-has-all-paths
+             (prop-path (SubP _ _ _)
                (ΣSubʳ S.id )
                (_ , id~ (ΣConʳ Γ))
               )
@@ -153,7 +153,7 @@ idʳ {Γ} = fst=
 
 ∘ʳ {Γ}{Δ}{Y}{σ}{δ }  =
   fst=
-             (prop-has-all-paths
+             (prop-path (SubP _ _ _)
                (ΣSubʳ (σ S.∘ δ) )
                (_ , ∘~ (ΣConʳ Δ)(ΣConʳ Y)(ΣSubʳ σ)(ΣConʳ Γ)(ΣSubʳ δ))
               )
@@ -299,14 +299,14 @@ to the one we constructed
 
 -- uniqueness
 Conʳ'= : ∀ {Γ : S.Con} → Mor.Conʳ Γ ≡ Conʳ Γ
-Conʳ'= {Γ} = fst= (prop-has-all-paths (_ , Mor.morCon~ (₂ Γ)) (ΣCon~ (₂ Γ)))
+Conʳ'= {Γ} = fst= (prop-path (ConP _) (_ , Mor.morCon~ (₂ Γ)) (ΣCon~ (₂ Γ)))
 
 Tyʳ'= : ∀ {Γ : S.Con}{A : S.Ty Γ} → Mor.Tyʳ A == Tyʳ A [ M.Ty ↓ Conʳ'= {Γ} ]
 
 Tyʳ'= {Γ}{A} with Mor.Conʳ Γ | Mor.Tyʳ A | Mor.morTy~ (₂ Γ) (₂ A) | Conʳ'= {Γ}
 -- ...   | Γm | Am | A~ | e = {!e!}
 Tyʳ'= {Γ} {A} | .(₁ (ΣCon~ (₂ Γ))) | Am | A~ | refl =
-  fst= (prop-has-all-paths (_ , A~) (ΣTyʳ A  ))
+  fst= (prop-path (TyP _ _) (_ , A~) (ΣTyʳ A  ))
 
 Tmʳ'= : ∀ {Γ : S.Con}{A}{t : S.Tm Γ A} → Mor.Tmʳ t == Tmʳ t
   [ (λ x → M.Tm (₁ x)(₂ x)) ↓ pair= (Conʳ'= {Γ}) (Tyʳ'= {Γ} {A}) ]
@@ -330,5 +330,5 @@ Subʳ'= {Γ}{Δ}{σ}
     Mor.Conʳ Γ | Mor.Conʳ Δ | Mor.Subʳ σ | Mor.morSub~ (₂ Γ)(₂ Δ) (₂ σ) | Conʳ'= {Γ} | Conʳ'= {Δ}
 -- ... | Γm | Δm | σm | σ~ | eΓ | eΔ = {!!}
 Subʳ'= {Γ} {Δ} {σ} | .(₁ (ΣCon~ (₂ Γ))) | .(₁ (ΣCon~ (₂ Δ))) | σm | σ~ | refl | refl =
-  fst= (prop-has-all-paths (_ , σ~) (ΣSubʳ σ))
+  fst= (prop-path (SubP _ _ _) (_ , σ~) (ΣSubʳ σ))
 
