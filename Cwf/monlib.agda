@@ -104,12 +104,12 @@ pathOverto-is-prop B p u =
       -- {{ pathto-is-prop _ }}
 
 
-instance
-  i-pathOverto-is-prop : 
-    ∀ {i j} {A : Type i} {B : A → Type j}
-    {x y : A} {p : x ≡ y} {u : B y}  → is-prop (∃ (λ t → t == u [ B ↓ p ]))
+-- instance
+--   i-pathOverto-is-prop : 
+--     ∀ {i j} {A : Type i} {B : A → Type j}
+--     {x y : A} {p : x ≡ y} {u : B y}  → is-prop (∃ (λ t → t == u [ B ↓ p ]))
 
-  i-pathOverto-is-prop = pathOverto-is-prop _ _ _
+--   i-pathOverto-is-prop = pathOverto-is-prop _ _ _
 
 Lift-pathto-is-prop : ∀ {l j}{A : Set l} (x : A) → is-prop (Σ A (λ t → Lift {ℓ = j} (t ≡ x)))
 Lift-pathto-is-prop {A = A} x =
@@ -240,11 +240,11 @@ uip-over-prop B p u v = equiv-preserves-level (to-transp!-equiv _ _ ⁻¹)
   {{ uip-prop }}
   -- {{ uip-prop }}
 
-instance
-  i-uip-over-prop :
-    ∀ {i j} {A : Type i} {B : A → Type j}
-    {x y : A} {p : x ≡ y}{v : B x} {u : B y}   → is-prop (v == u [ B ↓ p ])
-  i-uip-over-prop = uip-over-prop _ _ _ _
+-- instance
+--   i-uip-over-prop :
+--     ∀ {i j} {A : Type i} {B : A → Type j}
+--     {x y : A} {p : x ≡ y}{v : B x} {u : B y}   → is-prop (v == u [ B ↓ p ])
+--   i-uip-over-prop = uip-over-prop _ _ _ _
 
 uip-coe : ∀ {i }  {x y : Type i} (p q : x ≡ y)  {b : x}  →
   coe p b ≡ coe q b
