@@ -99,7 +99,7 @@ open import RelationCwfSubstitution {k = k}
         = Ty[]~ Γm {Δw = Γaw} Γam {σw  = <u>w} (M.< ₁ um > , <u>~ ) Bm
 
 
-    eE = fst=  (prop-has-all-paths Em (_ , B[]~))
+    eE = fst=  (prop-path (TyP _ _) Em (_ , B[]~))
   
 ΣTm~ {Γw = Γw} Γm' {Aw =  B[]w} Em (appNIw Γw' Bw tw u) =
 -- ΣTm~ {Γw = Γw'} Γm' {Aw =  B[]w} Em (appNIw Γw Bw tw u) =
@@ -123,7 +123,7 @@ open import RelationCwfSubstitution {k = k}
           prop-has-all-paths B[]w (Bw u)
       -- = {!₂ (  Bm u )!}
       = ₂ (  Bm u )
-    eE =  fst=  (prop-has-all-paths Em (_ , B[]~)) 
+    eE =  fst=  (prop-path (TyP _ _) Em (_ , B[]~)) 
 
 ΣTm~ {Γw = Γw} Γm' {Aw = Elw Γw'' aw} (_ , am , refl) (appInfw Γw' Bw tw u) =
   _ ,
@@ -159,7 +159,7 @@ open import RelationCwfSubstitution {k = k}
     ΓAm~ : Con~ Γw' (₁ Γm M.▶ ₁ Am)
     ΓAm~  rewrite prop-has-all-paths Γw' (▶w Γw Aw)
       = Γm , Am , refl
-    eC = fst=  (prop-has-all-paths Cm (_ , ΓAm~ ))
+    eC = fst=  (prop-path (ConP _) Cm (_ , ΓAm~ ))
     wE~ : Ty~ wkEw
           (transport! M.Ty eC (₁ Am M.[ M.wk ]T))
     wE~ =
@@ -169,7 +169,7 @@ open import RelationCwfSubstitution {k = k}
 
     eE = from-transp! _ _
       -- (fst=  (prop-has-all-paths Em (_ , {!wE~!})))
-      (fst=  (prop-has-all-paths Em (_ , wE~ )))
+      (fst=  (prop-path (TyP _ _) Em (_ , wE~ )))
 
 ΣVar~ {Γw = Cw'} Cm {Aw = wkEw} Em (VSw Γp Γw Ap Aw Bp Bw xp xw)  =
   _ , Γm , Am , Bm , xm , eC , eE ,
@@ -183,7 +183,7 @@ open import RelationCwfSubstitution {k = k}
    ΓAm~ : Con~ Cw' (₁ Γm M.▶ ₁ Am)
    ΓAm~ rewrite prop-has-all-paths Cw' (▶w Γw Aw)
     =  Γm , Am , refl 
-   eC = fst=  (prop-has-all-paths Cm (_ , ΓAm~ ))
+   eC = fst=  (prop-path (ConP _) Cm (_ , ΓAm~ ))
    wE~ : Ty~ wkEw
     (transport! M.Ty eC (₁ Bm M.[ M.wk ]T))
     -- TODO: factoriser avec le cas Var~ précédent
@@ -193,7 +193,7 @@ open import RelationCwfSubstitution {k = k}
       (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , Level.lift refl) Bm))
 
    eE = from-transp! _ _
-    (fst=  (prop-has-all-paths Em (_ , wE~)))
+    (fst=  (prop-path (TyP _ _) Em (_ , wE~)))
 
 
 ΣSub~ : ∀ {Γ } {Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
@@ -231,4 +231,4 @@ open import RelationCwfSubstitution {k = k}
        
 
      eC : ₁ Cm ≡ (₁ Δm M.▶ ₁ Am)
-     eC = fst= (prop-has-all-paths Cm (_ , ΔA~ ))
+     eC = fst= (prop-path (ConP _) Cm (_ , ΔA~ ))

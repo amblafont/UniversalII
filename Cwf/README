@@ -1,4 +1,4 @@
-Works with Agda 2.5.4.1
+Works with Agda 2.6.0.1
 In this directory, the model has full substitutions and the recursor construct them
 
 Files (in the order of dependancy)
@@ -27,3 +27,5 @@ DO i use the fact that the morphism preserve composition when showing uniqueness
 Probably, but if not, can I show it ?
 
 TODO remove subT
+
+TODO remove useless typeclass instances (most of them are ignored by the new version of Agda)

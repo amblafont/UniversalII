@@ -32,12 +32,12 @@ Var[]~ {Γm} {σw = ,sw  Γw' {σp = σ} σw Aw' {tp = t} tw}
    {xw = V0w Γp Γw Ap Aw} (xm , Δm , Am' , refl , refl , refl)
   rewrite wk[,]T Ap t σ
   | prop-has-all-paths Γw' Γw
-  | prop-has-all-paths Δm' Δm
+  | prop-path (ConP Γw) Δm' Δm
 
   | prop-has-all-paths Aw' Aw
-  | prop-has-all-paths Am'' Am'
+  | prop-path (TyP Aw _) Am'' Am'
 
-  | prop-has-all-paths eC refl
+  | uip eC refl
   | eS
     =
       tr!-over (λ Em → Tm~ tw {Am = Em}) (M.vz[,] (₁ σm') (₁ Am') (₁ tm')) (₂ tm')
@@ -48,12 +48,12 @@ Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
   (_ , Δm , Am' , Bm , xm , refl , refl , refl  )
   rewrite wk[,]T Bp t σ
   | prop-has-all-paths Δw' Δw
-  | prop-has-all-paths Δm' Δm
+  | prop-path (ConP Δw) Δm' Δm
 
   | prop-has-all-paths Aw' Aw
-  | prop-has-all-paths Am'' Am'
+  | prop-path (TyP Aw _) Am'' Am'
 
-  | prop-has-all-paths eC refl
+  | uip eC refl
   | eS
   =
     tr!-over (λ Em → Tm~ (Varw[] xw σw) {Am = Em})

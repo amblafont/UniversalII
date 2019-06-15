@@ -133,13 +133,13 @@ liftV~ {.(Γp ▶p Ap)} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙
     {xw = V0w Γp Γw Ap Aw} {Am = Am} (xm , Γm' , Am' , eC , eE , ex)
    rewrite
        prop-has-all-paths Γw' Γw
-     | prop-has-all-paths Γm' Γm
+     | prop-path (ConP Γw) Γm' Γm
 
      | prop-has-all-paths Aw' Aw
-     | prop-has-all-paths Am'' Am'
+     | prop-path (TyP Aw (₁ Γm)) Am'' Am' 
      -- | eC | eE | ex
 
-     | prop-has-all-paths eC refl
+     | uip eC refl
      | eE | ex
    =
     (_ , Γm , Am' , refl) ,
@@ -184,12 +184,12 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , (Δm , Am , re
 -- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} Δm {.(liftT 0 C)} Cm {.0} {V0w .(Γ ^^ Δ) Γw' .C Aw} (zm , Γm' , Am' , eC , eT , ez) 
   rewrite (lift-liftT ∣ Δ ∣ C)
   | prop-has-all-paths Δw Γw
-  | prop-has-all-paths Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
+  | prop-path (ConP Γw) Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
 
   | prop-has-all-paths Cw Aw
-  | prop-has-all-paths Am' Am
+  | prop-path (TyP Aw _) Am' Am
 
-  | prop-has-all-paths eC refl
+  | uip eC refl
   | eT | ez
   =
   -- needed : weakening of telescopes
@@ -215,12 +215,12 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , ref
    (zm , Γm' , Am' , Bm , xm , eC , eE , ez )
   rewrite
     prop-has-all-paths Δw Γw
-  | prop-has-all-paths Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
+  | prop-path (ConP Γw) Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
 
   | prop-has-all-paths Cw Aw
-  | prop-has-all-paths Cm Am'
+  | prop-path (TyP Aw _) Cm Am'
 
-  | prop-has-all-paths eC refl
+  | uip eC refl
   | eE | ez
   | (n-lift-liftT 0 ∣ Δ ∣ Bp)
   =

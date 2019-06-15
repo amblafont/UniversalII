@@ -1,4 +1,5 @@
-{-# OPTIONS --rewriting  #-}
+{-# OPTIONS --rewriting   #-}
+-- --overlapping-instances
 -- an attempt with rewrite rules, but by postulating the model rather than defining a record (because rewrite rules don't work)
 -- in this file: definition of the functional relation, and proof that the relation is indeed functional
 
@@ -122,11 +123,22 @@ module RelationCwf {k : Level.Level}  where
       Σ (Cm ≡ (₁ Δm M.▶ ₁ Am)) λ eC →
       sm == ₁ σm M.,s ₁ tm [ M.Sub Γm ↓ eC ]
 
+  ConP : ∀ {Γp} Γw → is-prop (∃ (Con~ {Γp} Γw))
+  TyP : ∀ {Γ A} (Aw : Tyw Γ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
+  TmP : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
+  VarP : ∀ {Γ A x} (x : Varw Γ A x) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
+
+  -- new version of Agda does not support explicit arguments for instances
   instance
-    ConP : ∀ {Γp} Γw → is-prop (∃ (Con~ {Γp} Γw))
-    TyP : ∀ {Γ A} (Aw : Tyw Γ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
-    TmP : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
-    VarP : ∀ {Γ A x} (x : Varw Γ A x) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
+    i-ConP : ∀ {Γp} {Γw} → is-prop (∃ (Con~ {Γp} Γw))
+    i-TyP : ∀ {Γ A} {Aw : Tyw Γ A} {Γm} → is-prop (∃ (Ty~ Aw {Γm}))
+    i-TmP : ∀ {Γ A t} {tw : Tmw Γ A t} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Tm~ tw {Γm}{Am}))
+    i-VarP : ∀ {Γ A x} {x : Varw Γ A x} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Var~ x {Γm}{Am}))
+
+    i-ConP {Γw = Γw} = ConP Γw 
+    i-TyP {Aw = Aw}{Γm = Γm} = TyP Aw Γm
+    i-TmP {tw = tw}{Am = Am} = TmP tw Am 
+    i-VarP {Am = Am} = VarP _ Am
   -- Var~ : ∀ {Γ A x} (xw : Varw Γ A x) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i M.j)
 
     ConP {.∙p} ∙w =  Lift-pathto-is-prop M.∙
@@ -134,6 +146,12 @@ module RelationCwf {k : Level.Level}  where
      equiv-preserves-level
       (Σ₁-×-comm   ∘e
       Σ-emap-r λ Γm → Σ₁-×-comm)
+      {{  
+        Σ-level (ConP Cw)
+              (λ x →
+                  Σ-level (TyP Aw (₁ x)) (λ x₁ → pathto-is-prop (₁ x M.▶ ₁ x₁)))
+
+        }}
 
 -- TyP {Γ}{ A} Aw Γm = {!!}
     TyP {.Γp} {.Up} (Uw Γp Γw) Γm = Lift-pathto-is-prop M.U
@@ -144,7 +162,9 @@ module RelationCwf {k : Level.Level}  where
       Σ₁-×-comm
       )
       {{ Σ-level (TmP Aw {Γm} M.U) λ Am' →
-          it
+           Σ-level (TyP Bw (Γm M.▶ M.El (₁ Am')))
+               (λ x → pathto-is-prop (M.Π (₁ Am') (₁ x)))
+
          }}
     TyP {Γ}  (ΠNIw Γw {T}{Bp} Bw) Γm =
       
@@ -154,7 +174,7 @@ module RelationCwf {k : Level.Level}  where
       -- ∘e Σ-emap-r λ Am' → {!!}
       )
       -- This needs funext actually
-      {{  Σ-level (Π-level (λ a → it)) λ Am' → it }}
+      {{  Σ-level (Π-level (λ a →  TyP (Bw a) Γm )) λ Am' →  pathto-is-prop (M.ΠNI (λ a → ₁ (Am' a)))  }}
       
       -- Σ-emap-r λ Am' →
       -- ?
@@ -162,7 +182,7 @@ module RelationCwf {k : Level.Level}  where
     TyP {Γ} {.(Elp _)} (Elw Γw aw) Γm =
 
       equiv-preserves-level Σ₁-×-comm
-      {{ Σ-level (TmP aw {Γm} M.U) λ Am' → it }}
+      {{ Σ-level (TmP aw {Γm} M.U) λ Am' →  pathto-is-prop (M.El (₁ Am'))  }}
 
 
     TmP {Γ} {A} {.(V _)} (vw xw) {Γm} Am = VarP xw Am
@@ -180,21 +200,22 @@ module RelationCwf {k : Level.Level}  where
           Σ-level (TyP Bw _) λ Bm' →
           Σ-level (TmP tw _) λ tm' →
           Σ-level (TmP uw _) λ um' →
-          Σ-level it λ eC' → pathOverto-is-prop (M.Tm Γm) eC' _
+          Σ-level (all-paths-is-prop uip ) λ eC' → pathOverto-is-prop (M.Tm Γm) eC' _
           -- raise-level ⟨-2⟩ {!!}
           }}
     TmP   {t = appNI t u} (appNIw Γw {T}{Bp} Bw tw u) {Γm} Am =
       
+
        equiv-preserves-level
        (
       Σ₁-×-comm ∘e Σ-emap-r λ Am' →
       Σ₁-×-comm ∘e Σ-emap-r λ Bm' →
       Σ₁-×-comm 
        )
-       {{ Σ-level (Π-level (λ a → it)) λ Bm' →
+       {{ Σ-level (Π-level (λ a →  TyP (Bw a) Γm )) λ Bm' →
           
           Σ-level (TmP tw _) λ tm' →
-          Σ-level it λ eC' →
+          Σ-level (all-paths-is-prop uip ) λ eC' →
           pathOverto-is-prop (M.Tm Γm) eC' _
           
         }}
@@ -209,7 +230,7 @@ module RelationCwf {k : Level.Level}  where
        {{ Σ-level (Π-level (λ a → TmP (Bw a) M.U)) λ Bm' →
           
           Σ-level (TmP tw _) λ tm' →
-          Σ-level it λ eC' →
+          Σ-level (all-paths-is-prop uip ) λ eC' →
           pathOverto-is-prop (M.Tm Γm) eC' _
           
         }}
@@ -221,7 +242,7 @@ module RelationCwf {k : Level.Level}  where
        )
       -- This needs funext actually
        {{ Σ-level (Π-level (λ a → TmP (Bw a) _)) λ Bm' →
-            Σ-level it λ eT →
+            Σ-level ( all-paths-is-prop uip ) λ eT →
              pathOverto-is-prop (M.Tm Γm) eT _ }}
 
     VarP {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Γm} Am =
@@ -233,9 +254,9 @@ module RelationCwf {k : Level.Level}  where
       Σ₁-×-comm
       )
       {{ 
-        Σ-level it λ Γm' →
-        Σ-level it λ Am' →
-        Σ-level it λ eC' →
+        Σ-level ( ConP Γw ) λ Γm' →
+        Σ-level  (TyP Aw (₁ Γm'))  λ Am' →
+        Σ-level ( all-paths-is-prop uip ) λ eC' →
         Σ-level (uip-over-prop _ _ _ _) λ eE' →
         pathOverto-is-prop _ _ _
        }}
@@ -252,48 +273,53 @@ module RelationCwf {k : Level.Level}  where
 
       )
       {{ 
-         Σ-level it λ Γm' →
-          Σ-level it λ Am' →
-          Σ-level it λ Bm' →
-          Σ-level it λ xm' →
-          Σ-level it λ eC' →
+         Σ-level (ConP Γw ) λ Γm' →
+          Σ-level  (TyP Aw (₁ Γm'))  λ Am' →
+          Σ-level  (TyP Bw _)  λ Bm' →
+          Σ-level  (VarP xw _)  λ xm' →
+          Σ-level (all-paths-is-prop uip) λ eC' →
           Σ-level (uip-over-prop _ _ _ _) λ eE' →
           pathOverto-is-prop _ _ _
        }}
 
 
-    SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
-    -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
-    SubP {Γ} {.∙p} {.nil} nilw Γm Δm =
-      
-      equiv-preserves-level
-      Σ₁-×-comm
+  SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
 
+  instance
+    i-SubP : ∀ {Γ Δ s} {sw : Subw Γ Δ s} {Γm} {Δm} → is-prop (∃ (Sub~ sw {Γm}{Δm}))
+    i-SubP {sw = sw}{Γm = Γm}{Δm = Δm} = SubP sw Γm Δm
+
+  -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
+  SubP {Γ} {.∙p} {.nil} nilw Γm Δm =
+
+    equiv-preserves-level
+    Σ₁-×-comm
+
+    {{ 
+    Σ-level (all-paths-is-prop uip) λ eC' →
+      Lift-pathOverto-is-prop _ eC' M.ε
+      }}
+
+  SubP {Γ} {.(_ ▶p _)}  (,sw Δw sw Aw tw) Γm Δm =
+
+    equiv-preserves-level
+    (
+    Σ₁-×-comm ∘e Σ-emap-r λ Δm' →
+    Σ₁-×-comm ∘e Σ-emap-r λ σm' →
+    Σ₁-×-comm ∘e Σ-emap-r λ Am' →
+    Σ₁-×-comm ∘e Σ-emap-r λ tm' →
+    Σ₁-×-comm
+    )
       {{ 
-      Σ-level it λ eC' →
-        Lift-pathOverto-is-prop _ eC' M.ε
-       }}
-
-    SubP {Γ} {.(_ ▶p _)}  (,sw Δw sw Aw tw) Γm Δm =
-
-      equiv-preserves-level
-      (
-      Σ₁-×-comm ∘e Σ-emap-r λ Δm' →
-      Σ₁-×-comm ∘e Σ-emap-r λ σm' →
-      Σ₁-×-comm ∘e Σ-emap-r λ Am' →
-      Σ₁-×-comm ∘e Σ-emap-r λ tm' →
-      Σ₁-×-comm
-      )
-       {{ 
-         Σ-level it λ Δm' →
-         Σ-level it λ σm' →
-         Σ-level it λ Am' →
-         Σ-level (TmP tw (₁ Am' M.[ ₁ σm' ]T)) λ tm' →
-         Σ-level it λ eC' →
-          pathOverto-is-prop _ _ _
+        Σ-level (ConP Δw ) λ Δm' →
+        Σ-level ( SubP sw Γm (₁ Δm') ) λ σm' →
+        Σ-level ( TyP Aw (₁ Δm') ) λ Am' →
+        Σ-level (TmP tw (₁ Am' M.[ ₁ σm' ]T)) λ tm' →
+        Σ-level ( all-paths-is-prop uip ) λ eC' →
+        pathOverto-is-prop _ _ _
 
 
-       }}
+      }}
 
 
 
@@ -340,7 +366,7 @@ module RelationCwf {k : Level.Level}  where
     Σ (Σ _ (Con~' Γp Γw ))
     λ Γm → Σ (Σ _ (Ty~' _ Ap Aw (₁ Γm) ))
     λ Am →
-    -- this left associative stuff makes it easier to inhbabite thanks to pair=
+    -- this left associative stuff makes {! it !} easier to inhbabite thanks to pair=
     _,_  {A = Σ _ M.Ty}{B = λ x → M.Tm (₁ x)(₂ x)}
     (Δm , Cm) zm ≡
     (((₁ Γm M.▶ ₁ Am)  , _ ) , ( M.V0 (₁ Γm) (₁ Am)))
@@ -355,7 +381,7 @@ module RelationCwf {k : Level.Level}  where
     λ Am → Σ (Σ _ (Ty~' _ Bp Bw (₁ Γm) ))
     λ Bm → Σ (Σ _ (Var~' _ _ _ xw (₁ Γm) (₁ Bm) ))
     λ xm →
-    -- this left associative stuff makes it easier to inhbabite thanks to pair=
+    -- this left associative stuff makes {! it !} easier to inhbabite thanks to pair=
     _,_  {A = Σ _ M.Ty}{B = λ x → M.Tm (₁ x)(₂ x)}
     (Δm , Cm) zm ≡
     (((₁ Γm M.▶ ₁ Am)  , _ ) , ( M.wkt _ _ _ (₁ xm)))

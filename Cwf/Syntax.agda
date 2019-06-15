@@ -1,6 +1,7 @@
 {-
-Non-inductive parameters makes functional extension necessary.
+Non-inductive parameters, and infinitary parameters, makes functional extensionality necessary.
 This file should work without K, 
+
 
 Plan of the file
 - Definition of the (untyped) syntax
@@ -1070,16 +1071,28 @@ Varw= .(Γp ▶p Ap) .(liftT 0 Bp) .(S xp) (VSw Γp Γw Ap Aw Bp Bw xp xw) xw' =
     ...  | refl | refl | refl | refl with e
     ...  | refl = refl
 
-instance
-  ConwP : (Γp : Conp) → is-prop (Conw Γp)
-  TywP : (Γp : Conp)(Ap : Typ)  → is-prop (Tyw Γp Ap)
-  TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Tmw Γp Ap tp)
-  VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Varw Γp Ap xp)
 
-  ConwP Γp = all-paths-is-prop (Conw= Γp)
-  TywP Γp Ap = all-paths-is-prop (Tyw= Γp Ap)
-  TmwP Γp Ap tp = all-paths-is-prop (Tmw= Γp Ap tp)
-  VarwP Γp Ap xp  = all-paths-is-prop (Varw= Γp Ap xp)
+ConwP : (Γp : Conp) → is-prop (Conw Γp)
+TywP : (Γp : Conp)(Ap : Typ)  → is-prop (Tyw Γp Ap)
+TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Tmw Γp Ap tp)
+VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Varw Γp Ap xp)
+
+ConwP Γp = all-paths-is-prop (Conw= Γp)
+TywP Γp Ap = all-paths-is-prop (Tyw= Γp Ap)
+TmwP Γp Ap tp = all-paths-is-prop (Tmw= Γp Ap tp)
+VarwP Γp Ap xp  = all-paths-is-prop (Varw= Γp Ap xp)
+
+-- in the last version of agda, instance arguments must be implicit
+instance
+  i-ConwP : {Γp : Conp} → is-prop (Conw Γp)
+  i-TywP : {Γp : Conp}{Ap : Typ}  → is-prop (Tyw Γp Ap)
+  i-TmwP : {Γp : Conp}{Ap : Typ}{tp : Tmp}  → is-prop (Tmw Γp Ap tp)
+  i-VarwP : {Γp : Conp}{Ap : Typ}{xp : ℕ}  → is-prop (Varw Γp Ap xp)
+
+  i-ConwP = ConwP _
+  i-TywP = TywP _ _
+  i-TmwP = TmwP _ _ _
+  i-VarwP = VarwP _ _ _
 
 Subw= : (Γp : Conp)(Δp : Conp)(s : Subp)  → has-all-paths (Subw Γp Δp s)
 -- Subw= Γ Δ s sw1 sw2 = {!!}
@@ -1091,10 +1104,14 @@ Subw= Γ .(_ ▶p _) .(_ ∷ _) (,sw Δw sw Aw tw) (,sw Δw' sw' Aw' tw') =
   (prop-has-all-paths _ _)
   (prop-has-all-paths _ _)
 
+SubwP : (Γp : Conp) (Δp : Conp)(s : Subp) → is-prop (Subw Γp Δp s)
+-- SubwP Γ Δ s = {!!}
+SubwP Γ Δ s = all-paths-is-prop (Subw= Γ Δ s)
+
 instance
-  SubwP : (Γp : Conp) (Δp : Conp)(s : Subp) → is-prop (Subw Γp Δp s)
+  i-SubwP : {Γp : Conp} {Δp : Conp}{s : Subp} → is-prop (Subw Γp Δp s)
   -- SubwP Γ Δ s = {!!}
-  SubwP Γ Δ s = all-paths-is-prop (Subw= Γ Δ s)
+  i-SubwP = SubwP _ _ _
 
 
 wkV-keep : ∀ s x →  (S x [ keep s ]V) ≡ wkt (x [ s ]V)
