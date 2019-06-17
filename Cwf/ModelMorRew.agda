@@ -282,7 +282,7 @@ module _   where
 
     morTy~ {.Γp} Γw {.Up} (Uw Γp Γw') rewrite prop-has-all-paths Γw' Γw = lift refl
 
-    morTy~ {Γ} Γw' {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw)
+    morTy~ {Γ} Γw' {.(ΠΠp ( _) _)} (Πw Γw Aw Bw)
         rewrite prop-has-all-paths Γw Γw' 
       =
       (_ , morTm~ Γw' (Uw _ Γw') Aw) ,

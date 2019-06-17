@@ -103,7 +103,7 @@ data Typ  : Set  (lsucc i)
 data Typ where
   Up  : Typ
   Elp : Tmp → Typ
-  ΠΠp  : Typ → Typ → Typ
+  ΠΠp  : Tmp → Typ → Typ
   ΠNI : {T : Set i} → (T → Typ) → Typ
 -- data Varp : Set
 
@@ -145,7 +145,7 @@ liftT p (Elp x) = Elp (liftt p x)
 -- Γ , C , wkTel Δ ⊢ w_Δ A
 -- Γ , Δ , A ⊢ B
 -- Γ , C , wkTel Δ , wk_Δ A ⊢ w_Δ+1 B
-liftT p (ΠΠp A B) = ΠΠp (liftT p A) (liftT (1 + p) B)
+liftT p (ΠΠp A B) = ΠΠp (liftt p A) (liftT (1 + p) B)
 liftT p (ΠNI {A} B) = ΠNI λ a → liftT p (B a)
 
 wkT : Typ → Typ
@@ -198,7 +198,7 @@ l-subT p l Up = Up
 l-subT p l (Elp x) = Elp (l-subt p l x)
 -- Γ , C , p,  A ⊢ B and Γ ⊢ t : C
 -- then Γ , p , A ⊢ l-sub p+1 t B
-l-subT p l (ΠΠp A B) = ΠΠp (l-subT p l A) (l-subT (1 + p) l B)
+l-subT p l (ΠΠp A B) = ΠΠp (l-subt p l A) (l-subT (1 + p) l B)
 l-subT p l (ΠNI B) = ΠNI  (λ a → l-subT p l (B a))
 
 subTel : (l : Tmp) (Δ : Conp) → Conp
@@ -241,7 +241,7 @@ n-lift-liftT : ∀ n p q → liftT (S (n + p)) (liftT n q) ≡ liftT n (liftT (n
 
 n-lift-liftT n p Up = refl
 n-lift-liftT n p (Elp x) rewrite n-lift-liftt n p x = refl
-n-lift-liftT n p (ΠΠp A B) rewrite n-lift-liftT n p A | n-lift-liftT (S n) p B = refl
+n-lift-liftT n p (ΠΠp A B) rewrite n-lift-liftt n p A | n-lift-liftT (S n) p B = refl
 n-lift-liftT n p (ΠNI B) = ap ΠNI (funext (λ a → n-lift-liftT n p (B a) ))
 -- rewrite n-lift-liftT n p A | n-lift-liftT (S n) p B = refl
 
@@ -278,7 +278,7 @@ n-subT-wkT : ∀ n A z → l-subT n z (liftT n A) ≡ A
 
 n-subT-wkT n Up u = refl
 n-subT-wkT n (Elp x) z rewrite n-subt-wkt n x z = refl
-n-subT-wkT n (ΠΠp A B) u rewrite n-subT-wkT n A u | n-subT-wkT (S n) B u = refl
+n-subT-wkT n (ΠΠp A B) u rewrite n-subt-wkt n A u | n-subT-wkT (S n) B u = refl
 n-subT-wkT n (ΠNI B) u rewrite  (funext (λ a → n-subT-wkT n (B a) u)) = refl
 
 subT-wkT : ∀ A u → subT u (wkT A) ≡ A 
@@ -316,7 +316,7 @@ lift-l-subT : ∀ n p u B → liftT (n + p) (l-subT n u B) ≡ l-subT n (liftt p
 
 lift-l-subT n p u Up = refl
 lift-l-subT n p u (Elp x) rewrite lift-l-subt n p u x = refl
-lift-l-subT n p u (ΠΠp A B) rewrite lift-l-subT n p u A | lift-l-subT (S n) p u B = refl
+lift-l-subT n p u (ΠΠp A B) rewrite lift-l-subt n p u A | lift-l-subT (S n) p u B = refl
 lift-l-subT n p u (ΠNI B) rewrite funext (λ a → lift-l-subT n p u (B a)) = refl
 
 
@@ -345,7 +345,7 @@ l-subT-liftT Δ u n Up = refl
 l-subT-liftT Δ u n (Elp x) rewrite l-subt-liftt Δ u n x = refl
 l-subT-liftT Δ u n (ΠΠp A B)
   rewrite
-    l-subT-liftT Δ u n A | l-subT-liftT Δ u (S n) B
+    l-subt-liftt Δ u n A | l-subT-liftT Δ u (S n) B
   = refl
 l-subT-liftT Δ u n (ΠNI B)
   rewrite funext (λ a →  l-subT-liftT Δ u n (B a))
@@ -390,7 +390,7 @@ l-subT-l-subT : ∀ n p z u B → l-subT (n + p) z (l-subT n u B) ≡ l-subT n (
 
 l-subT-l-subT n p z u Up = refl
 l-subT-l-subT n p z u (Elp x) rewrite l-subt-l-subt n p z u x = refl
-l-subT-l-subT n p z u (ΠΠp A B) rewrite l-subT-l-subT n p z u A | l-subT-l-subT (S n) p z u B = refl
+l-subT-l-subT n p z u (ΠΠp A B) rewrite l-subt-l-subt n p z u A | l-subT-l-subT (S n) p z u B = refl
 l-subT-l-subT n p z u (ΠNI B) rewrite funext (λ a → l-subT-l-subT n p z u (B a)) = refl
 
 
@@ -426,7 +426,7 @@ err [ s ]t = err
 _[_]T : Typ → Subp → Typ
 Up [ s ]T = Up
 Elp x [ s ]T = Elp (x [ s ]t)
-ΠΠp A B [ s ]T = ΠΠp (A [ s ]T) (B [ keep s ]T)
+ΠΠp A B [ s ]T = ΠΠp (A [ s ]t) (B [ keep s ]T)
 ΠNI B [ s ]T = ΠNI  (λ a → (B a) [ s ]T)
 
 
@@ -496,7 +496,7 @@ liftt=wkS n σ err = refl
 liftT=wkS : ∀ n σp Ap → (Ap [ iter n keep (wkS σp) ]T ) ≡ liftT n (Ap [ iter n keep σp ]T)
 liftT=wkS n σp Up = refl
 liftT=wkS n σp (Elp x) = ap Elp (liftt=wkS n σp x)
-liftT=wkS n σp (ΠΠp Ap Bp) rewrite liftT=wkS n σp Ap
+liftT=wkS n σp (ΠΠp Ap Bp) rewrite liftt=wkS n σp Ap
   | liftT=wkS (S n) σp Bp
   = refl
 liftT=wkS n σp (ΠNI Bp) rewrite 
@@ -534,7 +534,7 @@ liftₛT : ∀ n Ap σp tp → (liftT n Ap [ iter n keep (tp ∷ σp) ]T) ≡ (A
 
 liftₛT n Up σp' tp = refl
 liftₛT n (Elp x) σp' tp rewrite liftₛt n x σp' tp  = refl
-liftₛT n (ΠΠp Ap Bp) σp' tp rewrite liftₛT n Ap σp' tp 
+liftₛT n (ΠΠp Ap Bp) σp' tp rewrite liftₛt n Ap σp' tp 
   = ap (ΠΠp _) ( liftₛT (S n) Bp σp' tp )
 liftₛT n (ΠNI Bp) σp' tp 
   = ap ΠNI  (funext (λ a → liftₛT n (Bp a) σp' tp ))
@@ -606,7 +606,7 @@ l-sub[]T : ∀ n A z σ → (l-subT n z A [ iter n keep σ ]T) ≡ l-subT n (z [
 -- l-sub[]T n A z σ = ?
 l-sub[]T n Up z σ = refl
 l-sub[]T n (Elp x) z σ rewrite l-sub[]t n x z σ = refl
-l-sub[]T n (ΠΠp A B) z σ rewrite l-sub[]T n A z σ = ap (ΠΠp _) (l-sub[]T (S n) B z σ)
+l-sub[]T n (ΠΠp A B) z σ rewrite l-sub[]t n A z σ = ap (ΠΠp _) (l-sub[]T (S n) B z σ)
 l-sub[]T n (ΠNI B) z σ = ap ΠNI (funext (λ a → (l-sub[]T n (B a) z σ)))
 
 {-
@@ -648,7 +648,7 @@ data Conw where
 data Tyw where
   Uw : (Γp : Conp)(Γw : Conw Γp) → Tyw Γp Up
   Πw : ∀ {Γp : Conp}(Γw : Conw Γp){ap : Tmp}(Aw : Tmw Γp Up ap){Bp : Typ}(Bw : Tyw (Γp ▶p Elp ap) Bp)
-    → Tyw Γp (ΠΠp (Elp ap) Bp)
+    → Tyw Γp (ΠΠp ap Bp)
   ΠNIw : 
      ∀ {Γp : Conp}(Γw : Conw Γp){T : Set i} {Bp : T → Typ}(Bw : ∀ t → Tyw Γp (Bp t))
     → Tyw Γp (ΠNI Bp)
@@ -658,7 +658,7 @@ data Tmw where
     Tmw Γp Ap (V xp)
   appw : (Γp : Conp)(Γw : Conw Γp)(ap : Tmp)(aw : Tmw Γp Up ap)(Bp : Typ)
      (Bw : Tyw (Γp ▶p Elp ap ) Bp)
-     (t : Tmp)(tw : Tmw Γp (ΠΠp (Elp ap) Bp) t)
+     (t : Tmp)(tw : Tmw Γp (ΠΠp ap Bp) t)
      (u : Tmp)(tw : Tmw Γp (Elp ap) u)
      → Tmw Γp (subT u Bp) (app t u)
   appNIw : ∀ {Γp : Conp}(Γw : Conw Γp)
@@ -777,7 +777,7 @@ subTelw {Γp} {Ap} {Δp ▶p Bp} {up} uw (▶w Δw Bw) = ▶w (subTelw uw Δw) (
 
 
 subTw {Γp} {Ep} {Δp} {zp} {.Up} zw (Uw .(Γp ▶p Ep ^^ Δp) Γw) = Uw (Γp ^^ subTel zp Δp) (subTelw zw Γw)
-subTw {Γp} {Ep} {Δp} {zp} {.(ΠΠp (Elp _) _)} zw (Πw Γw Aw Bw) =
+subTw {Γp} {Ep} {Δp} {zp} {.(ΠΠp ( _) _)} zw (Πw Γw Aw Bw) =
   Πw (subTelw zw Γw) (subtw {Δp = Δp} zw Aw) (subTw zw Bw )
 subTw {Γp} {Ep} {Δp} {zp}  zw (ΠNIw Γw Bw) = ΠNIw (subTelw zw Γw) (λ a → subTw zw (Bw a) )
   -- Πw (subTelw zw Γw) (subtw {Δp = Δp} zw Aw) (subTw zw Bw )
@@ -857,19 +857,20 @@ Sub-Con2w nilw = ∙w
 Sub-Con2w (,sw Δw σw Aw tw) = ▶w Δw Aw
 
 -- needed for the Π case of preservation of typing by the substitution. (Tyw[])
-keepw : ∀ {Γp}(Γw : Conw Γp){Δp}{σp}(σw : Subw Γp Δp σp) {Ap}(Aw : Tyw Δp Ap) → Subw (Γp ▶p (Ap [ σp ]T )) (Δp ▶p Ap) (keep σp)
-keepw {Γp}Γw {Δp}{σp}σw {Ap}Aw  = ,sw (Sub-Con2w σw) (wkSw σw (Tyw[] Aw Γw σw)) Aw
+-- Δw is needed for Elw
+keepw : ∀ {Γp}(Γw : Conw Γp){Δp}(Δw : Conw Δp){σp}(σw : Subw Γp Δp σp) {Ap}(Aw : Tmw Δp Up Ap) → Subw (Γp ▶p (Elp Ap [ σp ]T )) (Δp ▶p Elp Ap) (keep σp)
+keepw {Γp}Γw {Δp}Δw{σp}σw {Ap}Aw  = ,sw (Sub-Con2w σw) (wkSw σw ( Elw Γw (Tmw[] Aw Γw σw) )) (Elw Δw Aw)
 -- I need to know that Γ is well typed.
-  (vw (transport! (λ x → Varw (Γp ▶p (Ap [ σp ]T)) x 0) (wkT=wkS σp Ap )
-    (V0w Γp Γw (Ap [ σp ]T) (Tyw[]  Aw Γw σw))))
+  (vw (transport! (λ x → Varw (Γp ▶p (Elp Ap [ σp ]T)) x 0) (wkT=wkS σp (Elp Ap) )
+    (V0w Γp Γw (Elp Ap [ σp ]T) (Elw Γw (Tmw[]  Aw Γw σw)))))
 
 
 -- Tyw[] {Γp}{Ap} Aw {Δp}{σp}σw = {!!}
 Tyw[] {Γp} {.Up} (Uw Γp Γw) {Δp} Δw {σp} σw = Uw Δp Δw
-Tyw[] {Γp} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) {Δp} Δw {σp} σw = Πw Δw (Tmw[] Aw Δw σw )
+Tyw[] {Γp} {.(ΠΠp _ _)} (Πw Γw Aw Bw) {Δp} Δw {σp} σw = Πw Δw (Tmw[] Aw Δw σw )
   (Tyw[] Bw {Δp ▶p _}
   (▶w Δw (Elw Δw (Tmw[] Aw Δw σw )))
-    (keepw Δw σw (Elw Γw Aw)))
+    (keepw Δw Γw σw Aw))
 Tyw[] {Γp}  (ΠNIw Γw Bw) {Δp} Δw {σp} σw = ΠNIw Δw (λ a → Tyw[] (Bw a) Δw σw)
 Tyw[] {Γp} {.(Elp _)} (Elw Γw aw) {Δp} Δw {σp} σw = Elw Δw (Tmw[] aw Δw σw )
 
@@ -879,7 +880,7 @@ Tmw[] {Γp} {.(app t u)} {.(l-subT 0 u Bp)} (appw Γp Γw ap aw Bp Bw t tw u uw)
    rewrite sub[]T Bp u σp
    =
   appw Δp Δw (ap [ σp ]t) (Tmw[] aw Δw σw) (Bp [ keep σp ]T)
-    (Tyw[] Bw (▶w Δw (Elw Δw (Tmw[] aw Δw σw))) (keepw Δw σw (Elw Γw aw)))
+    (Tyw[] Bw (▶w Δw (Elw Δw (Tmw[] aw Δw σw))) (keepw Δw Γw σw aw))
     (t [ σp ]t) (Tmw[] tw Δw σw) (u [ σp ]t) (Tmw[] uw Δw σw)
 Tmw[] {Γp} (appNIw Γw Bw tw u) {Δp} Δw {σp} σw =
   appNIw Δw (λ a → Tyw[] (Bw a) Δw σw) (Tmw[] tw Δw σw) u
@@ -960,7 +961,7 @@ Conw= .(_ ▶p _) (▶w Γw Aw) (▶w Γw' Aw')
   = refl
 
 Tyw= Γp .Up (Uw .Γp Γw) (Uw .Γp Γw') rewrite Conw= _ Γw Γw' = refl
-Tyw= Γp .(ΠΠp (Elp _) _) (Πw Γw Aw Bw) (Πw Γw' Aw' Bw')
+Tyw= Γp .(ΠΠp _ _) (Πw Γw Aw Bw) (Πw Γw' Aw' Bw')
   rewrite Conw= _ Γw Γw' | Tmw= _ _ _ Aw Aw' |  Tyw= _ _ Bw Bw'
   = refl
 Tyw= Γp  _ (ΠNIw Γw Bw) (ΠNIw Γw' Bw')
@@ -980,7 +981,7 @@ Tmw= Γp _ _ (appw .Γp Γw ap aw Bp Bw t tw u uw) tw' =
       appw Γp Γw ap aw Bp Bw t tw u uw == ttw 
         [ (λ D → Tmw _  D (app t u)) ↓ e ]
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
-   -- remarquons que t a le type ΠΠp (Elp ap') Bp' et le type ΠΠ (Elp ap') Bp
+   -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper
        .(l-subT 0 u Bp') e (appw .Γp Γw' ap' aw' Bp' Bw' .t tw' .u uw')
       
@@ -997,7 +998,7 @@ Tmw= Γp _ _ (appNIw Γw {Bp = Bp}Bw {t = t}tw u) tw' =
         [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
 
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
-   -- remarquons que t a le type ΠΠp (Elp ap') Bp' et le type ΠΠ (Elp ap') Bp
+   -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper _ e (appNIw  Γw' {Bp =  Bp'} Bw' tw' .u)
       with uniqueTypet tw' tw | e 
     ...  | refl | refl with Conw= _ Γw Γw' | funext (λ a → Tyw= _ _ (Bw a) (Bw' a)) 
@@ -1017,7 +1018,7 @@ Tmw= Γp .(Elp _) .(appNI _ u) (appInfw Γw {Bp = Bp} Bw {t = t} tw u) tw' =
         [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
 
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
-   -- remarquons que t a le type ΠΠp (Elp ap') Bp' et le type ΠΠ (Elp ap') Bp
+   -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper _ e (appInfw  Γw' {Bp =  Bp'} Bw' tw' .u)
       with uniqueTypet tw' tw | e 
     ...  | refl | refl with Conw= _ Γw Γw' | funext (λ a → Tmw= _ _ _ (Bw a) (Bw' a)) 
@@ -1043,7 +1044,7 @@ Tmw= Γp _ _ (appNIw Γw {Bp = Bp}Bw {t = t}tw u) tw' =
         [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
 
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
-   -- remarquons que t a le type ΠΠp (Elp ap') Bp' et le type ΠΠ (Elp ap') Bp
+   -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper _
         e (appNIw  Γw' {Bp =  Bp'} Bw' tw' .u)
       with uniqueTypet tw' tw | e 
@@ -1156,7 +1157,7 @@ keep∘ s1 s2 rewrite wkS∘ s1 s2 = refl
 [∘]T Up s1 s2 = refl
 [∘]T (Elp x) s1 s2 = ap Elp ([∘]t x s1 s2)
 [∘]T (ΠΠp A B) s1 s2
-  rewrite [∘]T A s1 s2
+  rewrite [∘]t A s1 s2
   | keep∘ s1 s2
   | [∘]T B (keep s1) (keep s2)
   =
@@ -1287,8 +1288,8 @@ ass {σ}{δ}{ν} =
 [<>]T-n : ∀ {Γ}{E}{Δ}{A}  (Aw : Tyw ((Γ ▶p E) ^^ Δ) A)  z →
   (A [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]T) ≡ l-subT ∣ Δ ∣ z A
 [<>]T-n {Γ} {E} {Δ} {.Up} (Uw .(Γ ▶p E ^^ Δ) Γw) z = refl
-[<>]T-n {Γ} {E} {Δ} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) z =
-  ap2 ΠΠp (ap Elp ([<>]t-n Aw z)) ([<>]T-n {Δ = Δ ▶p _} Bw z)
+[<>]T-n {Γ} {E} {Δ} {.(ΠΠp _ _)} (Πw Γw Aw Bw) z =
+  ap2 ΠΠp ( ([<>]t-n Aw z)) ([<>]T-n {Δ = Δ ▶p _} Bw z)
 [<>]T-n {Γ} {E} {Δ}  (ΠNIw Γw  Bw) z = ap ΠNI (funext (λ a → [<>]T-n (Bw a) z))
 [<>]T-n {Γ} {E} {Δ} {.(Elp _)} (Elw Γw aw) z = ap Elp ([<>]t-n aw z)
 

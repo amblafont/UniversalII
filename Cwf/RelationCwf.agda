@@ -44,7 +44,7 @@ module RelationCwf {k : Level.Level}  where
 
 -- Ty~ {Γ}{E} Ew {Cm} Em = {!Ew!}
   Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = Lift {ℓ = lmax M.j k} (Em ≡ M.U )
-  Ty~ {Γ} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) {Cm} Em =
+  Ty~ {Γ} {.(ΠΠp ( _) _)} (Πw Γw Aw Bw) {Cm} Em =
     Σ (∃ (Tm~ Aw {Cm} {M.U})) λ am →
     Σ (∃ (Ty~ Bw {Cm M.▶ M.El (₁ am)} )) λ Bm →
       Em ≡ M.Π (₁ am) (₁ Bm)
@@ -155,7 +155,7 @@ module RelationCwf {k : Level.Level}  where
 
 -- TyP {Γ}{ A} Aw Γm = {!!}
     TyP {.Γp} {.Up} (Uw Γp Γw) Γm = Lift-pathto-is-prop M.U
-    TyP {Γ} {.(ΠΠp (Elp _) _)} (Πw Γw Aw Bw) Γm =
+    TyP {Γ} {.(ΠΠp ( _) _)} (Πw Γw Aw Bw) Γm =
       equiv-preserves-level
       (
       Σ₁-×-comm ∘e Σ-emap-r λ Am' →
@@ -345,7 +345,7 @@ module RelationCwf {k : Level.Level}  where
     λ Am → Δm ≡ (₁ Γm M.▶ ₁ Am )
 
   Ty~' Γp .Up (Uw .Γp Γw) Δm Cm = Cm ≡ M.U Δm
-  Ty~' Γp .(ΠΠp (Elp ap) Bp) (Πw  Γw {ap} Aw {Bp} Bw) Δm Cm =
+  Ty~' Γp .(ΠΠp ( ap) Bp) (Πw  Γw {ap} Aw {Bp} Bw) Δm Cm =
     Σ (Σ _ (Tm~' _ _ ap Aw Δm (M.U Δm) ))
     λ am → Σ (Σ _ (Ty~' _ Bp Bw (Δm M.▶ M.El Δm  (₁ am))))
     λ Bm → Cm ≡ M.ΠΠ Δm _ (₁ Bm)
