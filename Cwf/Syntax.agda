@@ -633,61 +633,72 @@ sub[]T = l-sub[]T 0
 -- Well-formedness predicates
 --------------------------------------------------------------------------------
 
+infix 3 _⊢
+infix 3 _⊢_
+infix 3 _⊢_∈_
+infix 3 _⊢_∈v_
+
 -- It is easy to show that w is propositional, but we don't actually
 -- need that proof here. Also, note that Tyw Γ A implies Conw Γ.
-data Conw : (Γp : Conp) → Set (lsucc i)
-data Tyw  : Conp → (Ap : Typ)   → Set (lsucc i)
-data Tmw : Conp → Typ →   Tmp → Set(lsucc i)
-data Varw : Conp → Typ → ℕ → Set(lsucc i)
+data _⊢ : (Γp : Conp) → Set (lsucc i)
+data _⊢_  : Conp → (Ap : Typ)   → Set (lsucc i)
+data _⊢_∈_ : Conp → Tmp → Typ → Set(lsucc i)
+data _⊢_∈v_ : Conp → ℕ → Typ → Set(lsucc i)
 
 
+-- some aliases
+Conw = _⊢
+Tyw = _⊢_
+Tmw = λ Γ A t → Γ ⊢ t ∈ A
+Varw = λ Γ A x → Γ ⊢ x ∈v A
 
-data Conw where
+data _⊢ where
   ∙w : Conw ∙p
-  ▶w : ∀ {Γp} (Γw : Conw Γp){Ap}(Aw : Tyw Γp Ap) → Conw (Γp ▶p Ap)
-data Tyw where
-  Uw : (Γp : Conp)(Γw : Conw Γp) → Tyw Γp Up
-  Πw : ∀ {Γp : Conp}(Γw : Conw Γp){ap : Tmp}(Aw : Tmw Γp Up ap){Bp : Typ}(Bw : Tyw (Γp ▶p Elp ap) Bp)
-    → Tyw Γp (ΠΠp ap Bp)
+  ▶w : ∀ {Γp} (Γw : Γp ⊢){Ap}(Aw : Γp ⊢ Ap) → (Γp ▶p Ap) ⊢
+data _⊢_ where
+  Uw : (Γp : Conp)(Γw : Γp ⊢) → Γp ⊢ Up
+  Πw : ∀ {Γp : Conp}(Γw : Γp ⊢){ap : Tmp}(Aw : Γp ⊢ ap ∈ Up){Bp : Typ}(Bw : (Γp ▶p Elp ap) ⊢ Bp)
+    → Γp ⊢ (ΠΠp ap Bp)
   ΠNIw : 
-     ∀ {Γp : Conp}(Γw : Conw Γp){T : Set i} {Bp : T → Typ}(Bw : ∀ t → Tyw Γp (Bp t))
-    → Tyw Γp (ΠNI Bp)
-  Elw : ∀ {Γp}(Γw : Conw Γp){ap}(aw : Tmw Γp Up ap) → Tyw Γp (Elp ap)
-data Tmw where
-  vw : ∀ {Γp} {Ap : Typ}{xp : ℕ}(xw : Varw Γp Ap xp) →
-    Tmw Γp Ap (V xp)
-  appw : (Γp : Conp)(Γw : Conw Γp)(ap : Tmp)(aw : Tmw Γp Up ap)(Bp : Typ)
-     (Bw : Tyw (Γp ▶p Elp ap ) Bp)
-     (t : Tmp)(tw : Tmw Γp (ΠΠp ap Bp) t)
-     (u : Tmp)(tw : Tmw Γp (Elp ap) u)
-     → Tmw Γp (subT u Bp) (app t u)
+     ∀ {Γp : Conp}(Γw : Γp ⊢){T : Set i} {Bp : T → Typ}(Bw : ∀ t → Γp ⊢ (Bp t))
+    → Γp ⊢ (ΠNI Bp)
+  Elw : ∀ {Γp}(Γw : Γp ⊢){ap}(aw : Γp ⊢ ap ∈ Up) → Γp ⊢ (Elp ap)
+data _⊢_∈_ where
+  vw : ∀ {Γp} {Ap : Typ}{xp : ℕ}(xw : Γp ⊢ xp ∈v Ap) →
+     Γp ⊢ V xp ∈ Ap
+  appw : (Γp : Conp)(Γw : Γp ⊢)(ap : Tmp)(aw : Γp ⊢ ap ∈ Up)(Bp : Typ)
+     (Bw : (Γp ▶p Elp ap ) ⊢ Bp)
+     (t : Tmp)(tw : Γp ⊢ t ∈ (ΠΠp ap Bp))
+     (u : Tmp)(tw : Γp ⊢ u ∈ (Elp ap))
+     → Γp ⊢ app t u ∈ (subT u Bp)
   appNIw : ∀ {Γp : Conp}(Γw : Conw Γp)
-    {T : Set i} {Bp : T → Typ}(Bw : ∀ t → Tyw Γp (Bp t))
-     {t : Tmp}(tw : Tmw Γp (ΠNI Bp) t)
+    {T : Set i} {Bp : T → Typ}(Bw : ∀ t → Γp ⊢ (Bp t))
+     {t : Tmp}(tw : Γp ⊢ t ∈ (ΠNI Bp))
      (u : T)
-     → Tmw Γp (Bp u) (appNI t u)
+     → Γp ⊢ (appNI t u) ∈ Bp u
   ΠInfw : 
-     ∀ {Γp : Conp}(Γw : Conw Γp)
-      {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Tmw Γp Up (Bp t))
+     ∀ {Γp : Conp}(Γw : Γp ⊢)
+      {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Γp ⊢ (Bp t) ∈ Up)
       → Tmw Γp Up (ΠInf Bp)
-  appInfw : ∀ {Γp : Conp}(Γw : Conw Γp)
-    {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Tmw Γp Up (Bp t))
-     {t : Tmp}(tw : Tmw Γp (Elp (ΠInf Bp)) t)
+  appInfw : ∀ {Γp : Conp}(Γw : Γp ⊢)
+    {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Γp ⊢ Bp t ∈ Up)
+     {t : Tmp}(tw : Γp ⊢ t ∈ (Elp (ΠInf Bp)))
      (u : T)
-     → Tmw Γp (Elp (Bp u)) (appNI t u)
+     → Γp ⊢ (appNI t u) ∈ (Elp (Bp u)) 
 
-data Varw where
-  V0w : (Γp : Conp) (Γw : Conw Γp) (Ap : Typ) (Aw : Tyw Γp Ap) → Varw (Γp ▶p Ap) (wkT Ap) 0
-  VSw : (Γp : Conp) (Γw : Conw Γp) (Ap : Typ) (Aw : Tyw Γp Ap)
-     (Bp : Typ) (Bw : Tyw Γp Bp)(xp : ℕ)(xw : Varw Γp Bp xp)
-     → Varw (Γp ▶p Ap) (wkT Bp) (1 + xp)
+data _⊢_∈v_ where
+  V0w : (Γp : Conp) (Γw : Γp ⊢) (Ap : Typ) (Aw : Γp ⊢ Ap) →  (Γp ▶p Ap) ⊢ 0 ∈v (wkT Ap) 
+  VSw : (Γp : Conp) (Γw : Γp ⊢) (Ap : Typ) (Aw : Γp ⊢ Ap)
+     (Bp : Typ) (Bw : Γp ⊢ Bp)(xp : ℕ)(xw : Γp ⊢ xp ∈v Bp )
+     →  (Γp ▶p Ap) ⊢ (1 + xp) ∈v (wkT Bp) 
+
  
 data Subw (Γ : Conp) : Conp → Subp → Set (lsucc i) where
   nilw : Subw Γ ∙p nil
   ,sw : ∀ {Δp}
-    (Δw : Conw Δp)
-    {σp}(σw : Subw Γ Δp σp){Ap}(Aw : Tyw Δp Ap){tp}
-     (tw : Tmw Γ (Ap [ σp ]T) tp) →
+    (Δw : Δp ⊢)
+    {σp}(σw : Subw Γ Δp σp){Ap}(Aw : Δp ⊢ Ap){tp}
+     (tw : Γ ⊢ tp ∈ (Ap [ σp ]T)) →
      Subw Γ (Δp ▶p Ap) (tp ∷ σp)
 
 
