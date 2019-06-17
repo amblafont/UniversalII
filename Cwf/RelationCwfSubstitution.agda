@@ -90,7 +90,7 @@ keepEl~ : ∀ {Γp}{Γw : Conw Γp}(Γm : ∃ (Con~ Γw))
   {Δp}{Δw : Conw Δp}(Δm : ∃ (Con~ Δw))
   {σp}{σw : Subw Γp Δp σp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
   {Ap}{Aw : Tmw Δp Up Ap}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
-  Sub~ (keepw Γw σw (Elw Δw Aw))(₁ σm M.^ M.El (₁ Am))
+  Sub~ (keepw Γw Δw σw  Aw)(₁ σm M.^ M.El (₁ Am))
 
 keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   rewrite prop-has-all-paths (Sub-Con2w σw) Δw
@@ -128,7 +128,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   {B}{Bw : Tyw (Δ ▶p Elp A) B} (Bm : ∃ (Ty~ Bw {₁ Δm M.▶ M.El (₁ am) }))
   →
   -- Σ (M.Ty (₁ Γm M.▶ M.El (₁ am M.[ ₁ σm ]t)))
-    (Ty~ (Tyw[] Bw (▶w Γw (Elw Γw (Tmw[] Aw Γw σw))) (keepw Γw σw (Elw Δw' Aw))))
+    (Ty~ (Tyw[] Bw (▶w Γw (Elw Γw (Tmw[] Aw Γw σw))) (keepw Γw Δw' σw  Aw)))
     (₁ Bm M.[ ₁ σm M.^ (M.El (₁ am)) ]T)
 
 Π-B[]~
@@ -143,7 +143,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
    let Elam : ∃ (Ty~ (Elw Δw' Aw) {₁ Δm})
        Elam = (M.El (₁ am) , am , refl)
    in
-   let σam : ∃ (Sub~ (keepw Γw σw (Elw Δw' Aw))) 
+   let σam : ∃ (Sub~ (keepw Γw Δw' σw Aw)) 
        σam =  (₁ σm M.^ (M.El (₁ am)))  , keepEl~ Γm Δm σm {Aw = Aw} am
    in
    let am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
@@ -165,7 +165,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
 
 Ty[]~ {Γ}{Γw}Γm {_}{Δw'}Δm  {σ} {σw} σm {.Up} {Uw Δ Δw} (_ , Level.lift refl) = Level.lift refl
 
-Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp (Elp _) _)} {Πw Δw' Aw Bw} (_ , am , Bm , refl) =
+Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp ( _) _)} {Πw Δw' Aw Bw} (_ , am , Bm , refl) =
    -- this was factorized by Π-B[]~
    -- let Bm[]~ = Ty[]~ (_ , Γm , (_ , am[] , refl) , refl) {Δw = Δaw} (_ , Δa~) σam Bm in
    am[] ,
@@ -240,32 +240,33 @@ Tm[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {_}{_}{_} {ΠInfw Δw'  Bw}
 keep~ : ∀ {Γp}{Γw : Conw Γp}(Γm : ∃ (Con~ Γw))
   {Δp}{Δw : Conw Δp}(Δm : ∃ (Con~ Δw))
   {σp}{σw : Subw Γp Δp σp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
-  {Ap}{Aw : Tyw Δp Ap}(Am : Σ (M.Ty (₁ Δm)) (Ty~ Aw)) →
-  Sub~ (keepw Γw σw Aw)(₁ σm M.^ ₁ Am)
+  {Ap}{Aw : Tmw Δp Up Ap}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
+  Sub~ (keepw Γw Δw σw Aw)(₁ σm M.^ (M.El (₁ Am)))
 
 keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   rewrite prop-has-all-paths (Sub-Con2w σw) Δw
   =
     Δm ,
-    ((₁ σm M.∘ M.wk) , wkSub~ Γm σm ((₁ Am M.[ ₁ σm ]T) , Ty[]~ Γm Δm σm Am )
+    ((₁ σm M.∘ M.wk) , wkSub~ Γm σm ((M.El (₁ Am) M.[ ₁ σm ]T) ,  (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl )
+    -- Tm[]~ Γm Δm σm Am )
       -- (Tyw[] Aw Γw σw) (₁ Am M.[ ₁ σm ]T)
       ) ,
-    Am ,
-    (tr (M.Tm ((₁ Γm) M.▶ ₁ Am M.[ ₁ σm ]T)) (M.[][]T {A = ₁ Am}) M.vz , vz~) ,
+    (M.El (₁ Am) , Am , refl) ,
+    (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) M.vz , vz~) ,
     refl ,
     refl
   where
     vz~ : Var~
-      (transport! (λ x → Varw (Γ ▶p (A [ σ ]T)) x 0) (liftT=wkS 0 σ A)
-      (V0w Γ Γw (A [ σ ]T) (Tyw[] Aw Γw σw)))
-      (tr (M.Tm ((₁ Γm) M.▶ ₁ Am M.[ ₁ σm ]T)) (M.[][]T {A = ₁ Am}) M.vz)
+      (transport! (λ x → Varw (Γ ▶p (Elp A [ σ ]T)) x 0) (liftT=wkS 0 σ (Elp A))
+      (V0w Γ Γw (Elp A [ σ ]T) (Elw Γw (Tmw[] Aw Γw σw))))
+      (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
-    vz~ rewrite (liftT=wkS 0 σ A) =
+    vz~ rewrite (liftt=wkS 0 σ A) =
       Γm ,
-      (_ , Ty[]~ Γm Δm σm Am) ,
+      ((_ , (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl)) ,
       refl ,
-       ! (M.[][]T {A = ₁ Am})  ,
-      ≅↓ (↓≅  (from-transp (M.Tm (₁ Γm M.▶ ₁ Am M.[ ₁ σm ]T)) (M.[][]T {A = ₁ Am}) refl)  !≅)
+       ! (M.[][]T {A = M.El (₁ Am)})  ,
+      ≅↓ (↓≅  (from-transp (M.Tm (₁ Γm M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) refl)  !≅)
 
 id~ : ∀ {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) → Sub~ (idpw Γw) (M.id {₁ Γm})
 -- id~ {Γ}{Γw} Γm = {!!}

@@ -63,7 +63,7 @@ wkTel~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p A} {▶w Δw Aw} (_ , Δm , Am , refl
 
 -- liftT~ {Γ}{Γw}Γm{E}{Ew}Em{Δ}{Δw}Δm{T}{Tw}Tm = {!!}
 liftT~ {Γ} {Γw} Γm {E} {Ew} Em {Δ} {Δw} Δm {.Up} {Uw .(Γ ^^ Δ) Γw₁} (_ , Level.lift refl) = Level.lift refl
-liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(ΠΠp (Elp _) _)} {Πw Γw Aw Bw} (_ , am , Bm , refl)
+liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(ΠΠp ( _) _)} {Πw Γw Aw Bw} (_ , am , Bm , refl)
   rewrite prop-has-all-paths Δw Γw
   =
   (_ , (liftt~ Γm Em Δm {tw = Aw} am)) ,
