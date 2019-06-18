@@ -1,44 +1,31 @@
--question for ambrus : how do you do local modules (module M = ..) as an alias ?
-Formalisation of the universal datatype which is hoped to be enough to encode any Inductive-Inductive datatype.
+Works with Agda 2.6.0.1
+In this directory, the model has full substitutions and the recursor construct them
 
-This universal datatype can be described as an Inductive-Inductive-Recursive datatype, or as un Quotient-Inductive-Inductive Datatype. Here, we formalize it in agda using UIP and even rewrite rules (useful to tame the coherence hell) as an indexed datatype (preterms and then typing judgements). The aim is to produce the non dependent recursor and prove its unicity
-
-List of files
-- monlib: some useful lemmas about equalities (using UIP)
-- Syntax: the syntax of the universal datatype
-- Model: axiomatization of a model (using rewrite rules)
-- Relation: definition of the functional relation enjoyed by the non dependent recursor
-- RelationProp: proof that any syntax term relates to at most one model term (uses UIP)
-- RelationWeakening: proof that weakening preserves the relation
-- RelationSubst: proof that substitution preserves the relation 
-- RelationInhabit: proof that any syntax term relates to a model term. Hence the relation is functional.
-
-- ModelRecord : definition of a model as a record (without rewrite rules)
-- ModelRewIsRecord* : the postulated model with rewrite rules is a model (as a record)
-- SyntaxIsRecord* : the syntax is a model (as a record def)
-
-- ModelMorphism : definition of model morphisms between models as records
-
-- InitialMorphism* : definition of the model morphism between the syntax and the model with rewrite rules 
-
-- ModelMorRew : postulation of a model morphism from the syntax to the postulated model, using rewrite rules
-- ModelMorRewRel : proof that this postulated model morphism satisfies the functional relation
-
-- ModelMorUnique : proof that this postulated model is pointwise equal to the one constructed in InitialMorphism*
-
-- SetModel*  and SetModelComponents : The extended Set model of Ambrus
-
-- UniversalIIT: deprecated old file 
-
-TODO:
-- faire les lemmes dans Syntax d'abord pour les variables, ensuite les termes, ensuite les types
- de sorte qu'il n'y ait pas l'impression d'une récursion mutuelle.
-- rename commutation lemmas in Syntax (subt-wkt and so on) and Model
+Files (in the order of dependancy)
 
 
-Journal
-12-12-2018
-J'hésite entre repartir de la formalisation d'Andraç avec les substitutions, ou alors les ajouter à la mienne.
-Je pense que le plus rapide serait de les ajouter à la mienne, car la formalisation des jugements de typage chez Andraç ne donne pas des hypothèses de récurrence assez fortes (Cf le répertoire TentativesVariablesRec) pour définir la relation.
-Après réflexion: je vais modifier les règles de typage de la formalsiation d'andraç
-A
+1. monlib : some useful lemmas, some of them requiring UIP
+   Hott : definitions and lemmas taking from the HoTT library (without uip)
+2. Syntax : the syntax
+2. ModelCwf : postulated model with rewrite rules
+3. RelationCwf : Relation between the syntax and the postulated model
+4. RelationCwfWeakening : this relation is preserved by lifting/weakening
+5. RelationCwfSubstitution : this relation is preserved by full substitutions
+6. RelationCwfInhabit : construction of a witness of the relation
+
+ModelRecord: model, as a record
+
+InitialMorphism: initality of the morphism (existence, uniqueness)
+
+TODO: actuellement,  Pi A B [s] = Pi A[s] B[s ^ A]
+      ç remplacer par Pi A[s] B[s o wk] pour que Pi[] soit definitionnel
+
+      rendre _$_ primitif plutôt que app. Peut etre cela rendrait app[] plus definitionel dans le model
+      -- pas sur de cette dernière idée...
+
+DO i use the fact that the morphism preserve composition when showing uniqueness ?
+Probably, but if not, can I show it ?
+
+TODO remove subT
+
+TODO remove useless typeclass instances (most of them are ignored by the new version of Agda)

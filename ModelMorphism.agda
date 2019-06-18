@@ -1,411 +1,386 @@
+-- copied from finitaryQiit/modelTemplate
 
 
 open import Level 
-open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
+  hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+
+
+-- open import HoTT using (ap)
+
+open import monlib hiding (tr2)
+-- open import Lib2 hiding (id; _∘_ )
+
+
+
+module ModelMorphism   where
+
 open import ModelRecord
-open import monlib
--- Then, a definition of model morphism, based on a definition of model without rewrite rules
--- The big proofs : wkTᴹ and subTᴹ because they deal with horrible transports
-module ModelMorphism where
+
+-- the distinction between base and next is
+-- the idea that the base will be postulated with rewrite rules,
+-- and not the next (when postulating a morphism from the syntax to
+-- a model)
+record baseCwFMor
+    {k : Level}{l : Level}(M : CwF {k} {l})
+    {i : Level}{j : Level}(N : CwF {i} {j}) : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+    where
+ private
+   module S = CwF M
+ open CwF N
+ field
+
+  Conʳ : S.Con → Con
+  Tyʳ  : ∀ {Γ} → S.Ty Γ → Ty (Conʳ Γ)
+  Tmʳ  : ∀ {Γ A} → S.Tm Γ A → Tm (Conʳ Γ) (Tyʳ A)
+  Subʳ : ∀ {Γ Δ} → S.Sub Γ Δ → Sub (Conʳ Γ) (Conʳ Δ)
+  ,ʳ   : ∀ {Γ A} → Conʳ (Γ S.▶ A) ≡ (Conʳ Γ ▶ Tyʳ A)
 
 
-module _ {ℓ₁} {ℓ₂} {A1 : Model1 {ℓ₁}} (A2 : Model2 A1) {B1 : Model1 {ℓ₂}} (B2 : Model2 B1)  where
+record nextCwFMor
+    {k : Level}{l : Level}{M : CwF {k} {l}}
+    {i : Level}{j : Level}{N : CwF {i} {j}} (m : baseCwFMor M N)
+    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+   where
 
-  -- I split the def in two parts because I want to keep the def of wkTm and subTm separate from the record part
-  record ModelMorphism1 : Set (lmax ℓ₁ ℓ₂)  where
-    -- infixl 5 _▶_
-    -- infixl 5 _^^_
-    module M = Model1 A1
-    module N = Model1 B1
-    field
-      Conᴹ : M.Con → N.Con
-      Telescopeᴹ : ∀ {Γ} → M.Telescope Γ → N.Telescope (Conᴹ Γ)
-      Tyᴹ : ∀ {Γ} → M.Ty Γ → N.Ty (Conᴹ Γ)
-      Tmᴹ : ∀ {Γ} {A} → M.Tm Γ A → N.Tm (Conᴹ Γ) (Tyᴹ A)
+ private
+   module S = CwF M
+ open CwF N
+ open baseCwFMor m
 
-      ∙ᴹ : Conᴹ M.∙ ≡ N.∙ 
-      ▶ᴹ : ∀ {Γ} {A} → (Conᴹ (Γ M.▶ A)) ≡ (Conᴹ Γ N.▶ Tyᴹ A)
-      ^^ᴹ : ∀ {Γ}{Δ} → (Conᴹ (Γ M.^^ Δ)) ≡ (Conᴹ Γ N.^^ Telescopeᴹ Δ)
+ field
 
-      ∙tᴹ : ∀ {Γ} → Telescopeᴹ (M.∙t Γ) ≡ N.∙t _
-      ▶tᴹ : ∀ {Γ}{Δ : M.Telescope Γ}{A} →
-        (Telescopeᴹ (Δ M.▶t A)) ≡ ((Telescopeᴹ Δ) N.▶t N.tr-Ty ^^ᴹ (Tyᴹ A) )
+  ∙ʳ   : Conʳ S.∙ ≡ ∙
+  []Tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ} →
+            _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S._[_]T {Γ} {Δ} A σ))
+            (_[_]T {Conʳ Γ} {Conʳ Δ} (Tyʳ {Δ} A) (Subʳ {Γ} {Δ} σ))
+  -- these were rewrite rules
 
-      Uᴹ : ∀ {Γ} → (Tyᴹ (M.U Γ)) ≡ N.U _
-      Elᴹ : ∀ {Γ}{A : M.Tm Γ (M.U Γ)} → Tyᴹ (M.El _ A) ≡ N.El _ (N.tr-Tm Uᴹ (Tmᴹ A))
-      ΠΠᴹ : ∀ {Γ}{A : M.Tm Γ (M.U Γ)}{B} →
-        Tyᴹ (M.ΠΠ _ A B) ≡ N.ΠΠ _ (N.tr-Tm Uᴹ (Tmᴹ A))
-        -- the ∙' instead of ◾ is to make the definition of V0ᴹ easier
-        -- as I will destruct the equality Elᴹ
-          (N.tr-Ty (▶ᴹ ∙' ap (λ x → N._▶_ _ x) Elᴹ) (Tyᴹ B))
+  []tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {t : S.Tm Δ A} {σ : S.Sub Γ Δ} →
+           Tmʳ {Γ}  (t S.[ σ ]t )
+           == 
+           (Tmʳ {Δ} {A} t) [ Subʳ σ ]t
+            [ Tm _  ↓ []Tʳ ]
 
-      wkCᴹ : ∀ {Γ}{E}{Δ} →
-        Telescopeᴹ (M.wkC Γ E Δ) ≡ tr N.Telescope (! ▶ᴹ) (N.wkC _ (Tyᴹ E) (Telescopeᴹ Δ))
+  idʳ  : {Γ : S.Con} →
+           _≡_ {j} {Sub (Conʳ Γ) (Conʳ Γ)} (Subʳ {Γ} {Γ} (S.id {Γ}))
+           (id {Conʳ Γ})
 
-    ▶^^ᴹ : ∀ {Γ}{E}{Δ} →
-      Conᴹ (Γ M.▶ E M.^^ Δ) ≡
-      (Conᴹ Γ N.▶ Tyᴹ E N.^^ tr N.Telescope ▶ᴹ (Telescopeᴹ Δ))
-    ▶^^ᴹ {Γ} {E} {Δ} = tr2 {B = N.Telescope} (λ x y →  Conᴹ (Γ M.▶ E M.^^ Δ) ≡ N._^^_ x y)
-      ▶ᴹ refl ^^ᴹ
+  ∘ʳ   : {Γ Δ : S.Con} {Σ : S.Con} {σ : S.Sub Δ Σ} {δ : S.Sub Γ Δ} →
+           _≡_ {j} {Sub (Conʳ Γ) (Conʳ Σ)}
+           (Subʳ {Γ} {Σ} (S._∘_ {Γ} {Δ} {Σ} σ δ))
+           (_∘_ {Conʳ Γ} {Conʳ Δ} {Conʳ Σ} (Subʳ {Δ} {Σ} σ)
+            (Subʳ {Γ} {Δ} δ))
 
+  εʳ   : {Γ : S.Con} →
+    (Subʳ {Γ} {S.∙} (S.ε {Γ})) == (ε {Conʳ Γ}) [ Sub _ ↓ ∙ʳ ]
 
+  ,sʳ  : {Γ Δ : S.Con} {σ : S.Sub Γ Δ} {A : S.Ty Δ}
+         {t : S.Tm Γ (S._[_]T {Γ} {Δ} A σ)} →
+         (Subʳ {Γ} {Δ S.▶ A} (σ S.,s t))
+         ==
+         ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
+          [ Sub _ ↓ ,ʳ  ]
 
-    ▶wkCᴹ : ∀ {Γ}{Δ : M.Telescope Γ}{E : M.Ty Γ} →
-      Conᴹ (Γ M.▶ E M.^^ M.wkC Γ E Δ) ≡
-      (Conᴹ Γ N.▶ Tyᴹ E N.^^ N.wkC (Conᴹ Γ) (Tyᴹ E) (Telescopeᴹ Δ))
-    ▶wkCᴹ {Γ} {Δ} {E} = ▶^^ᴹ ◾ ap (λ x → N._^^_ _ x) (transpose-tr _ _ wkCᴹ)
+{- 
+ -- maybe this is needed for wkʳ ?
+ π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+           (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+           ≡
+           (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₁ʳ {Γ}{Δ}{A}{σ} =
+   
+      (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
 
-
-
-    field
-
-      liftTᴹ : ∀ {Γ}{Δ}{E : M.Ty Γ}{A : M.Ty (Γ M.^^ Δ)} →
-        Tyᴹ (M.liftT _ _ E A) ≡
-        N.tr-Ty (! (▶wkCᴹ {Δ = Δ} {E = E}))
-          (N.liftT _ _ (Tyᴹ E) (N.tr-Ty ^^ᴹ (Tyᴹ A)))
-
-      lifttᴹ : ∀ {Γ}{Δ}{E : M.Ty Γ}{A : M.Ty (Γ M.^^ Δ)}(t : M.Tm _ A) →
-        Tmᴹ (M.liftt _ _ E A t) ≡
-        tr2 N.Tm (! ▶wkCᴹ)
-         (! liftTᴹ)
-         (N.liftt _ _ (Tyᴹ E)(N.tr-Ty ^^ᴹ (Tyᴹ A))
-         (N.tr2-Tm ^^ᴹ (Tmᴹ t)))
-        {-
-        N.tr2-Tm⁻¹
-          {Δ =
-          N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E))
-          (N.wkC (Conᴹ Γ) (Tyᴹ E) (Telescopeᴹ Δ))}
-            ▶wkCᴹ 
-            (N.tr-Tm (! ((transpose-tr N.Ty ▶wkCᴹ liftTᴹ)) )
-          (N.liftt _ _ (Tyᴹ E)(N.tr-Ty ^^ᴹ (Tyᴹ A))
-            (N.tr2-Tm ^^ᴹ (Tmᴹ t))))
-            -}
-
-      -- needed for l-subT
-      subTelᴹ : ∀ {Γ : M.Con}{Ex : M.Ty Γ}{Δ : M.Telescope (Γ M.▶ Ex)}
-        {z : M.Tm Γ Ex} → Telescopeᴹ (M.subTel  Ex Δ z) ≡
-        N.subTel (Tyᴹ Ex) (tr N.Telescope ▶ᴹ (Telescopeᴹ Δ)) (Tmᴹ z)
-
-    ^^subTelᴹ : ∀ {Γ}{E}{Δ}{z} →
-      Conᴹ (Γ M.^^ M.subTel E Δ z) ≡ (Conᴹ Γ N.^^
-        N.subTel (Tyᴹ E) (tr N.Telescope ▶ᴹ (Telescopeᴹ Δ)) (Tmᴹ z))
-    ^^subTelᴹ {Γ}{E}{Δ}{z} = ^^ᴹ ◾ ap (λ x → N._^^_ _ x) subTelᴹ
-
-    field
-
-      l-subTᴹ : ∀ {Γ : M.Con}{E : M.Ty Γ}{Δ : M.Telescope (Γ M.▶ E)} {z : M.Tm Γ E}
-        {A : M.Ty ((Γ M.▶ E) M.^^ Δ)} →
-        Tyᴹ (M.l-subT E Δ z A) ≡ N.tr-Ty (! ^^subTelᴹ) 
-        (N.l-subT (Tyᴹ E) (tr N.Telescope ▶ᴹ (Telescopeᴹ Δ)) (Tmᴹ z)
-          (N.tr-Ty ▶^^ᴹ (Tyᴹ A)))
-
-      l-subtᴹ : ∀ {Γ : M.Con}{E : M.Ty Γ}{Δ : M.Telescope (Γ M.▶ E)} {z : M.Tm Γ E}
-        {A : M.Ty ((Γ M.▶ E) M.^^ Δ)} {t : M.Tm _ A}→
-        Tmᴹ (M.l-subt E Δ z A t) ≡
-        -- fit to please InitialMorphism1
-          tr2 N.Tm (! ^^subTelᴹ)
-            (! l-subTᴹ)
-            (N.l-subt (Tyᴹ E)
-              (tr N.Telescope ▶ᴹ (Telescopeᴹ Δ))(Tmᴹ z) (N.tr-Ty ▶^^ᴹ (Tyᴹ A))
-              (N.tr2-Tm ▶^^ᴹ (Tmᴹ t)))
-        
-        
+           =⟨ {!!} ⟩
+       -- (π₁
+       --    ((Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ)) ,s tr (Tm _) []Tʳ (Tmʳ (S.π₂ {Γ} {Δ} {A} σ))))
+       {!!}
 
 
-  module _ (MOR1 : ModelMorphism1) where
-    open ModelMorphism1 MOR1
+           =⟨ {!!} ⟩
+       -- (π₁ (Subʳ (S.π₁ σ S.,s S.π₂ σ)))
+       {!!}
 
-    tr-swap-Tyᴹ : ∀ {x y : M.Con} (p : x ≡ y) b → Tyᴹ (tr M.Ty p b) ≡ tr (λ Γ' → N.Ty (Conᴹ Γ')) p (Tyᴹ b)
-    tr-swap-Tyᴹ {x} {y} =
-      tr-swap {A = M.Con} {B = M.Ty} {C = λ Γ' → N.Ty (Conᴹ Γ')}
-      (λ Γ' A' → Tyᴹ {Γ = Γ'} A') {x} {y} 
+           =⟨ {!ap↓!} ⟩
+      (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+      ∎
 
+ wkʳ : ∀ {Γ : S.Con}{A : S.Ty Γ} →
+    Subʳ (S.wk {A = A})== wk {A = Tyʳ A} [ (λ s → Sub s _) ↓ ,ʳ ]
+ wkʳ {Γ}{A} =
+    ≅↓
+    (
+      Subʳ (S.wk {A = A})
 
-    wkTᴹ : ∀ {Γ}{E}{A} → Tyᴹ (M.wkT Γ E A ) ≡ N.tr-Ty (! ▶ᴹ) (N.wkT _ _ (Tyᴹ A))
-    wkTᴹ {Γ}{E}{A}= 
-      (_
-      =⟨
-        tr-swap-Tyᴹ
-      _
-      (M.liftT Γ (M.∙t Γ) E (tr M.Ty (! M.^^∙t) A))
+           ≅⟨ =≅ π₁ʳ ⟩
+      (π₁   {A = Tyʳ  A} (tr (Sub _) ,ʳ (Subʳ   S.id)))
 
-
-      ⟩
-      _ 
-      =⟨
-      ap (tr _ _) liftTᴹ
-      ⟩
-      _
-      ∎)
-      ◾
-
-      ap
-        (λ A' →
-          tr (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ (Γ M.▶ E)) M.wk∙t ◾ M.^^∙t)
-            (N.tr-Ty (! ▶wkCᴹ)
-            A'))
-          ( 
-          ap (N.liftT _ _ _ )
-            (
-            ap (N.tr-Ty _ ) (tr-swap-Tyᴹ _ A)
-            ◾
-            -- {! ! (coe-∙ _ _ _)) !}
-            ! (coe-∙
-                (ap (λ Γ' → N.Ty (Conᴹ Γ')) (! M.^^∙t) )
-                (ap N.Ty ^^ᴹ )
-              (Tyᴹ A))
-              ◾
-              uip-coe (ap (λ Γ' → N.Ty (Conᴹ Γ')) (! M.^^∙t) ◾ ap N.Ty ^^ᴹ)
-                (ap N.Ty (! (ap (N._^^_ _) ∙tᴹ ◾ N.^^∙t)))
-              -- Goal: coe (ap (λ Γ' → N.Ty (Conᴹ Γ')) (! M.^^∙t) ◾ ap N.Ty ^^ᴹ)
-              -- (Tyᴹ A)
-            )
-
-          ◾
-          (
-          N.liftT (Conᴹ Γ) (Telescopeᴹ (M.∙t Γ)) (Tyᴹ E)
-            (coe (ap N.Ty (! (ap (N._^^_ (Conᴹ Γ)) ∙tᴹ ◾ N.^^∙t))) (Tyᴹ A))
-          =⟨
-            J
-              (λ Δ' e →
-                ∀ q →
-                N.liftT (Conᴹ Γ) (Telescopeᴹ (M.∙t Γ)) (Tyᴹ E)
-                (coe (ap N.Ty (! (ap (N._^^_ (Conᴹ Γ)) e ◾ q))) (Tyᴹ A))
-                ≡
-                N.tr-Ty
-                (ap
-                  (λ Δ → N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E)) (N.wkC (Conᴹ Γ) (Tyᴹ E) Δ))
-                  (! e))
-                (N.liftT (Conᴹ Γ) Δ' (Tyᴹ E) (coe (ap N.Ty (! q)) (Tyᴹ A))))
-              (λ _ → refl) ∙tᴹ N.^^∙t
-                    -- )
-          ⟩
-          N.tr-Ty (ap (λ Δ → N._^^_ _ (N.wkC _ _ Δ)) (! ∙tᴹ)) (N.liftT (Conᴹ Γ) (N.∙t _) (Tyᴹ E) 
-          (coe (ap N.Ty (! N.^^∙t)) (Tyᴹ A)))
-
-          ∎)
-          )
-          -- y a plus qu'à fusionner les transports et utiliser uip
-
-      ◾
-
-        coe-∙2'
-        (ap N.Ty (ap (λ Δ → Conᴹ Γ N.▶ Tyᴹ E N.^^ N.wkC (Conᴹ Γ) (Tyᴹ E) Δ) (! ∙tᴹ)))
-        (ap N.Ty (! ▶wkCᴹ ) )
-        (ap (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ (Γ M.▶ E)) M.wk∙t ◾ M.^^∙t))
-        (N.liftT (Conᴹ Γ) (N.∙t (Conᴹ Γ)) (Tyᴹ E) (N.tr-Ty  (! N.^^∙t) (Tyᴹ A)))
-
-
-      ◾
-      -- maybe uip is not needed at this point, but it simplifies a lot
-      -- how sad is it that agda is not able to infer the proof of equalities from the goal :(
-      uip-coe
-        (
-          (ap N.Ty (ap (λ Δ → Conᴹ Γ N.▶ Tyᴹ E N.^^ N.wkC (Conᴹ Γ) (Tyᴹ E) Δ) (! ∙tᴹ)))
-          ◾
-          (ap N.Ty (! ▶wkCᴹ ) )
-          ◾
-          (ap (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ (Γ M.▶ E)) M.wk∙t ◾ M.^^∙t))
-        )
-        (
-          (ap N.Ty (ap (N._^^_ (Conᴹ Γ N.▶ Tyᴹ E)) N.wk∙t ◾ N.^^∙t))
-          ◾
-          (ap N.Ty (! ▶ᴹ))
-        )
-
-      ◾
-      --merge the transports
-      coe-∙
-        (ap N.Ty (ap (N._^^_ (Conᴹ Γ N.▶ Tyᴹ E)) N.wk∙t ◾ N.^^∙t))
-        (ap N.Ty (! ▶ᴹ))
-        (N.liftT (Conᴹ Γ) (N.∙t (Conᴹ Γ)) (Tyᴹ E) (N.tr-Ty  (! N.^^∙t) (Tyᴹ A)))
-
-
-
-
-
-
-
-
-
-    ∙t▶ᴹ : ∀ {Γ}{E} →
-      tr N.Telescope ▶ᴹ (Telescopeᴹ (M.∙t (Γ M.▶ E)))
-      ≡
-      N.∙t (Conᴹ Γ N.▶ Tyᴹ E) 
-    ∙t▶ᴹ {Γ}{E} = 
-      ap (tr N.Telescope ▶ᴹ) ∙tᴹ
-      ◾
-        J' {A = N.Con} {a = N._▶_ (Conᴹ Γ) (Tyᴹ E)}
-        (λ Γ' e →
-        tr N.Telescope e (N.∙t Γ') ≡ N.∙t (N._▶_ (Conᴹ Γ) (Tyᴹ E)))
-        refl ▶ᴹ
-
-
-
-    -- subTᴹ : the proof is similar to wkTᴹ
-    -- subpart1
-    subTᴹ-1 : ∀ {Γ}{E}{z}{A} → _
-    subTᴹ-1 {Γ}{E}{z}{A} = 
-        (
-            _
-            =⟨ l-subTᴹ ⟩
-
-            N.tr-Ty (! (^^ᴹ ◾ ap (N._^^_ (Conᴹ Γ)) subTelᴹ))
-              (N.l-subT (Tyᴹ E) (tr N.Telescope ▶ᴹ (Telescopeᴹ (M.∙t (Γ M.▶ E))))
-              (Tmᴹ z)
-              (N.tr-Ty ▶^^ᴹ
-                (Tyᴹ (M.tr-Ty (! M.^^∙t) A))))
-
-            =⟨ ap (N.tr-Ty _)
-            ( ap (N.l-subT _ _ _ )
-              (ap (N.tr-Ty ▶^^ᴹ ) (tr-swap-Tyᴹ (! M.^^∙t) A)
-              ◾
-              ! (coe-∙ (ap (λ Γ' → N.Ty (Conᴹ Γ')) (! M.^^∙t)) (ap N.Ty ▶^^ᴹ)  (Tyᴹ A) )
-              ◾
-              uip-coe (ap (λ Γ' → N.Ty (Conᴹ Γ')) (! M.^^∙t) ◾ ap N.Ty ▶^^ᴹ)
-                (
-                -- !
-                (ap N.Ty
-                  -- (ap (N._^^_ _) ∙t▶ᴹ ◾ N.^^∙t ◾ ! ▶ᴹ)
-                  (▶ᴹ ◾ ! N.^^∙t ∙' ! (ap (N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E))) ∙t▶ᴹ) )
-                )
-                  )
+           ≅⟨ ↓≅
+-- Sub (Conʳ (Γ S.▶ A)) (Conʳ Γ)
+             (
+             apd π₁ {x = (tr (Sub _) ,ʳ (Subʳ   S.id))}{y = id}{!!}
+             -- (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
+              
+             -- ap↓ {B = λ s → Sub s _}{C = λ s → Sub s (Conʳ Γ)}
+             
+             -- (π₁ {A = Tyʳ A})
+             -- {p = ,ʳ {A = A}}
+             --   -- (≅↓ (↓≅ (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl )))
+             --   (≅↓ (↓≅ {!!}))
+               
               )
-              ◾
-              (
-              N.l-subT (Tyᴹ E)
-                (tr N.Telescope ▶ᴹ (Telescopeᴹ (M.∙t (Γ M.▶ E)))) (Tmᴹ z)
-                (coe
-                (
-                -- !
-                  (ap N.Ty
-                  (▶ᴹ ◾ ! N.^^∙t ∙' ! (ap (N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E))) ∙t▶ᴹ) ) ))
-                  -- (ap (N._^^_ (Conᴹ Γ N.▶ Tyᴹ E)) ∙t▶ᴹ ◾ N.^^∙t ◾ ! ▶ᴹ)))
-                (Tyᴹ A))
-
-              =⟨
-              J'
-                (λ Δ e →
-                    N.l-subT (Tyᴹ E) Δ (Tmᴹ z)
-                    (coe
-                    (
-                      (ap N.Ty
-                      (▶ᴹ ◾ ! N.^^∙t ∙' ! (ap (N._^^_ (N._▶_ (Conᴹ Γ) (Tyᴹ E))) e ))))
-                    (Tyᴹ A))
-                    ≡
-                    N.tr-Ty (ap (λ Δ' → N._^^_ _ (N.subTel (Tyᴹ E) Δ' (Tmᴹ z))) (! e))
-                    (N.l-subT (Tyᴹ E) (N.∙t _) (Tmᴹ z)
-                    (N.tr-Ty (▶ᴹ ◾ ! N.^^∙t) (Tyᴹ A))))
-                refl ∙t▶ᴹ
-              ⟩
-
-              N.tr-Ty
-                (ap (λ Δ' → N._^^_ _ (N.subTel (Tyᴹ E) Δ' (Tmᴹ z))) (! ∙t▶ᴹ))
-                (N.l-subT (Tyᴹ E) (N.∙t _) (Tmᴹ z)
-                (N.tr-Ty ( ▶ᴹ ◾ ! N.^^∙t) (Tyᴹ A)))
-              =⟨ ap (λ A' → N.tr-Ty _ (N.l-subT _ _ _ A'))
-                  (transp-∙ ▶ᴹ (! N.^^∙t) (Tyᴹ A)) 
-                ⟩
-
-              N.tr-Ty
-                (ap (λ Δ' → N._^^_ _ (N.subTel (Tyᴹ E) Δ' (Tmᴹ z))) (! ∙t▶ᴹ))
-                (N.l-subT (Tyᴹ E) (N.∙t _) (Tmᴹ z)
-                (N.tr-Ty (! N.^^∙t) (N.tr-Ty ▶ᴹ (Tyᴹ A))))
-
-              ∎
-              )
-              )
-              -- ◾
-              -- {!!}
-              ⟩
-
-            _
-            ∎
-
-            )
+              -- ((≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅)))
+-- Sub (Conʳ Γ ▶ Tyʳ A) (Conʳ Γ)
+             ⟩
+      (π₁   {A = Tyʳ  A} id)
 
 
+      ≅∎
+    )
+    -}
+    -- (↓-cst-in {p = refl}
+     -- (π₁ʳ {σ = S.id {Γ = Γ S.▶ A}}) ◾  ap (λ x → π₁ (tr (Sub (Conʳ (Γ S.▶ A))) ,ʳ x)) idʳ ) ∙ᵈ
+     -- {! 
+     -- ap↓ {C = λ s → Sub s (Conʳ Γ)} (π₁ {A = Tyʳ A})
+     --   -- (≅↓ (↓≅ {! from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl !} !≅))
+     --   (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
+     --   !}
+    -- ≅↓ (↓≅ {! ap↓ {B = (Sub (Conʳ (Γ S.▶ A))) } π₁!})
+    -- ≅↓ (↓≅ {! ap↓ π₁ {p = ,ʳ}!})
+     -- {!J
+     -- (λ B e →
+     --  π₁ (tr (Sub (Conʳ (Γ S.▶ A))) e id)
+     --  == π₁ (id {Γ = B})
+     --  [ (λ s → Sub s (Conʳ Γ)) ↓ e ]
+     -- )!}
+    
+    -- ≅↓ (↓≅ {! ap↓ π₁ (from-transp ? ,ʳ ?)!})
+    
+      -- (wk {A = Tyʳ A})
 
-    -- this ⊤ is to block the reduction, because other wise in InitialMorphism2, it makes
-    -- make type checking too slow of appᴹ
-    subTᴹ :   ⊤' {ℓ₂} →
-      ∀ {Γ}{E}{z}{A} → Tyᴹ (M.subT Γ E z A) ≡ N.subT _ (Tyᴹ E) (Tmᴹ z) (N.tr-Ty ▶ᴹ (Tyᴹ A))
-    -- subTᴹ = subTᴹ' ?
+    -- -- ap↓ π₁ (from-transp _ _ {!!})
+    -- ap↓ {B = λ s → Sub s _} π₁ {p = {!,ʳ!}}
+    --   {u = tr (Sub (Conʳ (S._▶_ Γ A))) ,ʳ (Subʳ S.id)}
+    --   {v = id {Γ = _▶_ (Conʳ Γ) (Tyʳ A)}}
+    --    {!!}
+    -- ∙ᵈ {! !}
+ -- apd Subʳ {!π₁ʳ!} ∙ᵈ {!!}
 
-    -- it won't reduce unless I give you a unit' as a first argument
-    subTᴹ unit' {Γ}{E}{z}{A}  =
-        tr-swap-Tyᴹ (ap (M._^^_ Γ) M.sub∙t ◾ M.^^∙t) _
-        ◾
-        (
-          tr (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ Γ) M.sub∙t ◾ M.^^∙t) 
-            (Tyᴹ (M.l-subT E (M.∙t (Γ M.▶ E)) z (M.tr-Ty (! M.^^∙t) A)))
-        =⟨
-          ap (tr (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ Γ) M.sub∙t ◾ M.^^∙t)) 
-          subTᴹ-1
-        ⟩
-        _
-        =⟨
-          coe-∙2'
-          (ap N.Ty (ap (λ Δ' → Conᴹ Γ N.^^ N.subTel (Tyᴹ E) Δ' (Tmᴹ z)) (! ∙t▶ᴹ)))
-          (ap N.Ty (! (^^ᴹ ◾ ap (N._^^_ (Conᴹ Γ)) subTelᴹ)))
-          (ap (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ Γ) M.sub∙t ◾ M.^^∙t))
-          (N.l-subT (Tyᴹ E) (N.∙t (Conᴹ Γ N.▶ Tyᴹ E)) (Tmᴹ z)
-            (N.tr-Ty (! N.^^∙t) (N.tr-Ty ▶ᴹ (Tyᴹ A))))
+ <>ʳ : ∀ {Γ : S.Con}{A : S.Ty Γ}{t : S.Tm Γ A} →
+       Subʳ S.< t > == < Tmʳ t > [ Sub _ ↓ ,ʳ ]
+ <>ʳ {Γ}{A}{t} =
+   from-transp _ _
+     (to-transp ,sʳ ◾
+       ,s=
+         idʳ
+         -- here we use UIP
+         (≅↓
+           (
+           ↓≅ ( from-transp (Tm (Conʳ Γ)) []Tʳ refl ) !≅
+           ∘≅ (  ↓≅  (ap↓ Tmʳ {p = S.[id]T}(from-transp! _ _ refl))  
+           ∘≅ ↓≅ (from-transp! (Tm (Conʳ Γ)) [id]T refl) !≅
+           ))))
 
-        ⟩
+ [<>]T : ∀ {Γ : S.Con}{A : S.Ty Γ}{u : S.Tm Γ A}{B : S.Ty (Γ S.▶ A)}→
+    Tyʳ (B S.[ S.< u > ]T) ≡ (Tyʳ B [  transport! (Sub _) ,ʳ  < Tmʳ u >  ]T)
 
-        _ 
-
-        =⟨
-          uip-coe 
-          (
-            ap N.Ty (ap (λ Δ' → Conᴹ Γ N.^^ N.subTel (Tyᴹ E) Δ' (Tmᴹ z)) (! ∙t▶ᴹ))
-            ◾
-            ap N.Ty (! (^^ᴹ ◾ ap (N._^^_ (Conᴹ Γ)) subTelᴹ))
-            ◾
-            ap (λ Γ' → N.Ty (Conᴹ Γ')) (ap (M._^^_ Γ) M.sub∙t ◾ M.^^∙t)
-          )
-          (
-          ap N.Ty (ap (N._^^_ (Conᴹ Γ)) N.sub∙t ◾ N.^^∙t)
-          )
-
-        ⟩
-        N.tr-Ty (ap (N._^^_ (Conᴹ Γ)) N.sub∙t ◾ N.^^∙t)
-          (N.l-subT (Tyᴹ E) (N.∙t (Conᴹ Γ N.▶ Tyᴹ E)) (Tmᴹ z)
-          (N.tr-Ty (! N.^^∙t) (N.tr-Ty ▶ᴹ (Tyᴹ A))))
-        ∎)
+      
+ [<>]T {Γ}{A}{u} = []Tʳ ∙' ap (_[_]T _ ) (to-transp! <>ʳ) 
 
 
+  
 
-    record ModelMorphism2 : Set (lmax ℓ₁ ℓ₂)  where
-      field
 
-        V0ᴹ : ∀ {Γ}{A : M.Ty Γ} → Tmᴹ (M.V0 _ A) ≡
-          N.tr2-Tm⁻¹ {Δ = N._▶_ (Conᴹ Γ) (Tyᴹ A)} ▶ᴹ
-          (N.tr-Tm ( ! (transpose-tr _ _ wkTᴹ)) (N.V0 (Conᴹ Γ) (Tyᴹ A)))
+record CwFMor
+    {k : Level}{l : Level}(M : CwF {k} {l})
+    {i : Level}{j : Level}(N : CwF {i} {j}) 
+    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+   where
+  field
+     basecwfmor : baseCwFMor M N
+     nextcwfmor : nextCwFMor basecwfmor
+  open baseCwFMor basecwfmor public
+  open nextCwFMor nextcwfmor public
+{-
 
-        appᴹ : ∀ (top : ⊤'){Γ}{A : M.Tm _ (M.U Γ)}{B}{t}{u} →
-          Tmᴹ (M.app _ A B t u) ≡
-          -- tr o N.l-subT o tr o tr o Tyᴹ ≡ Tyᴹ o tr o M.l-subT o trj
-          -- this ∙' is to ease iniappᴹ
-          N.tr-Tm (! (subTᴹ top ∙'  (_
-          =⟨
-            J
-              (λ EL e →
-                N.subT (Conᴹ Γ) (Tyᴹ (M.El Γ A)) (Tmᴹ u) (N.tr-Ty ▶ᴹ (Tyᴹ B)) ≡
-                N.subT (Conᴹ Γ) EL (N.tr-Tm e (Tmᴹ u))
-                (N.tr-Ty (▶ᴹ ∙' ap (N._▶_ (Conᴹ Γ)) e) (Tyᴹ B)))
-              refl
-              Elᴹ
-          ⟩
-            N.subT (Conᴹ Γ) (N.El (Conᴹ Γ) (N.tr-Tm Uᴹ (Tmᴹ A)))
-            (N.tr-Tm Elᴹ (Tmᴹ u))
-            (N.tr-Ty (▶ᴹ ∙' ap (N._▶_ _) Elᴹ) (Tyᴹ B)) ∎)
-            )
-            )
-          (N.app (Conᴹ Γ)
-          (N.tr-Tm Uᴹ (Tmᴹ A))
-          (N.tr-Ty (▶ᴹ ∙' ap (N._▶_ _) Elᴹ) (Tyᴹ B))
-          (N.tr-Tm ΠΠᴹ (Tmᴹ t))
-          (N.tr-Tm Elᴹ (Tmᴹ u)))
+I should do the proof, but now we can deduce that Subʳ commutes with π₁ and π₂
+Indeed:
+Let δ and t such that σ = (δ , t)
 
+Then,
+  Subʳ (δ , t) = (Subʳ δ , Tmʳ t)
+So
+  π₁ (Subʳ (δ , t)) = Subʳ δ
+and
+  π₂ (Subʳ (δ , t)) = Tmʳ t
+
+or equivalently,
+  π₁ (Subʳ σ) = Subʳ (π₁ σ)
+  π₂ (Subʳ σ) = Tmʳ (π₂ σ)
+
+TODO: formalize the proof (it begins after)
+-}
+
+{- 
+module _
+    {k : Level}{l : Level}{M : CwF {k} {l}}
+    {i : Level}{j : Level}{N : CwF {i} {j}}{m : CwFMor M N} where
+ private
+   module S = CwF M
+ open CwF N
+ open CwFMor m
+
+ π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+           (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+           ≡
+           (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₁ʳ {Γ}{Δ}{A}{σ} =
+   
+      (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
+
+           =⟨ {!!} ⟩
+       (π₁
+          ((Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ)) ,s tr (Tm _) []Tʳ (Tmʳ (S.π₂ {Γ} {Δ} {A} σ))))
+
+           =⟨ {!!} ⟩
+       (π₁ (Subʳ (S.π₁ σ S.,s S.π₂ σ)))
+
+           =⟨ {!!} ⟩
+      (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+      ∎
+
+   
+ 
+   -- version alternative
+   -- π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ}{t : Tm Γ (A [ σ ]T)} →
+   --         (Subʳ {Γ} {Δ} σ)
+   --         ≡
+   --         (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+ 
+ π₂ʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
+ 
+         (Tmʳ {Γ} {S._[_]T {Γ} {Δ} A (S.π₁ {Γ} {Δ} {A} σ)}
+           (S.π₂ {Γ} {Δ} {A} σ))
+           ==
+         (π₂ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A}
+             (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
+         [ Tm _ ↓ []Tʳ ◾ ap ( _[_]T (Tyʳ _) ) π₁ʳ ]
+ 
+ π₂ʳ {Γ}{Δ}{A}{σ} = {!!}
+ -}
+
+module _   {ll : Level}
+    {k : Level}{l : Level}{M : CwF {k} {l}}(MM : UnivΠ {k = ll} M)
+    {i : Level}{j : Level}{N : CwF {i} {j}}(NN : UnivΠ {k = ll} N)
+    (mor : CwFMor M N)
+     where
+  open CwFMor mor
+  open CwF N
+  open UnivΠ NN
+  private
+    module S = CwFUnivΠ MM
+
+-- I do Univ and Π parts in different records because
+-- I need [<>^El]Tʳ before app
+  record UnivMor  : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
+    field 
+      Uʳ  : {Γ : S.Con} → _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.U {Γ})) U
+
+      Elʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} →
+        (Tyʳ {Γ} (S.El  a)) ≡ (El  (tr (Tm _) Uʳ (Tmʳ   a)))
+
+    [<>^El]Tʳ :
+       ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}
+            (u : S.Tm Γ (S.El a)) →
+      Tyʳ (B S.[ S.< u > ]T) ≡
+      (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) Elʳ) (Tyʳ B) [
+       < tr (Tm (Conʳ Γ)) Elʳ (Tmʳ u) > ]T)
+
+    [<>^El]Tʳ {Γ}{a}{B}u =
+      [<>]T ∙'
+      
+      J (λ C e →
+          (Tyʳ B [ transport! (Sub (Conʳ Γ)) ,ʳ < Tmʳ u > ]T) ≡
+          (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) e) (Tyʳ B) [
+          < tr (Tm (Conʳ Γ)) e (Tmʳ u) > ]T)
+      )
+      ( 
+      J (λ C e → ∀ <u> →
+        Tyʳ B [ transport! (Sub (Conʳ Γ)) e <u> ]T ≡
+          tr Ty e (Tyʳ B) [ <u> ]T
+      )
+      (λ _ → refl)
+      ,ʳ
+      < Tmʳ u >
+      )
+      Elʳ
+
+
+  record ΠMor (um : UnivMor) : Set (Level.suc (lmax ll (lmax (lmax i j)(lmax k l))) ) where
+      -- module S = UnivΠ MM
+    -- module NN = UnivΠ NN
+    open UnivMor um
+
+      
+      
+
+    field
+
+
+      Πʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)} →
+        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.Π {Γ} a B))
+        (Π {Conʳ Γ} (tr (Tm _) Uʳ (Tmʳ {Γ} {S.U {Γ}} a))
+          (tr Ty (,ʳ ∙' ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ S.El {Γ} a} B)))
+
+      -- appʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)}
+      --         {t : S.Tm Γ (S.Π {Γ} a B)} →
+              
+      --         (Tmʳ {Γ S.▶ S.El {Γ} a} {B} (S.app {Γ} {a} {B} t))
+      --         ==
+      --         (app {Conʳ Γ}  
+      --           (tr (Tm _) Πʳ (Tmʳ {Γ} {S.Π {Γ} a B} t)))
+      --           [ (λ x → Tm (₁ x)(₂ x)) ↓
+      --             pair= (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (from-transp _ _ refl) ]
+      $ʳ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a B))
+      -- this q , e is to stop reduction
+            (u : S.Tm Γ (S.El a))
+            →
+            let e = [<>^El]Tʳ u in
+            -- {e}(q : e ≡ [<>^El]Tʳ u)→ 
+          Tmʳ (t S.$ u) ==
+            (tr (Tm _) Πʳ (Tmʳ t) $
+            tr (Tm _) Elʳ (Tmʳ u)) [ Tm _ ↓  e
+            -- [<>^El]Tʳ u
+            ]
+           -- []Tʳ ◾ ap (λ s → Tyʳ B [ s ]T) (to-transp! <>ʳ) ◾ {!!} ]
+
+      ΠNIʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Ty Γ} →
+        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.ΠNI B))
+        (ΠNI {Conʳ Γ} {T = T} λ a → Tyʳ (B a))
+          -- (tr Ty (,ʳ ∙' ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ S.El {Γ} a} B)))
+      $NIʳ : ∀ {Γ}{T : Set ll}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
+            (u : T)
+            →
+          Tmʳ (t S.$NI u) ≡ tr (Tm _) ΠNIʳ (Tmʳ t) $NI u
+
+      ΠInfʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Tm Γ S.U} →
+       (Tmʳ {Γ} (S.ΠInf B)) == 
+        (ΠInf {Conʳ Γ} {T = T} λ a → tr (Tm _)  Uʳ (Tmʳ (B a)) ) [ Tm _ ↓ Uʳ ]
+
+      $Infʳ : ∀ {Γ}{T : Set ll}{B : T → S.Tm Γ S.U}(t : S.Tm Γ (S.El (S.ΠInf B)))
+            (u : T)
+            →
+          Tmʳ (t S.$Inf u) ==  ( (tr (Tm _) (Elʳ ◾ ap El (to-transp ΠInfʳ)) (Tmʳ t)) $Inf u)
+            [ Tm _ ↓ Elʳ ]
+
+        -- {!Tmʳ (t S.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
+    -- $ʳ = {!!}
+  record UnivΠMor : Set (Level.suc (lmax ll (lmax (lmax i j)(lmax k l)) )) where
+    field
+      univmor : UnivMor
+      Πmor : ΠMor univmor
+    open UnivMor univmor public
+    open ΠMor Πmor public
