@@ -148,7 +148,7 @@ postulate
             {xp}{xw} →
           -- {x : S.Tm Γ (S.U {Γ})} →
           -- (Tyʳ {Γ} (S.El x)) ↦ (M.El  (Tmʳ   x))
-          (Tyʳ {Γ} (Elp xp , Elw (₂ Γ)xw)) ↦ (M.El  (Tmʳ  {Γ = Γ}{A = _ , Uw _ (₂ Γ)} (xp , xw)))
+          (Tyʳ {Γ} (Elp xp , Elw (₂ Γ)xw)) ↦ (M.El  (Tmʳ  {Γ = Γ}{A = _ , Uw (₂ Γ)} (xp , xw)))
 
 {-# REWRITE Elʳ  #-}
 
@@ -158,8 +158,8 @@ postulate
            -- {Γ : S.Con}
           -- {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)}
           -- {Γp}{Γw : Conw Γp}
-          {ap}{aw : Tmw (₁ Γ) Up ap}
-          {Bp}{Bw : Tyw ((₁ Γ) ▶p Elp ap) Bp} →
+          {ap}{aw : (₁ Γ) ⊢ ap ∈ Up }
+          {Bp}{Bw : ((₁ Γ) ▶p Elp ap) ⊢ Bp} →
           -- let Γ = (Γp , Γw) in
           let a : S.Tm Γ (S.U {Γ}) 
               a = (ap , aw)
@@ -187,7 +187,7 @@ postulate
 postulate
     ΠNIʳ : ∀{Γ}
           {T : Set k}
-          {Bp : T → Typ}{Bw : ∀ (a : T) → Tyw (₁ Γ) (Bp a)} →
+          {Bp : T → Typ}{Bw : ∀ (a : T) → (₁ Γ) ⊢ (Bp a)} →
           -- let Γ = (Γp , Γw) in
           let B = λ a → _ , (Bw a) in
              
@@ -210,7 +210,7 @@ postulate
 postulate
     ΠInfʳ : ∀{Γ}
           {T : Set k}
-          {Bp : T → Tmp}{Bw : ∀ (a : T) → Tmw (₁ Γ) Up (Bp a)} →
+          {Bp : T → Tmp}{Bw : ∀ (a : T) → (₁ Γ) ⊢ (Bp a) ∈ Up} →
           -- let Γ = (Γp , Γw) in
           let B = λ a → _ , (Bw a) in
              
@@ -275,17 +275,17 @@ module _   where
         open UnivΠMor m2 public
 
 
-    morCon~ : ∀ {Γ}(Γw : Conw Γ) → Con~ Γw (m.Conʳ (Γ , Γw))
-    morTy~ : ∀ {Γ}Γw{A}(Aw : Tyw Γ A) → Ty~ Aw (m.Tyʳ {Γ = (Γ , Γw)}(A , Aw))
-    morTm~ : ∀ {Γ}Γw{A}(Aw : Tyw Γ A){t}(tw : Tmw Γ A t) → Tm~ tw (m.Tmʳ {Γ = (Γ , Γw)}{(A , Aw)} (t , tw))
-    morVar~ : ∀ {Γ}Γw{A}(Aw : Tyw Γ A){x}(xw : Varw Γ A x) → Var~ xw (m.Tmʳ {Γ = (Γ , Γw)}{(A , Aw)} (V x , vw xw))
+    morCon~ : ∀ {Γ}(Γw : Γ ⊢) → Con~ Γw (m.Conʳ (Γ , Γw))
+    morTy~ : ∀ {Γ}Γw{A}(Aw : Γ ⊢ A) → Ty~ Aw (m.Tyʳ {Γ = (Γ , Γw)}(A , Aw))
+    morTm~ : ∀ {Γ}Γw{A}(Aw : Γ ⊢ A){t}(tw : Γ ⊢ t ∈ A) → Tm~ tw (m.Tmʳ {Γ = (Γ , Γw)}{(A , Aw)} (t , tw))
+    morVar~ : ∀ {Γ}Γw{A}(Aw : Γ ⊢ A){x}(xw : Γ ⊢ x ∈v A) → Var~ xw (m.Tmʳ {Γ = (Γ , Γw)}{(A , Aw)} (V x , vw xw))
 
-    morTy~ {.Γp} Γw {.Up} (Uw Γp Γw') rewrite prop-has-all-paths Γw' Γw = lift refl
+    morTy~  Γw {.Up} (Uw Γw') rewrite prop-has-all-paths Γw' Γw = lift refl
 
     morTy~ {Γ} Γw' {.(ΠΠp ( _) _)} (Πw Γw Aw Bw)
         rewrite prop-has-all-paths Γw Γw' 
       =
-      (_ , morTm~ Γw' (Uw _ Γw') Aw) ,
+      (_ , morTm~ Γw' (Uw Γw') Aw) ,
       (_ , morTy~ (▶w Γw' (Elw Γw' Aw))  Bw) ,
       refl
 
@@ -293,7 +293,7 @@ module _   where
       = (λ a → _ , morTy~ Γw' (Bw a)) , refl
 
     morTy~ {Γ} Γw' {.(Elp _)} (Elw Γw aw) rewrite prop-has-all-paths Γw' Γw =
-      (_ , morTm~ Γw (Uw _ Γw) aw  ) ,
+      (_ , morTm~ Γw (Uw Γw) aw  ) ,
       refl  
 
     morCon~ {.∙p} ∙w = Level.lift m.∙ʳ
@@ -305,9 +305,9 @@ module _   where
 
     -- morTm~ {Γ}Γw{A}Aw {t}tw = ?
     morTm~ {Γ} Γw {A} Aw {.(V _)} (vw xw) = morVar~ Γw Aw xw 
-    morTm~ {.Γp} Γw {.(l-subT 0 up Bp)} sBw {.(app tp up)} (appw Γp Γw' Ap aw Bp Bw tp tw up uw)
+    morTm~  Γw  sBw  (appw Γw' aw Bw tw uw)
       =
-      (_ , morTm~ Γw (Uw _ Γw) aw) ,
+      (_ , morTm~ Γw (Uw Γw) aw) ,
       (_ , morTy~ (▶w Γw (Elw Γw aw)) Bw) ,
       -- {!? , ? morTm~ (▶w Γw (Elw Γw aw)) Bw!} ,
       (_ , morTm~ Γw (Πw Γw aw Bw) tw) ,
@@ -315,34 +315,34 @@ module _   where
        (eT , et Γw' (prop-has-all-paths Γw' Γw))
       where
         Γ : S.Con
-        Γ = (Γp , Γw)
+        Γ = (_ , Γw)
 
         ElA : S.Ty Γ
         ElA = (_ , Elw Γw aw)
 
         u : S.Tm Γ ElA
-        u = (up , uw)
+        u = (_ , uw)
 
         B : S.Ty (Γ S.▶ ElA)
-        B = (Bp , Bw)
+        B = (_ , Bw)
 
         B[] : S.Ty Γ
-        B[] = (l-subT 0 up Bp , sBw)
+        B[] = (l-subT 0 _ _ , sBw)
 
         ΠAB : S.Ty Γ
         ΠAB = S.Π (_ , aw) B
         t : S.Tm Γ ΠAB
-        t = (tp , tw)
+        t = (_ , tw)
 
         eT :   (m.Tyʳ B[] ≡ m.Tyʳ B M.[ M.< m.Tmʳ u > ]T)
-        eT = ap m.Tyʳ {x = (l-subT 0 up Bp , sBw)}{y = B S.[ S.< u > ]T } (Ty= (₁[<>]T {B = B})) ◾
+        eT = ap m.Tyʳ {x = B[]}{y = B S.[ S.< u > ]T } (Ty= (₁[<>]T {B = B})) ◾
            m.[<>]T {u = u}{B} 
 
         et : ∀ Γw' (e : Γw' ≡ Γw) → 
-          (m.Tmʳ (app tp up , appw Γp Γw' Ap aw Bp Bw tp tw up uw))
+          (m.Tmʳ (app _ _ , appw Γw' aw Bw tw uw))
           ==
           ((m.Tmʳ t) M.$ (m.Tmʳ u))
-          [ (M.Tm (Conʳ (Γp , Γw))) ↓ eT ]
+          [ (M.Tm (Conʳ Γ)) ↓ eT ]
 
         et _ refl
           = 
@@ -353,14 +353,14 @@ module _   where
             
 
            where
-             apptu = (app tp up , appw Γp Γw Ap aw Bp Bw tp tw up uw) 
+             apptu = (app _ _ , appw Γw aw Bw tw uw) 
           -- | (₁[<>]T {B = B}{u = u})
 
              help :
                 ∀ {B}(e : _ ≡ B)Bw →
                 -- let e = (₁[<>]T {B = B}{u = u}) in
                 Tmʳ {Γ = Γ}apptu
-                == Tmʳ (app tp up , tr (λ C → Tmw _ C _) ( e) (₂ apptu))
+                == Tmʳ (app _ _ , tr (λ C →  _ ⊢ _ ∈ C) ( e) (₂ apptu))
                   [ M.Tm (m.Conʳ Γ) ↓ ap m.Tyʳ (Ty= {A = _ , sBw}{B = (B , Bw)}e) ]
               
              help refl Bw rewrite prop-has-all-paths sBw Bw = refl
@@ -383,7 +383,7 @@ module _   where
       rewrite prop-has-all-paths sBw (Elw Γw' (Bw u))
         | prop-has-all-paths Γw Γw'
       =
-       ((λ a → _ , morTm~ Γw' (Uw _ Γw') (Bw a)) ,
+       ((λ a → _ , morTm~ Γw' (Uw Γw') (Bw a)) ,
        ((_ , morTm~ Γw' (Elw Γw' (ΠInfw Γw' Bw)) tw) ,
        (refl ,
        et)))
@@ -393,17 +393,17 @@ module _   where
           Tmʳ (appNI t u , appInfw Γw' Bw tw u) ≡ M.app$Inf (m.Tmʳ {A = _ , Elw Γw' (ΠInfw Γw' Bw)} (t , tw)) u
         et = $Infʳ (_ , tw) u
 
-    morTm~ {.Γp} Γw' (Uw Γp Γw'') (ΠInfw Γw Bw)
+    morTm~  Γw' (Uw Γw'') (ΠInfw Γw Bw)
        rewrite prop-has-all-paths Γw'' Γw'
              | prop-has-all-paths Γw Γw'
              =
       -- (λ a → {! (? , ?)!}) , {!!}
-      (λ a →  (_ , morTm~ Γw' (Uw _ Γw') (Bw a))) , (refl , refl)
+      (λ a →  (_ , morTm~ Γw' (Uw Γw') (Bw a))) , (refl , refl)
       
           
 
       
-    morVar~ {.(Γp ▶p Ap)} Γw' {.(liftT 0 Ap)} wAw {.0} (V0w Γp Γw Ap Aw)
+    morVar~  Γw'  wAw {.0} (V0w Γw Aw)
       rewrite prop-has-all-paths Γw' (▶w Γw Aw)
        =
           (_ , morCon~ Γw) ,
@@ -411,13 +411,13 @@ module _   where
           refl ,
           (eT ,
           -- ≅↓ (↓≅ {!vzʳ!})
-          ≅↓   ( et (vw (V0w Γp Γw Ap Aw)))
+          ≅↓   ( et (vw (V0w  Γw Aw)))
           )
         where
-          Γ = (Γp , Γw)
-          A = (Ap , Aw)
-          eT : Tyʳ {Γ = ((Γp ▶p Ap) , ▶w Γw Aw)}
-            (liftT 0 Ap , wAw) ≡ (m.Tyʳ {Γ = (_ , Γw)}A M.[ M.π₁ M.id ]T)
+          Γ = (_ , Γw)
+          A = (_ , Aw)
+          eT : Tyʳ {Γ = (_ , ▶w Γw Aw)}
+            (liftT 0 _ , wAw) ≡ (m.Tyʳ {Γ = (_ , Γw)}A M.[ M.π₁ M.id ]T)
           eT = ap m.Tyʳ (Ty= (wk=[wk]T Aw)) ◾ m.[]Tʳ {A = A }{σ = S.wk} ◾ ap (λ s → M._[_]T (m.Tyʳ A) s) wkʳ
           -- eT = ap m.Tyʳ (Ty= {!!}) ◾ ?
 
@@ -438,7 +438,7 @@ module _   where
           
 
 
-    morVar~ {.(Γp ▶p Ap)} Γw' {.(liftT 0 Bp)} Cw {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw)
+    morVar~ {.(Γp ▶p Ap)} Γw' {.(liftT 0 Bp)} Cw {.(S xp)} (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw)
       rewrite prop-has-all-paths Γw' (▶w Γw Aw)
       =
      (_ , morCon~ Γw) ,
@@ -456,9 +456,9 @@ module _   where
          (liftT 0 Bp , Cw) ≡ (m.Tyʳ {Γ = (_ , Γw)}(Bp , Bw) M.[ M.π₁ M.id ]T)
       eT = ap m.Tyʳ (Ty= (wk=[wk]T Bw)) ◾ m.[]Tʳ {A = B }{σ = S.wk} ◾ ap (λ s → M._[_]T (m.Tyʳ B) s) wkʳ
       x = (V xp , vw xw)
-      sx = (V (S xp) , vw (VSw Γp Γw Ap Aw Bp Bw xp xw))
+      sx = (V (S xp) , vw (VSw Γw Aw Bw xw))
 
-      et :  (m.Tmʳ (V (S xp) , vw (VSw Γp Γw Ap Aw Bp Bw xp xw)))
+      et :  (m.Tmʳ (V (S xp) , vw (VSw Γw Aw Bw xw)))
         ≅ (m.Tmʳ x M.[ M.π₁ M.id ]t)
       et = 
          ↓≅ (ap↓ {A = S.Ty  _}{B = S.Tm (Γ S.▶ A)}{C = λ C → M.Tm _ (m.Tyʳ C)} m.Tmʳ
@@ -472,7 +472,7 @@ module _   where
         ∘≅ ↓≅ (vsʳ {t = x}{B = A})
 
 
-    morSub~ : ∀ {Γ}Γw{Δ}(Δw : Conw Δ){σ}(σw : Subw Γ Δ σ) → Sub~ σw (m.Subʳ {Γ = (Γ , Γw)}{(Δ , Δw)} (σ , σw))
+    morSub~ : ∀ {Γ}Γw{Δ}(Δw : Δ ⊢){σ}(σw : Γ ⊢ σ ⇒ Δ) → Sub~ σw (m.Subʳ {Γ = (Γ , Γw)}{(Δ , Δw)} (σ , σw))
     -- morSub~ {Γ}Γw{Δ}Δw {σ}σw = ?
     morSub~ {Γ} Γw {.∙p} ∙w {.nil} nilw = m.∙ʳ ,
        Level.lift (from-transp _ _ M.εη)

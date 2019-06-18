@@ -19,9 +19,9 @@ open import RelationCwfWeakening {k = k}
 
 Var[]~ : ∀ 
    {Γm Δm : M.Con}
-   {Γ}{Δ}{σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {Γm}{Δm}))
+   {Γ}{Δ}{σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {Γm}{Δm}))
    {Am : M.Ty Δm}
-    {A}{x}{xw : Varw Δ A x} (xm : ∃ (Var~ xw {Δm}{ Am}))
+    {A}{x}{xw : Δ ⊢ x ∈v A} (xm : ∃ (Var~ xw {Δm}{ Am}))
   → Tm~ (Varw[] xw σw) {Γm} { Am M.[ ₁ σm ]T} (₁ xm M.[ ₁ σm ]t)
 
   -- Ty[]~ Γm Δm σm Am = {!!}
@@ -29,7 +29,7 @@ Var[]~ : ∀
 Var[]~ {Γm} {σw = ,sw  Γw' {σp = σ} σw Aw' {tp = t} tw}
   -- σm
   (sm , Δm' , σm' , Am'' , tm' , eC , eS)
-   {xw = V0w Γp Γw Ap Aw} (xm , Δm , Am' , refl , refl , refl)
+   {xw = V0w Γw {Ap} Aw} (xm , Δm , Am' , refl , refl , refl)
   rewrite wk[,]T Ap t σ
   | prop-has-all-paths Γw' Γw
   | prop-path (ConP Γw) Δm' Δm
@@ -44,7 +44,7 @@ Var[]~ {Γm} {σw = ,sw  Γw' {σp = σ} σw Aw' {tp = t} tw}
 
 Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
   (sm , Δm' , σm , Am'' , tm , eC , eS)
-  {Am} {xw = VSw Δp Δw Ap Aw Bp Bw xp xw}
+  {Am} {xw = VSw Δw Aw {Bp} Bw xw}
   (_ , Δm , Am' , Bm , xm , refl , refl , refl  )
   rewrite wk[,]T Bp t σ
   | prop-has-all-paths Δw' Δw
@@ -71,25 +71,25 @@ Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
     --   (Var[]~ σm xm)
 
 Tm[]~ : ∀ 
-      {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-      {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw))
-      {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+      {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+      {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
+      {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
       {Am : M.Ty (₁ Δm)}
-      {A}{t}{tw : Tmw Δ A t} (tm : ∃ (Tm~ tw {₁ Δm}{ Am}))
+      {A}{t}{tw : Δ ⊢ t ∈ A} (tm : ∃ (Tm~ tw {₁ Δm}{ Am}))
       → Tm~ (Tmw[] tw Γw σw) {₁ Γm} { Am M.[ ₁ σm ]T} (₁ tm M.[ ₁ σm ]t)
 
 Ty[]~ : ∀ 
-   {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-   {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw))
-  {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
-  {A}{Aw : Tyw Δ A} (Am : ∃ (Ty~ Aw {₁ Δm}))
+   {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+   {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
+  {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+  {A}{Aw : Δ ⊢ A} (Am : ∃ (Ty~ Aw {₁ Δm}))
   → Ty~ (Tyw[] Aw Γw σw) {₁ Γm} (₁ Am M.[ ₁ σm ]T)
   -- Ty[]~ {Γm}{Δm}{Γ}Γw{Δ}{σ}{σw}  σm{T}{Tw}Tm  = {!!}
 
-keepEl~ : ∀ {Γp}{Γw : Conw Γp}(Γm : ∃ (Con~ Γw))
-  {Δp}{Δw : Conw Δp}(Δm : ∃ (Con~ Δw))
-  {σp}{σw : Subw Γp Δp σp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
-  {Ap}{Aw : Tmw Δp Up Ap}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
+keepEl~ : ∀ {Γp}{Γw : Γp ⊢}(Γm : ∃ (Con~ Γw))
+  {Δp}{Δw : Δp ⊢}(Δm : ∃ (Con~ Δw))
+  {σp}{σw : Γp ⊢ σp ⇒ Δp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
+  {Ap}{Aw : Δp ⊢ Ap ∈ Up}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
   Sub~ (keepw Γw Δw σw  Aw)(₁ σm M.^ M.El (₁ Am))
 
 keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
@@ -106,8 +106,8 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → Varw (Γ ▶p Elp (A [ σ ]t)) x 0) (liftT=wkS 0 σ (Elp A))
-      (V0w Γ Γw ((Elp A) [ σ ]T) (Tyw[] (Elw Δw Aw) Γw σw)))
+      (transport! (λ x → (Γ ▶p Elp (A [ σ ]t)) ⊢ 0 ∈v x) (liftT=wkS 0 σ (Elp A))
+      (V0w Γw  (Tyw[] (Elw Δw Aw) Γw σw)))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am M.[ ₁ σm ]t))) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
     vz~ rewrite (liftT=wkS 0 σ (Elp A)) =
@@ -121,11 +121,11 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
 
 -- helper for Π[] and app[] cases
 Π-B[]~ :
-  ∀ {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-  {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw)) (Δw' : Conw Δ)
-  {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
-  {A}{Aw : Tmw Δ Up A} (am : ∃ (Tm~ Aw {₁ Δm}{M.U}))
-  {B}{Bw : Tyw (Δ ▶p Elp A) B} (Bm : ∃ (Ty~ Bw {₁ Δm M.▶ M.El (₁ am) }))
+  ∀ {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+  {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw)) (Δw' : Δ ⊢)
+  {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+  {A}{Aw : Δ ⊢ A ∈ Up} (am : ∃ (Tm~ Aw {₁ Δm}{M.U}))
+  {B}{Bw : (Δ ▶p Elp A) ⊢ B} (Bm : ∃ (Ty~ Bw {₁ Δm M.▶ M.El (₁ am) }))
   →
   -- Σ (M.Ty (₁ Γm M.▶ M.El (₁ am M.[ ₁ σm ]t)))
     (Ty~ (Tyw[] Bw (▶w Γw (Elw Γw (Tmw[] Aw Γw σw))) (keepw Γw Δw' σw  Aw)))
@@ -163,7 +163,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   -- TODO factoriser avec app
    -- σar = keep~ Γm Δm σm (M.El (₁ am) , am , refl)
 
-Ty[]~ {Γ}{Γw}Γm {_}{Δw'}Δm  {σ} {σw} σm {.Up} {Uw Δ Δw} (_ , Level.lift refl) = Level.lift refl
+Ty[]~ {Γ}{Γw}Γm {_}{Δw'}Δm  {σ} {σw} σm {.Up} {Uw Δw} (_ , Level.lift refl) = Level.lift refl
 
 Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp ( _) _)} {Πw Δw' Aw Bw} (_ , am , Bm , refl) =
    -- this was factorized by Π-B[]~
@@ -194,8 +194,8 @@ Ty[]~ {Γ}{Γw}Γm {Δ}{Δw'}Δm  {σ} {σw} σm {.(Elp _)} {Elw Δw aw} (_ , am
 -- Tm[]~ {Γm}{Δm}{Γ}Γw{Δ}{σ}{σw}σm {Am}{A}{t}{tw} tm = {!!}
 
 Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {Am} {A} {.(V _)} {vw xw} tm = Var[]~ σm tm
-Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {.(app t u)}
-   {appw Δp Δw' Ap Aw Bp Bw t tw u uw}
+Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {_}
+   {appw Δw' Aw {Bp} Bw tw {u} uw}
    (_ , am , Bm , tm , um , refl , refl)
    rewrite l-sub[]T 0 Bp u σ
    =
@@ -237,10 +237,10 @@ Tm[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {_}{_}{_} {ΠInfw Δw'  Bw}
 
 -- keep~ {Γ}Γw{Δ}{σ}{σw}{Γm}{Δm}σm{A}{Aw}Am =
 -- note that this keep~ is not defined by induction
-keep~ : ∀ {Γp}{Γw : Conw Γp}(Γm : ∃ (Con~ Γw))
-  {Δp}{Δw : Conw Δp}(Δm : ∃ (Con~ Δw))
-  {σp}{σw : Subw Γp Δp σp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
-  {Ap}{Aw : Tmw Δp Up Ap}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
+keep~ : ∀ {Γp}{Γw : Γp ⊢}(Γm : ∃ (Con~ Γw))
+  {Δp}{Δw : Δp ⊢}(Δm : ∃ (Con~ Δw))
+  {σp}{σw : Γp ⊢ σp ⇒ Δp} (σm : Σ (M.Sub (₁ Γm) (₁ Δm)) (Sub~ σw))
+  {Ap}{Aw : Δp ⊢ Ap ∈ Up}(Am : Σ (M.Tm (₁ Δm) M.U) (Tm~ Aw)) →
   Sub~ (keepw Γw Δw σw Aw)(₁ σm M.^ (M.El (₁ Am)))
 
 keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
@@ -257,8 +257,8 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → Varw (Γ ▶p (Elp A [ σ ]T)) x 0) (liftT=wkS 0 σ (Elp A))
-      (V0w Γ Γw (Elp A [ σ ]T) (Elw Γw (Tmw[] Aw Γw σw))))
+      (transport! (λ x → (Γ ▶p (Elp A [ σ ]T)) ⊢ 0 ∈v x) (liftT=wkS 0 σ (Elp A))
+      (V0w Γw  (Elw Γw (Tmw[] Aw Γw σw))))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
     vz~ rewrite (liftt=wkS 0 σ A) =
@@ -268,7 +268,7 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
        ! (M.[][]T {A = M.El (₁ Am)})  ,
       ≅↓ (↓≅  (from-transp (M.Tm (₁ Γm M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) refl)  !≅)
 
-id~ : ∀ {Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) → Sub~ (idpw Γw) (M.id {₁ Γm})
+id~ : ∀ {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw)) → Sub~ (idpw Γw) (M.id {₁ Γm})
 -- id~ {Γ}{Γw} Γm = {!!}
 id~ {.∙p} {∙w} (_ , Level.lift refl) = refl , Level.lift M.εη
 id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
@@ -292,9 +292,9 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
       ◾ M.πη)
 
     tm₂ :  Tm~
-      (transport! (λ B → Tmw (Γ ▶p A) B (V 0))
+      (transport! (λ B → (Γ ▶p A) ⊢ V 0 ∈ B)
       (wkT=wkS (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw))
-      (vw (V0w Γ Γw A Aw)))
+      (vw (V0w Γw Aw)))
       tm₁
     tm₂ rewrite (wkT=wkS (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw)) =
       Γm ,
@@ -303,9 +303,9 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
       ap (₁ Am M.[_]T) M.idl ,
       ≅↓ tm₁≅vz
 
-<>~ : ∀{Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-    {A}{Aw : Tyw Γ A}(Am  : ∃ (Ty~ Aw {₁ Γm}))
-    {t} {tw : Tmw Γ A t } (tm : Σ (M.Tm (₁ Γm) (₁ Am)) (Tm~ tw)) →
+<>~ : ∀{Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+    {A}{Aw : Γ ⊢ A}(Am  : ∃ (Ty~ Aw {₁ Γm}))
+    {t} {tw : Γ ⊢ t ∈ A } (tm : Σ (M.Tm (₁ Γm) (₁ Am)) (Tm~ tw)) →
     Sub~ (<>w Γw Aw tw)  (M.< ₁ tm >)
 
 -- <>~ {Γ}Γw{A}Aw{t}tw Γm Am tm = {!!}
@@ -320,7 +320,7 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
     tm₁ : M.Tm (₁ Γm) (₁ Am M.[ M.id ]T)
     tm₁ = transport! (M.Tm _) M.[id]T (₁ tm)
 
-    tm₂ : Tm~ (transport! (λ A₁ → Tmw Γ A₁ t) ([idp]T Aw) tw) tm₁
+    tm₂ : Tm~ (transport! (λ A₁ → Γ ⊢ t ∈ A₁) ([idp]T Aw) tw) tm₁
     tm₂  rewrite ([idp]T Aw) =
       tr!-over (λ A₁ → Tm~ tw {Am = A₁})
         ( from-transp! (M.Tm (₁ Γm)) M.[id]T refl )
@@ -328,11 +328,11 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
 
 
 -- not needed for the inhabitation
-∘~ : ∀{Γ}{Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-      {Δ}{Δw : Conw Δ}(Δm : ∃ (Con~ Δw))
-      {σ}{σw : Subw Γ Δ σ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
-      {Y}{Yw : Conw Y}(Ym : ∃ (Con~ Yw))
-      {δ}{δw : Subw Y Γ δ}(δm : ∃ (Sub~ δw {₁ Ym}{₁ Γm}))
+∘~ : ∀{Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+      {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
+      {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+      {Y}{Yw : Y ⊢}(Ym : ∃ (Con~ Yw))
+      {δ}{δw : Y ⊢ δ ⇒ Γ}(δm : ∃ (Sub~ δw {₁ Ym}{₁ Γm}))
       →
       Sub~ {σ = σ ∘p δ} (∘w σw Yw δw) {₁ Ym}{₁ Δm} (₁ σm M.∘ ₁ δm)
 
@@ -351,7 +351,7 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
   M.,∘ (from-transp _ _ refl)
   where
     t[]~ : Tm~
-      (tr (λ A → Tmw Y A (tp [ δ ]t)) (! ([∘]T Ap σp δ))
+      (tr (λ A → Y ⊢ (tp [ δ ]t) ∈ A) (! ([∘]T Ap σp δ))
        (Tmw[] tw Yw δw))
       (tr (M.Tm (₁ Ym)) (M.[][]T {A = ₁ Am}{σ = ₁ δm}{δ = ₁ σm}) (₁ tm M.[ ₁ δm ]t))
     t[]~

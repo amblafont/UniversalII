@@ -200,7 +200,7 @@ $ʳ~ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a
 -- $ʳ~ {Γ}{a}{B}t u tm um = ?
 $ʳ~ {Γ}{a}{B}t u
     =
-   tr {A = ∃ (λ C → Tmw (₁ Γ) C (app (₁ t) (₁ u)))}
+   tr {A = ∃  λ C →  (₁ Γ) ⊢ (app (₁ t) (₁ u) ) ∈ C   }
      (λ x → Tm~ {A = ₁ x}(₂ x) (Tmʳ t M.$ Tmʳ u))
      {x = (subT (₁ u) (₁ B)) , tuw }
      {y = (₁ (B S.[ S.< u > ]T)) , ₂ (t S.$ u)}
@@ -209,7 +209,7 @@ $ʳ~ {Γ}{a}{B}t u
        (from-transp _ _ (prop-has-all-paths _ _)))
      helper
   where
-    tuw = (appw (₁ Γ) (₂ Γ) (₁ a) (₂ a) (₁ B) (₂ B) (₁ t) (₂ t) (₁ u) (₂ u))
+    tuw = (appw  (₂ Γ)  (₂ a)  (₂ B)  (₂ t)  (₂ u))
 
     helper : Tm~ tuw
       ( (Tmʳ {A = (S.Π a B)}t) M.$ (Tmʳ {A = S.El a} u))

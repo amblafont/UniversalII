@@ -44,14 +44,14 @@ record Con : Set (suc k)  where
   constructor _,_
   field
     ₁ : Conp
-    ₂ : Conw ₁
+    ₂ :  ₁ ⊢
 open Con public
 
 record Ty (Γ : Con) : Set (suc k)  where
   constructor _,_
   field
     ₁ : Typ
-    ₂ : Tyw (Con.₁ Γ ) ₁
+    ₂ :  (Con.₁ Γ ) ⊢ ₁
 
 open Ty public
 
@@ -63,7 +63,7 @@ record Tm (Γ : Con)(A : Ty Γ) : Set (suc k) where
   constructor _,_
   field
     ₁ : Tmp
-    ₂ : Tmw (Con.₁ Γ ) (Ty.₁ A) ₁
+    ₂ : (Con.₁ Γ ) ⊢ ₁ ∈ (Ty.₁ A) 
 
 open Tm public
 
@@ -90,7 +90,7 @@ record Sub (Γ : Con)(Δ : Con) : Set (suc k)  where
   constructor _,_
   field
     ₁ : Subp
-    ₂ : Subw (Con.₁ Γ )(Con.₁ Δ ) ₁
+    ₂ : (Con.₁ Γ ) ⊢ ₁ ⇒ (Con.₁ Δ ) 
 
 open Sub public
 
@@ -148,7 +148,7 @@ Now the UnivΠ part
 
 
 
-wkS=∘wk : ∀ {Γ}{Δ}{σ}(σw : Subw Γ Δ σ){A}(Aw : Tyw Γ A) → wkS σ ≡ σ ∘p (wk ∣ Γ ∣)
+wkS=∘wk : ∀ {Γ}{Δ}{σ}(σw :  Γ ⊢ σ ⇒ Δ){A}(Aw : Γ ⊢ A) → wkS σ ≡ σ ∘p (wk ∣ Γ ∣)
 wkS=∘wk {Γ}{Δ}{σ}σw{A}Aw = ! (idr {σ = wkS σ} (wkSw σw Aw)) ◾ wk∘, _ _ _
 
 -- wkS (idp ∣ Γ ∣ ) ∘p  < ∣ Γ ▶p A ∣ ⊢ (V 0) >
@@ -246,7 +246,7 @@ wkt[^] {Γ}{Δ}{σ}{A}{t}{B} =
 -- Goal: (wkt (₁ t) [ ₁ (σ S.^ (Elp (₁ a) , Elw (₂ Δ) (₂ a))) ]t) ==
 
 U : ∀ {Γ : Con} → Ty Γ
-U {Γ} = _ , Uw _ (₂ Γ)
+U {Γ} = _ , Uw (₂ Γ)
 
 El : {Γ : Con} → Tm Γ U → Ty Γ
 El {Γ} a = _ , Elw (₂ Γ)(₂ a)
@@ -299,14 +299,14 @@ syntaxUnivΠ = record
                 ; _$_ = λ {Γ}{a}{B}t u  →
                    (app (₁ t) (₁ u)) ,
                     
-                    tr (λ B' → Tmw _ B' _ )
+                    tr (λ B' → _ ⊢ _ ∈ B' )
                     (₁[<>]T {A = El a}{B = B}{u} )
                     (appw
-                     (₁ Γ ) (₂ Γ)
-                     _ (₂ a)
-                     _ (₂ B)
-                     _ (₂ t)
-                     _ (₂ u)
+                      (₂ Γ)
+                      (₂ a)
+                      (₂ B)
+                      (₂ t)
+                      (₂ u)
                      )
 
                      

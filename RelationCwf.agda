@@ -27,10 +27,10 @@ module RelationCwf {k : Level.Level}  where
   -- the advantage : I won't need to show that Ty~' implies Con~'
   -- However I would still need to prove that _w are HProp (consider you would state
   --   the main theorem for Ty~' and the case of context extension)
-  Con~ : {Γp : Conp}(Γw : Conw Γp) → M.Con → Set (lmax M.i (lmax M.j k))
-  Ty~ : ∀ {Γ A} (Aw : Tyw Γ A) {Γm} (Am : M.Ty Γm) → Set (lmax M.i (lmax M.j k))
-  Tm~ : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
-  Var~ : ∀ {Γ A x} (xw : Varw Γ A x) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
+  Con~ : {Γp : Conp}(Γw :  Γp ⊢) → M.Con → Set (lmax M.i (lmax M.j k))
+  Ty~ : ∀ {Γ A} (Aw : Γ ⊢ A) {Γm} (Am : M.Ty Γm) → Set (lmax M.i (lmax M.j k))
+  Tm~ : ∀ {Γ A t} (tw : Γ ⊢  t ∈ A) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
+  Var~ : ∀ {Γ A x} (xw : Γ ⊢  x ∈v A) {Γm} {Am : M.Ty Γm}(tm : M.Tm Γm Am) → Set (lmax M.i (lmax M.j k))
 
 -- Con~ {Γ}Γw Γm = {!!}
 -- Sub~ {Γ}{Δ}{σ}σw {Γm}{Δm}σm = {!!}
@@ -43,7 +43,7 @@ module RelationCwf {k : Level.Level}  where
     Δm ≡ (₁ Γm M.▶ ₁ Am )
 
 -- Ty~ {Γ}{E} Ew {Cm} Em = {!Ew!}
-  Ty~ {.Γp} {.Up} (Uw Γp Γw) {Cm} Em = Lift {ℓ = lmax M.j k} (Em ≡ M.U )
+  Ty~   (Uw  Γw) {Cm} Em = Lift {ℓ = lmax M.j k} (Em ≡ M.U )
   Ty~ {Γ} {.(ΠΠp ( _) _)} (Πw Γw Aw Bw) {Cm} Em =
     Σ (∃ (Tm~ Aw {Cm} {M.U})) λ am →
     Σ (∃ (Ty~ Bw {Cm M.▶ M.El (₁ am)} )) λ Bm →
@@ -59,7 +59,7 @@ module RelationCwf {k : Level.Level}  where
 
 
   Tm~ {Γ} {E} {.(V _)} (vw xw) {Cm} {Em} zm = (Var~ xw zm)
-  Tm~ {.Γp} {.(l-subT 0 u Bp)} {.(app t u)} (appw Γp Γw ap aw Bp Bw t tw u uw) {Δm} {Em} zm =
+  Tm~    (appw Γw aw Bw tw uw) {Δm} {Em} zm =
     Σ (∃ (Tm~ aw {Δm} {M.U })) λ am →
     Σ (∃ (Ty~ Bw {Δm M.▶ M.El (₁ am)})) λ Bm →
 
@@ -87,7 +87,7 @@ module RelationCwf {k : Level.Level}  where
 
 
 -- Var~ {Γ}{E}{x} xw {Cm}{Em} xm = {!Ew!}
-  Var~ {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Cm} {Em} xm =
+  Var~    (V0w Γw Aw) {Cm} {Em} xm =
 
      Σ (∃ (Con~ Γw )) λ Γm →
      Σ (∃ (Ty~  Aw {₁ Γm} )) λ Am →
@@ -95,7 +95,7 @@ module RelationCwf {k : Level.Level}  where
      Σ (Em == ₁ Am M.[ M.wk ]T [ M.Ty ↓ eC ]) λ eE →
       xm == M.vz [ (λ CE → M.Tm (₁ CE)(₂ CE)) ↓ pair= eC eE ]
 
-  Var~ {.(Γp ▶p Ap)} {.(liftT 0 Bp)} {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw) {Cm} {Em} zm =
+  Var~  (VSw Γw Aw Bw xw) {Cm} {Em} zm =
     Σ (∃ (Con~ Γw )) λ Γm →
     Σ (∃ (Ty~  Aw {₁ Γm} )) λ Am →
     Σ (∃ (Ty~  Bw {₁ Γm} )) λ Bm →
@@ -110,7 +110,7 @@ module RelationCwf {k : Level.Level}  where
     -- M.app Δm (₁ am) (₁ Bm) (₁ tm) (₁ um)
 
 
-  Sub~ : ∀ {Γ Δ σ} (σw : Subw Γ Δ σ) {Γm Δm} (σm : M.Sub Γm Δm) → Set (lmax M.i (lmax M.j k))
+  Sub~ : ∀ {Γ Δ σ} (σw :  Γ ⊢ σ ⇒ Δ) {Γm Δm} (σm : M.Sub Γm Δm) → Set (lmax M.i (lmax M.j k))
   -- Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm = {!(Δm , σm) ≡ (M.∙ , M.ε )!}
   Sub~ {Γ} {.∙p} {.nil} nilw {Γm} {Δm} σm =
     Σ (Δm ≡ M.∙ ) λ eC → Lift {ℓ  = k} (σm == M.ε [ M.Sub Γm ↓ eC ])
@@ -124,16 +124,16 @@ module RelationCwf {k : Level.Level}  where
       sm == ₁ σm M.,s ₁ tm [ M.Sub Γm ↓ eC ]
 
   ConP : ∀ {Γp} Γw → is-prop (∃ (Con~ {Γp} Γw))
-  TyP : ∀ {Γ A} (Aw : Tyw Γ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
-  TmP : ∀ {Γ A t} (tw : Tmw Γ A t) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
-  VarP : ∀ {Γ A x} (x : Varw Γ A x) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
+  TyP : ∀ {Γ A} (Aw : Γ ⊢ A) Γm → is-prop (∃ (Ty~ Aw {Γm}))
+  TmP : ∀ {Γ A t} (tw : Γ ⊢  t ∈ A) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Tm~ tw {Γm}{Am}))
+  VarP : ∀ {Γ A x} (x : Γ ⊢  x ∈v A) {Γm} (Am : M.Ty Γm) → is-prop (∃ (Var~ x {Γm}{Am}))
 
   -- new version of Agda does not support explicit arguments for instances
   instance
     i-ConP : ∀ {Γp} {Γw} → is-prop (∃ (Con~ {Γp} Γw))
-    i-TyP : ∀ {Γ A} {Aw : Tyw Γ A} {Γm} → is-prop (∃ (Ty~ Aw {Γm}))
-    i-TmP : ∀ {Γ A t} {tw : Tmw Γ A t} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Tm~ tw {Γm}{Am}))
-    i-VarP : ∀ {Γ A x} {x : Varw Γ A x} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Var~ x {Γm}{Am}))
+    i-TyP : ∀ {Γ A} {Aw : Γ ⊢ A} {Γm} → is-prop (∃ (Ty~ Aw {Γm}))
+    i-TmP : ∀ {Γ A t} {tw : Γ ⊢  t ∈ A} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Tm~ tw {Γm}{Am}))
+    i-VarP : ∀ {Γ A x} {x : Γ ⊢  x ∈v A} {Γm} {Am : M.Ty Γm} → is-prop (∃ (Var~ x {Γm}{Am}))
 
     i-ConP {Γw = Γw} = ConP Γw 
     i-TyP {Aw = Aw}{Γm = Γm} = TyP Aw Γm
@@ -154,7 +154,7 @@ module RelationCwf {k : Level.Level}  where
         }}
 
 -- TyP {Γ}{ A} Aw Γm = {!!}
-    TyP {.Γp} {.Up} (Uw Γp Γw) Γm = Lift-pathto-is-prop M.U
+    TyP (Uw Γw) Γm = Lift-pathto-is-prop M.U
     TyP {Γ} {.(ΠΠp ( _) _)} (Πw Γw Aw Bw) Γm =
       equiv-preserves-level
       (
@@ -186,7 +186,7 @@ module RelationCwf {k : Level.Level}  where
 
 
     TmP {Γ} {A} {.(V _)} (vw xw) {Γm} Am = VarP xw Am
-    TmP {.Γp} {.(l-subT 0 u Bp)} {.(app t u)} (appw Γp Γw ap aw Bp Bw t tw u uw) {Γm} Am =
+    TmP  (appw Γw aw Bw tw uw) {Γm} Am =
 
       equiv-preserves-level
       (
@@ -245,7 +245,7 @@ module RelationCwf {k : Level.Level}  where
             Σ-level ( all-paths-is-prop uip ) λ eT →
              pathOverto-is-prop (M.Tm Γm) eT _ }}
 
-    VarP {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {Γm} Am =
+    VarP (V0w Γw Aw) {Γm} Am =
       equiv-preserves-level
       (
       Σ₁-×-comm ∘e Σ-emap-r λ Γm →
@@ -261,7 +261,7 @@ module RelationCwf {k : Level.Level}  where
         pathOverto-is-prop _ _ _
        }}
 
-    VarP {.(Γp ▶p Ap)} {.(liftT 0 Bp)} {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw) {Γm} Am =
+    VarP (VSw Γw Aw Bw xw) {Γm} Am =
       equiv-preserves-level
       (
       Σ₁-×-comm ∘e Σ-emap-r λ Γm →
@@ -283,10 +283,10 @@ module RelationCwf {k : Level.Level}  where
        }}
 
 
-  SubP : ∀ {Γ Δ s} (sw : Subw Γ Δ s) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
+  SubP : ∀ {Γ Δ s} (sw :  Γ ⊢ s ⇒ Δ) Γm Δm → is-prop (∃ (Sub~ sw {Γm}{Δm}))
 
   instance
-    i-SubP : ∀ {Γ Δ s} {sw : Subw Γ Δ s} {Γm} {Δm} → is-prop (∃ (Sub~ sw {Γm}{Δm}))
+    i-SubP : ∀ {Γ Δ s} {sw :  Γ ⊢ s ⇒ Δ} {Γm} {Δm} → is-prop (∃ (Sub~ sw {Γm}{Δm}))
     i-SubP {sw = sw}{Γm = Γm}{Δm = Δm} = SubP sw Γm Δm
 
   -- SubP {Γ}{Δ}{s}sw Γm Δm = {!sw!}
@@ -457,8 +457,8 @@ module RelationCwf {k : Level.Level}  where
     (λ Δm → Σ (∃ (Ty~ Aw {Γm M.^^ (₁ Δm)}))
     λ Am → Cm ≡ (₁ Δm M.▶t ₁ Am))
 
-  ^^~ : {Γp : Conp}{Γw : Conw Γp}(Γm : ∃ (Con~ Γw))
-   {Δp : Conp}{Δw : Telw Γp Δp} {Δm : M.Tel (₁ Γm)} →
+  ^^~ : {Γp : Conp}{Γw :  Γp ⊢}(Γm : ∃ (Con~ Γw))
+   {Δp : Conp}{Δw : Γp ^^ Δp ⊢} {Δm : M.Tel (₁ Γm)} →
    (Δr : Tel~ {Γp = Γp}{Δp} Δw Δm) → Con~ Δw (₁ Γm M.^^ Δm)
    -- Tel^^Con~{Γp}{Γw}Γm{Δp}{Δw}{Δm}Δr  = {!Δp!}
   ^^~ {Γp} {Γw} Γm {∙p} {Δw} {_} (lift refl) rewrite prop-has-all-paths Δw Γw = ₂ Γm

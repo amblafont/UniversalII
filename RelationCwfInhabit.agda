@@ -15,30 +15,30 @@ open import RelationCwfWeakening {k = k}
 open import RelationCwfSubstitution {k = k}
 
 
-Σ▶~ : ∀ {Γ}{Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
-   {A}{Aw : Tyw Γ A}(Am : ∃ (Ty~ Aw {₁ Γm}))
+Σ▶~ : ∀ {Γ}{Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
+   {A}{Aw : Γ ⊢ A}(Am : ∃ (Ty~ Aw {₁ Γm}))
    → ∃ (Con~ (▶w Γw Aw))
 Σ▶~ Γm Am = _ , Γm , Am , refl
 
-Σ▶El~ : ∀ {Γ}{Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
+Σ▶El~ : ∀ {Γ}{Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
    {A}
    -- I don't know why this is not inferred..
-   (Aw : Tmw Γ Up A)(Am : ∃ (Tm~ Aw {₁ Γm}{M.U }))
+   (Aw : Γ ⊢ A ∈ Up)(Am : ∃ (Tm~ Aw {₁ Γm}{M.U }))
    → ∃ (Con~ (▶w Γw (Elw Γw Aw)))
 Σ▶El~ {Γ}{Γw}Γm{A}Aw Am = Σ▶~ Γm {Aw = Elw Γw Aw}(_ , Am , refl)
 
 
   
-ΣCon~ : {Γp : Conp}(Γw : Conw Γp) → ∃ (Con~ Γw)
-ΣTy~ : ∀ {Γ }{Γw : Conw Γ}(Γm : ∃ (Con~ Γw)) {A}(Aw : Tyw Γ A) → ∃ (Ty~ Aw {₁ Γm})
+ΣCon~ : {Γp : Conp}(Γw : Γp ⊢) → ∃ (Con~ Γw)
+ΣTy~ : ∀ {Γ }{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw)) {A}(Aw : Γ ⊢ A) → ∃ (Ty~ Aw {₁ Γm})
 ΣTm~ :
- ∀ {Γ } {Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-  {A} {Aw : Tyw Γ A} (Am : ∃ (Ty~ Aw {₁ Γm})) 
-  {t}(tw : Tmw Γ A t) →
+ ∀ {Γ } {Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+  {A} {Aw : Γ ⊢ A} (Am : ∃ (Ty~ Aw {₁ Γm})) 
+  {t}(tw : Γ ⊢ t ∈ A) →
   ∃ (Tm~ tw {₁ Γm}{₁ Am})
-ΣVar~ : ∀ {Γ } {Γw : Conw Γ}(Γm : ∃ (Con~ Γw))
-  {A} {Aw : Tyw Γ A} (Am : ∃ (Ty~ Aw {₁ Γm})) 
-  {x}(xw : Varw Γ A x) →
+ΣVar~ : ∀ {Γ } {Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+  {A} {Aw : Γ ⊢ A} (Am : ∃ (Ty~ Aw {₁ Γm})) 
+  {x}(xw : Γ ⊢ x ∈v A) →
   ∃ (Var~ xw {₁ Γm}{₁ Am})
 
 -- ΣCon~ Γw = {!!}
@@ -48,9 +48,9 @@ open import RelationCwfSubstitution {k = k}
   Σ▶~ Γm (ΣTy~ Γm Aw) 
 
 -- ΣTy~ Aw Γm = {!!}
-ΣTy~ Γm (Uw Γp Γw') = _ , lift refl
+ΣTy~ Γm (Uw  Γw') = _ , lift refl
 ΣTy~ {Γw = Γw} Γm (Πw Γw' Aw Bw) =
-  let am = ΣTm~ Γm {Aw = (Uw _ Γw)} (_ , lift refl) Aw  in
+  let am = ΣTm~ Γm {Aw = (Uw Γw)} (_ , lift refl) Aw  in
   _ , am  ,
    ΣTy~ {Γw = (▶w Γw (Elw Γw Aw))}
     ( Σ▶El~ Γm  Aw am )
@@ -61,18 +61,18 @@ open import RelationCwfSubstitution {k = k}
   -- {!_!} ,
   -- {!!}
 
-ΣTy~ Γm (Elw Γw aw) = _ , ΣTm~ Γm { Aw = Uw _ Γw} (_ , lift refl) aw  , refl
+ΣTy~ Γm (Elw Γw aw) = _ , ΣTm~ Γm { Aw = Uw Γw} (_ , lift refl) aw  , refl
 
 -- ΣTm~ Γw' Aw' tw Γm Am = {!tw!}
 ΣTm~ {Γw = Γw'} Γm {Aw = Aw'} Am (vw xw) = ΣVar~ Γm Am xw
-ΣTm~ {Γw = Γw'} Γm' {Aw =  B[]w} Em (appw Γp Γw ap aw Bp Bw t tw u uw) =
+ΣTm~ {Γw = Γw'} Γm' {Aw =  B[]w} Em (appw {Γp} Γw {ap} aw Bw tw {u} uw) =
     _ , am , Bm , tm , um , eE ,
     from-transp! _ _ refl 
   where
     Γm : ∃ (Con~ Γw)
     Γm = (₁ Γm' , tr (λ x → Con~ x _) (prop-has-all-paths _ _) (₂ Γm'))
     Γaw = (▶w Γw (Elw Γw aw))
-    am = ΣTm~ Γm {Aw = (Uw Γp Γw)} (_ , lift refl) aw 
+    am = ΣTm~ Γm {Aw = (Uw Γw)} (_ , lift refl) aw 
 
     Γam : ∃ (Con~ Γaw)
     -- Γam = _ , Γm , (_ , am , refl) , refl
@@ -82,7 +82,7 @@ open import RelationCwfSubstitution {k = k}
     tm = ΣTm~ Γm {Aw = (Πw Γw aw Bw)} (_ , am , Bm , refl) tw   
     um = ΣTm~ Γm {Aw = (Elw Γw aw) } (_ , am , refl) uw 
 
-    <u>w : Subw Γp (Γp ▶p Elp ap) (< ∣ Γp ∣  ⊢ u >)
+    <u>w : Γp ⊢  (< ∣ Γp ∣  ⊢ u >) ⇒ (Γp ▶p Elp ap)
     <u>w = (<>w Γw (Elw Γw aw) uw)
 
     <u>~ : (Sub~ <u>w {₁ Γm}{₁ Γam} (M.< ₁ um >))
@@ -139,18 +139,18 @@ open import RelationCwfSubstitution {k = k}
     Γm = Γm'
     -- Γm = (₁ Γm' , tr (λ x → Con~ x _) (prop-has-all-paths _ _) (₂ Γm'))
 
-    Bm = λ a → ΣTm~ Γm {Aw = Uw _  Γw'}(_ , lift refl) (Bw a) 
+    Bm = λ a → ΣTm~ Γm {Aw = Uw  Γw'}(_ , lift refl) (Bw a) 
     tm = ΣTm~ Γm {Aw = Elw Γw (ΠInfw Γw Bw)} (_ , (_ , Bm , refl , refl) , refl ) tw   
     eB : (am' : Σ (M.Tm (₁ Γm') M.U) (Tm~ aw))  → M.El (₁ am') ≡ M.El (₁ (Bm u))
     eB rewrite prop-has-all-paths aw (Bw u) = λ am' →
        ap M.El ( fst= (prop-has-all-paths  {{ TmP (Bw u) _ }} am' (Bm u)) )
 
 
-ΣTm~ {Γw = Γw} Γm' {Aw = Uw Γp Γw''} (_ , lift refl) (ΠInfw Γw' Bw) =
-  _ , (λ a → ΣTm~ Γm' {Aw = Uw _ Γw'} (_ , lift refl) (Bw a)  ) , refl , refl
+ΣTm~ {Γw = Γw} Γm' {Aw = Uw Γw''} (_ , lift refl) (ΠInfw Γw' Bw) =
+  _ , (λ a → ΣTm~ Γm' {Aw = Uw Γw'} (_ , lift refl) (Bw a)  ) , refl , refl
 
 -- ΣVar~ Γw' Ew' xw Γm Em = {!xw!}
-ΣVar~ {Γw = Γw'} Cm {Aw = wkEw} Em (V0w Γp Γw Ap Aw)   = 
+ΣVar~ {Γw = Γw'} Cm {Aw = wkEw} Em (V0w Γw Aw)   = 
   _ , Γm , Am , eC , eE ,
     from-transp! _ _ refl
   where
@@ -171,7 +171,7 @@ open import RelationCwfSubstitution {k = k}
       -- (fst=  (prop-has-all-paths Em (_ , {!wE~!})))
       (fst=  (prop-path (TyP _ _) Em (_ , wE~ )))
 
-ΣVar~ {Γw = Cw'} Cm {Aw = wkEw} Em (VSw Γp Γw Ap Aw Bp Bw xp xw)  =
+ΣVar~ {Γw = Cw'} Cm {Aw = wkEw} Em (VSw Γw Aw Bw xw)  =
   _ , Γm , Am , Bm , xm , eC , eE ,
   from-transp! _ _ refl
   
@@ -196,9 +196,9 @@ open import RelationCwfSubstitution {k = k}
     (fst=  (prop-path (TyP _ _) Em (_ , wE~)))
 
 
-ΣSub~ : ∀ {Γ } {Γw : Conw Γ} (Γm : ∃ (Con~ Γw))
-     {Δ} {Δw : Conw Δ} (Δm : ∃ (Con~ Δw))
-     {σ}(σw : Subw Γ Δ σ) → ∃ (Sub~ σw {₁ Γm}{₁ Δm})
+ΣSub~ : ∀ {Γ } {Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
+     {Δ} {Δw : Δ ⊢} (Δm : ∃ (Con~ Δw))
+     {σ}(σw : Γ ⊢ σ ⇒ Δ) → ∃ (Sub~ σw {₁ Γm}{₁ Δm})
 
 -- ΣSub~ {Γ}{Γw}Γm {C}{Cw}Cm σw = ?
 ΣSub~ {Γ} {Γw} Γm {.∙p} {∙w} (_ , Level.lift refl) nilw =

@@ -176,12 +176,12 @@ l-subV 0 l 0 = l
 l-subV 0 l (S x) = V x
 l-subV (S p) l 0 = V 0
 -- Γ , C , p+1 ⊢ x+1   (and Γ ⊢ t : C)
--- donc Γ , C , p ⊢  x   (and Γ ⊢ t : C)
--- donc Γ , p ⊢ l-sub p t x
--- donc Γ , p+1 ⊢ wk (l-sub p t x)
+-- so Γ , C , p ⊢  x   (and Γ ⊢ t : C)
+-- so Γ , p ⊢ l-sub p t x
+-- so Γ , p+1 ⊢ wk (l-sub p t x)
 
 -- prenons l'exemple x = 0 et p = 2. On veut que wk (l-sub p t x) = 1
--- Or, l-sub 2 t 0 = V 0
+-- but, l-sub 2 t 0 = V 0
 l-subV (S p) l (S x) = wkt (l-subV p l x)
 
 l-subt : (p : ℕ)(l : Tmp) (t : Tmp) → Tmp
@@ -636,6 +636,7 @@ sub[]T = l-sub[]T 0
 infix 3 _⊢
 infix 3 _⊢_
 infix 3 _⊢_∈_
+infix 3 _⊢_⇒_
 infix 3 _⊢_∈v_
 
 -- It is easy to show that w is propositional, but we don't actually
@@ -647,16 +648,20 @@ data _⊢_∈v_ : Conp → ℕ → Typ → Set(lsucc i)
 
 
 -- some aliases
-Conw = _⊢
-Tyw = _⊢_
-Tmw = λ Γ A t → Γ ⊢ t ∈ A
-Varw = λ Γ A x → Γ ⊢ x ∈v A
+-- infixr 40 Conw
+-- syntax Conw Γ =  Γ ⊢ 
+-- \: (Γp : Conp) → Set (lsucc i)
+--   Conw = _⊢
+-- Conw = _⊢
+-- Tyw = _⊢_
+-- Tmw = λ Γ A t → Γ ⊢ t ∈ A
+-- Varw = λ Γ A x → Γ ⊢ x ∈v A
 
 data _⊢ where
-  ∙w : Conw ∙p
+  ∙w : ∙p ⊢
   ▶w : ∀ {Γp} (Γw : Γp ⊢){Ap}(Aw : Γp ⊢ Ap) → (Γp ▶p Ap) ⊢
 data _⊢_ where
-  Uw : (Γp : Conp)(Γw : Γp ⊢) → Γp ⊢ Up
+  Uw : {Γp : Conp}(Γw : Γp ⊢) → Γp ⊢ Up
   Πw : ∀ {Γp : Conp}(Γw : Γp ⊢){ap : Tmp}(Aw : Γp ⊢ ap ∈ Up){Bp : Typ}(Bw : (Γp ▶p Elp ap) ⊢ Bp)
     → Γp ⊢ (ΠΠp ap Bp)
   ΠNIw : 
@@ -666,12 +671,12 @@ data _⊢_ where
 data _⊢_∈_ where
   vw : ∀ {Γp} {Ap : Typ}{xp : ℕ}(xw : Γp ⊢ xp ∈v Ap) →
      Γp ⊢ V xp ∈ Ap
-  appw : (Γp : Conp)(Γw : Γp ⊢)(ap : Tmp)(aw : Γp ⊢ ap ∈ Up)(Bp : Typ)
+  appw : {Γp : Conp}(Γw : Γp ⊢){ap : Tmp}(aw : Γp ⊢ ap ∈ Up){Bp : Typ}
      (Bw : (Γp ▶p Elp ap ) ⊢ Bp)
-     (t : Tmp)(tw : Γp ⊢ t ∈ (ΠΠp ap Bp))
-     (u : Tmp)(tw : Γp ⊢ u ∈ (Elp ap))
+     {t : Tmp}(tw : Γp ⊢ t ∈ (ΠΠp ap Bp))
+     {u : Tmp}(tw : Γp ⊢ u ∈ (Elp ap))
      → Γp ⊢ app t u ∈ (subT u Bp)
-  appNIw : ∀ {Γp : Conp}(Γw : Conw Γp)
+  appNIw : ∀ {Γp : Conp}(Γw : Γp ⊢)
     {T : Set i} {Bp : T → Typ}(Bw : ∀ t → Γp ⊢ (Bp t))
      {t : Tmp}(tw : Γp ⊢ t ∈ (ΠNI Bp))
      (u : T)
@@ -679,7 +684,7 @@ data _⊢_∈_ where
   ΠInfw : 
      ∀ {Γp : Conp}(Γw : Γp ⊢)
       {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Γp ⊢ (Bp t) ∈ Up)
-      → Tmw Γp Up (ΠInf Bp)
+      →  Γp ⊢ (ΠInf Bp) ∈ Up 
   appInfw : ∀ {Γp : Conp}(Γw : Γp ⊢)
     {T : Set i} {Bp : T → Tmp}(Bw : ∀ t → Γp ⊢ Bp t ∈ Up)
      {t : Tmp}(tw : Γp ⊢ t ∈ (Elp (ΠInf Bp)))
@@ -687,19 +692,19 @@ data _⊢_∈_ where
      → Γp ⊢ (appNI t u) ∈ (Elp (Bp u)) 
 
 data _⊢_∈v_ where
-  V0w : (Γp : Conp) (Γw : Γp ⊢) (Ap : Typ) (Aw : Γp ⊢ Ap) →  (Γp ▶p Ap) ⊢ 0 ∈v (wkT Ap) 
-  VSw : (Γp : Conp) (Γw : Γp ⊢) (Ap : Typ) (Aw : Γp ⊢ Ap)
-     (Bp : Typ) (Bw : Γp ⊢ Bp)(xp : ℕ)(xw : Γp ⊢ xp ∈v Bp )
+  V0w : {Γp : Conp} (Γw : Γp ⊢) {Ap : Typ} (Aw : Γp ⊢ Ap) →  (Γp ▶p Ap) ⊢ 0 ∈v (wkT Ap) 
+  VSw : {Γp : Conp} (Γw : Γp ⊢) {Ap : Typ} (Aw : Γp ⊢ Ap)
+     {Bp : Typ} (Bw : Γp ⊢ Bp){xp : ℕ}(xw : Γp ⊢ xp ∈v Bp )
      →  (Γp ▶p Ap) ⊢ (1 + xp) ∈v (wkT Bp) 
 
  
-data Subw (Γ : Conp) : Conp → Subp → Set (lsucc i) where
-  nilw : Subw Γ ∙p nil
+data _⊢_⇒_ (Γ : Conp) : Subp → Conp → Set (lsucc i) where
+  nilw : Γ ⊢ nil ⇒ ∙p 
   ,sw : ∀ {Δp}
     (Δw : Δp ⊢)
-    {σp}(σw : Subw Γ Δp σp){Ap}(Aw : Δp ⊢ Ap){tp}
+    {σp}(σw :  Γ ⊢ σp ⇒ Δp){Ap}(Aw : Δp ⊢ Ap){tp}
      (tw : Γ ⊢ tp ∈ (Ap [ σp ]T)) →
-     Subw Γ (Δp ▶p Ap) (tp ∷ σp)
+     Γ ⊢ (tp ∷ σp) ⇒ (Δp ▶p Ap)
 
 
 
@@ -713,7 +718,7 @@ _^^_ : Conp → Conp → Conp
 Γ ^^ (Δ ▶p x) =  (Γ ^^ Δ) ▶p x
 
 Telw : (Γ : Conp)(Δ : Conp) → Set (lsucc i)
-Telw Γ Δ = Conw (Γ ^^ Δ)
+Telw Γ Δ =  Γ ^^ Δ ⊢ 
 
 
 wkTel : Conp → Conp
@@ -722,17 +727,17 @@ wkTel (Γ ▶p A) = wkTel Γ ▶p liftT ∣ Γ ∣ A
 
 
 -- do we really need to show this ?
-wkTelw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap)Δp (Δw : Conw (Γp ^^ Δp)) → Conw ((Γp ▶p Ap) ^^ wkTel Δp)
-liftTw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap)Δp{Bp}(Bw : Tyw (Γp ^^ Δp) Bp) → Tyw ((Γp ▶p Ap) ^^ wkTel Δp) (liftT ∣ Δp ∣ Bp)
-lifttw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap)Δp{Bp}{tp}(tw : Tmw (Γp ^^ Δp) Bp tp) →
-  Tmw ((Γp ▶p Ap) ^^ wkTel Δp) (liftT ∣ Δp ∣ Bp) (liftt ∣ Δp ∣ tp)
-liftVw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap)Δp{Bp}{xp}(xw : Varw (Γp ^^ Δp) Bp xp) →
-  Varw ((Γp ▶p Ap) ^^ wkTel Δp) (liftT ∣ Δp ∣ Bp) (liftV ∣ Δp ∣ xp)
+wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
+liftTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}(Bw : (Γp ^^ Δp) ⊢ Bp) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftT ∣ Δp ∣ Bp)
+lifttw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}{tp}(tw : (Γp ^^ Δp) ⊢ tp ∈ Bp) →
+  ((Γp ▶p Ap) ^^ wkTel Δp) ⊢  (liftt ∣ Δp ∣ tp) ∈ (liftT ∣ Δp ∣ Bp)
+liftVw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}{xp}(xw : (Γp ^^ Δp) ⊢ xp ∈v Bp) →
+   ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftV ∣ Δp ∣ xp) ∈v (liftT ∣ Δp ∣ Bp) 
 
 wkTelw  Aw ∙p Δw = ▶w Δw Aw
 wkTelw Aw (Δp ▶p Bp) (▶w Δw Bw)  = ▶w (wkTelw Aw Δp Δw) (liftTw Aw Δp Bw)
 
-liftTw Aw Δp (Uw .(_ ^^ Δp) Γw) = Uw _ (wkTelw Aw Δp Γw)
+liftTw Aw Δp (Uw Γw) = Uw (wkTelw Aw Δp Γw)
 liftTw Aw Δp (Πw Γw {ap = ap} aw Bw) = Πw (wkTelw Aw Δp Γw) (lifttw Aw Δp aw ) (liftTw Aw (Δp ▶p Elp ap) Bw)
 liftTw Aw Δp (ΠNIw Γw {T = T}{Bp = Bp} Bw) = ΠNIw (wkTelw Aw Δp Γw) {T} (λ a → liftTw Aw Δp (Bw a))
    -- (liftTw Aw {!!} {!!})
@@ -740,10 +745,10 @@ liftTw Aw Δp (Elw Γw {ap = ap} aw) = Elw (wkTelw Aw Δp Γw) (lifttw Aw Δp aw
 
 
 lifttw Aw Δp (vw xw) = vw (liftVw Aw Δp xw)
-lifttw Aw Δp (appw .(_ ^^ Δp) Γw ap aw Bp Bw t tw u uw) =
-   tr (λ x → Tmw _ x _) (! (lift-subT ∣ Δp ∣ u Bp ))
-   (appw _ (wkTelw Aw Δp Γw) _ (lifttw Aw Δp aw) _ (liftTw Aw (Δp ▶p Elp ap) Bw)
-   (liftt ∣ Δp ∣ t) (lifttw Aw Δp tw) (liftt ∣ Δp ∣ u) (lifttw Aw Δp uw)
+lifttw Aw Δp (appw  Γw {ap} aw {Bp} Bw {t} tw {u} uw) =
+   tr (λ x → _ ⊢ _ ∈ x) (! (lift-subT ∣ Δp ∣ u Bp ))
+   (appw  (wkTelw Aw Δp Γw)  (lifttw Aw Δp aw)  (liftTw Aw (Δp ▶p Elp ap) Bw)
+   {liftt ∣ Δp ∣ t} (lifttw Aw Δp tw) {liftt ∣ Δp ∣ u} (lifttw Aw Δp uw)
    )
 
 lifttw Aw Δp (appNIw {.(_ ^^ Δp)} Γw {T} {Bp} Bw {t} tw u) =
@@ -753,41 +758,41 @@ lifttw Aw Δp (appInfw  Γw {T} {Bp} Bw {t} tw u) =
 lifttw Aw Δp (ΠInfw Γw {T = T}{Bp = Bp} Bw) =  ΠInfw (wkTelw Aw Δp Γw) {T} (λ a → lifttw Aw Δp (Bw a)) 
 
 -- liftVw Aw ∙p xw = VSw _ {!!} _ Aw _ {!!} _ xw
-liftVw {Ap = Bp} Bw ∙p (V0w Γp Γw Ap Aw) = VSw (Γp ▶p Ap) (▶w Γw Aw) Bp Bw (wkT Ap)
-   (liftTw Aw ∙p Aw) 0 (V0w Γp Γw Ap Aw)
-liftVw Aw ∙p (VSw Γp Γw Ap Aw' Bp Bw xp xw) =
-  VSw _ (▶w Γw Aw') _ Aw _ (liftTw Aw' ∙p Bw) _ (VSw Γp Γw Ap Aw' Bp Bw xp xw)
+liftVw {Ap = Bp} Bw ∙p (V0w {Γp} Γw {Ap} Aw) = VSw {Γp ▶p Ap} (▶w Γw Aw) {Bp} Bw {wkT Ap}
+   (liftTw Aw ∙p Aw) {0} (V0w {Γp} Γw {Ap} Aw)
+liftVw Aw ∙p (VSw {Γp} Γw {Ap} Aw' {Bp} Bw {xp} xw) =
+  VSw  (▶w Γw Aw') Aw  (liftTw Aw' ∙p Bw)  (VSw {Γp} Γw {Ap} Aw' {Bp} Bw {xp} xw)
 
-liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (V0w .(_ ^^ Δp) Γw .Bp Aw) =
-  tr (λ x → Varw (((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp) x 0) (! (lift-liftT ∣ Δp ∣ Bp))
-     (V0w ((Γp ▶p T) ^^ wkTel Δp) (wkTelw Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Aw))
-liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (VSw .(_ ^^ Δp) Γw .Bp Bw Ap Aw xp xw) =
-  tr (λ x → Varw _ x _)  (! (lift-liftT ∣ Δp ∣ Ap))
-   (VSw ((Γp ▶p T) ^^ wkTel Δp) (wkTelw Tw Δp Γw) (liftT ∣ Δp ∣ Bp) (liftTw Tw Δp Bw)
-   _ (liftTw Tw Δp Aw) _ (liftVw Tw Δp xw))
+liftVw {Γp = Γp}{Ap = T} Tw (Δp ▶p Bp) (V0w  Γw  Aw) =
+  tr (λ x →  ((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp ⊢ 0 ∈v x) (! (lift-liftT ∣ Δp ∣ Bp))
+     (V0w {(Γp ▶p T) ^^ wkTel Δp} (wkTelw Tw Δp Γw) {liftT ∣ Δp ∣ Bp} (liftTw Tw Δp Aw))
+liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (VSw  Γw  Bw {Ap} Aw {xp} xw) =
+  tr (λ x →  _ ⊢ _ ∈v x)  (! (lift-liftT ∣ Δp ∣ Ap))
+   (VSw {(Γp ▶p T) ^^ wkTel Δp} (wkTelw Tw Δp Γw) {liftT ∣ Δp ∣ Bp} (liftTw Tw Δp Bw)
+    (liftTw Tw Δp Aw)  (liftVw Tw Δp xw))
    
 
-wkTw : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap){Bp}(Bw : Tyw Γp Bp) → Tyw (Γp ▶p Ap) (wkT Bp)
+wkTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap){Bp}(Bw : Γp ⊢ Bp) → (Γp ▶p Ap) ⊢ (wkT Bp)
 wkTw Aw Bw = liftTw Aw ∙p Bw 
 
-wktw : ∀ {Γp}{Bp}(Bw : Tyw Γp Bp){Ap}{tp}(tw : Tmw Γp Ap tp) → Tmw (Γp ▶p Bp) (wkT Ap) (wkt tp)
+wktw : ∀ {Γp}{Bp}(Bw : Γp ⊢ Bp){Ap}{tp}(tw : Γp ⊢ tp ∈ Ap) →  (Γp ▶p Bp) ⊢ (wkt tp) ∈ (wkT Ap)
 wktw Aw tw = lifttw Aw ∙p tw
 
-subTelw : ∀ {Γp Ap Δp up}(uw : Tmw Γp Ap up)(Δw : Conw (Γp ▶p Ap ^^ Δp)) → Conw (Γp ^^ (subTel up Δp ))
-subTw : ∀ {Γp Ap Δp up Bp }(uw : Tmw Γp Ap up)(Bw : Tyw (Γp ▶p Ap ^^ Δp) Bp )
-  → Tyw (Γp ^^ (subTel up Δp )) (l-subT ∣ Δp ∣ up Bp ) 
-subtw : ∀ {Γp Ap Δp up Bp tp}(uw : Tmw Γp Ap up)(tw : Tmw (Γp ▶p Ap ^^ Δp) Bp tp)
-  → Tmw (Γp ^^ (subTel up Δp )) (l-subT ∣ Δp ∣ up Bp ) (l-subt ∣ Δp ∣ up tp )
+subTelw : ∀ {Γp Ap Δp up}(uw :  Γp ⊢ up ∈ Ap)(Δw : (Γp ▶p Ap ^^ Δp) ⊢) → (Γp ^^ (subTel up Δp )) ⊢
+subTw : ∀ {Γp Ap Δp up Bp }(uw :  Γp ⊢ up ∈ Ap)(Bw : (Γp ▶p Ap ^^ Δp) ⊢ Bp )
+  →  (Γp ^^ (subTel up Δp )) ⊢ (l-subT ∣ Δp ∣ up Bp ) 
+subtw : ∀ {Γp Ap Δp up Bp tp}(uw : Γp ⊢ up ∈ Ap)(tw : (Γp ▶p Ap ^^ Δp) ⊢ tp ∈ Bp )
+  → (Γp ^^ (subTel up Δp )) ⊢  (l-subt ∣ Δp ∣ up tp ) ∈ (l-subT ∣ Δp ∣ up Bp )
 
-subVw : ∀ {Γp Ap Δp up Bp xp}(uw : Tmw Γp Ap up)(xw : Varw (Γp ▶p Ap ^^ Δp) Bp xp)
-  → Tmw (Γp ^^ (subTel up Δp )) (l-subT ∣ Δp ∣ up Bp ) (l-subV ∣ Δp ∣ up xp )
+subVw : ∀ {Γp Ap Δp up Bp xp}(uw : Γp ⊢ up ∈ Ap)(xw : (Γp ▶p Ap ^^ Δp) ⊢ xp ∈v Bp)
+  → (Γp ^^ (subTel up Δp )) ⊢ (l-subV ∣ Δp ∣ up xp ) ∈ (l-subT ∣ Δp ∣ up Bp ) 
 
 subTelw {Γp} {Ap} {∙p} {up} uw (▶w Δw Aw) = Δw
 subTelw {Γp} {Ap} {Δp ▶p Bp} {up} uw (▶w Δw Bw) = ▶w (subTelw uw Δw) (subTw uw Bw)
 
 
 
-subTw {Γp} {Ep} {Δp} {zp} {.Up} zw (Uw .(Γp ▶p Ep ^^ Δp) Γw) = Uw (Γp ^^ subTel zp Δp) (subTelw zw Γw)
+subTw {Γp} {Ep} {Δp} {zp} {.Up} zw (Uw  Γw) = Uw  (subTelw zw Γw)
 subTw {Γp} {Ep} {Δp} {zp} {.(ΠΠp ( _) _)} zw (Πw Γw Aw Bw) =
   Πw (subTelw zw Γw) (subtw {Δp = Δp} zw Aw) (subTw zw Bw )
 subTw {Γp} {Ep} {Δp} {zp}  zw (ΠNIw Γw Bw) = ΠNIw (subTelw zw Γw) (λ a → subTw zw (Bw a) )
@@ -795,14 +800,14 @@ subTw {Γp} {Ep} {Δp} {zp}  zw (ΠNIw Γw Bw) = ΠNIw (subTelw zw Γw) (λ a �
 subTw {Γp} {Ep} {Δp} {zp} {.(Elp _)} zw (Elw Γw aw) = Elw (subTelw zw Γw) (subtw zw aw)
 
 subtw {Γp} {Ep} {Δp} {zp} {tp} zw (vw xw) = subVw zw xw
-subtw {Γp} {Ep} {Δp} {zp} {.(l-subT 0 u Bp)} zw (appw .(Γp ▶p Ep ^^ Δp) Γw ap₁ tw Bp Bw t tw₁ u tw₂)
+subtw {Γp} {Ep} {Δp} {zp} {.(l-subT 0 u Bp)} zw (appw Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂)
   rewrite l-subT-subT ∣ Δp ∣ zp u Bp
-  = appw (Γp ^^ subTel zp Δp) (subTelw zw Γw) (l-subt ∣ Δp ∣ zp ap₁)
-    (subtw zw tw) (l-subT (S ∣ Δp ∣) zp Bp)
+  = appw {Γp ^^ subTel zp Δp} (subTelw zw Γw) {l-subt ∣ Δp ∣ zp ap₁}
+    (subtw zw tw) {l-subT (S ∣ Δp ∣) zp Bp}
     (subTw zw Bw)
-    (l-subt ∣ Δp ∣ zp t)
+    {l-subt ∣ Δp ∣ zp t}
     (subtw zw tw₁)
-    (l-subt ∣ Δp ∣ zp u)
+    {l-subt ∣ Δp ∣ zp u}
     (subtw zw tw₂)
 subtw {Γp} {Ep} {Δp} {zp}  zw (appNIw {.(Γp ▶p Ep ^^ Δp)} Γw {T} { Bp} Bw {t} tw₁ u) =
   appNIw (subTelw zw Γw) (λ a → subTw zw (Bw a)) (subtw zw tw₁) u
@@ -811,17 +816,17 @@ subtw {Γp} {Ep} {Δp} {zp}  zw (appInfw {.(Γp ▶p Ep ^^ Δp)} Γw {T} { Bp} B
 subtw {Γp} {Ep} {Δp} {zp}  zw (ΠInfw Γw Bw) = ΠInfw (subTelw zw Γw) (λ a → subtw zw (Bw a) )
 
 -- subVw {Γp} {Ap} {Δp} {up} {Bp} {xp} uw xw = {!!}
-subVw {Γp₁} {Ap₁} {∙p} {up} {.(liftT 0 Ap₁)} {.0} uw (V0w Γp₁ Γw Ap₁ Aw)
+subVw {Γp₁} {Ap₁} {∙p} {up} {.(liftT 0 Ap₁)} {.0} uw (V0w {Γp₁} Γw {Ap₁} Aw)
   rewrite subT-wkT Ap₁ up = uw 
-subVw {Γp} {Ap} {∙p} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw Γp Γw Ap Aw Bp Bw xp xw)
+subVw {Γp} {Ap} {∙p} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw)
   rewrite subT-wkT Bp up = vw xw
 
-subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Cp)} {.0} uw (V0w .(Γp ▶p Ap ^^ Δp) Γw .Cp Aw)
+subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Cp)} {.0} uw (V0w  Γw  Aw)
  rewrite l-subT-wkT ∣ Δp ∣ up Cp
-  = vw (V0w (Γp ^^ subTel up Δp) (subTelw uw Γw) (l-subT ∣ Δp ∣ up Cp)
+  = vw (V0w {Γp ^^ subTel up Δp} (subTelw uw Γw) {l-subT ∣ Δp ∣ up Cp}
     (subTw uw Aw))
 
-subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw .(Γp ▶p Ap ^^ Δp) Γw .Cp Aw Bp Bw xp xw)
+subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw  Γw  Aw {Bp} Bw {xp} xw)
   rewrite l-subT-wkT ∣ Δp ∣ up Bp =
   lifttw {Γp ^^ subTel up Δp} {l-subT ∣ Δp ∣ up Cp} (subTw uw Aw) ∙p
     {l-subT ∣ Δp ∣ up Bp} {l-subV ∣ Δp ∣ up xp} ( subVw uw xw)
@@ -833,51 +838,51 @@ subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw .(Γp ▶p
 
 
 -- needed for keepw : keep preserve typing of substitutions
-wkSw : ∀ {Γp}{Δp}{σp}(σw : Subw Γp Δp σp)
-  {Ap}(Aw : Tyw Γp Ap) → Subw (Γp ▶p Ap) Δp (wkS σp)
+wkSw : ∀ {Γp}{Δp}{σp}(σw :  Γp ⊢ σp ⇒ Δp)
+  {Ap}(Aw : Γp ⊢ Ap) → (Γp ▶p Ap) ⊢ (wkS σp) ⇒ Δp 
 wkSw nilw Aw = nilw
-wkSw (,sw Δw σw Aw tw) Bw  = ,sw Δw (wkSw σw Bw) Aw (transport! (λ A → Tmw _ A _) (wkT=wkS _ _) (wktw Bw tw ))
+wkSw (,sw Δw σw Aw tw) Bw  = ,sw Δw (wkSw σw Bw) Aw (transport! (λ A → _ ⊢ _ ∈ A) (wkT=wkS _ _) (wktw Bw tw ))
 
   
 
 
 -- Tmw[] : ∀ {Γp}{tp}
-Varw[] : ∀ {Γp}{xp}{Ap}(xw : Varw Γp Ap xp)
-  {Δp}{σp}(σw : Subw Δp Γp σp) →
-  Tmw Δp (Ap [ σp ]T) (xp [ σp ]V )
+Varw[] : ∀ {Γp}{xp}{Ap}(xw : Γp ⊢ xp ∈v Ap)
+  {Δp}{σp}(σw :  Δp ⊢ σp ⇒ Γp) →
+  Δp ⊢ (xp [ σp ]V ) ∈ (Ap [ σp ]T) 
 -- Varw[] {Γp}{xp}{Ap} xw {Δp}{σp}σw = {!!}
 Varw[] {.∙p} {xp} {Ap} () {Δp} {.nil} nilw
-Varw[] {.(Γp ▶p Ap)} {.0} {.(liftT 0 Ap)} (V0w Γp Γw Ap Aw₁) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
+Varw[] {.(Γp ▶p Ap)} {.0} {.(liftT 0 Ap)} (V0w {Γp} Γw {Ap} Aw₁) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
   -- rewrite wk[,]T Ap tp σp
-  =  transport! (λ A → Tmw _ A _) (wk[,]T Ap tp σp) tw 
-Varw[] {.(Γp ▶p Ap)} {.(S xp)} {.(liftT 0 Bp)} (VSw Γp Γw Ap Aw₁ Bp Bw xp xw) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
+  =  transport! (λ A → _ ⊢ _ ∈ A) (wk[,]T Ap tp σp) tw 
+Varw[] {.(Γp ▶p Ap)} {.(S xp)} {.(liftT 0 Bp)} (VSw {Γp} Γw {Ap} Aw₁ {Bp} Bw {xp} xw) {Δp} {(tp ∷ σp)} (,sw Δw σw Aw tw)
   rewrite wk[,]T Bp tp σp
   =  Varw[] xw σw 
 
 
-Tmw[] : ∀ {Γp}{tp}{Ap}(tw : Tmw Γp Ap tp)
-  {Δp}(Δw : Conw Δp){σp}(σw : Subw Δp Γp σp) →
-  Tmw Δp (Ap [ σp ]T) (tp [ σp ]t )
+Tmw[] : ∀ {Γp}{tp}{Ap}(tw : Γp ⊢ tp ∈ Ap )
+  {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ σp ⇒ Γp) →
+  Δp ⊢  (tp [ σp ]t ) ∈ (Ap [ σp ]T)
 
 
-Tyw[] : ∀ {Γp}{Ap}(Aw : Tyw Γp Ap) {Δp}(Δw : Conw Δp){σp}(σw : Subw Δp Γp σp) → Tyw Δp (Ap [ σp ]T) 
+Tyw[] : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap) {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ σp ⇒ Γp) → Δp ⊢ (Ap [ σp ]T) 
 
 -- I don't know if it is good pratique to do that
-Sub-Con2w : ∀{Γ}{Δ}{σ}(σw : Subw Γ Δ σ) → Conw Δ
+Sub-Con2w : ∀{Γ}{Δ}{σ}(σw :  Γ ⊢ σ ⇒ Δ) → Δ ⊢
 Sub-Con2w nilw = ∙w
 Sub-Con2w (,sw Δw σw Aw tw) = ▶w Δw Aw
 
 -- needed for the Π case of preservation of typing by the substitution. (Tyw[])
 -- Δw is needed for Elw
-keepw : ∀ {Γp}(Γw : Conw Γp){Δp}(Δw : Conw Δp){σp}(σw : Subw Γp Δp σp) {Ap}(Aw : Tmw Δp Up Ap) → Subw (Γp ▶p (Elp Ap [ σp ]T )) (Δp ▶p Elp Ap) (keep σp)
+keepw : ∀ {Γp}(Γw : Γp ⊢){Δp}(Δw : Δp ⊢){σp}(σw :  Γp ⊢ σp ⇒ Δp) {Ap}(Aw : Δp ⊢ Ap ∈ Up ) → (Γp ▶p (Elp Ap [ σp ]T )) ⊢ (keep σp) ⇒ (Δp ▶p Elp Ap) 
 keepw {Γp}Γw {Δp}Δw{σp}σw {Ap}Aw  = ,sw (Sub-Con2w σw) (wkSw σw ( Elw Γw (Tmw[] Aw Γw σw) )) (Elw Δw Aw)
 -- I need to know that Γ is well typed.
-  (vw (transport! (λ x → Varw (Γp ▶p (Elp Ap [ σp ]T)) x 0) (wkT=wkS σp (Elp Ap) )
-    (V0w Γp Γw (Elp Ap [ σp ]T) (Elw Γw (Tmw[]  Aw Γw σw)))))
+  (vw (transport! (λ x → (Γp ▶p (Elp Ap [ σp ]T)) ⊢ 0 ∈v x) (wkT=wkS σp (Elp Ap) )
+    (V0w {Γp} Γw {Elp Ap [ σp ]T} (Elw Γw (Tmw[]  Aw Γw σw)))))
 
 
 -- Tyw[] {Γp}{Ap} Aw {Δp}{σp}σw = {!!}
-Tyw[] {Γp} {.Up} (Uw Γp Γw) {Δp} Δw {σp} σw = Uw Δp Δw
+Tyw[] {Γp} {.Up} (Uw Γw) {Δp} Δw {σp} σw = Uw  Δw
 Tyw[] {Γp} {.(ΠΠp _ _)} (Πw Γw Aw Bw) {Δp} Δw {σp} σw = Πw Δw (Tmw[] Aw Δw σw )
   (Tyw[] Bw {Δp ▶p _}
   (▶w Δw (Elw Δw (Tmw[] Aw Δw σw )))
@@ -887,12 +892,12 @@ Tyw[] {Γp} {.(Elp _)} (Elw Γw aw) {Δp} Δw {σp} σw = Elw Δw (Tmw[] aw Δw 
 
 -- Tmw[] {Γp}{xp}{Ap} tw {Δp}{σp}σw = {!!}
 Tmw[] {Γp} {.(V _)} {Ap} (vw xw) {Δp} Δw {σp} σw = Varw[] xw σw
-Tmw[] {Γp} {.(app t u)} {.(l-subT 0 u Bp)} (appw Γp Γw ap aw Bp Bw t tw u uw) {Δp} Δw {σp} σw
+Tmw[] {Γp} {.(app t u)} {.(l-subT 0 u Bp)} (appw {Γp} Γw {ap} aw {Bp} Bw {t} tw {u} uw) {Δp} Δw {σp} σw
    rewrite sub[]T Bp u σp
    =
-  appw Δp Δw (ap [ σp ]t) (Tmw[] aw Δw σw) (Bp [ keep σp ]T)
+  appw {Δp} Δw {ap [ σp ]t} (Tmw[] aw Δw σw) {Bp [ keep σp ]T}
     (Tyw[] Bw (▶w Δw (Elw Δw (Tmw[] aw Δw σw))) (keepw Δw Γw σw aw))
-    (t [ σp ]t) (Tmw[] tw Δw σw) (u [ σp ]t) (Tmw[] uw Δw σw)
+    {t [ σp ]t} (Tmw[] tw Δw σw) {u [ σp ]t} (Tmw[] uw Δw σw)
 Tmw[] {Γp} (appNIw Γw Bw tw u) {Δp} Δw {σp} σw =
   appNIw Δw (λ a → Tyw[] (Bw a) Δw σw) (Tmw[] tw Δw σw) u
 Tmw[] {Γp} (appInfw Γw Bw tw u) {Δp} Δw {σp} σw =
@@ -908,17 +913,17 @@ In both cases, I need to show that two syntactic types are equal, and I have no 
 Maybe if I show that a term has a unique type, it would be enough ?
 
 -}
-uniqueTypet : {Γp : Conp} {Ap : Typ}{ t : Tmp} (tw : Tmw Γp Ap t)
-   {Ap' : Typ} (tw' : Tmw Γp Ap' t) → Ap ≡ Ap'
+uniqueTypet : {Γp : Conp} {Ap : Typ}{ t : Tmp} (tw : Γp ⊢ t ∈ Ap )
+   {Ap' : Typ} (tw' : Γp ⊢ t ∈ Ap' ) → Ap ≡ Ap'
 
-uniqueTypeV : {Γp : Conp} {Ap : Typ}{ x : _} (xw : Varw Γp Ap x)
-   {Ap' : Typ} (xw' : Varw Γp Ap' x) → Ap ≡ Ap'
+uniqueTypeV : {Γp : Conp} {Ap : Typ}{ x : _} (xw : Γp ⊢ x ∈v Ap )
+   {Ap' : Typ} (xw' : Γp ⊢ x ∈v Ap' ) → Ap ≡ Ap'
 
 -- uniqueTypet {Γp} {Ap} {tp} tw {Ap'} tw' = {!tw!}
 uniqueTypet {Γp} {Ap} {.(V _)} (vw xw) {Ap'} (vw xw₁) = uniqueTypeV xw xw₁
 -- uniqueTypet {Γp₁} {.(l-subT 0 u Bp)} {.(app t u)} (appw Γp₁ Γw ap₁ tw Bp Bw t tw₁ u tw₂) {Ap'} tw' = {!!}
 uniqueTypet {Γp₁} {.(l-subT 0 u Bp)} {.(app t u)}
-  (appw Γp₁ Γw ap₁ tw Bp Bw t tw₁ u tw₂) {.(l-subT 0 u Bp₁)} (appw .Γp₁ Γw₁ ap₂ tw' Bp₁ Bw₁ .t tw'' .u tw''')
+  (appw {Γp₁} Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂) {.(l-subT 0 u Bp₁)} (appw Γw₁ {ap₂} tw' {Bp₁} Bw₁  tw''  tw''')
   with uniqueTypet tw₁ tw''
 ...  | refl = refl
 
@@ -957,21 +962,21 @@ uniqueTypet {Γp} {.(Elp (Bp _))} {appNI _ _} (appInfw Γw {Bp = Bp} Bw tw _) {.
 
 -- uniqueTypet {Γp₁} {.(l-subT (FromNat.read ℕ-reader _) u Bp₁)} {.(app t u)} (appw Γp₁ Γw ap₁ tw .Bp₁ Bw t tw₁ u tw₂) {.(l-subT (FromNat.read ℕ-reader _) u Bp₁)} (appw .Γp₁ Γw₁ .ap₁ tw' Bp₁ Bw₁ .t tw'' .u tw''') | refl = refl
 
-uniqueTypeV {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) {.(liftT 0 Ap)} (V0w .Γp Γw₁ .Ap Aw₁) = refl
-uniqueTypeV {.(Γp ▶p Ap)} {.(liftT 0 Bp)} {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw) {.(liftT 0 Bp₁)} (VSw .Γp Γw₁ .Ap Aw₁ Bp₁ Bw₁ .xp xw') = ap (liftT 0) (uniqueTypeV xw xw')
+uniqueTypeV {.(Γp ▶p Ap)} {.(liftT 0 Ap)} {.0} (V0w {Γp} Γw {Ap} Aw) {.(liftT 0 Ap)} (V0w  Γw₁  Aw₁) = refl
+uniqueTypeV {.(Γp ▶p Ap)} {.(liftT 0 Bp)} {.(S xp)} (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw) {.(liftT 0 Bp₁)} (VSw {Γp} Γw₁ Aw₁ {Bp₁} Bw₁ xw') = ap (liftT 0) (uniqueTypeV xw xw')
 
 
-Conw= : (Γp : Conp) → has-all-paths (Conw Γp)
-Tyw= : (Γp : Conp)(Ap : Typ)  → has-all-paths (Tyw Γp Ap)
-Tmw= : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → has-all-paths (Tmw Γp Ap tp)
-Varw= : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → has-all-paths (Varw Γp Ap xp)
+Conw= : (Γp : Conp) → has-all-paths (Γp ⊢)
+Tyw= : (Γp : Conp)(Ap : Typ)  → has-all-paths (Γp ⊢ Ap)
+Tmw= : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → has-all-paths (Γp ⊢ tp ∈ Ap )
+Varw= : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → has-all-paths (Γp ⊢ xp ∈v Ap )
 
 Conw= .∙p ∙w ∙w = refl
 Conw= .(_ ▶p _) (▶w Γw Aw) (▶w Γw' Aw')
   rewrite Conw= _ Γw Γw' | Tyw= _ _ Aw Aw'
   = refl
 
-Tyw= Γp .Up (Uw .Γp Γw) (Uw .Γp Γw') rewrite Conw= _ Γw Γw' = refl
+Tyw= Γp .Up (Uw Γw) (Uw Γw') rewrite Conw= _ Γw Γw' = refl
 Tyw= Γp .(ΠΠp _ _) (Πw Γw Aw Bw) (Πw Γw' Aw' Bw')
   rewrite Conw= _ Γw Γw' | Tmw= _ _ _ Aw Aw' |  Tyw= _ _ Bw Bw'
   = refl
@@ -985,16 +990,16 @@ Tyw= Γp .(Elp _) (Elw Γw aw) (Elw Γw' aw')
 
 
 Tmw= Γp Ap .(V _) (vw xw) (vw xw') = ap vw (Varw= _ _ _ xw xw')
-Tmw= Γp _ _ (appw .Γp Γw ap aw Bp Bw t tw u uw) tw' =
+Tmw= Γp _ _ (appw  Γw {ap} aw {Bp} Bw {t} tw {u} uw) tw' =
   helper (l-subT 0 u Bp) refl tw'
   where
-    helper : (Cp : Typ) (e : l-subT 0 u Bp ≡ Cp) (ttw  : Tmw Γp Cp (app t u)) →
-      appw Γp Γw ap aw Bp Bw t tw u uw == ttw 
-        [ (λ D → Tmw _  D (app t u)) ↓ e ]
+    helper : (Cp : Typ) (e : l-subT 0 u Bp ≡ Cp) (ttw  : Γp ⊢ (app t u) ∈ Cp ) →
+      appw {Γp} Γw {ap} aw {Bp} Bw {t} tw {u} uw == ttw 
+        [ (λ D → _ ⊢ (app t u) ∈ D) ↓ e ]
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
    -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper
-       .(l-subT 0 u Bp') e (appw .Γp Γw' ap' aw' Bp' Bw' .t tw' .u uw')
+       .(l-subT 0 u Bp') e (appw Γw' {ap'} aw' {Bp'} Bw'  tw' uw')
       
        with uniqueTypet tw' tw | e 
     ...  | refl | refl with Conw= _ Γw Γw' | Tyw= _ _ Bw Bw' | Tmw= _ _ _ uw uw' | Tmw= _ _ _ aw aw' 
@@ -1004,9 +1009,9 @@ Tmw= Γp _ _ (appw .Γp Γw ap aw Bp Bw t tw u uw) tw' =
 Tmw= Γp _ _ (appNIw Γw {Bp = Bp}Bw {t = t}tw u) tw' = 
   helper (Bp u) refl tw'
   where
-    helper : (Cp : Typ) (e : Bp u ≡ Cp) (ttw  : Tmw Γp Cp (appNI t u)) →
+    helper : (Cp : Typ) (e : Bp u ≡ Cp) (ttw  : Γp ⊢ (appNI t u) ∈ Cp ) →
       appNIw Γw Bw tw u == ttw 
-        [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
+        [ (λ D → _ ⊢  (appNI t u) ∈ D ) ↓ e ]
 
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
    -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
@@ -1024,9 +1029,9 @@ Tmw= Γp _ _ (appNIw Γw {Bp = Bp}Bw {t = t}tw u) tw' =
 Tmw= Γp .(Elp _) .(appNI _ u) (appInfw Γw {Bp = Bp} Bw {t = t} tw u) tw' =
   helper (Elp (Bp u)) refl tw'
   where
-    helper : (Cp : Typ) (e : Elp (Bp u) ≡ Cp) (ttw  : Tmw Γp Cp (appNI t u)) →
+    helper : (Cp : Typ) (e : Elp (Bp u) ≡ Cp) (ttw  : Γp ⊢ (appNI t u) ∈ Cp ) →
       appInfw Γw Bw tw u == ttw 
-        [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
+        [ (λ D → _ ⊢ (appNI t u) ∈ D ) ↓ e ]
 
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
    -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
@@ -1046,37 +1051,20 @@ Tmw= Γp .Up .(ΠInf _) (ΠInfw Γw Bw) (ΠInfw Γw' Bw')
   = refl
 
 
-{- 
-Tmw= Γp _ _ (appNIw Γw {Bp = Bp}Bw {t = t}tw u) tw' = 
-  helper (Bp u) refl tw'
-  where
-    helper : (Cp : Typ) (e : Bp u ≡ Cp) (ttw  : Tmw Γp Cp (appNI t u)) →
-      appNIw Γw Bw tw u == ttw 
-        [ (λ D → Tmw _  D (appNI t u)) ↓ e ]
-
-   -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
-   -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
-    helper _
-        e (appNIw  Γw' {Bp =  Bp'} Bw' tw' .u)
-      with uniqueTypet tw' tw | e 
-    ...  | refl | refl with Conw= _ Γw Γw' | funext (λ a → Tyw= _ _ (Bw a) (Bw' a)) 
-             | Tmw= _ _ _ tw tw'
-    ...     | refl | refl | refl = refl
-
--}
 
 
-Varw= .(Γp ▶p Ap) .(liftT 0 Ap) .0 (V0w Γp Γw Ap Aw) (V0w .Γp Γw' .Ap Aw')
+
+Varw= .(Γp ▶p Ap) .(liftT 0 Ap) .0 (V0w {Γp} Γw {Ap} Aw) (V0w Γw' Aw')
   rewrite Conw= _ Γw Γw' | Tyw= _ _ Aw Aw'
   = refl
 
-Varw= .(Γp ▶p Ap) .(liftT 0 Bp) .(S xp) (VSw Γp Γw Ap Aw Bp Bw xp xw) xw' = helper _ refl xw' 
+Varw= .(Γp ▶p Ap) .(liftT 0 Bp) .(S xp) (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw) xw' = helper _ refl xw' 
   where
   -- Aïe ! COmment je fais pour montrer que Bp = Bp' ?
   -- remarquons que xp a le type Bp et le type Bp'
-    helper :  (Cp : Typ) (e : liftT 0 Bp ≡ Cp) (xxw : Varw (Γp ▶p Ap) Cp (S xp)) →
-      VSw Γp Γw Ap Aw Bp Bw xp xw == xxw [ (λ D → Varw (Γp ▶p Ap) D (S xp)) ↓ e ]
-    helper .(liftT 0 Bp') e (VSw .Γp Γw' .Ap Aw' Bp' Bw' .xp xw')
+    helper :  (Cp : Typ) (e : liftT 0 Bp ≡ Cp) (xxw : (Γp ▶p Ap) ⊢ (S xp) ∈v Cp ) →
+      VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw == xxw [ (λ D →  (Γp ▶p Ap) ⊢ S xp ∈v D ) ↓ e ]
+    helper .(liftT 0 Bp') e (VSw Γw' Aw' {Bp'} Bw' xw')
       with uniqueTypeV xw' xw
     ... | refl with Varw= _ _ _ xw xw' | Tyw= _ _ Aw Aw' | Tyw= _ _ Bw Bw'
        | Conw= _ Γw Γw'
@@ -1084,10 +1072,10 @@ Varw= .(Γp ▶p Ap) .(liftT 0 Bp) .(S xp) (VSw Γp Γw Ap Aw Bp Bw xp xw) xw' =
     ...  | refl = refl
 
 
-ConwP : (Γp : Conp) → is-prop (Conw Γp)
-TywP : (Γp : Conp)(Ap : Typ)  → is-prop (Tyw Γp Ap)
-TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Tmw Γp Ap tp)
-VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Varw Γp Ap xp)
+ConwP : (Γp : Conp) → is-prop (Γp ⊢)
+TywP : (Γp : Conp)(Ap : Typ)  → is-prop (Γp ⊢ Ap)
+TmwP : (Γp : Conp)(Ap : Typ)(tp : Tmp)  → is-prop (Γp ⊢ tp ∈ Ap )
+VarwP : (Γp : Conp)(Ap : Typ)(xp : ℕ)  → is-prop (Γp ⊢ xp ∈v Ap )
 
 ConwP Γp = all-paths-is-prop (Conw= Γp)
 TywP Γp Ap = all-paths-is-prop (Tyw= Γp Ap)
@@ -1096,17 +1084,17 @@ VarwP Γp Ap xp  = all-paths-is-prop (Varw= Γp Ap xp)
 
 -- in the last version of agda, instance arguments must be implicit
 instance
-  i-ConwP : {Γp : Conp} → is-prop (Conw Γp)
-  i-TywP : {Γp : Conp}{Ap : Typ}  → is-prop (Tyw Γp Ap)
-  i-TmwP : {Γp : Conp}{Ap : Typ}{tp : Tmp}  → is-prop (Tmw Γp Ap tp)
-  i-VarwP : {Γp : Conp}{Ap : Typ}{xp : ℕ}  → is-prop (Varw Γp Ap xp)
+  i-ConwP : {Γp : Conp} → is-prop (Γp ⊢)
+  i-TywP : {Γp : Conp}{Ap : Typ}  → is-prop (Γp ⊢ Ap)
+  i-TmwP : {Γp : Conp}{Ap : Typ}{tp : Tmp}  → is-prop (Γp ⊢ tp ∈ Ap )
+  i-VarwP : {Γp : Conp}{Ap : Typ}{xp : ℕ}  → is-prop (Γp ⊢ xp ∈v Ap )
 
   i-ConwP = ConwP _
   i-TywP = TywP _ _
   i-TmwP = TmwP _ _ _
   i-VarwP = VarwP _ _ _
 
-Subw= : (Γp : Conp)(Δp : Conp)(s : Subp)  → has-all-paths (Subw Γp Δp s)
+Subw= : (Γp : Conp)(Δp : Conp)(s : Subp)  → has-all-paths ( Γp ⊢ s ⇒ Δp)
 -- Subw= Γ Δ s sw1 sw2 = {!!}
 Subw= Γ .∙p .nil nilw nilw = refl
 Subw= Γ .(_ ▶p _) .(_ ∷ _) (,sw Δw sw Aw tw) (,sw Δw' sw' Aw' tw') =
@@ -1116,12 +1104,12 @@ Subw= Γ .(_ ▶p _) .(_ ∷ _) (,sw Δw sw Aw tw) (,sw Δw' sw' Aw' tw') =
   (prop-has-all-paths _ _)
   (prop-has-all-paths _ _)
 
-SubwP : (Γp : Conp) (Δp : Conp)(s : Subp) → is-prop (Subw Γp Δp s)
+SubwP : (Γp : Conp) (Δp : Conp)(s : Subp) → is-prop ( Γp ⊢ s ⇒ Δp)
 -- SubwP Γ Δ s = {!!}
 SubwP Γ Δ s = all-paths-is-prop (Subw= Γ Δ s)
 
 instance
-  i-SubwP : {Γp : Conp} {Δp : Conp}{s : Subp} → is-prop (Subw Γp Δp s)
+  i-SubwP : {Γp : Conp} {Δp : Conp}{s : Subp} → is-prop ( Γp ⊢ s ⇒ Δp)
   -- SubwP Γ Δ s = {!!}
   i-SubwP = SubwP _ _ _
 
@@ -1182,45 +1170,45 @@ keep∘ s1 s2 rewrite wkS∘ s1 s2 = refl
    ap ΠNI (funext (λ a → [∘]T (B a) s1 s2))
 
 --- needed for the ᶜ case of Sub in SetModelComponentsACDS
-∘w : ∀ {Γ} {Δ σ} (σw : Subw Δ Γ σ)
-   {Y}(Yw : Conw Y) {δ} (δw : Subw Y Δ δ) →
-   Subw Y Γ (σ ∘p δ)
+∘w : ∀ {Γ} {Δ σ} (σw :  Δ ⊢ σ ⇒ Γ)
+   {Y}(Yw : Y ⊢) {δ} (δw :  Y ⊢ δ ⇒ Δ) →
+   Y ⊢  (σ ∘p δ) ⇒ Γ
    -- ∘w σw δw = {!δw!}
 ∘w nilw Yw σw = nilw
 ∘w (,sw Δw δw Aw tw) Yw σw  = 
-  ,sw Δw ( ∘w δw Yw σw ) Aw (tr (λ A → Tmw _ A _) (! ([∘]T _ _ _)) (Tmw[] tw Yw σw))
+  ,sw Δw ( ∘w δw Yw σw ) Aw (tr (λ A → _ ⊢ _ ∈ A) (! ([∘]T _ _ _)) (Tmw[] tw Yw σw))
 
 
 idp :  ℕ → Subp
 idp n = iter n keep nil
 
-[idp]V : ∀ {Γ}{A}{x}(xw : Varw Γ A x) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
-[idp]V (V0w Γp Γw Ap Aw) = refl
-[idp]V (VSw Γp Γw Ap Aw Bp Bw xp xw) = 
+[idp]V : ∀ {Γ}{A}{x}(xw : Γ ⊢ x ∈v A) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
+[idp]V (V0w {Γp} Γw {Ap} Aw) = refl
+[idp]V (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw) = 
   wkV=wkS (idp ∣ Γp ∣) xp ◾ ap wkt ([idp]V xw)
 
-[idp]t : ∀ {Γ}{A}{t}(tw : Tmw Γ A t) → (t [ idp ∣ Γ ∣ ]t) ≡ t
+[idp]t : ∀ {Γ}{A}{t}(tw : Γ ⊢  t ∈ A) → (t [ idp ∣ Γ ∣ ]t) ≡ t
 [idp]t (vw xw) = [idp]V xw
-[idp]t (appw Γp Γw ap aw Bp Bw t tw u uw) = ap2 app ([idp]t tw) ([idp]t uw)
+[idp]t (appw  Γw  aw Bw tw uw) = ap2 app ([idp]t tw) ([idp]t uw)
 [idp]t (appNIw  Γw Bw tw u) = ap (λ z → appNI z u) ([idp]t tw)
 [idp]t (appInfw  Γw Bw tw u) = ap (λ z → appNI z u) ([idp]t tw)
 [idp]t (ΠInfw Γw Bw) = ap ΠInf (funext (λ a → [idp]t (Bw a)))
 -- ap2 app ([idp]t tw) ([idp]t uw)
 
-[idp]T : ∀ {Γ}{A}(Aw : Tyw Γ A) → (A [ idp ∣ Γ ∣ ]T) ≡ A
-[idp]T (Uw Γp Γw) = refl
+[idp]T : ∀ {Γ}{A}(Aw : Γ ⊢ A) → (A [ idp ∣ Γ ∣ ]T) ≡ A
+[idp]T (Uw  Γw) = refl
 -- heureusement qu'on peut faire la récurrence sur Bw
 [idp]T (Πw Γw Aw Bw) rewrite [idp]t Aw = ap (ΠΠp _) ([idp]T Bw)
 [idp]T (ΠNIw Γw Bw) = ap ΠNI (funext (λ a → [idp]T (Bw a)))
 -- ap (ΠΠp _) ([idp]T Bw)
 [idp]T (Elw Γw aw) = ap Elp ([idp]t aw)
 
-idpw : ∀ {Γ} (Γw : Conw Γ) → Subw Γ Γ (idp ∣ Γ ∣)
+idpw : ∀ {Γ} (Γw : Γ ⊢) → Γ ⊢ (idp ∣ Γ ∣) ⇒ Γ
 idpw {.∙p} ∙w = nilw
 idpw {(Γ ▶p A)} (▶w Γw Aw) = ,sw Γw (wkSw (idpw Γw) Aw) Aw
-   (transport! (λ B → Tmw (Γ ▶p A) B _)
+   (transport! (λ B → (Γ ▶p A) ⊢ _ ∈ B)
   (wkT=wkS (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw)) 
-  (vw (V0w Γ Γw A Aw)))
+  (vw (V0w Γw Aw)))
 
 -- idr : ∀ {Γ Δ : Conp}{σ}(σw : Subw Γ Δ σ) → (σ ∘p idp ∣ Γ ∣) ≡ σ
 -- idr nilw = refl
@@ -1231,13 +1219,13 @@ wk∘, σ t δ rewrite map-∘ (_[ t ∷ δ ]t) wkt σ =
   pw-map= (λ x → wk[,]t x t δ ) σ
   -- pw-map= (λ x → {!wkt=wkS!}) σ
 
-idl : ∀ {Γ Δ : Conp}{σ}(σw : Subw Γ Δ σ) → (idp ∣ Δ ∣ ∘p σ) ≡ σ
+idl : ∀ {Γ Δ : Conp}{σ}(σw :  Γ ⊢ σ ⇒ Δ) → (idp ∣ Δ ∣ ∘p σ) ≡ σ
 -- idl {Γ}{Δ}{σ}σw = {!!}
 idl nilw = refl
 idl {Δ = (Δ ▶p A)}{σ = tp ∷ σp}(,sw Δw σw Aw tw) =
   ap (_ ∷_) (wk∘, (idp ∣ Δ ∣ ) tp σp ◾ idl σw)
 
-idr : ∀ {Γ : Conp}{Δ}{σ}(σw : Subw Γ Δ σ) → (σ ∘p idp ∣ Γ ∣ ) ≡ σ
+idr : ∀ {Γ : Conp}{Δ}{σ}(σw :  Γ ⊢ σ ⇒ Δ) → (σ ∘p idp ∣ Γ ∣ ) ≡ σ
 -- idr {Γ}Γw{Δ}{σ}σw = ?
 idr {Γ} {.∙p} {.nil} nilw = refl
 idr {Γ} {.(_ ▶p _)} {.(_ ∷ _)} (,sw Δw σw Aw tw) = ap2 _∷_ ([idp]t tw) (idr σw)
@@ -1256,27 +1244,25 @@ ass {σ}{δ}{ν} =
 <_⊢_> : ∀ n t → Subp
 < Γ ⊢ t > = t ∷ (idp Γ) 
 
-<>w : ∀{Γ}(Γw : Conw Γ){A}(Aw : Tyw Γ A){t} → Tmw Γ A t → Subw Γ (Γ ▶p A) < ∣ Γ ∣ ⊢ t >
-<>w {Γ}Γw{A}Aw{t}tw = ,sw Γw (idpw Γw) Aw (transport! (λ A₁ → Tmw Γ A₁ t) ([idp]T Aw) tw)
+<>w : ∀{Γ}(Γw :  Γ ⊢){A}(Aw : Γ ⊢ A){t} → Γ ⊢ t ∈ A → Γ ⊢ < ∣ Γ ∣ ⊢ t > ⇒ (Γ ▶p A) 
+<>w {Γ}Γw{A}Aw{t}tw = ,sw Γw (idpw Γw) Aw (transport! (λ A₁ → Γ ⊢ t ∈ A₁) ([idp]T Aw) tw)
 
--- infixl 80 _-_
---TODO : voir si ça peut pas simplifier les prueuve de l-subₛ..
 -- Γ , E , Δ ⊢ x : A
 -- Γ ⊢ z : E
 -- actally, only the size of contexts matters
-[<>]V-n : ∀ {Γ}{E}{Δ}{A} {x} (xw : Varw ((Γ ▶p E) ^^ Δ) A x)  z →
+[<>]V-n : ∀ {Γ}{E}{Δ}{A} {x} (xw :  ((Γ ▶p E) ^^ Δ) ⊢ x ∈v A)  z →
   (x [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]V) ≡ l-subV ∣ Δ ∣ z x
-  -- (x [ iter ∣ Δ ∣ keep <  (ℕ-pred ∣ Γ ∣) ⊢ z > ]V) ≡ l-subV ∣ Δ ∣ z x
+
 -- [<>]V-n n {Γ} {A} {x} xw z = {!n!}
 
 -- [<>]V-n {Γ} {E}{Δ}{A} {x} xw z = {!xw!}
-[<>]V-n {.Γp} {.Ap} {∙p} {.(liftT 0 Ap)} {.0} (V0w Γp Γw Ap Aw) z = refl
-[<>]V-n {.Γp} {.Ap} {∙p} {.(liftT 0 Bp)} {.(S xp)} (VSw Γp Γw Ap Aw Bp Bw xp xw) z =
+[<>]V-n {Γp} {Ap} {∙p} {.(liftT 0 Ap)} {.0} (V0w  Γw  Aw) z = refl
+[<>]V-n {.Γp} {.Ap} {∙p} {.(liftT 0 Bp)} {.(S xp)} (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw) z =
      wk[,]V xp z (idp (∣ Γp ∣)) 
     ◾ [idp]V xw
   
-[<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 B)} {.0} (V0w .(Γ ▶p E ^^ Δ) Γw .B Aw) z = refl
-[<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 Bp)} {.(S xp)} (VSw .(Γ ▶p E ^^ Δ) Γw .B Aw Bp Bw xp xw) z =
+[<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 B)} {.0} (V0w  Γw Aw) z = refl
+[<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 Bp)} {.(S xp)} (VSw  Γw Aw {Bp} Bw {xp} xw) z =
      wkV-keep
      (iter ∣ Δ ∣ keep < ∣ Γ ∣ ⊢ z >)
       xp
@@ -1285,10 +1271,10 @@ ass {σ}{δ}{ν} =
   
 
 
-[<>]t-n : ∀ {Γ}{E}{Δ}{A} {t} (tw : Tmw ((Γ ▶p E) ^^ Δ) A t)  z →
+[<>]t-n : ∀ {Γ}{E}{Δ}{A} {t} (tw :  ((Γ ▶p E) ^^ Δ) ⊢ t ∈ A)  z →
   (t [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]t) ≡ l-subt ∣ Δ ∣ z t
 [<>]t-n {Γ} {E} {Δ} {A} {.(V _)} (vw xw) z = [<>]V-n xw z
-[<>]t-n {Γ} {E} {Δ} {.(l-subT 0 u Bp)} {.(app t u)} (appw .(Γ ▶p E ^^ Δ) Γw ap aw Bp Bw t tw u uw) z =
+[<>]t-n {Γ} {E} {Δ} {.(l-subT 0 u Bp)} {.(app t u)} (appw  Γw  aw {Bp} Bw {t} tw {u} uw) z =
   ap2 app
     ([<>]t-n tw z)
     ([<>]t-n uw z)
@@ -1296,16 +1282,16 @@ ass {σ}{δ}{ν} =
 [<>]t-n {Γ} {E} {Δ} (appInfw Γw Bw tw u) z = ap (λ z₁ → appNI z₁ u) ([<>]t-n tw z)
 [<>]t-n {Γ} {E} {Δ}  (ΠInfw Γw  Bw) z = ap ΠInf (funext (λ a → [<>]t-n (Bw a) z))
 
-[<>]T-n : ∀ {Γ}{E}{Δ}{A}  (Aw : Tyw ((Γ ▶p E) ^^ Δ) A)  z →
+[<>]T-n : ∀ {Γ}{E}{Δ}{A}  (Aw : ((Γ ▶p E) ^^ Δ) ⊢ A)  z →
   (A [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]T) ≡ l-subT ∣ Δ ∣ z A
-[<>]T-n {Γ} {E} {Δ} {.Up} (Uw .(Γ ▶p E ^^ Δ) Γw) z = refl
+[<>]T-n {Γ} {E} {Δ} {.Up} (Uw Γw) z = refl
 [<>]T-n {Γ} {E} {Δ} {.(ΠΠp _ _)} (Πw Γw Aw Bw) z =
   ap2 ΠΠp ( ([<>]t-n Aw z)) ([<>]T-n {Δ = Δ ▶p _} Bw z)
 [<>]T-n {Γ} {E} {Δ}  (ΠNIw Γw  Bw) z = ap ΠNI (funext (λ a → [<>]T-n (Bw a) z))
 [<>]T-n {Γ} {E} {Δ} {.(Elp _)} (Elw Γw aw) z = ap Elp ([<>]t-n aw z)
 
 -- useful for RelationCwfInhabit : the app case
-[<>]T : ∀ {Γ E A} (Aw : Tyw (Γ ▶p E) A) z →
+[<>]T : ∀ {Γ E A} (Aw : (Γ ▶p E) ⊢ A) z →
   (A [ < ∣ Γ ∣  ⊢ z > ]T) ≡ subT  z A
 [<>]T {Γ}{E}{ A} Aw z = [<>]T-n {Γ}{E} {∙p} Aw z
 
@@ -1313,57 +1299,10 @@ ass {σ}{δ}{ν} =
 wk : ∀ Γ → Subp
 wk Γ = wkS (idp Γ )
 
-wk=[wk]T : ∀{Γ}{A}(Aw : Tyw Γ A) → wkT A ≡ A [ wk ∣ Γ ∣ ]T
+wk=[wk]T : ∀{Γ}{A}(Aw : Γ ⊢ A) → wkT A ≡ A [ wk ∣ Γ ∣ ]T
 wk=[wk]T {Γ}{A}Aw = ! ((wkT=wkS _ _) ◾ ap wkT  ([idp]T Aw)) 
 
-wk=[wk]t : ∀{Γ}{A}{t}(tw : Tmw Γ A t) → wkt t ≡ t [ wk ∣ Γ ∣ ]t
+wk=[wk]t : ∀{Γ}{A}{t}(tw : Γ ⊢  t ∈ A) → wkt t ≡ t [ wk ∣ Γ ∣ ]t
 wk=[wk]t {Γ}{A}{t}tw = ! (wkt=wkS (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw)) 
   
-{- old stuff -}
-
--- la substitution sur les types requiert dans le cas du Π de pouvoir affaiblir les substitutions
--- le lemme de substitution sur les variables requiert
--- - wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp ∷ σp ]T) ≡ (Ap [ σp ]T)
---    Note: dans metacoq, ou chez Théo, la substitution sur les types (par exemple) est définie
---            comme un fold_left de subT.
---            du coup le lemme précédent devient un corrolaire de subT (wkT Ap) = Ap.
---            Mais je préfère une version qui calcule sur les constructeurs de type
--- lequel requiert:
--- - liftₛT : ∀ Ap σp tp σp'  → (liftT (length σp) Ap [ σp ++ (tp ∷ σp') ]T) ≡ (Ap [ σp ++ σp' ]T)
-
-
--- au lieu d'avoir la syntaxe well scoped (c'est à dire indexée par un entier qui indique la taille maximale
--- de variables), j'ai ajouté une constante de terme erreur que je renvoie quand la substitution est mal
--- typée. Tout semble bien marcher, mais par contre pour montrer que la substitution identité préserve
--- la syntaxe, je ne sais pas comment faire..
-
-
--- remarque: pour les nombreux lemmes de substitutions (susbtitutions étant listes de termes)
--- peut être que les preuves auraient été beaucoup plus simples en les faisant par récurrence
--- sur le jugment de typage.
-
-
-{- 
--- weakening from Γ ^ Δ to Γ
--- the first argumet is the length of Γ
--- the seond argument is the length of Δ
-liftₛ : ℕ → ℕ → Subp
-liftₛ 0 p = nil
-liftₛ (S n) p = V p ∷ (liftₛ n (S p))
-
--- liftₛ' : ℕ → ℕ → Subp → Subp
--- liftₛ' 0 p = nil
--- liftₛ' (S n) p = V p ∷ (liftₛ n (S p))
-
--- length of the context
-wkₛ : ℕ → Subp
-wkₛ n = liftₛ n 0
--}
-
--- -- the substitution from Γ , Δ to Γ , A , Δ
--- liftₛ : ℕ → ℕ → Subp
--- liftₛ Γ 0 = wkₛ Γ
--- liftₛ Γ (S Δ) = V 0 ∷ liftₛ Γ Δ
-
--- -}
 
