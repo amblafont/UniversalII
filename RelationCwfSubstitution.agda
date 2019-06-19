@@ -194,7 +194,7 @@ Ty[]~ {Γ}{Γw}Γm {Δ}{Δw'}Δm  {σ} {σw} σm {.(Elp _)} {Elw Δw aw} (_ , am
 -- Tm[]~ {Γm}{Δm}{Γ}Γw{Δ}{σ}{σw}σm {Am}{A}{t}{tw} tm = {!!}
 
 Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {Am} {A} {.(V _)} {vw xw} tm = Var[]~ σm tm
-Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {.(l-subT 0 u Bp)} {_}
+Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_}
    {appw Δw' Aw {Bp} Bw tw {u} uw}
    (_ , am , Bm , tm , um , refl , refl)
    rewrite l-sub[]T 0 Bp u σ

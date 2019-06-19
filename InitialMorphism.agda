@@ -62,8 +62,6 @@ Tmʳ {Γ}{A}t = ₁ (ΣTmʳ t)
 Subʳ : ∀ {Γ Δ} → S.Sub Γ Δ → M.Sub (Conʳ Γ) (Conʳ Δ)
 Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
 
--- Tmʳ~  : ∀ {Γ A} → S.Tm Γ A → M.Tm (Conʳ Γ) (Tyʳ A)
--- Tmʳ~ {Γ}{A}t = ₁ (ΣTm~ (ΣCon~  (₂ Γ)) (ΣTy~ (ΣCon~  (₂ Γ))(₂ A)) (₂ t))
 
 []Tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ} →
       Tyʳ (A S.[ σ ]T) ≡ Tyʳ A M.[ Subʳ σ ]T
@@ -75,7 +73,6 @@ Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
   fst=
     (prop-path (TyP _ _)
       (ΣTyʳ (A S.[ σ ]T))
-      -- ΣTy~ (ΣCon~ (₂ Γ)) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
       (_ , Ty[]~ Γm Δm (ΣSub~ Γm Δm (₂ σ))(ΣTy~ Δm (₂ A)))
     )
 
@@ -202,7 +199,7 @@ $ʳ~ {Γ}{a}{B}t u
     =
    tr {A = ∃  λ C →  (₁ Γ) ⊢ (app (₁ t) (₁ u) ) ∈ C   }
      (λ x → Tm~ {A = ₁ x}(₂ x) (Tmʳ t M.$ Tmʳ u))
-     {x = (subT (₁ u) (₁ B)) , tuw }
+     {x = _ , tuw }
      {y = (₁ (B S.[ S.< u > ]T)) , ₂ (t S.$ u)}
      (pair=
        (₁[<>]T {B = B}{u = u})

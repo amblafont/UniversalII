@@ -5,7 +5,7 @@ some complementary lemmas about the syntax
 
 open import Level 
 open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-  hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+  hiding (_∘_ ; _⁻¹ ; Π ; _$_ ; _↦_)
 
 
 
@@ -20,19 +20,7 @@ open import Syntax {i = k}
 
 module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
   open CwF MM
-  {-
-
-  helper'' : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ ▶ A)} →
-        ((B
-           [ (id ∘ wk {A = A} ) ^ A ]T)
-           -- [ {!!} ]T ) ≡ B
-           [ < transport! (λ s → Tm _ (A [ s ]T)) idl vz > ]T ) ≡ B
-  helper'' {Γ}{A}{B} =
-     [][]T ◾ ap (_[_]T B ) aux ◾  [id]T 
-     where
-       aux : (( (id ∘ wk {A = A} ) ^ A ) ∘ < transport! (λ s → Tm _ (A [ s ]T)) idl vz  >) ≡ id
-       aux = ^∘<> ◾ ,s= idl (from-transp! _ _ refl) ◾  πη
-       -}
+  
 
 
 -- Con = ∃ Conw
@@ -276,7 +264,7 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
 
 -- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
 ₁[<>]T : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)}{u : Tm Γ A} →
-  subT (₁ u) (₁ B) ≡ ₁ (B S.[ S.< u > ]T)
+  (₁ B) [ 0 ↦ (₁ u) ]T  ≡ ₁ (B S.[ S.< u > ]T)
 
 ₁[<>]T {Γ}{A}{B}{u} = ! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u)
 
@@ -348,30 +336,4 @@ Sa : {Γ : M.Con} {A : M.Tm Γ (M.U )}{B : M.Ty Γ}
     (u : M.Tm Γ (M.El A)) → M.Tm Γ B
 Sa {Γ} {A} {B} t u = tr (Tm _)
    (M.[][]T {σ =  M.< u >}{δ = M.wk {A = M.El A}} ◾ ap (λ s → B M.[ s ]T) M.wk∘<> ◾ M.[id]T) (t M.$ u)
---   = 
---     tr (λ B' → Σ Tmp (Tmw (₁ Γ) B'))
---     (Syntax.subT-wkT (₁ B) (₁ u))
---     (S1.app Γ A (S1.wkT Γ (S1.El Γ A) B) t u )
-
--- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
-{- 
-ex1 : M.Con 
--- ex1 = M.∙ M.▶ {!? M.▶ ?!}
-A,B,∙ = M.∙ M.▶ M.U M.▶ M.Π M.vz M.U M.▶
-   M.El (M.vs M.vz)
-
-A,B,∙⊢A : M.Tm A,B,∙ M.U
-A,B,∙⊢A = (M.vs (M.vs M.vz))
-
-ex1 = A,B,∙
-   M.▶
-   M.Π A,B,∙⊢A
-   (S→ (Sa (M.vs (M.vs M.vz)) M.vz) (M.El (M.vs A,B,∙⊢A)))
-   M.▶
-   -- u
-   M.Π (M.vs A,B,∙⊢A) (M.El {!!})
-   M.▶
-   {!!}
-   -}
-
 

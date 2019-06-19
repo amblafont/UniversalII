@@ -72,7 +72,7 @@ Complements lemmas and definitions:
 
 open import Level 
 -- open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂) hiding (_∘_)
-open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂ ; λ= to funext) hiding (_∘_)
+open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂ ; λ= to funext) hiding (_∘_ ; _↦_)
 open import monlib
 open import Data.Nat renaming (suc to S)
  
@@ -167,14 +167,22 @@ wkt = liftt 0
 --    Γ , C , p ⊢ A    et    Γ ⊢ t : C
 --   then Γ , subTel t p ⊢ l-subT p t A
 
+infixl 7 _[_↦_]V
+infixl 7 _[_↦_]t
+infixl 7 _[_↦_]T
+ -- infixl 5 _,s_
+ -- infix  6 _∘_
+ -- infixl 8 _[_]t
 
-l-subV : (p : ℕ)(l : Tmp) (x : ℕ) → Tmp
+_[_↦_]V : (x : ℕ)(p : ℕ)(l : Tmp) → Tmp
+-- l-subV : (p : ℕ)(l : Tmp) (x : ℕ) → Tmp
 
 
 -- don't touch if it is below p
-l-subV 0 l 0 = l
-l-subV 0 l (S x) = V x
-l-subV (S p) l 0 = V 0
+0 [ 0 ↦ l ]V = l
+
+S x [ 0 ↦ l ]V = V x
+0  [ (S p) ↦ l ]V = V 0
 -- Γ , C , p+1 ⊢ x+1   (and Γ ⊢ t : C)
 -- so Γ , C , p ⊢  x   (and Γ ⊢ t : C)
 -- so Γ , p ⊢ l-sub p t x
@@ -182,37 +190,37 @@ l-subV (S p) l 0 = V 0
 
 -- prenons l'exemple x = 0 et p = 2. On veut que wk (l-sub p t x) = 1
 -- but, l-sub 2 t 0 = V 0
-l-subV (S p) l (S x) = wkt (l-subV p l x)
 
-l-subt : (p : ℕ)(l : Tmp) (t : Tmp) → Tmp
+S x [ S p ↦ l ]V = wkt (x [ p ↦ l ]V)
 
-l-subt p l (V x) = (l-subV p l x)
-l-subt p l (app t u) = app (l-subt p l t)(l-subt p l u)
-l-subt p l (appNI t u) = appNI (l-subt p l t) u
-l-subt p l (ΠInf B) = ΠInf (λ a → l-subt p l (B a)) 
-l-subt p l err = err
+_[_↦_]t : (t : Tmp)(p : ℕ)(l : Tmp) → Tmp
 
-l-subT : (p : ℕ)(l : Tmp) (T : Typ) → Typ
+V x [ p ↦ l ]t  = x [ p ↦ l ]V
+(app t u) [ p ↦ l ]t = app (t [ p ↦ l ]t)(u [ p ↦ l ]t)
+(appNI t u)[ p ↦ l ]t = appNI (t [ p ↦ l ]t) u
+(ΠInf B)[ p ↦ l ]t = ΠInf (λ a →  (B a) [ p ↦ l ]t ) 
+err [ p ↦ l ]t = err
 
-l-subT p l Up = Up
-l-subT p l (Elp x) = Elp (l-subt p l x)
+_[_↦_]T : (T : Typ)(x : ℕ) (l : Tmp) → Typ
+
+Up [ p ↦ l ]T = Up
+(Elp x) [ p ↦ l ]T  = Elp ( x [ p ↦ l ]t )
 -- Γ , C , p,  A ⊢ B and Γ ⊢ t : C
 -- then Γ , p , A ⊢ l-sub p+1 t B
-l-subT p l (ΠΠp A B) = ΠΠp (l-subt p l A) (l-subT (1 + p) l B)
-l-subT p l (ΠNI B) = ΠNI  (λ a → l-subT p l (B a))
+(ΠΠp A B) [ p ↦ l ]T = ΠΠp (A [ p ↦ l ]t ) ( B [ (1 + p) ↦ l ]T )
+(ΠNI B) [ p ↦ l ]T  = ΠNI  (λ a → (B a) [ p ↦ l ]T )
 
 subTel : (l : Tmp) (Δ : Conp) → Conp
 
 subTel l ∙p = ∙p
-subTel l (Δ ▶p A) = (subTel l Δ) ▶p (l-subT ∣ Δ ∣ l A)
+subTel l (Δ ▶p A) = (subTel l Δ) ▶p (A [ ∣ Δ ∣ ↦ l ]T )
 
-subT : (l : Tmp) (T : Typ) → Typ
-subt : (l : Tmp) (t : Tmp) → Tmp
-subV : (l : Tmp) (x : ℕ) → Tmp
+-- subT : (l : Tmp) (T : Typ) → Typ
+-- subt : (l : Tmp) (t : Tmp) → Tmp
 
-subT = l-subT 0
-subt = l-subt 0
-subV = l-subV 0
+-- subT = l-subT 0
+-- subt = l-subt 0
+-- subV = l-subV 0
 
 {-
 
@@ -259,14 +267,15 @@ lift-liftt = n-lift-liftt 0
 -- TODO généraliser à l-subT
 
 -- auxiliary lemmas to prove subT-wkT
-n-subV-wkV : ∀ n x z → l-subV n z (liftV n x) ≡ V x 
+n-subV-wkV : ∀ n x z → (liftV n x) [ n ↦ z ]V  ≡ V x 
 
 n-subV-wkV 0 0 z = refl
 n-subV-wkV (S n) 0 z = refl
 n-subV-wkV 0 (S x) z = refl
 n-subV-wkV (S n) (S x) z rewrite n-subV-wkV n x z = refl
 
-n-subt-wkt : ∀ n t z → l-subt n z (liftt n t) ≡ t 
+
+n-subt-wkt : ∀ n t z → (liftt n t) [ n ↦ z ]t  ≡ t 
 
 n-subt-wkt n (V x) z = n-subV-wkV n x z
 n-subt-wkt n (app t u) z rewrite n-subt-wkt n t z | n-subt-wkt n u z = refl
@@ -274,25 +283,25 @@ n-subt-wkt n (appNI t u) z rewrite n-subt-wkt n t z = refl
 n-subt-wkt n (ΠInf B) z rewrite funext (λ a → n-subt-wkt n (B a) z) = refl
 n-subt-wkt n err z = refl
 
-n-subT-wkT : ∀ n A z → l-subT n z (liftT n A) ≡ A 
+n-subT-wkT : ∀ n A z → (liftT n A) [ n ↦ z ]T  ≡ A 
 
 n-subT-wkT n Up u = refl
 n-subT-wkT n (Elp x) z rewrite n-subt-wkt n x z = refl
 n-subT-wkT n (ΠΠp A B) u rewrite n-subt-wkt n A u | n-subT-wkT (S n) B u = refl
 n-subT-wkT n (ΠNI B) u rewrite  (funext (λ a → n-subT-wkT n (B a) u)) = refl
 
-subT-wkT : ∀ A u → subT u (wkT A) ≡ A 
+subT-wkT : ∀ A u → (wkT A) [ 0 ↦ u ]T ≡ A 
 subT-wkT = n-subT-wkT 0
 
-subt-wkt : ∀ t u → subt u (wkt t) ≡ t 
+subt-wkt : ∀ t u → (wkt t) [ 0 ↦ u ]t ≡ t 
 subt-wkt = n-subt-wkt 0
 
 
 -- auxiliary lemmas to prove lift-subT
-lift-l-subV : ∀ n p u x → liftt (n + p) (l-subV n u x) ≡ l-subV n (liftt p u)(liftV (S (n + p)) x)
+lift-l-subV : ∀ n p u x → liftt (n + p) (x [ n ↦ u ]V) ≡ (liftV (S (n + p)) x) [ n ↦ (liftt p u) ]V
 
 lift-l-subV 0 p u (S x) = refl
-lift-l-subV (S n) p u (S x) rewrite lift-liftt (n + p) (l-subV n u x) | lift-l-subV n p u x = refl
+lift-l-subV (S n) p u (S x) rewrite lift-liftt (n + p) (x [ n ↦ u ]V) | lift-l-subV n p u x = refl
 lift-l-subV 0 p u 0 = refl
 lift-l-subV (S n) p u 0 = refl
 
@@ -300,7 +309,7 @@ lift-l-subV (S n) p u 0 = refl
 -- note lift-subT and l-subT-liftT are not the same case because subT is l-subT 0
 
 
-lift-l-subt : ∀ n p u t → liftt (n + p) (l-subt n u t) ≡ l-subt n (liftt p u)(liftt (S (n + p)) t)
+lift-l-subt : ∀ n p u t → liftt (n + p) (t [ n ↦ u ]t ) ≡ (liftt (S (n + p)) t) [ n ↦ (liftt p u) ]t
 
 lift-l-subt n p u (V x) = lift-l-subV n p u x
 lift-l-subt n p z (app t u)
@@ -312,7 +321,7 @@ lift-l-subt n p z (ΠInf B) rewrite funext (λ a → lift-l-subt n p z (B a)) = 
 lift-l-subt n p u err = refl
 
 
-lift-l-subT : ∀ n p u B → liftT (n + p) (l-subT n u B) ≡ l-subT n (liftt p u)(liftT (S (n + p)) B)
+lift-l-subT : ∀ n p u B → liftT (n + p) (B [ n ↦ u ]T ) ≡ (liftT (S (n + p)) B) [ n ↦ (liftt p u) ]T
 
 lift-l-subT n p u Up = refl
 lift-l-subT n p u (Elp x) rewrite lift-l-subt n p u x = refl
@@ -320,18 +329,18 @@ lift-l-subT n p u (ΠΠp A B) rewrite lift-l-subt n p u A | lift-l-subT (S n) p 
 lift-l-subT n p u (ΠNI B) rewrite funext (λ a → lift-l-subT n p u (B a)) = refl
 
 
-lift-subT : ∀ p u B → liftT p (subT u B) ≡ subT (liftt p u)(liftT (S p) B)
+lift-subT : ∀ p u B → liftT p (B [ 0 ↦ u ]T ) ≡ (liftT (S p) B) [ 0 ↦ (liftt p u) ]T
 lift-subT = lift-l-subT 0
 
 -- auxiliary lemmas to prove l-subT-wkT / l-subt-wkt
-l-subV-liftV : ∀ Δ u n x → l-subV (S (n + Δ)) u (liftV n x) ≡ liftt n (l-subV (n + Δ) u x)
+l-subV-liftV : ∀ Δ u n x → (liftV n x) [ (S (n + Δ)) ↦ u ]V  ≡ liftt n (x [ (n + Δ) ↦ u ]V)
 
 l-subV-liftV Δ u 0 0 = refl
 l-subV-liftV Δ u (S n) 0 = refl
 l-subV-liftV Δ u 0 (S x) = refl
-l-subV-liftV Δ u (S n) (S x) rewrite l-subV-liftV Δ u n x = ! (lift-liftt n (l-subV (n + Δ) u x))
+l-subV-liftV Δ u (S n) (S x) rewrite l-subV-liftV Δ u n x = ! (lift-liftt n (x [ n + Δ ↦ u ]V))
 
-l-subt-liftt : ∀ Δ u n t → l-subt (S (n + Δ)) u (liftt n t) ≡ liftt n (l-subt (n + Δ) u t)
+l-subt-liftt : ∀ Δ u n t → (liftt n t) [ (S (n + Δ)) ↦ u ]t ≡ liftt n (t [ (n + Δ) ↦ u ]t )
 
 l-subt-liftt Δ u n (V x) = l-subV-liftV Δ u n x
 l-subt-liftt Δ u n (app a b) rewrite l-subt-liftt Δ u n a | l-subt-liftt Δ u n b = refl
@@ -339,7 +348,7 @@ l-subt-liftt Δ u n (appNI a b) rewrite l-subt-liftt Δ u n a = refl
 l-subt-liftt Δ u n (ΠInf B) rewrite funext (λ a → l-subt-liftt Δ u n (B a)) = refl
 l-subt-liftt Δ u n err = refl
 
-l-subT-liftT : ∀ Δ u n B → l-subT (S (n + Δ)) u (liftT n B) ≡ liftT n (l-subT (n + Δ) u B)
+l-subT-liftT : ∀ Δ u n B → (liftT n B) [ (S (n + Δ)) ↦ u ]T ≡ liftT n ( B [ (n + Δ) ↦ u ]T)
 
 l-subT-liftT Δ u n Up = refl
 l-subT-liftT Δ u n (Elp x) rewrite l-subt-liftt Δ u n x = refl
@@ -357,25 +366,25 @@ l-subT-liftT Δ u n (ΠNI B)
 -- A ,  Δ  ⊢  B
 -- donc A , Δ , E ⊢ wk B et ensuite Δ , E ⊢ (wk B)[u]
 -- mais on peut aussi faire l'inverse: Δ ⊢ B[u] et Δ , E ⊢ wk (B[u]), et ça doit donner la même chose
-l-subT-wkT : ∀ Δ u B → l-subT (S Δ) u (wkT B) ≡ wkT (l-subT Δ u B)
+l-subT-wkT : ∀ Δ u B →  (wkT B) [ (S Δ) ↦ u ]T ≡ wkT ( B [ Δ ↦ u ]T)
 l-subT-wkT Δ u = l-subT-liftT Δ u 0
 
-l-subt-wkt : ∀ Δ u t → l-subt (S Δ) u (wkt t) ≡ wkt (l-subt Δ u t)
+l-subt-wkt : ∀ Δ u t →  (wkt t) [ (S Δ) ↦ u ]t ≡ wkt (t [ Δ ↦ u ]t)
 l-subt-wkt Δ u = l-subt-liftt Δ u 0
 
-l-subV-l-subV : ∀ n p z u x → l-subt (n + p) z (l-subV n u x) ≡ l-subt n (l-subt p z u)(l-subV (S (n + p)) z x)
+l-subV-l-subV : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]t  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]t) ]t
 
 l-subV-l-subV 0 p z u 0 = refl
 l-subV-l-subV (S n) p z u 0 = refl
-l-subV-l-subV 0 p z u (S x) rewrite n-subt-wkt 0 (l-subV p z x) (l-subt p z u) = refl
-l-subV-l-subV (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (l-subV n u x)
-  | l-subt-wkt n (l-subt p z u) (l-subV (S (n + p)) z x)
+l-subV-l-subV 0 p z u (S x) rewrite n-subt-wkt 0 (x [ p ↦ z ]V) (u [ p ↦ z ]t) = refl
+l-subV-l-subV (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (x [ n ↦ u ]V)
+  | l-subt-wkt n (u [ p ↦ z ]t) (x [ S (n + p) ↦ z ]V) 
   | l-subV-l-subV n p z u x
   =
   refl
 
 
-l-subt-l-subt : ∀ n p z u t → l-subt (n + p) z (l-subt n u t) ≡ l-subt n (l-subt p z u)(l-subt (S (n + p)) z t)
+l-subt-l-subt : ∀ n p z u t →  ( t [ n ↦ u ]t) [ (n + p) ↦ z ]t ≡ ( t [ (S (n + p)) ↦ z ]t) [ n ↦ ( u [ p ↦ z ]t) ]t
 
 l-subt-l-subt n p z w (V x) = l-subV-l-subV n p z w x
 l-subt-l-subt n p z w (app t u)
@@ -386,7 +395,7 @@ l-subt-l-subt n p z w (ΠInf B) rewrite funext (λ a → l-subt-l-subt n p z w (
 
 l-subt-l-subt n p z w err = refl
 
-l-subT-l-subT : ∀ n p z u B → l-subT (n + p) z (l-subT n u B) ≡ l-subT n (l-subt p z u)(l-subT (S (n + p)) z B)
+l-subT-l-subT : ∀ n p z u B →  ( B [ n ↦ u ]T) [ (n + p) ↦ z ]T ≡ ( B [ (S (n + p)) ↦ z ]T) [ n ↦ ( u [ p ↦ z ]t) ]T
 
 l-subT-l-subT n p z u Up = refl
 l-subT-l-subT n p z u (Elp x) rewrite l-subt-l-subt n p z u x = refl
@@ -394,7 +403,7 @@ l-subT-l-subT n p z u (ΠΠp A B) rewrite l-subt-l-subt n p z u A | l-subT-l-sub
 l-subT-l-subT n p z u (ΠNI B) rewrite funext (λ a → l-subT-l-subT n p z u (B a)) = refl
 
 
-l-subT-subT : ∀ p z u B → l-subT p z (subT u B) ≡ subT (l-subt p z u)(l-subT (S p) z B)
+l-subT-subT : ∀ p z u B →  (B [ 0 ↦ u ]T) [ p ↦ z ]T ≡ ( B [ (S p) ↦ z ]T) [ 0 ↦ ( u [ p ↦ z ]t) ]T
 l-subT-subT = l-subT-l-subT 0
 
 
@@ -571,7 +580,7 @@ l.h.s.
 l-sub[]V : ∀ n x z σ
   -- (r : n < length σ)
   →
-  (l-subV n z x [ iter n keep σ ]t) ≡ l-subt n (z [ σ ]t) (x [ iter (S n) keep σ ]V)
+  ((x [ n ↦ z ]V) [ iter n keep σ ]t) ≡ (x [ iter (S n) keep σ ]V) [ n ↦ (z [ σ ]t) ]t
 l-sub[]V 0 0 z σ = refl
 -- l-sub[]V 0 (S x) z nil  = refl
 l-sub[]V 0 (S x) z σ rewrite olookup-map (liftt 0) x err σ
@@ -589,20 +598,20 @@ l-sub[]V (S n) (S x) z σ rewrite olookup-map (liftt 0) x err (iter (S n) keep �
   | (l-subt-wkt n (z [ σ ]t) (x [ iter (S n) keep σ ]V))
   | ! ( l-sub[]V n x z σ)
   =
-  wk[,]t (l-subV n z x) (V 0) (wkS (iter n keep σ))
+  wk[,]t ( x [ n ↦ z ]V ) (V 0) (wkS (iter n keep σ))
   ◾
-  wkt=wkS (iter n keep σ) (l-subV n z x)
+  wkt=wkS (iter n keep σ) ( x [ n ↦ z ]V )
   
 
 
-l-sub[]t : ∀ n t z σ → (l-subt n z t [ iter n keep σ ]t) ≡ l-subt n (z [ σ ]t) (t [ iter (S n) keep σ ]t)
+l-sub[]t : ∀ n t z σ → ( (t [ n ↦ z ]t) [ iter n keep σ ]t) ≡ (t [ iter (S n) keep σ ]t) [ n ↦ (z [ σ ]t) ]t 
 l-sub[]t n (V x) z σ = l-sub[]V n x z σ
 l-sub[]t n (app t u) z σ rewrite l-sub[]t n t z σ | l-sub[]t n u z σ = refl
 l-sub[]t n (appNI t u) z σ rewrite l-sub[]t n t z σ = refl
 l-sub[]t n (ΠInf B) z σ rewrite (funext (λ a → l-sub[]t n (B a) z σ)) = refl
 l-sub[]t n err z σ = refl
 
-l-sub[]T : ∀ n A z σ → (l-subT n z A [ iter n keep σ ]T) ≡ l-subT n (z [ σ ]t) (A [ iter (S n) keep σ ]T)
+l-sub[]T : ∀ n A z σ → ( (A [ n ↦ z ]T) [ iter n keep σ ]T) ≡ (A [ iter (S n) keep σ ]T) [ n ↦ (z [ σ ]t) ]T
 -- l-sub[]T n A z σ = ?
 l-sub[]T n Up z σ = refl
 l-sub[]T n (Elp x) z σ rewrite l-sub[]t n x z σ = refl
@@ -622,9 +631,9 @@ l-sub[]T n (ΠNI B) z σ = ap ΠNI (funext (λ a → (l-sub[]T n (B a) z σ)))
 Γ , F[σ] ⊢ z[σ] : F
 -}
 -- needed for Tmw[] : the substitution preserves the well typedness of applications
-sub[]T : ∀ A z σ → (subT z A [ σ ]T) ≡ subT (z [ σ ]t) (A [ keep σ ]T)
+sub[]T : ∀ A z σ → ((A [ 0 ↦ z ]T) [ σ ]T) ≡ (A [ keep σ ]T) [ 0 ↦ z [ σ ]t ]T
 
-sub[]T = l-sub[]T 0 
+sub[]T =  l-sub[]T 0  
 
 -- liftₛT Ap nil
 
@@ -675,7 +684,7 @@ data _⊢_∈_ where
      (Bw : (Γp ▶p Elp ap ) ⊢ Bp)
      {t : Tmp}(tw : Γp ⊢ t ∈ (ΠΠp ap Bp))
      {u : Tmp}(tw : Γp ⊢ u ∈ (Elp ap))
-     → Γp ⊢ app t u ∈ (subT u Bp)
+     → Γp ⊢ app t u ∈ (Bp [ 0 ↦ u ]T)
   appNIw : ∀ {Γp : Conp}(Γw : Γp ⊢)
     {T : Set i} {Bp : T → Typ}(Bw : ∀ t → Γp ⊢ (Bp t))
      {t : Tmp}(tw : Γp ⊢ t ∈ (ΠNI Bp))
@@ -780,12 +789,12 @@ wktw Aw tw = lifttw Aw ∙p tw
 
 subTelw : ∀ {Γp Ap Δp up}(uw :  Γp ⊢ up ∈ Ap)(Δw : (Γp ▶p Ap ^^ Δp) ⊢) → (Γp ^^ (subTel up Δp )) ⊢
 subTw : ∀ {Γp Ap Δp up Bp }(uw :  Γp ⊢ up ∈ Ap)(Bw : (Γp ▶p Ap ^^ Δp) ⊢ Bp )
-  →  (Γp ^^ (subTel up Δp )) ⊢ (l-subT ∣ Δp ∣ up Bp ) 
+  →  (Γp ^^ (subTel up Δp )) ⊢ ( Bp [ ∣ Δp ∣ ↦ up ]T ) 
 subtw : ∀ {Γp Ap Δp up Bp tp}(uw : Γp ⊢ up ∈ Ap)(tw : (Γp ▶p Ap ^^ Δp) ⊢ tp ∈ Bp )
-  → (Γp ^^ (subTel up Δp )) ⊢  (l-subt ∣ Δp ∣ up tp ) ∈ (l-subT ∣ Δp ∣ up Bp )
+  → (Γp ^^ (subTel up Δp )) ⊢  ( tp [ ∣ Δp ∣ ↦ up ]t ) ∈ ( Bp [ ∣ Δp ∣ ↦ up ]T )
 
 subVw : ∀ {Γp Ap Δp up Bp xp}(uw : Γp ⊢ up ∈ Ap)(xw : (Γp ▶p Ap ^^ Δp) ⊢ xp ∈v Bp)
-  → (Γp ^^ (subTel up Δp )) ⊢ (l-subV ∣ Δp ∣ up xp ) ∈ (l-subT ∣ Δp ∣ up Bp ) 
+  → (Γp ^^ (subTel up Δp )) ⊢ (xp [  ∣ Δp ∣ ↦ up ]V ) ∈ ( Bp [ ∣ Δp ∣ ↦ up ]T ) 
 
 subTelw {Γp} {Ap} {∙p} {up} uw (▶w Δw Aw) = Δw
 subTelw {Γp} {Ap} {Δp ▶p Bp} {up} uw (▶w Δw Bw) = ▶w (subTelw uw Δw) (subTw uw Bw)
@@ -800,14 +809,12 @@ subTw {Γp} {Ep} {Δp} {zp}  zw (ΠNIw Γw Bw) = ΠNIw (subTelw zw Γw) (λ a �
 subTw {Γp} {Ep} {Δp} {zp} {.(Elp _)} zw (Elw Γw aw) = Elw (subTelw zw Γw) (subtw zw aw)
 
 subtw {Γp} {Ep} {Δp} {zp} {tp} zw (vw xw) = subVw zw xw
-subtw {Γp} {Ep} {Δp} {zp} {.(l-subT 0 u Bp)} zw (appw Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂)
+subtw {Γp} {Ep} {Δp} {zp}  zw (appw Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂)
   rewrite l-subT-subT ∣ Δp ∣ zp u Bp
-  = appw {Γp ^^ subTel zp Δp} (subTelw zw Γw) {l-subt ∣ Δp ∣ zp ap₁}
-    (subtw zw tw) {l-subT (S ∣ Δp ∣) zp Bp}
+  = appw {Γp ^^ subTel zp Δp} (subTelw zw Γw) 
+    (subtw zw tw) 
     (subTw zw Bw)
-    {l-subt ∣ Δp ∣ zp t}
     (subtw zw tw₁)
-    {l-subt ∣ Δp ∣ zp u}
     (subtw zw tw₂)
 subtw {Γp} {Ep} {Δp} {zp}  zw (appNIw {.(Γp ▶p Ep ^^ Δp)} Γw {T} { Bp} Bw {t} tw₁ u) =
   appNIw (subTelw zw Γw) (λ a → subTw zw (Bw a)) (subtw zw tw₁) u
@@ -823,13 +830,13 @@ subVw {Γp} {Ap} {∙p} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw {Γp} Γw {Ap} Aw
 
 subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Cp)} {.0} uw (V0w  Γw  Aw)
  rewrite l-subT-wkT ∣ Δp ∣ up Cp
-  = vw (V0w {Γp ^^ subTel up Δp} (subTelw uw Γw) {l-subT ∣ Δp ∣ up Cp}
+  = vw (V0w {Γp ^^ subTel up Δp} (subTelw uw Γw) 
     (subTw uw Aw))
 
 subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw  Γw  Aw {Bp} Bw {xp} xw)
   rewrite l-subT-wkT ∣ Δp ∣ up Bp =
-  lifttw {Γp ^^ subTel up Δp} {l-subT ∣ Δp ∣ up Cp} (subTw uw Aw) ∙p
-    {l-subT ∣ Δp ∣ up Bp} {l-subV ∣ Δp ∣ up xp} ( subVw uw xw)
+  lifttw {Γp ^^ subTel up Δp}  (subTw uw Aw) ∙p
+      ( subVw uw xw)
 
 
 
@@ -892,7 +899,7 @@ Tyw[] {Γp} {.(Elp _)} (Elw Γw aw) {Δp} Δw {σp} σw = Elw Δw (Tmw[] aw Δw 
 
 -- Tmw[] {Γp}{xp}{Ap} tw {Δp}{σp}σw = {!!}
 Tmw[] {Γp} {.(V _)} {Ap} (vw xw) {Δp} Δw {σp} σw = Varw[] xw σw
-Tmw[] {Γp} {.(app t u)} {.(l-subT 0 u Bp)} (appw {Γp} Γw {ap} aw {Bp} Bw {t} tw {u} uw) {Δp} Δw {σp} σw
+Tmw[] {Γp} {.(app t u)}  (appw {Γp} Γw {ap} aw {Bp} Bw {t} tw {u} uw) {Δp} Δw {σp} σw
    rewrite sub[]T Bp u σp
    =
   appw {Δp} Δw {ap [ σp ]t} (Tmw[] aw Δw σw) {Bp [ keep σp ]T}
@@ -922,8 +929,8 @@ uniqueTypeV : {Γp : Conp} {Ap : Typ}{ x : _} (xw : Γp ⊢ x ∈v Ap )
 -- uniqueTypet {Γp} {Ap} {tp} tw {Ap'} tw' = {!tw!}
 uniqueTypet {Γp} {Ap} {.(V _)} (vw xw) {Ap'} (vw xw₁) = uniqueTypeV xw xw₁
 -- uniqueTypet {Γp₁} {.(l-subT 0 u Bp)} {.(app t u)} (appw Γp₁ Γw ap₁ tw Bp Bw t tw₁ u tw₂) {Ap'} tw' = {!!}
-uniqueTypet {Γp₁} {.(l-subT 0 u Bp)} {.(app t u)}
-  (appw {Γp₁} Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂) {.(l-subT 0 u Bp₁)} (appw Γw₁ {ap₂} tw' {Bp₁} Bw₁  tw''  tw''')
+uniqueTypet {Γp₁}  
+  (appw {Γp₁} Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂)  (appw Γw₁ {ap₂} tw' {Bp₁} Bw₁  tw''  tw''')
   with uniqueTypet tw₁ tw''
 ...  | refl = refl
 
@@ -991,15 +998,15 @@ Tyw= Γp .(Elp _) (Elw Γw aw) (Elw Γw' aw')
 
 Tmw= Γp Ap .(V _) (vw xw) (vw xw') = ap vw (Varw= _ _ _ xw xw')
 Tmw= Γp _ _ (appw  Γw {ap} aw {Bp} Bw {t} tw {u} uw) tw' =
-  helper (l-subT 0 u Bp) refl tw'
+  helper ( Bp [ 0 ↦ u ]T) refl tw'
   where
-    helper : (Cp : Typ) (e : l-subT 0 u Bp ≡ Cp) (ttw  : Γp ⊢ (app t u) ∈ Cp ) →
+    helper : (Cp : Typ) (e :  Bp [ 0 ↦ u ]T ≡ Cp) (ttw  : Γp ⊢ (app t u) ∈ Cp ) →
       appw {Γp} Γw {ap} aw {Bp} Bw {t} tw {u} uw == ttw 
         [ (λ D → _ ⊢ (app t u) ∈ D) ↓ e ]
    -- Aïe ! COmment je fais pour montrer que Bp = Bp', et ap = ap' ?
    -- remarquons que t a le type ΠΠp ( ap') Bp' et le type ΠΠ (Elp ap') Bp
     helper
-       .(l-subT 0 u Bp') e (appw Γw' {ap'} aw' {Bp'} Bw'  tw' uw')
+       _ e (appw Γw' {ap'} aw' {Bp'} Bw'  tw' uw')
       
        with uniqueTypet tw' tw | e 
     ...  | refl | refl with Conw= _ Γw Γw' | Tyw= _ _ Bw Bw' | Tmw= _ _ _ uw uw' | Tmw= _ _ _ aw aw' 
@@ -1251,7 +1258,7 @@ ass {σ}{δ}{ν} =
 -- Γ ⊢ z : E
 -- actally, only the size of contexts matters
 [<>]V-n : ∀ {Γ}{E}{Δ}{A} {x} (xw :  ((Γ ▶p E) ^^ Δ) ⊢ x ∈v A)  z →
-  (x [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]V) ≡ l-subV ∣ Δ ∣ z x
+  (x [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]V) ≡ x [ ∣ Δ ∣ ↦ z ]V
 
 -- [<>]V-n n {Γ} {A} {x} xw z = {!n!}
 
@@ -1272,9 +1279,9 @@ ass {σ}{δ}{ν} =
 
 
 [<>]t-n : ∀ {Γ}{E}{Δ}{A} {t} (tw :  ((Γ ▶p E) ^^ Δ) ⊢ t ∈ A)  z →
-  (t [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]t) ≡ l-subt ∣ Δ ∣ z t
+  (t [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]t) ≡  t [ ∣ Δ ∣ ↦ z ]t 
 [<>]t-n {Γ} {E} {Δ} {A} {.(V _)} (vw xw) z = [<>]V-n xw z
-[<>]t-n {Γ} {E} {Δ} {.(l-subT 0 u Bp)} {.(app t u)} (appw  Γw  aw {Bp} Bw {t} tw {u} uw) z =
+[<>]t-n {Γ} {E} {Δ} {_} {.(app t u)} (appw  Γw  aw {Bp} Bw {t} tw {u} uw) z =
   ap2 app
     ([<>]t-n tw z)
     ([<>]t-n uw z)
@@ -1283,7 +1290,7 @@ ass {σ}{δ}{ν} =
 [<>]t-n {Γ} {E} {Δ}  (ΠInfw Γw  Bw) z = ap ΠInf (funext (λ a → [<>]t-n (Bw a) z))
 
 [<>]T-n : ∀ {Γ}{E}{Δ}{A}  (Aw : ((Γ ▶p E) ^^ Δ) ⊢ A)  z →
-  (A [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]T) ≡ l-subT ∣ Δ ∣ z A
+  (A [ iter ∣ Δ ∣ keep <   ∣ Γ ∣ ⊢ z > ]T) ≡  A [ ∣ Δ ∣ ↦ z ]T 
 [<>]T-n {Γ} {E} {Δ} {.Up} (Uw Γw) z = refl
 [<>]T-n {Γ} {E} {Δ} {.(ΠΠp _ _)} (Πw Γw Aw Bw) z =
   ap2 ΠΠp ( ([<>]t-n Aw z)) ([<>]T-n {Δ = Δ ▶p _} Bw z)
@@ -1292,7 +1299,7 @@ ass {σ}{δ}{ν} =
 
 -- useful for RelationCwfInhabit : the app case
 [<>]T : ∀ {Γ E A} (Aw : (Γ ▶p E) ⊢ A) z →
-  (A [ < ∣ Γ ∣  ⊢ z > ]T) ≡ subT  z A
+  (A [ < ∣ Γ ∣  ⊢ z > ]T) ≡ A [ 0 ↦ z ]T
 [<>]T {Γ}{E}{ A} Aw z = [<>]T-n {Γ}{E} {∙p} Aw z
 
 -- strange that i did not use this before InitialMorphism (variable case):
@@ -1306,3 +1313,5 @@ wk=[wk]t : ∀{Γ}{A}{t}(tw : Γ ⊢  t ∈ A) → wkt t ≡ t [ wk ∣ Γ ∣ ]
 wk=[wk]t {Γ}{A}{t}tw = ! (wkt=wkS (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw)) 
   
 
+
+-- -}

@@ -327,7 +327,7 @@ module _   where
         B = (_ , Bw)
 
         B[] : S.Ty Γ
-        B[] = (l-subT 0 _ _ , sBw)
+        B[] = (_ , sBw)
 
         ΠAB : S.Ty Γ
         ΠAB = S.Π (_ , aw) B
