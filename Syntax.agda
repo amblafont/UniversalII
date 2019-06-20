@@ -305,7 +305,7 @@ lift+[↦]V (S n) p u (S x) rewrite lift-liftt 0 (n + p) (x [ n ↦ u ]V) | lift
 lift+[↦]V 0 p u 0 = refl
 lift+[↦]V (S n) p u 0 = refl
 
--- note : l-subT-wkT and lift-subT are particular cases of a more general one
+-- note : wk[↦]T and lift-subT are particular cases of a more general one
 -- note lift-subT and lift[+]T are not the same case because subT is l-subT 0
 
 
@@ -332,7 +332,7 @@ lift+[↦]T n p u (ΠNI B) rewrite funext (λ a → lift+[↦]T n p u (B a)) = r
 -- lift-subT : ∀ p u B → liftT p (B [ 0 ↦ u ]T ) ≡ (liftT (S p) B) [ 0 ↦ (liftt p u) ]T
 -- lift-subT = lift+[↦]T 0
 
--- auxiliary lemmas to prove l-subT-wkT / l-subt-wkt
+-- auxiliary lemmas to prove wk[↦]T / wk[↦]t
 lift[+]V : ∀ Δ u n x → (liftV n x) [ (S (n + Δ)) ↦ u ]V  ≡ liftt n (x [ (n + Δ) ↦ u ]V)
 
 lift[+]V Δ u 0 0 = refl
@@ -366,19 +366,19 @@ lift[+]T Δ u n (ΠNI B)
 -- A ,  Δ  ⊢  B
 -- donc A , Δ , E ⊢ wk B et ensuite Δ , E ⊢ (wk B)[u]
 -- mais on peut aussi faire l'inverse: Δ ⊢ B[u] et Δ , E ⊢ wk (B[u]), et ça doit donner la même chose
-l-subT-wkT : ∀ Δ u B →  (wkT B) [ (S Δ) ↦ u ]T ≡ wkT ( B [ Δ ↦ u ]T)
-l-subT-wkT Δ u = lift[+]T Δ u 0
+wk[↦]T : ∀ Δ u B →  (wkT B) [ (S Δ) ↦ u ]T ≡ wkT ( B [ Δ ↦ u ]T)
+wk[↦]T Δ u = lift[+]T Δ u 0
 
-l-subt-wkt : ∀ Δ u t →  (wkt t) [ (S Δ) ↦ u ]t ≡ wkt (t [ Δ ↦ u ]t)
-l-subt-wkt Δ u = lift[+]t Δ u 0
+wk[↦]t : ∀ Δ u t →  (wkt t) [ (S Δ) ↦ u ]t ≡ wkt (t [ Δ ↦ u ]t)
+wk[↦]t Δ u = lift[+]t Δ u 0
 
 [↦][↦]V : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]t  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]t) ]t
 
 [↦][↦]V 0 p z u 0 = refl
 [↦][↦]V (S n) p z u 0 = refl
 [↦][↦]V 0 p z u (S x) rewrite liftn[n]t 0 (x [ p ↦ z ]V) (u [ p ↦ z ]t) = refl
-[↦][↦]V (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (x [ n ↦ u ]V)
-  | l-subt-wkt n (u [ p ↦ z ]t) (x [ S (n + p) ↦ z ]V)
+[↦][↦]V (S n) p z u (S x) rewrite wk[↦]t (n + p) z (x [ n ↦ u ]V)
+  | wk[↦]t n (u [ p ↦ z ]t) (x [ S (n + p) ↦ z ]V)
   | [↦][↦]V n p z u x
   =
   refl
@@ -595,7 +595,7 @@ l-sub[]V (S n) 0 z σ = refl
 -- l-sub[]V (S n) (S (S x)) z σ = {!!}
 
 l-sub[]V (S n) (S x) z σ rewrite olookup-map (liftt 0) x err (iter (S n) keep σ)
-  | (l-subt-wkt n (z [ σ ]t) (x [ iter (S n) keep σ ]V))
+  | (wk[↦]t n (z [ σ ]t) (x [ iter (S n) keep σ ]V))
   | ! ( l-sub[]V n x z σ)
   =
   wk[,]t ( x [ n ↦ z ]V ) (V 0) (wkS (iter n keep σ))
