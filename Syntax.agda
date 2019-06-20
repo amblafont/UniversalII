@@ -48,7 +48,7 @@ List of somme lemmas :
 Interaction between weakening/telescope substitutions:
 
   lift-liftT : liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
-  subT-wkT : subT u (wkT A) ≡ A
+  liftn[n]T 0 : subT u (wkT A) ≡ A
   lift-subT : liftT p (subT u B) ≡ subT (liftt p u)(liftT (S p) B)
   l-subT-subT : l-subT p z (subT u B) ≡ subT (l-subt p z u)(l-subT (S p) z B)
 
@@ -228,37 +228,37 @@ Lemmas about commutations of lift
 
 -}
 -- auxiliary lemmas to proof lift-lift*
-n-lift-liftV : ∀ n p q → liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
+lift-liftV : ∀ n p q → liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
 
-n-lift-liftV 0 p 0 = refl
-n-lift-liftV (S n) 0 0 = refl
-n-lift-liftV (S n) (S p) 0 = refl
-n-lift-liftV 0 p (S x) = refl
-n-lift-liftV (S n) p (S x) rewrite n-lift-liftV n p x = refl
+lift-liftV 0 p 0 = refl
+lift-liftV (S n) 0 0 = refl
+lift-liftV (S n) (S p) 0 = refl
+lift-liftV 0 p (S x) = refl
+lift-liftV (S n) p (S x) rewrite lift-liftV n p x = refl
 
-n-lift-liftt : ∀ n p q → liftt (S (n + p)) (liftt n q) ≡ liftt n (liftt (n + p) q)
+lift-liftt : ∀ n p q → liftt (S (n + p)) (liftt n q) ≡ liftt n (liftt (n + p) q)
 
-n-lift-liftt n p (V x) rewrite n-lift-liftV n p x = refl
-n-lift-liftt n p (app t u) rewrite n-lift-liftt n p t | n-lift-liftt n p u = refl
-n-lift-liftt n p (appNI t u) rewrite n-lift-liftt n p t = refl
-n-lift-liftt n p (ΠInf B)  = ap ΠInf (funext (λ a → n-lift-liftt n p (B a) ))
-n-lift-liftt n p err = refl
+lift-liftt n p (V x) rewrite lift-liftV n p x = refl
+lift-liftt n p (app t u) rewrite lift-liftt n p t | lift-liftt n p u = refl
+lift-liftt n p (appNI t u) rewrite lift-liftt n p t = refl
+lift-liftt n p (ΠInf B)  = ap ΠInf (funext (λ a → lift-liftt n p (B a) ))
+lift-liftt n p err = refl
 -- lift-liftV p q = {!!}
 
-n-lift-liftT : ∀ n p q → liftT (S (n + p)) (liftT n q) ≡ liftT n (liftT (n + p) q)
+lift-liftT : ∀ n p q → liftT (S (n + p)) (liftT n q) ≡ liftT n (liftT (n + p) q)
 
-n-lift-liftT n p Up = refl
-n-lift-liftT n p (Elp x) rewrite n-lift-liftt n p x = refl
-n-lift-liftT n p (ΠΠp A B) rewrite n-lift-liftt n p A | n-lift-liftT (S n) p B = refl
-n-lift-liftT n p (ΠNI B) = ap ΠNI (funext (λ a → n-lift-liftT n p (B a) ))
--- rewrite n-lift-liftT n p A | n-lift-liftT (S n) p B = refl
+lift-liftT n p Up = refl
+lift-liftT n p (Elp x) rewrite lift-liftt n p x = refl
+lift-liftT n p (ΠΠp A B) rewrite lift-liftt n p A | lift-liftT (S n) p B = refl
+lift-liftT n p (ΠNI B) = ap ΠNI (funext (λ a → lift-liftT n p (B a) ))
+-- rewrite lift-liftT n p A | lift-liftT (S n) p B = refl
 
-lift-liftT : ∀ p q → liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
-lift-liftT = n-lift-liftT 0
+-- lift-liftT : ∀ p q → liftT (S p) (liftT 0 q) ≡ liftT 0 (liftT p q)
+-- lift-liftT = lift-liftT 0
 
 
-lift-liftt : ∀ p q → liftt (S p) (liftt 0 q) ≡ liftt 0 (liftt p q)
-lift-liftt = n-lift-liftt 0
+-- lift-liftt : ∀ p q → liftt (S p) (liftt 0 q) ≡ liftt 0 (liftt p q)
+-- lift-liftt = lift-liftt 0
 
 
 
@@ -266,98 +266,98 @@ lift-liftt = n-lift-liftt 0
 -- TODO: faire un schema
 -- TODO généraliser à l-subT
 
--- auxiliary lemmas to prove subT-wkT
-n-subV-wkV : ∀ n x z → (liftV n x) [ n ↦ z ]V  ≡ V x
+-- auxiliary lemmas to prove liftn[n]T 0
+liftn[n]V : ∀ n x z → (liftV n x) [ n ↦ z ]V  ≡ V x
 
-n-subV-wkV 0 0 z = refl
-n-subV-wkV (S n) 0 z = refl
-n-subV-wkV 0 (S x) z = refl
-n-subV-wkV (S n) (S x) z rewrite n-subV-wkV n x z = refl
+liftn[n]V 0 0 z = refl
+liftn[n]V (S n) 0 z = refl
+liftn[n]V 0 (S x) z = refl
+liftn[n]V (S n) (S x) z rewrite liftn[n]V n x z = refl
 
 
-n-subt-wkt : ∀ n t z → (liftt n t) [ n ↦ z ]t  ≡ t
+liftn[n]t : ∀ n t z → (liftt n t) [ n ↦ z ]t  ≡ t
 
-n-subt-wkt n (V x) z = n-subV-wkV n x z
-n-subt-wkt n (app t u) z rewrite n-subt-wkt n t z | n-subt-wkt n u z = refl
-n-subt-wkt n (appNI t u) z rewrite n-subt-wkt n t z = refl
-n-subt-wkt n (ΠInf B) z rewrite funext (λ a → n-subt-wkt n (B a) z) = refl
-n-subt-wkt n err z = refl
+liftn[n]t n (V x) z = liftn[n]V n x z
+liftn[n]t n (app t u) z rewrite liftn[n]t n t z | liftn[n]t n u z = refl
+liftn[n]t n (appNI t u) z rewrite liftn[n]t n t z = refl
+liftn[n]t n (ΠInf B) z rewrite funext (λ a → liftn[n]t n (B a) z) = refl
+liftn[n]t n err z = refl
 
-n-subT-wkT : ∀ n A z → (liftT n A) [ n ↦ z ]T  ≡ A
+liftn[n]T : ∀ n A z → (liftT n A) [ n ↦ z ]T  ≡ A
 
-n-subT-wkT n Up u = refl
-n-subT-wkT n (Elp x) z rewrite n-subt-wkt n x z = refl
-n-subT-wkT n (ΠΠp A B) u rewrite n-subt-wkt n A u | n-subT-wkT (S n) B u = refl
-n-subT-wkT n (ΠNI B) u rewrite  (funext (λ a → n-subT-wkT n (B a) u)) = refl
+liftn[n]T n Up u = refl
+liftn[n]T n (Elp x) z rewrite liftn[n]t n x z = refl
+liftn[n]T n (ΠΠp A B) u rewrite liftn[n]t n A u | liftn[n]T (S n) B u = refl
+liftn[n]T n (ΠNI B) u rewrite  (funext (λ a → liftn[n]T n (B a) u)) = refl
 
-subT-wkT : ∀ A u → (wkT A) [ 0 ↦ u ]T ≡ A
-subT-wkT = n-subT-wkT 0
+-- liftn[n]T 0 : ∀ A u → (wkT A) [ 0 ↦ u ]T ≡ A
+-- liftn[n]T 0 = liftn[n]T 0
 
-subt-wkt : ∀ t u → (wkt t) [ 0 ↦ u ]t ≡ t
-subt-wkt = n-subt-wkt 0
+-- liftn[n]t 0 : ∀ t u → (wkt t) [ 0 ↦ u ]t ≡ t
+-- liftn[n]t 0 = liftn[n]t 0
 
 
 -- auxiliary lemmas to prove lift-subT
-lift-l-subV : ∀ n p u x → liftt (n + p) (x [ n ↦ u ]V) ≡ (liftV (S (n + p)) x) [ n ↦ (liftt p u) ]V
+lift+[↦]V : ∀ n p u x → liftt (n + p) (x [ n ↦ u ]V) ≡ (liftV (S (n + p)) x) [ n ↦ (liftt p u) ]V
 
-lift-l-subV 0 p u (S x) = refl
-lift-l-subV (S n) p u (S x) rewrite lift-liftt (n + p) (x [ n ↦ u ]V) | lift-l-subV n p u x = refl
-lift-l-subV 0 p u 0 = refl
-lift-l-subV (S n) p u 0 = refl
+lift+[↦]V 0 p u (S x) = refl
+lift+[↦]V (S n) p u (S x) rewrite lift-liftt 0 (n + p) (x [ n ↦ u ]V) | lift+[↦]V n p u x = refl
+lift+[↦]V 0 p u 0 = refl
+lift+[↦]V (S n) p u 0 = refl
 
 -- note : l-subT-wkT and lift-subT are particular cases of a more general one
--- note lift-subT and l-subT-liftT are not the same case because subT is l-subT 0
+-- note lift-subT and lift[+]T are not the same case because subT is l-subT 0
 
 
-lift-l-subt : ∀ n p u t → liftt (n + p) (t [ n ↦ u ]t ) ≡ (liftt (S (n + p)) t) [ n ↦ (liftt p u) ]t
+lift+[↦]t : ∀ n p u t → liftt (n + p) (t [ n ↦ u ]t ) ≡ (liftt (S (n + p)) t) [ n ↦ (liftt p u) ]t
 
-lift-l-subt n p u (V x) = lift-l-subV n p u x
-lift-l-subt n p z (app t u)
-  rewrite lift-l-subt n p z t
-       |  lift-l-subt n p z u
+lift+[↦]t n p u (V x) = lift+[↦]V n p u x
+lift+[↦]t n p z (app t u)
+  rewrite lift+[↦]t n p z t
+       |  lift+[↦]t n p z u
    = refl
-lift-l-subt n p z (appNI t u) rewrite lift-l-subt n p z t = refl
-lift-l-subt n p z (ΠInf B) rewrite funext (λ a → lift-l-subt n p z (B a)) = refl
-lift-l-subt n p u err = refl
+lift+[↦]t n p z (appNI t u) rewrite lift+[↦]t n p z t = refl
+lift+[↦]t n p z (ΠInf B) rewrite funext (λ a → lift+[↦]t n p z (B a)) = refl
+lift+[↦]t n p u err = refl
 
 
-lift-l-subT : ∀ n p u B → liftT (n + p) (B [ n ↦ u ]T ) ≡ (liftT (S (n + p)) B) [ n ↦ (liftt p u) ]T
+lift+[↦]T : ∀ n p u B → liftT (n + p) (B [ n ↦ u ]T ) ≡ (liftT (S (n + p)) B) [ n ↦ (liftt p u) ]T
 
-lift-l-subT n p u Up = refl
-lift-l-subT n p u (Elp x) rewrite lift-l-subt n p u x = refl
-lift-l-subT n p u (ΠΠp A B) rewrite lift-l-subt n p u A | lift-l-subT (S n) p u B = refl
-lift-l-subT n p u (ΠNI B) rewrite funext (λ a → lift-l-subT n p u (B a)) = refl
+lift+[↦]T n p u Up = refl
+lift+[↦]T n p u (Elp x) rewrite lift+[↦]t n p u x = refl
+lift+[↦]T n p u (ΠΠp A B) rewrite lift+[↦]t n p u A | lift+[↦]T (S n) p u B = refl
+lift+[↦]T n p u (ΠNI B) rewrite funext (λ a → lift+[↦]T n p u (B a)) = refl
 
 
-lift-subT : ∀ p u B → liftT p (B [ 0 ↦ u ]T ) ≡ (liftT (S p) B) [ 0 ↦ (liftt p u) ]T
-lift-subT = lift-l-subT 0
+-- lift-subT : ∀ p u B → liftT p (B [ 0 ↦ u ]T ) ≡ (liftT (S p) B) [ 0 ↦ (liftt p u) ]T
+-- lift-subT = lift+[↦]T 0
 
 -- auxiliary lemmas to prove l-subT-wkT / l-subt-wkt
-l-subV-liftV : ∀ Δ u n x → (liftV n x) [ (S (n + Δ)) ↦ u ]V  ≡ liftt n (x [ (n + Δ) ↦ u ]V)
+lift[+]V : ∀ Δ u n x → (liftV n x) [ (S (n + Δ)) ↦ u ]V  ≡ liftt n (x [ (n + Δ) ↦ u ]V)
 
-l-subV-liftV Δ u 0 0 = refl
-l-subV-liftV Δ u (S n) 0 = refl
-l-subV-liftV Δ u 0 (S x) = refl
-l-subV-liftV Δ u (S n) (S x) rewrite l-subV-liftV Δ u n x = ! (lift-liftt n (x [ n + Δ ↦ u ]V))
+lift[+]V Δ u 0 0 = refl
+lift[+]V Δ u (S n) 0 = refl
+lift[+]V Δ u 0 (S x) = refl
+lift[+]V Δ u (S n) (S x) rewrite lift[+]V Δ u n x = ! (lift-liftt 0 n (x [ n + Δ ↦ u ]V))
 
-l-subt-liftt : ∀ Δ u n t → (liftt n t) [ (S (n + Δ)) ↦ u ]t ≡ liftt n (t [ (n + Δ) ↦ u ]t )
+lift[+]t : ∀ Δ u n t → (liftt n t) [ (S (n + Δ)) ↦ u ]t ≡ liftt n (t [ (n + Δ) ↦ u ]t )
 
-l-subt-liftt Δ u n (V x) = l-subV-liftV Δ u n x
-l-subt-liftt Δ u n (app a b) rewrite l-subt-liftt Δ u n a | l-subt-liftt Δ u n b = refl
-l-subt-liftt Δ u n (appNI a b) rewrite l-subt-liftt Δ u n a = refl
-l-subt-liftt Δ u n (ΠInf B) rewrite funext (λ a → l-subt-liftt Δ u n (B a)) = refl
-l-subt-liftt Δ u n err = refl
+lift[+]t Δ u n (V x) = lift[+]V Δ u n x
+lift[+]t Δ u n (app a b) rewrite lift[+]t Δ u n a | lift[+]t Δ u n b = refl
+lift[+]t Δ u n (appNI a b) rewrite lift[+]t Δ u n a = refl
+lift[+]t Δ u n (ΠInf B) rewrite funext (λ a → lift[+]t Δ u n (B a)) = refl
+lift[+]t Δ u n err = refl
 
-l-subT-liftT : ∀ Δ u n B → (liftT n B) [ (S (n + Δ)) ↦ u ]T ≡ liftT n ( B [ (n + Δ) ↦ u ]T)
+lift[+]T : ∀ Δ u n B → (liftT n B) [ (S (n + Δ)) ↦ u ]T ≡ liftT n ( B [ (n + Δ) ↦ u ]T)
 
-l-subT-liftT Δ u n Up = refl
-l-subT-liftT Δ u n (Elp x) rewrite l-subt-liftt Δ u n x = refl
-l-subT-liftT Δ u n (ΠΠp A B)
+lift[+]T Δ u n Up = refl
+lift[+]T Δ u n (Elp x) rewrite lift[+]t Δ u n x = refl
+lift[+]T Δ u n (ΠΠp A B)
   rewrite
-    l-subt-liftt Δ u n A | l-subT-liftT Δ u (S n) B
+    lift[+]t Δ u n A | lift[+]T Δ u (S n) B
   = refl
-l-subT-liftT Δ u n (ΠNI B)
-  rewrite funext (λ a →  l-subT-liftT Δ u n (B a))
+lift[+]T Δ u n (ΠNI B)
+  rewrite funext (λ a →  lift[+]T Δ u n (B a))
   = refl
 
 
@@ -367,44 +367,44 @@ l-subT-liftT Δ u n (ΠNI B)
 -- donc A , Δ , E ⊢ wk B et ensuite Δ , E ⊢ (wk B)[u]
 -- mais on peut aussi faire l'inverse: Δ ⊢ B[u] et Δ , E ⊢ wk (B[u]), et ça doit donner la même chose
 l-subT-wkT : ∀ Δ u B →  (wkT B) [ (S Δ) ↦ u ]T ≡ wkT ( B [ Δ ↦ u ]T)
-l-subT-wkT Δ u = l-subT-liftT Δ u 0
+l-subT-wkT Δ u = lift[+]T Δ u 0
 
 l-subt-wkt : ∀ Δ u t →  (wkt t) [ (S Δ) ↦ u ]t ≡ wkt (t [ Δ ↦ u ]t)
-l-subt-wkt Δ u = l-subt-liftt Δ u 0
+l-subt-wkt Δ u = lift[+]t Δ u 0
 
-l-subV-l-subV : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]t  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]t) ]t
+[↦][↦]V : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]t  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]t) ]t
 
-l-subV-l-subV 0 p z u 0 = refl
-l-subV-l-subV (S n) p z u 0 = refl
-l-subV-l-subV 0 p z u (S x) rewrite n-subt-wkt 0 (x [ p ↦ z ]V) (u [ p ↦ z ]t) = refl
-l-subV-l-subV (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (x [ n ↦ u ]V)
+[↦][↦]V 0 p z u 0 = refl
+[↦][↦]V (S n) p z u 0 = refl
+[↦][↦]V 0 p z u (S x) rewrite liftn[n]t 0 (x [ p ↦ z ]V) (u [ p ↦ z ]t) = refl
+[↦][↦]V (S n) p z u (S x) rewrite l-subt-wkt (n + p) z (x [ n ↦ u ]V)
   | l-subt-wkt n (u [ p ↦ z ]t) (x [ S (n + p) ↦ z ]V)
-  | l-subV-l-subV n p z u x
+  | [↦][↦]V n p z u x
   =
   refl
 
 
-l-subt-l-subt : ∀ n p z u t →  ( t [ n ↦ u ]t) [ (n + p) ↦ z ]t ≡ ( t [ (S (n + p)) ↦ z ]t) [ n ↦ ( u [ p ↦ z ]t) ]t
+[↦][↦]t : ∀ n p z u t →  ( t [ n ↦ u ]t) [ (n + p) ↦ z ]t ≡ ( t [ (S (n + p)) ↦ z ]t) [ n ↦ ( u [ p ↦ z ]t) ]t
 
-l-subt-l-subt n p z w (V x) = l-subV-l-subV n p z w x
-l-subt-l-subt n p z w (app t u)
-  rewrite l-subt-l-subt n p z w t | l-subt-l-subt n p z w u
+[↦][↦]t n p z w (V x) = [↦][↦]V n p z w x
+[↦][↦]t n p z w (app t u)
+  rewrite [↦][↦]t n p z w t | [↦][↦]t n p z w u
   = refl
-l-subt-l-subt n p z w (appNI t u) rewrite l-subt-l-subt n p z w t = refl
-l-subt-l-subt n p z w (ΠInf B) rewrite funext (λ a → l-subt-l-subt n p z w (B a)) = refl
+[↦][↦]t n p z w (appNI t u) rewrite [↦][↦]t n p z w t = refl
+[↦][↦]t n p z w (ΠInf B) rewrite funext (λ a → [↦][↦]t n p z w (B a)) = refl
 
-l-subt-l-subt n p z w err = refl
+[↦][↦]t n p z w err = refl
 
-l-subT-l-subT : ∀ n p z u B →  ( B [ n ↦ u ]T) [ (n + p) ↦ z ]T ≡ ( B [ (S (n + p)) ↦ z ]T) [ n ↦ ( u [ p ↦ z ]t) ]T
+[↦][↦]T : ∀ n p z u B →  ( B [ n ↦ u ]T) [ (n + p) ↦ z ]T ≡ ( B [ (S (n + p)) ↦ z ]T) [ n ↦ ( u [ p ↦ z ]t) ]T
 
-l-subT-l-subT n p z u Up = refl
-l-subT-l-subT n p z u (Elp x) rewrite l-subt-l-subt n p z u x = refl
-l-subT-l-subT n p z u (ΠΠp A B) rewrite l-subt-l-subt n p z u A | l-subT-l-subT (S n) p z u B = refl
-l-subT-l-subT n p z u (ΠNI B) rewrite funext (λ a → l-subT-l-subT n p z u (B a)) = refl
+[↦][↦]T n p z u Up = refl
+[↦][↦]T n p z u (Elp x) rewrite [↦][↦]t n p z u x = refl
+[↦][↦]T n p z u (ΠΠp A B) rewrite [↦][↦]t n p z u A | [↦][↦]T (S n) p z u B = refl
+[↦][↦]T n p z u (ΠNI B) rewrite funext (λ a → [↦][↦]T n p z u (B a)) = refl
 
 
-l-subT-subT : ∀ p z u B →  (B [ 0 ↦ u ]T) [ p ↦ z ]T ≡ ( B [ (S p) ↦ z ]T) [ 0 ↦ ( u [ p ↦ z ]t) ]T
-l-subT-subT = l-subT-l-subT 0
+-- l-subT-subT : ∀ p z u B →  (B [ 0 ↦ u ]T) [ p ↦ z ]T ≡ ( B [ (S p) ↦ z ]T) [ 0 ↦ ( u [ p ↦ z ]t) ]T
+-- l-subT-subT = [↦][↦]T 0
 
 
 
@@ -486,7 +486,7 @@ liftV=wkS (S n) l (S xp)
   rewrite olookup-map (liftt 0) xp err (iter n keep l)
   | olookup-map (liftt 0) xp err (iter n keep (wkS l))
   =
-  ap (liftt 0) (liftV=wkS n l xp) ◾ ! (lift-liftt n _)
+  ap (liftt 0) (liftV=wkS n l xp) ◾ ! (lift-liftt 0 n _)
 liftV=wkS (S n) σp 0 = refl
 -- wkV=wkS n l 0 = {!j!}
 
@@ -584,9 +584,9 @@ l-sub[]V : ∀ n x z σ
 l-sub[]V 0 0 z σ = refl
 -- l-sub[]V 0 (S x) z nil  = refl
 l-sub[]V 0 (S x) z σ rewrite olookup-map (liftt 0) x err σ
-  = ! (subt-wkt (x [ σ ]V) (z [ σ ]t))
+  = ! (liftn[n]t 0 (x [ σ ]V) (z [ σ ]t))
 
-  -- (subt-wkt (x [ σ ]V) (z [ σ ]t))
+  -- (liftn[n]t 0 (x [ σ ]V) (z [ σ ]t))
 l-sub[]V (S n) 0 z σ = refl
 -- l-sub[]V (S n) (S x) z σ = wk[,]t (l-subV n z x) (V 0) (wkS (iter n keep σ))
 -- wk[,]t (l-subV n z x) (V 0) (wkS (iter n keep σ))
@@ -755,7 +755,7 @@ liftTw Aw Δp (Elw Γw {ap = ap} aw) = Elw (wkTelw Aw Δp Γw) (lifttw Aw Δp aw
 
 lifttw Aw Δp (vw xw) = vw (liftVw Aw Δp xw)
 lifttw Aw Δp (appw  Γw {ap} aw {Bp} Bw {t} tw {u} uw) =
-   tr (λ x → _ ⊢ _ ∈ x) (! (lift-subT ∣ Δp ∣ u Bp ))
+       tr (λ x → _ ⊢ _ ∈ x) (! (lift+[↦]T 0 ∣ Δp ∣ u Bp ))
    (appw  (wkTelw Aw Δp Γw)  (lifttw Aw Δp aw)  (liftTw Aw (Δp ▶p Elp ap) Bw)
    {liftt ∣ Δp ∣ t} (lifttw Aw Δp tw) {liftt ∣ Δp ∣ u} (lifttw Aw Δp uw)
    )
@@ -773,10 +773,10 @@ liftVw Aw ∙p (VSw {Γp} Γw {Ap} Aw' {Bp} Bw {xp} xw) =
   VSw  (▶w Γw Aw') Aw  (liftTw Aw' ∙p Bw)  (VSw {Γp} Γw {Ap} Aw' {Bp} Bw {xp} xw)
 
 liftVw {Γp = Γp}{Ap = T} Tw (Δp ▶p Bp) (V0w  Γw  Aw) =
-  tr (λ x →  ((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp ⊢ 0 ∈v x) (! (lift-liftT ∣ Δp ∣ Bp))
+  tr (λ x →  ((Γp ▶p T) ^^ wkTel Δp) ▶p liftT ∣ Δp ∣ Bp ⊢ 0 ∈v x) (! (lift-liftT 0 ∣ Δp ∣ Bp))
      (V0w {(Γp ▶p T) ^^ wkTel Δp} (wkTelw Tw Δp Γw) {liftT ∣ Δp ∣ Bp} (liftTw Tw Δp Aw))
 liftVw {Γp = Γp}{Ap = T}Tw (Δp ▶p Bp) (VSw  Γw  Bw {Ap} Aw {xp} xw) =
-  tr (λ x →  _ ⊢ _ ∈v x)  (! (lift-liftT ∣ Δp ∣ Ap))
+  tr (λ x →  _ ⊢ _ ∈v x)  (! (lift-liftT 0 ∣ Δp ∣ Ap))
    (VSw {(Γp ▶p T) ^^ wkTel Δp} (wkTelw Tw Δp Γw) {liftT ∣ Δp ∣ Bp} (liftTw Tw Δp Bw)
     (liftTw Tw Δp Aw)  (liftVw Tw Δp xw))
 

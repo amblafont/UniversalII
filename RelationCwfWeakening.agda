@@ -86,7 +86,7 @@ liftT~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(Elp _)} {Elw Γw aw} (_ , a
 -- liftt~ {Γ}{Γw}Γm{E}{Ew}Em{Δ}{Δw}Δm{z}{T}{zw}{Tm}zm = {!!}
 liftt~ {Γ} {Γw} Γm {E} {Ew} Em {Δ} {Δw} Δm {.(V _)} {T} {vw xw} {Tm} zm = liftV~ Γm Em Δm zm
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {_}{_}  {appw Γw aw {Bp} Bw tw {u} uw} {_} (_ , am , Bm , tm , um , refl , refl)
-  rewrite (lift-subT ∣ Δ ∣ u Bp)
+  rewrite (lift+[↦]T 0 ∣ Δ ∣ u Bp)
     |  prop-has-all-paths Δw Γw
  =
   (_ , liftt~ Γm Em Δm {tw = aw} am) ,
@@ -183,7 +183,7 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , (Δm , Am , re
   {Am = Cm}
   (zm , Γm' , Am' , eC , eT , ez)
 -- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} Δm {.(liftT 0 C)} Cm {.0} {V0w .(Γ ^^ Δ) Γw' .C Aw} (zm , Γm' , Am' , eC , eT , ez)
-  rewrite (lift-liftT ∣ Δ ∣ C)
+  rewrite (lift-liftT 0 ∣ Δ ∣ C)
   | prop-has-all-paths Δw Γw
   | prop-path (ConP Γw) Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
 
@@ -223,7 +223,7 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , ref
 
   | uip eC refl
   | eE | ez
-  | (n-lift-liftT 0 ∣ Δ ∣ Bp)
+  | (lift-liftT 0 ∣ Δ ∣ Bp)
   =
   -- needed : weakening of telescopes
     (((₁ Γm M.▶ ₁ Em) M.^^ (M.wkTel (₁ Em) (₁ Δm))) ,
