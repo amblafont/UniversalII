@@ -1,20 +1,9 @@
 
 
 
-open import Level 
--- open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to transport )
-
---   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-
-open import Hott renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ ) 
-  hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-
--- open import HoTT using (ap)
-
+open import Level
+open import Hott renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ ) hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 open import monlib hiding (tr2)
--- open import Lib2 hiding (id; _∘_ )
-
-
 
 module ModelRecord   where
 
@@ -34,21 +23,6 @@ record nextCwF {i : Level}{j : Level}(b : baseCwF {i}{j}) : Set (Level.suc (lmax
  infixl 8 _[_]t
  infixl 4 _▶_
  field
-
-{- 
-record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
- infixl 7 _[_]T
- infixl 5 _,s_
- infix  6 _∘_
- infixl 8 _[_]t
- infixl 4 _▶_
- field
-
-  Con : Set i
-  Ty  : Con → Set i
-  Tm  : ∀ Γ → Ty Γ → Set j
-  Sub : Con → Con → Set j
-  -}
 
   ∙     : Con
   _▶_   : (Γ : Con) → Ty Γ → Con
@@ -77,13 +51,11 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
   ass   : {Γ Δ : Con} {Σ : Con} {Ω : Con} {σ : Sub Σ Ω} {δ : Sub Δ Σ}
     {ν : Sub Γ Δ} → (σ ∘ δ) ∘ ν ≡ σ ∘ (δ ∘ ν)
 
-   
 
-
-{- 
+{-
   π₁∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
     {Y}{δ : Sub Y Γ} →
-    π₁ (σ ∘ δ) ≡ (π₁ σ ∘ δ )  
+    π₁ (σ ∘ δ) ≡ (π₁ σ ∘ δ )
 
   π₂∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
     {Y}{δ : Sub Y Γ} →
@@ -166,7 +138,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
      ! πη ◾ ,s= π₁,∘
        (≅↓ (↓≅ π₂,∘
          ∘≅ ↓≅ et))
- {- 
+ {-
 
  ,∘ {Γ}{Δ}{Σ}{δ}{σ}{A}{t}{ts}et =
    ! πη ◾
@@ -180,7 +152,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  -}
  π₁∘ : ∀ {Γ Δ} {A : Ty Δ}{σ : Sub Γ (Δ ▶ A)}
     {Y}{δ : Sub Y Γ} →
-    π₁ (σ ∘ δ) ≡ (π₁ σ ∘ δ )  
+    π₁ (σ ∘ δ) ≡ (π₁ σ ∘ δ )
  π₁∘ {Γ}{Δ}{A}{σ}{Y}{δ} =
    -- transport (λ s → π₁ (s ∘ δ) ≡ π₁ s ∘ δ) πη (π₁,∘ ◾ ap (λ s → s ∘ δ) (! π₁β))
    ap (λ s → π₁ (s ∘ δ)) (! πη) ◾ π₁,∘
@@ -211,24 +183,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  open nextCwF nextcwf public
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  wk∘, : ∀ {Γ Δ} {σ : Sub Γ Δ}{A : Ty Δ} {t : Tm Γ (A [ σ ]T)} →
    wk ∘ (σ ,s t) ≡ σ
  wk∘, {Γ = Γ}{σ = σ} {A = A}{t = t} =
@@ -250,7 +204,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  wk[]T = [][]T ◾ ap (_ [_]T) wk∘,
 
 
-
  vz[,] : ∀ {Γ Δ} (σ : Sub Γ Δ)(A : Ty Δ) (t : Tm Γ (A [ σ ]T)) →
    (vz [ σ ,s t ]t) == t
    [ Tm Γ ↓ wk[]T ]
@@ -268,8 +221,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
            ≅⟨ ↓≅ π₂β ⟩
        t
        ≅∎)
-
-
 
 
  <>∘ : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{Y}{σ : Sub Y (Γ)} →
@@ -307,11 +258,11 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  vz<> {Γ}{A}{t} = ≅↓ helper
    where
    -- extensive use of UIP (don't know whether it is really necessary)
-   helper : (vz [ < t > ]t) ≅ t 
+   helper : (vz [ < t > ]t) ≅ t
    helper =
      ↓≅ (vz[,] id A (transport! (Tm _) [id]T t))
      ∘≅
-     ↓≅ (from-transp! _ [id]T refl) 
+     ↓≅ (from-transp! _ [id]T refl)
 
 
  [id]t : {Γ : Con}{A : Ty Γ}{t : Tm Γ A} →
@@ -372,7 +323,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
          =∎
        where
          esub : (σ ∘ wk) ∘ (δ ,s t) ≡ σ ∘ δ
-         esub =  
+         esub =
                  (((σ ∘ wk) ∘ (δ ,s t))
 
                    =⟨ ass ⟩
@@ -383,7 +334,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
                    =∎)
 
          et : vz[] ≅ transport (Tm Y) [][]T t
-         et = 
+         et =
            vz[]
 
              ≅⟨ (↓≅ vz[]e) !≅ ⟩
@@ -401,17 +352,12 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
 
  ^∘<> :  ∀{Γ}{A : Ty Γ} {Y}{σ : Sub Y Γ } →{t : Tm Y (A  [ σ ]T)}  →
    -- ((σ ^ A) ∘ < t [ σ ]t >) ≡ σ ,s (t [ σ ]t)
-   ((σ ^ A) ∘ < t  > ) ≡ σ ,s t 
+   ((σ ^ A) ∘ < t  > ) ≡ σ ,s t
 
  ^∘<> = ^∘, ◾ ,s= idr (≅↓
    (((↓≅ (from-transp _ [][]T refl)) !≅)
    ∘≅ (↓≅ (from-transp! _ [id]T refl))
    ))
-
-
-
-
-
 
 
  [<>][]T : ∀ {Γ}{A : Ty Γ}{u : Tm Γ A}{B : Ty (Γ ▶ A)}{Y}{σ : Sub Y (Γ)} →
@@ -447,7 +393,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  wk[]t {Γ}{Δ}{A}{σ}{t}{B}{b} =
    ≅↓ helper
    where
-     helper : 
+     helper :
        (b [ wk ]t [ σ ,s t ]t) ≅ b [ σ ]t
      helper =
        (b [ wk ]t [ σ ,s t ]t)
@@ -459,163 +405,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
        (b [ σ ]t)
        ≅∎
 
-    {- 
-    _,s_ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Δ} (_∘_ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ}
-    {Δ} σ (π₁ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} {_[_]T {Γ} {Δ} A σ} (id {Γ ▶
-    _[_]T {Γ} {Δ} A σ}))) {A} (coe {_} {Tm (Γ ▶ _[_]T {Γ} {Δ} A σ)
-    (_[_]T {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} (_[_]T {Γ} {Δ} A σ) (π₁ {Γ ▶
-    _[_]T {Γ} {Δ} A σ} {Γ} {_[_]T {Γ} {Δ} A σ} (id {Γ ▶ _[_]T {Γ} {Δ} A
-    σ})))} {Tm (Γ ▶ _[_]T {Γ} {Δ} A σ) (_[_]T {Γ ▶ _[_]T {Γ} {Δ} A σ}
-    {Δ} A (_∘_ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} {Δ} σ (π₁ {Γ ▶ _[_]T {Γ} {Δ}
-    A σ} {Γ} {_[_]T {Γ} {Δ} A σ} (id {Γ ▶ _[_]T {Γ} {Δ} A σ}))))} (ap
-    {_} {suc _} {Ty (Γ ▶ _[_]T {Γ} {Δ} A σ)} {_} (Tm (Γ ▶ _[_]T
-    {Γ} {Δ} A σ)) {_[_]T {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} (_[_]T {Γ} {Δ} A σ)
-    (π₁ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} {_[_]T {Γ} {Δ} A σ} (id {Γ ▶ _[_]T
-    {Γ} {Δ} A σ}))} {_[_]T {Γ ▶ _[_]T {Γ} {Δ} A σ} {Δ} A (_∘_ {Γ ▶ _[_]T
-    {Γ} {Δ} A σ} {Γ} {Δ} σ (π₁ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} {_[_]T {Γ}
-    {Δ} A σ} (id {Γ ▶ _[_]T {Γ} {Δ} A σ})))} ([][]T {Γ ▶ _[_]T {Γ} {Δ} A
-    σ} {Γ} {Δ} {A} {π₁ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ} {_[_]T {Γ} {Δ} A σ}
-    (id {Γ ▶ _[_]T {Γ} {Δ} A σ})} {σ})) (π₂ {Γ ▶ _[_]T {Γ} {Δ} A σ} {Γ}
-    {_[_]T {Γ} {Δ} A σ} (id {Γ ▶ _[_]T {Γ} {Δ} A σ})))
-    -}
-
-
-
-
-{- 
-
-
-  -- Inductive function
-  --------------------------------------------------------------------------------
-  postulate
-    Π : ∀{Γ}(a : Tm Γ U)(B : Ty (Γ ▶ El a)) → Ty Γ
-    Π[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)} →
-      ((Π a B) [ σ ]T) ↦ Π (a [ σ ]t) (B [ σ ^ El a ]T)
-
-  {-# REWRITE Π[]  #-}
-
-  {- 
-    Π[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)} →
-      _≡_ {_} {Ty Γ} (_[_]T {Γ} {Δ} (Π {Δ} a B) σ) (Π {Γ} (transport {_}
-      {_} {Ty Γ} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ}
-      {σ}) (_[_]t {Γ} {Δ} {U {Δ}} a σ)) (transport {_} {_} {Ty Γ} (λ x → Ty
-      (Γ ▶ x)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (transport {_} {_} {Ty Γ}
-      (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}) (_[_]t {Γ}
-      {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
-      (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))))
-      -}
-
-  postulate
-    app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
-
-  -- TODO: voir si on peut le demander en définitional: est ce la cas dans la syntaxe ?
-    app[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)}
-      {t : Tm Δ (Π {Δ} a B)} →
-      app t [ σ ^ El a ]t ≡ app (t [ σ ]t)
-      {- 
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)}
-      {t : Tm Δ (Π {Δ} a B)} → _≡_ {_} {Tm (Γ ▶ El {Γ} (coe {_} {Tm Γ
-      (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-      -- Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-      Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl)
-      (_[_]t {Γ} {Δ} {U {Δ}} a σ))) (transport {_} {_} {Ty Γ} (λ z → Ty (Γ ▶
-      z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ}
-      {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm
-      Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl) (_[_]t {Γ} {Δ}
-      -- Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ}
-      {U {Δ}} a σ))} refl (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-      -- {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-      {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} (tr2 {_}
-      {_} {_} {Ty Γ} {λ z → Ty (Γ ▶ z)} (λ A → Tm (Γ ▶ A)) {_[_]T {Γ}
-      {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ} {Δ} (U {Δ}) σ)}
-      {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm Γ) {_[_]T {Γ}
-      {Δ} (U {Δ}) σ} {U {Γ}} refl) (_[_]t {Γ} {Δ} {U {Δ}} a
-      -- {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ} {U {Δ}} a
-      σ))} refl {_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El {Δ} a) σ} {Δ
-      -- σ))} (El[] {Γ} {Δ} {σ} {a}) {_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El {Δ} a) σ} {Δ
-      ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))} {transport {_} {_} {Ty Γ} (λ
-      z → Ty (Γ ▶ z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ
-      (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-      Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl)
-      -- Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-      (_[_]t {Γ} {Δ} {U {Δ}} a σ))} refl (_[_]T {Γ ▶ _[_]T
-      -- (_[_]t {Γ} {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T
-      {Γ} {Δ} (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))}
-      refl (_[_]t {Γ ▶ _[_]T {Γ} {Δ} (El {Δ} a) σ} {Δ ▶ El {Δ} a} {B} (app
-      {Δ} {a} {B} t) (_^_ {Γ} {Δ} σ (El {Δ} a)))) (app {Γ} {coe {_} {Tm Γ
-      (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-      Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl)
-      -- Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-      (_[_]t {Γ} {Δ} {U {Δ}} a σ)} {transport {_} {_} {Ty Γ} (λ z → Ty (Γ ▶
-      z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ}
-      {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm
-      Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl) (_[_]t {Γ} {Δ}
-      -- Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ}
-      {U {Δ}} a σ))} refl (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-      -- {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-      {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))} (transport {_}
-      {_} {Ty Γ} (Tm Γ) {_[_]T {Γ} {Δ} (Π {Δ} a B) σ} {Π {Γ} (coe {_}
-      {Tm Γ (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _}
-      {Ty Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl)
-      -- {Ty Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-      (_[_]t {Γ} {Δ} {U {Δ}} a σ)) (transport {_} {_} {Ty Γ} (λ z → Ty
-      (Γ ▶ z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T
-      {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_}
-      (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} refl) (_[_]t {Γ}
-      -- (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ}
-      {Δ} {U {Δ}} a σ))} refl (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
-      -- {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
-      (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} refl
-      -- (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} (Π[] {Γ} {Δ} {σ} {a} {B})
-      (_[_]t {Γ} {Δ} {Π {Δ} a B} t σ)))
-      -}
-
-
-  _$_ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
-  _$_ {Γ} {a} {B} t u = app t [ < u > ]t
-
-  -- nécessaire pour le weakening (application)
-  $[] : 
-    ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
-    → ((t $ u) [ σ ]t) == (t [ σ ]t) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
-  -- utilise [][]t
-  $[] {Y}{Γ}{σ}{a}{B}{t}{u} =
-    ≅↓
-      (
-        ((t $ u) [ σ ]t)
-
-            ≅⟨ ↓≅ [][]t ⟩
-        (app t [ < u > ∘ σ ]t)
-
-            -- ≅⟨ ↓≅ (HoTT.apd (app t [_]t) <>∘)  ⟩
-            ≅⟨ ↓≅ (HoTT.apd (app t [_]t) (<>∘ ◾ (! ^∘<>)))  ⟩
-        (app t [ (σ ^ El a) ∘ < u [ σ ]t > ]t)
-
-            ≅⟨ (↓≅ [][]t) !≅  ⟩
-        (app t [ (σ ^ El a) ]t [ < u [ σ ]t > ]t)
-
-            ≅⟨ =≅ (ap (_[  < u [ σ ]t >  ]t) app[]) ⟩
-        (app (t [ σ ]t) [ < u [ σ ]t > ]t )
-        ≅∎
-      )
-  {- 
-    _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
-    (id {z}) {El {z} z₁} (coe {_} {Tm z (El {z} z₁)} {Tm z (_[_]T {z}
-    {z} (El {z} z₁) (id {z}))} (ap {_} {suc _} {Ty z} {_} (Tm
-    z) {El {z} z₁} {_[_]T {z} {z} (El {z} z₁) (id {z})}
-    e)
-    u))
-    -}
-    -- where
-    --   e : El a ≡ El a [ id ]T
-    --   e =
-      -- _⁻¹ {_} {Ty z} {_[_]T {z} {z} (El {z} z₁) (id {z})} {El {z} z₁} ([id]T {z} {El {z} z₁})
-
-
-  -}
 
 
   {- ------------
@@ -632,8 +421,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
 
   ------------   -}
 module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
-
-
   open CwF M
 
   data isTel  (Γ : Con) : (Δ : Con) → Set i where
@@ -644,7 +431,7 @@ module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
   Tel Γ = Σ _ (isTel Γ)
 
   ∙t : (Γ : Con) → Tel Γ
-  ∙t Γ = _ , is∙t 
+  ∙t Γ = _ , is∙t
 
   _^^_ : (Γ : Con) (Δ : Tel Γ) → Con
   _^^_ Γ Δ = ₁ Δ
@@ -683,14 +470,12 @@ module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
     {E : Ty Γ} →
       wk ∘ longWk {E = E} (Δ ▶t A) ≡ longWk Δ ∘ wk
 
-  --   
+  --
   wk∘longWk {Γ}{Δ}A {E} =
     (wk ∘ (longWk Δ ^ A))
     =⟨  wk∘^ ⟩
       (longWk Δ ∘  wk)
     =∎
-
-
 
 
   -- for this one, I checked the need of the explicit arguments
@@ -767,7 +552,7 @@ module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
 
 record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (lmax j k)))) where
     open CwF M
-    field 
+    field
       U    : ∀{Γ} → Ty Γ
       U[]  : {Γ Δ : Con} {σ : Sub Γ Δ} → _≡_ {i} {Ty Γ} (_[_]T {Γ} {Δ} (U {Δ}) σ) (U {Γ})
 
@@ -793,54 +578,9 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
         (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}) (_[_]t {Γ}
         {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
         (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))))
-      -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
-      {- 
-      app[] :
-        {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)}
-        {t : Tm Δ (Π {Δ} a B)} → _≡_ {_} {Tm (Γ ▶ El {Γ} (coe {_} {Tm Γ
-        (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-        Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-        (_[_]t {Γ} {Δ} {U {Δ}} a σ))) (transport {_} {_} {Ty Γ} (λ z → Ty (Γ ▶
-        z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ}
-        {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm
-        Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ}
-        {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-        {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} (monlib.tr2 {_}
-        {_} {_} {Ty Γ} {λ z → Ty (Γ ▶ z)} (λ A → Tm (Γ ▶ A)) {_[_]T {Γ}
-        {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ} {Δ} (U {Δ}) σ)}
-        {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm Γ) {_[_]T {Γ}
-        {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ} {U {Δ}} a
-        σ))} (El[] {Γ} {Δ} {σ} {a}) {_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El {Δ} a) σ} {Δ
-        ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))} {transport {_} {_} {Ty Γ} (λ
-        z → Ty (Γ ▶ z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ
-        (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-        Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-        (_[_]t {Γ} {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T
-        {Γ} {Δ} (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))}
-        refl (_[_]t {Γ ▶ _[_]T {Γ} {Δ} (El {Δ} a) σ} {Δ ▶ El {Δ} a} {B} (app
-        {Δ} {a} {B} t) (_^_ {Γ} {Δ} σ (El {Δ} a)))) (app {Γ} {coe {_} {Tm Γ
-        (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty
-        Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ}))
-        (_[_]t {Γ} {Δ} {U {Δ}} a σ)} {transport {_} {_} {Ty Γ} (λ z → Ty (Γ ▶
-        z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T {Γ}
-        {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_} (Tm
-        Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ} {Δ}
-        {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ} (El
-        {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a)))} (transport {_}
-        {_} {Ty Γ} (Tm Γ) {_[_]T {Γ} {Δ} (Π {Δ} a B) σ} {Π {Γ} (coe {_}
-        {Tm Γ (_[_]T {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _}
-        {Ty Γ} {_} (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ}
-        {σ})) (_[_]t {Γ} {Δ} {U {Δ}} a σ)) (transport {_} {_} {Ty Γ} (λ z → Ty
-        (Γ ▶ z)) {_[_]T {Γ} {Δ} (El {Δ} a) σ} {El {Γ} (coe {_} {Tm Γ (_[_]T
-        {Γ} {Δ} (U {Δ}) σ)} {Tm Γ (U {Γ})} (ap {_} {suc _} {Ty Γ} {_}
-        (Tm Γ) {_[_]T {Γ} {Δ} (U {Δ}) σ} {U {Γ}} (U[] {Γ} {Δ} {σ})) (_[_]t {Γ}
-        {Δ} {U {Δ}} a σ))} (El[] {Γ} {Δ} {σ} {a}) (_[_]T {Γ ▶ _[_]T {Γ} {Δ}
-        (El {Δ} a) σ} {Δ ▶ El {Δ} a} B (_^_ {Γ} {Δ} σ (El {Δ} a))))} (Π[] {Γ}
-        {Δ} {σ} {a} {B}) (_[_]t {Γ} {Δ} {Π {Δ} a B} t σ)))
-        -}
 
       _$_ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
-      $[] : 
+      $[] :
         ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
         → ((t $ u) [ σ ]t) == (transport (Tm _) Π[] (t [ σ ]t)) $ transport (Tm _) El[] (u [ σ ]t)
         -- ∙' rather than ◾ so that it computes when the second is refl
@@ -874,54 +614,7 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
              transport (Tm Y) (El[] ◾ ap El (to-transp ΠInf[])) (t [ σ ]t)
              $Inf u [ Tm _ ↓ El[] ]
 
-     
 
-
-
-
-        -- → ((t $ u) [ σ ]t) == (transport (Tm _) ? (t [ σ ]t)) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
-      -- utilise [][]t
-      {-
-    _$_ {z} {z₁} {z₂} t u =
-      _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
-      (id {z}) {El {z} z₁}
-      (transport! (Tm z) [id]T u)
-      )
-      -}
-
-{-
-
-  _^El_ :
-    {Γ Δ : Con}(σ : Sub Γ Δ)(a : Tm Δ U)
-    → Sub (Γ ▶ El (transport (Tm Γ) (U[] ) (a [ σ ]t))) (Δ ▶ El a)
-  _^El_ {Γ}{Δ} σ a = σ ∘ wk ,s transport (Tm (Γ ▶ El (transport (Tm Γ) (U[] {σ = σ}) (a [ σ ]t))))
-                                    (((_[ wk ]T) & (El[] {Γ}{Δ}{σ}{a} ⁻¹)) ◾
-                                    ([][]T {A = El a}{wk}{σ})) vz
-
-  infixl 5 _^El_
-
-  _^U : ∀ {Γ Δ}(σ : Sub Γ Δ) → Sub (Γ ▶ U) (Δ ▶ U)
-  _^U {Γ} {Δ} σ =
-    _,s_ {Γ ▶ U {Γ}} {Δ} (_∘_ {Γ ▶ U {Γ}} {Γ} {Δ} σ (π₁ {Γ ▶ U {Γ}} {Γ}
-    {U {Γ}} (id {Γ ▶ U {Γ}}))) {U {Δ}} (coe {_} {Tm (Γ ▶ U {Γ})
-    (_[_]T {Γ ▶ U {Γ}} {Γ} (U {Γ}) (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶
-    U {Γ}})))} {Tm (Γ ▶ U {Γ}) (_[_]T {Γ ▶ U {Γ}} {Δ} (U {Δ}) (_∘_ {Γ ▶
-    U {Γ}} {Γ} {Δ} σ (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U {Γ}}))))}
-    (ap {_} {suc _} {Ty (Γ ▶ U {Γ})} {_} (Tm (Γ ▶ U {Γ}))
-    {_[_]T {Γ ▶ U {Γ}} {Γ} (U {Γ}) (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶
-    U {Γ}}))} {_[_]T {Γ ▶ U {Γ}} {Δ} (U {Δ}) (_∘_ {Γ ▶ U {Γ}} {Γ} {Δ} σ
-    (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U {Γ}})))} (_◾_ {_} {Ty (Γ
-    ▶ U {Γ})} {_[_]T {Γ ▶ U {Γ}} {Γ} (U {Γ}) (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}}
-    (id {Γ ▶ U {Γ}}))} {U {Γ ▶ U {Γ}}} {_[_]T {Γ ▶ U {Γ}} {Δ} (U {Δ})
-    (_∘_ {Γ ▶ U {Γ}} {Γ} {Δ} σ (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U
-    {Γ}})))} (U[] {Γ ▶ U {Γ}} {Γ} {π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U
-    {Γ}})}) (_⁻¹ {_} {Ty (Γ ▶ U {Γ})} {_[_]T {Γ ▶ U {Γ}} {Δ} (U {Δ})
-    (_∘_ {Γ ▶ U {Γ}} {Γ} {Δ} σ (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U
-    {Γ}})))} {U {Γ ▶ U {Γ}}} (U[] {Γ ▶ U {Γ}} {Δ} {_∘_ {Γ ▶ U {Γ}} {Γ}
-    {Δ} σ (π₁ {Γ ▶ U {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U {Γ}}))})))) (π₂ {Γ ▶ U
-    {Γ}} {Γ} {U {Γ}} (id {Γ ▶ U {Γ}})))
-
-    -}
 
 module CwFUnivΠ {i}{j}{k}{c : CwF {i}{j}}(cov : UnivΠ {k = k} c) where
   open CwF c public

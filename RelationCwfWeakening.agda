@@ -1,7 +1,7 @@
 {-# OPTIONS  --rewriting  #-}
 
 -- proof #~el
-open import Level 
+open import Level
 open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
 open import Syntax as S
@@ -13,27 +13,27 @@ import ModelCwf {k = k} as M
 open import RelationCwf
 
 
--- σar : (Sub~ (keepw Γw σw (Elw Δw aw)) (₁ σm M.^ M.El (₁ am))) 
+-- σar : (Sub~ (keepw Γw σw (Elw Δw aw)) (₁ σm M.^ M.El (₁ am)))
 
 
-wkTel~ : 
+wkTel~ :
   ∀ {Γ}{Γw :  Γ ⊢}(Γm : ∃ (Con~ Γw) )
     {E}{Ew : Γ ⊢ E}(Em : ∃ (Ty~ Ew {₁ Γm}))
-    {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm})) 
+    {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm}))
     →
     Tel~ {Γp = Γ ▶p E}{Δp = wkTel Δ}(wkTelw {Γp = Γ} Ew Δ Δw) (M.wkTel (₁ Em) (₁ Δm))
 
 liftT~ :
     ∀ {Γ}{Γw :  Γ ⊢}(Γm : ∃ (Con~ Γw) )
     {E}{Ew : Γ ⊢ E}(Em : ∃ (Ty~ Ew {₁ Γm}))
-    {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm})) 
+    {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm}))
     {A}{Aw : (Γ ^^ Δ) ⊢ A}(Am : ∃ (Ty~ Aw {(₁ Γm) M.^^ (₁ Δm)})) →
     Ty~ (liftTw Ew Δ Aw) (M.liftT (₁ Δm) (₁ Em) (₁ Am))
 
 liftt~ :
   ∀ {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw) )
   {E}{Ew : Γ ⊢ E}(Em : ∃ (Ty~ Ew {₁ Γm}))
-  {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm})) 
+  {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm}))
   {t}{A}{tw : (Γ ^^ Δ) ⊢ t ∈ A}
   {Am : M.Ty  ((₁ Γm) M.^^ (₁ Δm))}(tm : ∃ (Tm~ tw {₁ Γm M.^^ (₁ Δm)}{Am} )) →
   Tm~ (lifttw Ew Δ tw) (M.liftt (₁ Δm) (₁ Em) (₁ tm))
@@ -42,7 +42,7 @@ liftV~ :
   -- j'ai besoin que Γm soit relié pour le cas 0 des variables
   ∀ {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw) )
   {E}{Ew : Γ ⊢ E}(Em : ∃ (Ty~ Ew {₁ Γm}))
-  {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm})) 
+  {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Tel~ {Γp = Γ} Δw {₁ Γm}))
   -- j'ai besoin que Am soit relié pour le cas 0 des variables
   -- ah bah non en fait !!TDODO
 
@@ -104,18 +104,18 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {_}{_}  {appw Γw aw {Bp} Bw t
        ) ≡
       ((M.liftT (₁ Δm M.▶t M.El (₁ am)) (₁ Em) (₁ Bm) ) M.[ M.< M.liftt (₁ Δm) (₁ Em) (₁ um)  > ]T)
 
-    eB = M.lift-subT (₁ Δm) {B = ₁ Bm}{t = ₁ um} 
+    eB = M.lift-subT (₁ Δm) {B = ₁ Bm}{t = ₁ um}
 
     eapp : (((₁ tm) M.$ (₁ um)) M.[ M.longWk {E = ₁ Em}(₁ Δm) ]t ) ≅
       ((₁ tm) M.[ M.longWk {E = ₁ Em} (₁ Δm) ]t) M.$ (₁ um M.[ M.longWk (₁ Δm) ]t)
     -- eapp : {!(((₁ tm) M.$ (₁ um)) M.[ M.longWk (₁ Δm) ]t ) ≅ ?!}
-    eapp =  ↓≅ ( M.$[] {σ =  M.longWk (₁ Δm) }{t = ₁ tm}{u = ₁ um}) 
+    eapp =  ↓≅ ( M.$[] {σ =  M.longWk (₁ Δm) }{t = ₁ tm}{u = ₁ um})
 
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appNIw Γw {T} {Bp} Bw tw u} {_}
   (_ , Bm , tm , refl , refl)
  = (λ a → _ , liftT~ Γm Em Δm (Bm a)) ,
  (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
- refl , refl 
+ refl , refl
 
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appInfw Γw {T} {Bp} Bw tw u} {_}
   (_ , Bm , tm , refl , refl)
@@ -124,7 +124,7 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appInfw Γw {
     (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
       (refl , refl)
 
-liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {ΠInf B} {_} {ΠInfw Γw {T}{Bp} Bw} {_} 
+liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {ΠInf B} {_} {ΠInfw Γw {T}{Bp} Bw} {_}
   (_ , Bm , refl , refl)
   = (λ a →  _ , liftt~ Γm Em Δm {tw = Bw a}(Bm a)) , refl , refl
 -- liftV~ {.(Γp ▶p Ap)} {Γw} Γm {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Ap)} Am {.0} {V0w Γp Γw₁ Ap Aw} xm = {!!}
@@ -137,7 +137,7 @@ liftV~ {_} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} (_ ,
      | prop-path (ConP Γw) Γm' Γm
 
      | prop-has-all-paths Aw' Aw
-     | prop-path (TyP Aw (₁ Γm)) Am'' Am' 
+     | prop-path (TyP Aw (₁ Γm)) Am'' Am'
      -- | eC | eE | ex
 
      | uip eC refl
@@ -154,9 +154,9 @@ liftV~ {_} {▶w Γw' Aw'} (_ , Γm , Am'' , refl) {E} {Ew} Em {∙p} {Δw} (_ ,
 
 -- liftV~ {.(Γp ▶p Ap)} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} Δm {.(liftT 0 Bp)} Am {.(S xp)} {VSw Γp Γw' Ap Aw Bp Bw xp xw} (zm , Γm' , Am' , Bm , xm , eC , eE , ezm) =
 -- here I can't destruct eC for a reason I don't know (agda bug ?)
-liftV~ {_} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl)  
+liftV~ {_} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl)
    {xw = VSw Γw' Aw Bw xw} {Am = Am} (zm , Γm' , Am' , Bm , xm , eC , eE , ezm) =
-     helper Γm Γr Em Am zm Γm' Am' Bm xm eC eE ezm 
+     helper Γm Γr Em Am zm Γm' Am' Bm xm eC eE ezm
   where
     helper : ∀ Γm (Γr : Con~ Γw Γm) (Em : Σ (M.Ty Γm) (Ty~ Ew))
       (Am : M.Ty Γm)  (zm : M.Tm Γm Am) (Γm' : ∃ (Con~ Γw'))
@@ -177,12 +177,12 @@ liftV~ {_} {Γw} (Γm , Γr) {E} {Ew} Em {∙p} {Δw} (_ , Level.lift refl)
       (_ , Γm' , Am' , Bm , xm , refl , refl , refl) ,
       refl , refl , refl)
 
--- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} ((_ , ΔT) , (Δm , Am , eΔ)) {.(liftT 0 C)} _ {.0} {V0w .(Γ ^^ Δ) Γw₁ .C Aw} (_ , Γm' , Am' , refl , refl , refl) 
-liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , (Δm , Am , refl))  
+-- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} ((_ , ΔT) , (Δm , Am , eΔ)) {.(liftT 0 C)} _ {.0} {V0w .(Γ ^^ Δ) Γw₁ .C Aw} (_ , Γm' , Am' , refl , refl , refl)
+liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , (Δm , Am , refl))
   {xw = V0w  Γw  Aw}
   {Am = Cm}
   (zm , Γm' , Am' , eC , eT , ez)
--- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} Δm {.(liftT 0 C)} Cm {.0} {V0w .(Γ ^^ Δ) Γw' .C Aw} (zm , Γm' , Am' , eC , eT , ez) 
+-- liftV~ {Γ} {Γw} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} Δm {.(liftT 0 C)} Cm {.0} {V0w .(Γ ^^ Δ) Γw' .C Aw} (zm , Γm' , Am' , eC , eT , ez)
   rewrite (lift-liftT ∣ Δ ∣ C)
   | prop-has-all-paths Δw Γw
   | prop-path (ConP Γw) Γm' (((₁ Γm) M.^^ (₁ Δm)) , ^^~ Γm (₂ Δm))
@@ -206,11 +206,11 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , (Δm , Am , re
    eA = M.lift-wkT (₁ Δm)(₁ Am)
    -- {₁ Am}{₁ Em}
    ex : M.vz M.[ M.longWk (₁ Δm M.▶t ₁ Am) ]t ≅ M.vz
-   ex = ↓≅ (M.liftV0 (₁ Δm)(₁ Am)(₁ Em)) 
-       
-  
+   ex = ↓≅ (M.liftV0 (₁ Δm)(₁ Am)(₁ Em))
 
-liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , refl)  
+
+
+liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , refl)
    {xw = VSw Γw Aw {Bp} Bw xw}
    {Am = Am}
    (zm , Γm' , Am' , Bm , xm , eC , eE , ez )
@@ -239,10 +239,10 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , ref
     where
       eB = M.lift-wkT (₁ Δm)(₁ Bm)
       ex = ≅↓ (↓≅ (M.lift-wkt (₁ Δm) (₁ xm)))
-      
 
 
-wkSub~ : ∀ 
+
+wkSub~ : ∀
   {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
   { Δ σ} {σw : Γ ⊢ σ ⇒ Δ}
   { Δm}(σm : ∃ (Sub~ σw {(₁ Γm)}{Δm}))
@@ -250,7 +250,7 @@ wkSub~ : ∀
   Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
 
 
-wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , Level.lift refl) {E} {Ew} Em = refl ,  Level.lift M.εη 
+wkSub~ {Γ} {Γw} Γm {.∙p} {.nil} {nilw} {_} (_ , refl , Level.lift refl) {E} {Ew} Em = refl ,  Level.lift M.εη
 wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {_} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {tp = tp} tw}  {_}
   (_ , Δm , σm , Am , tm , refl , refl)
     {E} {Ew} Em
@@ -273,7 +273,3 @@ wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {_} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {t
         tr-over (λ A t → Tm~ (lifttw Ew ∙p tw) {Am = A} t)
            etm
         (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , Level.lift refl) {tw = tw} tm)
-
-
-
-

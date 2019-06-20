@@ -3,39 +3,34 @@ some complementary lemmas about the syntax
            -}
 
 
-open import Level 
+open import Level
 open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_ ; _↦_)
-
-
-
 open import monlib hiding (tr2)
-
-
-
-module SyntaxIsModel {k : Level}  where
-
 open import ModelRecord
-open import Syntax {i = k}
 
-module _ {i : Level} {j : Level} (MM : CwF {i}{j}) where
-  open CwF MM
-  
+
+
+module SyntaxIsModel {i : Level}  where
+
+open import Syntax {i}
+
+
 
 
 -- Con = ∃ Conw
 
--- I defined it as a record rather than using Σ because otherwise
+-- I defined it as a record rather than using Σ because otherwkse
 -- inferences may fail
--- I don't know if it helps though...
-record Con : Set (suc k)  where
+-- I don't inow if it helps though...
+record Con : Set (suc i)  where
   constructor _,_
   field
     ₁ : Conp
     ₂ :  ₁ ⊢
 open Con public
 
-record Ty (Γ : Con) : Set (suc k)  where
+record Ty (Γ : Con) : Set (suc i)  where
   constructor _,_
   field
     ₁ : Typ
@@ -47,11 +42,11 @@ Ty= : ∀ {Γ}{A B : Ty Γ}(e : ₁ A ≡ ₁ B) → A ≡ B
 Ty= {Γ} {A} {B} refl = ap (_ ,_) (prop-has-all-paths _ _)
 -- rewrite e | prop-has-all-paths Aw (₂ B) = refl
 
-record Tm (Γ : Con)(A : Ty Γ) : Set (suc k) where
+record Tm (Γ : Con)(A : Ty Γ) : Set (suc i) where
   constructor _,_
   field
     ₁ : Tmp
-    ₂ : (Con.₁ Γ ) ⊢ ₁ ∈ (Ty.₁ A) 
+    ₂ : (Con.₁ Γ ) ⊢ ₁ ∈ (Ty.₁ A)
 
 open Tm public
 
@@ -61,10 +56,10 @@ Tm= {Γ} {A}{t , tw} {u} e rewrite e | prop-has-all-paths tw (₂ u) = refl
 Tm=↓ : ∀ {Γ}{A}{t : Tm Γ A}{B}{u : Tm Γ B}(eT : A ≡ B)(e : ₁ t ≡ ₁ u) →
    t == u [ Tm Γ ↓ eT ]
 
-Tm=↓ {Γ} {A} {t}{.A}{u} refl = Tm= {u = u} 
+Tm=↓ {Γ} {A} {t}{.A}{u} refl = Tm= {u = u}
 
 fstTm= : ∀ {Γ}{A}{t u : Tm Γ A}(e : t ≡ u) → ₁ t ≡ ₁ u
-fstTm= {Γ}{A}{t}{u}  = ap ₁ 
+fstTm= {Γ}{A}{t}{u}  = ap ₁
 
 Tm-tr=₁ : ∀ {Γ}{A}{t : Tm Γ A}{B : Ty Γ}{e : A ≡ B} →
   ₁ t ≡ ₁ (tr (Tm Γ) e t)
@@ -74,11 +69,11 @@ Tm-tr!=₁ : ∀ {Γ}{A}{t : Tm Γ A}{B : Ty Γ}{e : B ≡ A} →
   ₁ t ≡ ₁ (transport! (Tm Γ) e t)
 Tm-tr!=₁ {t = t}{e = e} = forget-tr! (Tm _) e t (λ {A} u → ₁ u)
 
-record Sub (Γ : Con)(Δ : Con) : Set (suc k)  where
+record Sub (Γ : Con)(Δ : Con) : Set (suc i)  where
   constructor _,_
   field
     ₁ : Subp
-    ₂ : (Con.₁ Γ ) ⊢ ₁ ⇒ (Con.₁ Δ ) 
+    ₂ : (Con.₁ Γ ) ⊢ ₁ ⇒ (Con.₁ Δ )
 
 open Sub public
 
@@ -86,7 +81,7 @@ Sub= : ∀ {Γ}{Δ}{σ δ : Sub Γ Δ}(e : ₁ σ ≡ ₁ δ) → σ ≡ δ
 Sub= {Γ}{Δ} {σ , σw} {δ} e rewrite e | prop-has-all-paths σw (₂ δ) = refl
 
 fstSub= : ∀ {Γ}{Δ}{σ δ : Sub Γ Δ}(e : σ ≡ δ) → ₁ σ ≡ ₁ δ
-fstSub= {Γ}{A}{σ}{δ}  = ap ₁ 
+fstSub= {Γ}{A}{σ}{δ}  = ap ₁
 
 open Sub public
 
@@ -115,9 +110,9 @@ syntaxCwF = record
               ; idr = λ {Γ}{Δ}{σ} → Sub= (idr (₂ σ))
               ; ass = λ {Γ}{Δ}{Y}{O}{σ}{δ}{ν} → Sub= ass
               ; π₁,∘ = refl
-              ; π₂,∘ = λ {Γ}{Δ}{Y}{δ}{σ}{A}{t} → Tm=↓ _ refl 
+              ; π₂,∘ = λ {Γ}{Δ}{Y}{δ}{σ}{A}{t} → Tm=↓ _ refl
               ; π₁β = refl
-              ; πη = λ {Γ}{Δ}{A} → λ { {_ , ,sw Δw σw Aw tw} → Sub= refl } 
+              ; πη = λ {Γ}{Δ}{A} → λ { {_ , ,sw Δw σw Aw tw} → Sub= refl }
               ; εη = λ {Γ} → (λ { {(_ , nilw)} → refl })
               ; π₂β = refl
               }
@@ -153,7 +148,7 @@ wk=wk = refl
 keep=^ : ∀ {Γ}{Δ}{σ : Sub Γ Δ}{A : Ty Δ} →
   keep (₁ σ) ≡ ₁ (σ S.^ A)
 keep=^ {Γ}{Δ}{σ}{A}  =
-  let  p = S.[][]T  {Σ = Δ} 
+  let  p = S.[][]T  {Σ = Δ}
        B = Tm ((₁ Γ ▶p (₁ A [ ₁ σ ]T)) , ▶w (₂ Γ) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
        v = tr B p S.vz
   in
@@ -161,15 +156,15 @@ keep=^ {Γ}{Δ}{σ}{A}  =
     (Tm-tr=₁ {t = S.vz {Γ = Γ}{A = A S.[ σ ]T}}{e = p})
         -- (↓-cst-out {p = p} ( ap↓ {B = B} Tm.₁ {p = p}{u = S.vz {Γ = Γ}{A = A S.[ σ ]T}} {v = v}
         --   (from-transp _ _ refl) ))
-       
+
    (wkS=∘wk (₂ σ) (Tyw[] (₂ A) (₂ Γ) (₂ σ)))
 
 
-{- 
+{-
 private
   helper : ∀ {Γ}{A : Ty Γ}{B : Ty (Γ S.▶ A)} → subT (V 0) (liftT 1 (₁ B)) ≡ (₁ B)
   helper {Γ}{A}{B} =
-          (subT (V 0) (liftT 1 (₁ B)) 
+          (subT (V 0) (liftT 1 (₁ B))
 
               =⟨ ap (λ C → subT (V 0) (liftT 1 C)) (! ([idp]T (₂ B))) ⟩
           (subT (V 0) (liftT 1 ((₁ B) [ (idp ∣ ₁ Γ ▶p ₁ A ∣) ]T) ) )
@@ -194,7 +189,7 @@ private
                   (! ( Tm-tr!=₁ {t = (S.vz {A = A})}{e = S.[id]T}) ◾
                     forget-tr! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {A = A}) (λ t → ₁ t) ◾
                     forget-tr! (Tm _) S.[id]T ( transport! (λ s → Tm _ (A S.[ s ]T)) S.idl (S.vz {Γ = Γ}{A = A}) )
-                      (λ t → ₁ t) 
+                      (λ t → ₁ t)
                   )
                 )
               ⟩
@@ -248,16 +243,16 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
    (Π a B) S.[ σ ]T ≡ Π (a S.[ σ ]t) (B S.[ σ S.^ El a ]T)
 
 
-Π[]{Γ}{Δ}{σ} {a}{B} = 
+Π[]{Γ}{Δ}{σ} {a}{B} =
     Ty=
       ( (ap (λ s → ΠΠp ( ((₁ a) [ ₁ σ ]t)) (₁ B [ s ]T))
           (keep=^ {Γ = Γ}{Δ = Δ}{A =  El a})) )
 
-Π-NI : {Γ : Con} {T : Set k} →
+Π-NI : {Γ : Con} {T : Set i} →
    (T → Ty Γ) → Ty Γ
 Π-NI {Γ} {T} B = _ , ΠNIw (₂ Γ) (λ a → (₂ (B a)))
 
-Π-Inf : {Γ : Con} {T : Set k} →
+Π-Inf : {Γ : Con} {T : Set i} →
    (T → Tm Γ U) → Tm Γ U
 Π-Inf {Γ} {T} B = _ , ΠInfw (₂ Γ) (λ a → (₂ (B a)))
 
@@ -269,7 +264,7 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
 ₁[<>]T {Γ}{A}{B}{u} = ! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u)
 
 
-syntaxUnivΠ : UnivΠ {k = k} syntaxCwF
+syntaxUnivΠ : UnivΠ {k = i} syntaxCwF
 syntaxUnivΠ = record
                 { U = U
                 ; U[] = refl
@@ -279,14 +274,14 @@ syntaxUnivΠ = record
                 ; Π = Π
                 -- λ {Γ}a B → _ , Πw (₂ Γ)(₂ a)(₂ B)
                 ; Π[] = λ {Γ}{Δ}{σ}{a}{B} → Π[]
-                ; ΠNI = Π-NI 
+                ; ΠNI = Π-NI
                 ; ΠNI[] = refl
-                ; ΠInf = Π-Inf 
+                ; ΠInf = Π-Inf
                 ; ΠInf[] = refl
-                       
+
                 ; _$_ = λ {Γ}{a}{B}t u  →
                    (app (₁ t) (₁ u)) ,
-                    
+
                     tr (λ B' → _ ⊢ _ ∈ B' )
                     (₁[<>]T {A = El a}{B = B}{u} )
                     (appw
@@ -297,22 +292,22 @@ syntaxUnivΠ = record
                       (₂ u)
                      )
 
-                     
+
                 ; $[] = λ {Γ}{Δ}{σ}{a}{B}{t}{u} →
                    Tm=↓ (S.[<>][]T {u = u}{B = B}{σ = σ})
                    (ap (λ x → app x _)
                    ( (Tm-tr=₁ {t = t S.[ σ ]t } {e = Π[]})))
 
-                ; _$NI_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appNIw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u 
+                ; _$NI_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appNIw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u
                 ; $NI[] = refl
 
-                ; _$Inf_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appInfw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u 
+                ; _$Inf_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appInfw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u
                 ; $Inf[] = refl
 
 
-                           
 
-                           
+
+
                 }
 
 
@@ -322,18 +317,3 @@ module Syn where
   -- open Telescope RewCwF public
 
 -- -}
-private
-  module M = Syn
-
--- simple arrow
-S→ : {Γ : M.Con} (A : M.Tm Γ M.U)(B : M.Ty Γ) → M.Ty Γ
-S→ {Γ} A B = M.Π A (B M.[ M.wk {A = M.El A}]T)
--- (S1.wkT Γ (S1.El Γ A) B)
-
---non dependent application
-Sa : {Γ : M.Con} {A : M.Tm Γ (M.U )}{B : M.Ty Γ}
-    (t : M.Tm Γ (S→ A B))
-    (u : M.Tm Γ (M.El A)) → M.Tm Γ B
-Sa {Γ} {A} {B} t u = tr (Tm _)
-   (M.[][]T {σ =  M.< u >}{δ = M.wk {A = M.El A}} ◾ ap (λ s → B M.[ s ]T) M.wk∘<> ◾ M.[id]T) (t M.$ u)
-

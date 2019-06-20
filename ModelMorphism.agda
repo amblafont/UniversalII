@@ -1,17 +1,10 @@
 -- copied from finitaryQiit/modelTemplate
 
 
-open import Level 
+open import Level
 open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-
-
--- open import HoTT using (ap)
-
 open import monlib hiding (tr2)
--- open import Lib2 hiding (id; _∘_ )
-
-
 
 module ModelMorphism   where
 
@@ -58,7 +51,7 @@ record nextCwFMor
 
   []tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {t : S.Tm Δ A} {σ : S.Sub Γ Δ} →
            Tmʳ {Γ}  (t S.[ σ ]t )
-           == 
+           ==
            (Tmʳ {Δ} {A} t) [ Subʳ σ ]t
             [ Tm _  ↓ []Tʳ ]
 
@@ -82,15 +75,15 @@ record nextCwFMor
          ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
           [ Sub _ ↓ ,ʳ  ]
 
-{- 
+{-
  -- maybe this is needed for wkʳ ?
  π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
            (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
            ≡
            (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
- 
+
  π₁ʳ {Γ}{Δ}{A}{σ} =
-   
+
       (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
 
            =⟨ {!!} ⟩
@@ -122,14 +115,14 @@ record nextCwFMor
              (
              apd π₁ {x = (tr (Sub _) ,ʳ (Subʳ   S.id))}{y = id}{!!}
              -- (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
-              
+
              -- ap↓ {B = λ s → Sub s _}{C = λ s → Sub s (Conʳ Γ)}
-             
+
              -- (π₁ {A = Tyʳ A})
              -- {p = ,ʳ {A = A}}
              --   -- (≅↓ (↓≅ (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl )))
              --   (≅↓ (↓≅ {!!}))
-               
+
               )
               -- ((≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅)))
 -- Sub (Conʳ Γ ▶ Tyʳ A) (Conʳ Γ)
@@ -142,7 +135,7 @@ record nextCwFMor
     -}
     -- (↓-cst-in {p = refl}
      -- (π₁ʳ {σ = S.id {Γ = Γ S.▶ A}}) ◾  ap (λ x → π₁ (tr (Sub (Conʳ (Γ S.▶ A))) ,ʳ x)) idʳ ) ∙ᵈ
-     -- {! 
+     -- {!
      -- ap↓ {C = λ s → Sub s (Conʳ Γ)} (π₁ {A = Tyʳ A})
      --   -- (≅↓ (↓≅ {! from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl !} !≅))
      --   (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
@@ -155,9 +148,9 @@ record nextCwFMor
      --  == π₁ (id {Γ = B})
      --  [ (λ s → Sub s (Conʳ Γ)) ↓ e ]
      -- )!}
-    
+
     -- ≅↓ (↓≅ {! ap↓ π₁ (from-transp ? ,ʳ ?)!})
-    
+
       -- (wk {A = Tyʳ A})
 
     -- -- ap↓ π₁ (from-transp _ _ {!!})
@@ -179,23 +172,23 @@ record nextCwFMor
          (≅↓
            (
            ↓≅ ( from-transp (Tm (Conʳ Γ)) []Tʳ refl ) !≅
-           ∘≅ (  ↓≅  (ap↓ Tmʳ {p = S.[id]T}(from-transp! _ _ refl))  
+           ∘≅ (  ↓≅  (ap↓ Tmʳ {p = S.[id]T}(from-transp! _ _ refl))
            ∘≅ ↓≅ (from-transp! (Tm (Conʳ Γ)) [id]T refl) !≅
            ))))
 
  [<>]T : ∀ {Γ : S.Con}{A : S.Ty Γ}{u : S.Tm Γ A}{B : S.Ty (Γ S.▶ A)}→
     Tyʳ (B S.[ S.< u > ]T) ≡ (Tyʳ B [  transport! (Sub _) ,ʳ  < Tmʳ u >  ]T)
 
-      
- [<>]T {Γ}{A}{u} = []Tʳ ∙' ap (_[_]T _ ) (to-transp! <>ʳ) 
+
+ [<>]T {Γ}{A}{u} = []Tʳ ∙' ap (_[_]T _ ) (to-transp! <>ʳ)
 
 
-  
+
 
 
 record CwFMor
     {k : Level}{l : Level}(M : CwF {k} {l})
-    {i : Level}{j : Level}(N : CwF {i} {j}) 
+    {i : Level}{j : Level}(N : CwF {i} {j})
     : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
    where
   field
@@ -223,7 +216,7 @@ or equivalently,
 TODO: formalize the proof (it begins after)
 -}
 
-{- 
+{-
 module _
     {k : Level}{l : Level}{M : CwF {k} {l}}
     {i : Level}{j : Level}{N : CwF {i} {j}}{m : CwFMor M N} where
@@ -236,9 +229,9 @@ module _
            (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
            ≡
            (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
- 
+
  π₁ʳ {Γ}{Δ}{A}{σ} =
-   
+
       (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
 
            =⟨ {!!} ⟩
@@ -252,23 +245,23 @@ module _
       (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
       ∎
 
-   
- 
+
+
    -- version alternative
    -- π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ}{t : Tm Γ (A [ σ ]T)} →
    --         (Subʳ {Γ} {Δ} σ)
    --         ≡
    --         (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
- 
+
  π₂ʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
- 
+
          (Tmʳ {Γ} {S._[_]T {Γ} {Δ} A (S.π₁ {Γ} {Δ} {A} σ)}
            (S.π₂ {Γ} {Δ} {A} σ))
            ==
          (π₂ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A}
              (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
          [ Tm _ ↓ []Tʳ ◾ ap ( _[_]T (Tyʳ _) ) π₁ʳ ]
- 
+
  π₂ʳ {Γ}{Δ}{A}{σ} = {!!}
  -}
 
@@ -286,7 +279,7 @@ module _   {ll : Level}
 -- I do Univ and Π parts in different records because
 -- I need [<>^El]Tʳ before app
   record UnivMor  : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
-    field 
+    field
       Uʳ  : {Γ : S.Con} → _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.U {Γ})) U
 
       Elʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} →
@@ -301,13 +294,13 @@ module _   {ll : Level}
 
     [<>^El]Tʳ {Γ}{a}{B}u =
       [<>]T ∙'
-      
+
       J (λ C e →
           (Tyʳ B [ transport! (Sub (Conʳ Γ)) ,ʳ < Tmʳ u > ]T) ≡
           (tr Ty (,ʳ ∙' ap (_▶_ (Conʳ Γ)) e) (Tyʳ B) [
           < tr (Tm (Conʳ Γ)) e (Tmʳ u) > ]T)
       )
-      ( 
+      (
       J (λ C e → ∀ <u> →
         Tyʳ B [ transport! (Sub (Conʳ Γ)) e <u> ]T ≡
           tr Ty e (Tyʳ B) [ <u> ]T
@@ -324,8 +317,8 @@ module _   {ll : Level}
     -- module NN = UnivΠ NN
     open UnivMor um
 
-      
-      
+
+
 
     field
 
@@ -337,10 +330,10 @@ module _   {ll : Level}
 
       -- appʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} {B : S.Ty (Γ S.▶ S.El {Γ} a)}
       --         {t : S.Tm Γ (S.Π {Γ} a B)} →
-              
+
       --         (Tmʳ {Γ S.▶ S.El {Γ} a} {B} (S.app {Γ} {a} {B} t))
       --         ==
-      --         (app {Conʳ Γ}  
+      --         (app {Conʳ Γ}
       --           (tr (Tm _) Πʳ (Tmʳ {Γ} {S.Π {Γ} a B} t)))
       --           [ (λ x → Tm (₁ x)(₂ x)) ↓
       --             pair= (,ʳ ◾ ap ( _▶_ _ ) Elʳ) (from-transp _ _ refl) ]
@@ -349,7 +342,7 @@ module _   {ll : Level}
             (u : S.Tm Γ (S.El a))
             →
             let e = [<>^El]Tʳ u in
-            -- {e}(q : e ≡ [<>^El]Tʳ u)→ 
+            -- {e}(q : e ≡ [<>^El]Tʳ u)→
           Tmʳ (t S.$ u) ==
             (tr (Tm _) Πʳ (Tmʳ t) $
             tr (Tm _) Elʳ (Tmʳ u)) [ Tm _ ↓  e
@@ -367,7 +360,7 @@ module _   {ll : Level}
           Tmʳ (t S.$NI u) ≡ tr (Tm _) ΠNIʳ (Tmʳ t) $NI u
 
       ΠInfʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Tm Γ S.U} →
-       (Tmʳ {Γ} (S.ΠInf B)) == 
+       (Tmʳ {Γ} (S.ΠInf B)) ==
         (ΠInf {Conʳ Γ} {T = T} λ a → tr (Tm _)  Uʳ (Tmʳ (B a)) ) [ Tm _ ↓ Uʳ ]
 
       $Infʳ : ∀ {Γ}{T : Set ll}{B : T → S.Tm Γ S.U}(t : S.Tm Γ (S.El (S.ΠInf B)))

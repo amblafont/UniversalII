@@ -1,7 +1,7 @@
 {-# OPTIONS  --rewriting  #-}
 
 -- proof #~el
-open import Level 
+open import Level
 open import Hott renaming (_∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
 -- open import Lib2 using (_&_)
@@ -17,7 +17,7 @@ open import RelationCwf
 open import RelationCwfWeakening {k = k}
 
 
-Var[]~ : ∀ 
+Var[]~ : ∀
    {Γm Δm : M.Con}
    {Γ}{Δ}{σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {Γm}{Δm}))
    {Am : M.Ty Δm}
@@ -70,7 +70,7 @@ Var[]~ {Γm} {σw = ,sw Δw' {σp = σ} σw Aw' {tp = t} tw}
     -- (λ Em → Tm~ (Varw[] xw σw) {Am = Em}) {p = M.wk[]T}M.wk[]t
     --   (Var[]~ σm xm)
 
-Tm[]~ : ∀ 
+Tm[]~ : ∀
       {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
       {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
       {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
@@ -78,7 +78,7 @@ Tm[]~ : ∀
       {A}{t}{tw : Δ ⊢ t ∈ A} (tm : ∃ (Tm~ tw {₁ Δm}{ Am}))
       → Tm~ (Tmw[] tw Γw σw) {₁ Γm} { Am M.[ ₁ σm ]T} (₁ tm M.[ ₁ σm ]t)
 
-Ty[]~ : ∀ 
+Ty[]~ : ∀
    {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
    {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
   {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
@@ -97,7 +97,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   =
     Δm ,
     ((₁ σm M.∘ M.wk) , wkSub~ Γm σm (M.El (₁ Am M.[ ₁ σm ]t) ,
-       (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl) 
+       (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl)
       -- (Tyw[] Aw Γw σw) (₁ Am M.[ ₁ σm ]T)
       ) ,
     (M.El (₁ Am) , Am , refl) ,
@@ -143,16 +143,16 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
    let Elam : ∃ (Ty~ (Elw Δw' Aw) {₁ Δm})
        Elam = (M.El (₁ am) , am , refl)
    in
-   let σam : ∃ (Sub~ (keepw Γw Δw' σw Aw)) 
+   let σam : ∃ (Sub~ (keepw Γw Δw' σw Aw))
        σam =  (₁ σm M.^ (M.El (₁ am)))  , keepEl~ Γm Δm σm {Aw = Aw} am
    in
-   let am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
+   let am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw))
        am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
    in
    let Δa~ : Con~ Δaw (₁ Δm M.▶ M.El (₁ am))
        Δa~ = Δm , Elam , refl
    in
-    Ty[]~ (_ , Γm , (_ , am[] , refl) , refl) {Δw = Δaw} (_ , Δa~) σam Bm 
+    Ty[]~ (_ , Γm , (_ , am[] , refl) , refl) {Δw = Δaw} (_ , Δa~) σam Bm
    -- let Bm[]~ = Ty[]~ (_ , Γm , (_ , am[] , refl) , refl) {Δw = Δaw} (_ , Δa~) σam Bm in
    --  (₁ Bm M.[ ₁ σm M.^ (M.El (₁ am)) ]T) , Bm[]~
 
@@ -177,7 +177,7 @@ Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {.(ΠΠp ( _) _)} {Πw Δw' Aw Bw
   where
 
 
-    am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
+    am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw))
     am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
 
 Ty[]~ {Γ}{Γw}Γm {Δ}{Δw}Δm {σ} {σw} σm {_} {ΠNIw Δw'  Bw} (_ , Bm , refl) =
@@ -207,12 +207,12 @@ Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_}
     (_ , Π-B[]~ Γm Δm Δw' σm am Bm) ,
     tm[] ,
     um[] ,
-     M.[<>][]T {Γ = ₁ Δm}{M.El (₁ am)}{₁ um} {₁ Bm} 
+     M.[<>][]T {Γ = ₁ Δm}{M.El (₁ am)}{₁ um} {₁ Bm}
     ,
-     M.$[] {Γ = ₁ Δm}{_}{₁ am} {₁ Bm}{₁ tm} 
-   
+     M.$[] {Γ = ₁ Δm}{_}{₁ am} {₁ Bm}{₁ tm}
+
    where
-    am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw)) 
+    am[] : Σ (M.Tm (₁ Γm) M.U) (Tm~ (Tmw[] Aw Γw σw))
     am[] = _ , Tm[]~ Γm Δm σm {tw = Aw} am
 
 Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_} {appNIw Δw'  Bw tw u}
@@ -358,4 +358,3 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
       rewrite ( ([∘]T Ap σp δ))
       = tr2 (λ A → Tm~ (Tmw[] tw Yw δw) {Am = A}) (M.[][]T{A = ₁ Am}) refl
           (Tm[]~ Ym Γm δm {Am = ₁ Am M.[ ₁ σm ]T}{tw = tw} tm )
-

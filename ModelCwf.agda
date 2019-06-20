@@ -1,5 +1,5 @@
 {-# OPTIONS  --rewriting  #-}
-{- 
+{-
 TODO: réfélchir à de meilleures preuves
 
 This file postulates a model which enjoys some rewrite rule for some equalities, in order
@@ -21,18 +21,9 @@ indeed B is in an extended context)
 
 
 
-open import Level 
-open import Hott
-   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
--- open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
-
-
--- open import HoTT using (ap)
-
+open import Level
+open import Hott hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 open import monlib hiding (tr2)
--- open import Lib2 hiding (id; _∘_ )
-
-
 
 module ModelCwf {k : Level.Level}   where
 
@@ -151,52 +142,8 @@ module Postulats where
                ; _$Inf_ = app$Inf
                ; $Inf[] = refl
                }
-  
+
   open UnivΠ RewUnivΠ using (_$_ ; _$NI_ ; _$Inf_)
-  
-  -- nécessaire pour le weakening (application)
-  {-
-  $[] : 
-    ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
-    → ((t $ u) [ σ ]t) == (t [ σ ]t) $ (u [ σ ]t) [ Tm _ ↓ [<>][]T {Γ = Γ}{El a}{u}{B} ]
-  -- utilise [][]t
-  $[] {Y}{Γ}{σ}{a}{B}{t}{u} =
-    ≅↓
-      (
-        ((t $ u) [ σ ]t)
-  
-            ≅⟨ ↓≅ ([][]t ) ⟩
-        (app t [ < u > ∘ σ ]t)
-  
-            -- ≅⟨ ↓≅ (HoTT.apd (app t [_]t) <>∘)  ⟩
-            ≅⟨ ↓≅ (HoTT.apd (app t [_]t) (<>∘ ◾ (! ^∘<>)))  ⟩
-        (app t [ (σ ^ El a) ∘ < u [ σ ]t > ]t)
-  
-            ≅⟨ (↓≅ [][]t) !≅  ⟩
-        (app t [ (σ ^ El a) ]t [ < u [ σ ]t > ]t)
-  
-            ≅⟨ =≅ (ap (_[  < u [ σ ]t >  ]t) app[]) ⟩
-        (app (t [ σ ]t) [ < u [ σ ]t > ]t )
-        ≅∎
-      )
-
--}
-
-
-
-
-   {- 
-    _[_]t {z} {z ▶ El {z} z₁} {z₂} (app {z} {z₁} {z₂} t) (_,s_ {z} {z}
-    (id {z}) {El {z} z₁} (coe {_} {Tm z (El {z} z₁)} {Tm z (_[_]T {z}
-    {z} (El {z} z₁) (id {z}))} (_&_ {_} {suc _} {Ty z} {_} (Tm
-    z) {El {z} z₁} {_[_]T {z} {z} (El {z} z₁) (id {z})}
-    e)
-    u))
-    -}
-    -- where
-    --   e : El a ≡ El a [ id ]T
-    --   e =
-      -- _⁻¹ {_} {Ty z} {_[_]T {z} {z} (El {z} z₁) (id {z})} {El {z} z₁} ([id]T {z} {El {z} z₁})
 
 -- module ModelRew where
 -- accessibles depuis l'exterieur
@@ -204,5 +151,3 @@ open Postulats public
 open CwF RewCwF public
 open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public
 open Telescope RewCwF public
-
-

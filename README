@@ -26,6 +26,6 @@ TODO: actuellement,  Pi A B [s] = Pi A[s] B[s ^ A]
 DO i use the fact that the morphism preserve composition when showing uniqueness ?
 Probably, but if not, can I show it ?
 
-TODO remove subT
+TODO remove subT (replace by < _ >, but it is not that straightforward as <_> needs to know the length of the context, whereas subT does not)
 
 TODO remove useless typeclass instances (most of them are ignored by the new version of Agda)

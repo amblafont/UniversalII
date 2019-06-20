@@ -4,29 +4,20 @@ some complementary lemmas about the syntax
 
 {-# OPTIONS  --rewriting  #-}
 
-open import Level 
--- open import HoTT renaming (  idp to refl ;  fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
---   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+open import Level
 open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-
-
-
 open import monlib hiding (tr2)
-
-
 
 module InitialMorphism {k : Level}  where
 
-
 open import ModelRecord
 
-
 open import Syntax {i = k}
-open import SyntaxIsModel {k = k} renaming (module Syn to S)
+open import SyntaxIsModel {i = k} renaming (module Syn to S)
 
   -- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
-ex1 : Con 
+ex1 : Con
 ex1 = {!!}
 
 import ModelCwf {k = k} as M
@@ -78,7 +69,7 @@ Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
 
 []tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {t : S.Tm Δ A} {σ : S.Sub Γ Δ} →
            Tmʳ {Γ}  (t S.[ σ ]t )
-           == 
+           ==
            (Tmʳ {Δ} {A} t) M.[ Subʳ σ ]t
             [ M.Tm _  ↓ []Tʳ {A = A}{σ = σ} ]
 
@@ -90,21 +81,21 @@ Subʳ {Γ}{Δ}σ = ₁ (ΣSubʳ σ)
    -- tm[] = ΣTm~  Γm Am[] (₂ (t S.[ σ ]t))
    tm[] = ΣTmʳ  (t S.[ σ ]t)
 
-   aux : ∀ (tm[]' : ∃ (Tm~ (Tmw[] (₂ t) (₂ Γ) (₂ σ)))) → ₁ tm[]' == 
+   aux : ∀ (tm[]' : ∃ (Tm~ (Tmw[] (₂ t) (₂ Γ) (₂ σ)))) → ₁ tm[]' ==
            (Tmʳ {Δ} {A} t) M.[ Subʳ σ ]t
             [ M.Tm _  ↓ []Tʳ {A = A}{σ = σ} ]
             -- [ M.Tm _  ↓ {![]Tʳ {A = A}{σ = σ} = {!tm[]!}!} ]
 
    -- aux rewrite []Tʳ {A = A}{σ = σ} = {!tm[]!}
    aux tm[]' rewrite []Tʳ {A = A}{σ = σ} =
-     
+
       fst=
         (prop-has-all-paths
           {{  TmP (Tmw[] (₂ t) (₂ Γ) (₂ σ)) ( Tyʳ A M.[ Subʳ σ ]T)  }}
           tm[]'
           (_ ,  Tm[]~ (ΣConʳ Γ) (ΣConʳ Δ) (ΣSubʳ σ) {tw = ₂ t}(ΣTmʳ t) )
         )
-     
+
 idʳ : {Γ : S.Con} → Subʳ {Γ = Γ} S.id ≡ M.id
 idʳ {Γ} = fst=
              (prop-path (SubP _ _ _)
@@ -125,7 +116,7 @@ idʳ {Γ} = fst=
 ,sʳ {Γ}{Δ}{σ}{A}{t} =
    helper _
    where
-     tm = ΣTm~ (ΣConʳ Γ)(_ , Ty[]~ (ΣConʳ Γ)(ΣConʳ Δ) (ΣSubʳ σ)(ΣTyʳ A))  (₂ t) 
+     tm = ΣTm~ (ΣConʳ Γ)(_ , Ty[]~ (ΣConʳ Γ)(ΣConʳ Δ) (ΣSubʳ σ)(ΣTyʳ A))  (₂ t)
 
 
      eq : ∀ {B : M.Ty (Conʳ Γ)}(p : Tyʳ (A S.[ σ ]T) ≡ B)
@@ -154,7 +145,7 @@ idʳ {Γ} = fst=
                (ΣSubʳ (σ S.∘ δ) )
                (_ , ∘~ (ΣConʳ Δ)(ΣConʳ Y)(ΣSubʳ σ)(ΣConʳ Γ)(ΣSubʳ δ))
               )
-  
+
 
 
 iniMor : CwFMor syntaxCwF M.RewCwF
@@ -165,14 +156,14 @@ iniMor = record
            ; Subʳ = Subʳ
            ; ,ʳ = refl
            }
-           ; nextcwfmor = record { 
+           ; nextcwfmor = record {
 
              ∙ʳ = refl
            ; []Tʳ = λ {Γ}{Δ}{A}{σ} → []Tʳ {A = A}{σ = σ}
            ; []tʳ = λ{Γ}{Δ}{A}{t}{σ} → []tʳ {t = t}{σ = σ}
            ; idʳ = λ{Γ}→ idʳ {Γ}
            -- tiens? Est-ce nécessaire ?
-           ; ∘ʳ =  λ {Γ}{Δ}{Y}{σ}{δ } → ∘ʳ{Γ}{Δ}{Y}{σ}{δ} 
+           ; ∘ʳ =  λ {Γ}{Δ}{Y}{σ}{δ } → ∘ʳ{Γ}{Δ}{Y}{σ}{δ}
            ; εʳ = refl
            -- ça devrait calculer ici par refl ! TODO: réfléchir à pourquoi ce n'est pas le
            -- cas
@@ -185,9 +176,9 @@ iniMor = record
 iniUnivMor : UnivMor syntaxUnivΠ M.RewUnivΠ iniMor
 iniUnivMor = record {
     Uʳ = refl ;
-    Elʳ = refl 
+    Elʳ = refl
   }
-      
+
 
 $ʳ~ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a B))
   (u : S.Tm Γ (S.El a))
@@ -216,10 +207,10 @@ $ʳ~ {Γ}{a}{B}t u
       ΣTmʳ t ,
       ΣTmʳ u ,
       refl ,
-      refl 
+      refl
 
 $ʳ : ∀ {Γ}{a : S.Tm Γ S.U}{B : S.Ty (Γ S.▶ S.El a)}(t : S.Tm Γ (S.Π a B))
-      (u : S.Tm Γ (S.El a)) e → 
+      (u : S.Tm Γ (S.El a)) e →
     Tmʳ (t S.$ u)
     -- ₁ (ΣTm~ (ΣCon~ (₂ Γ)) (ΣTy~ (ΣCon~ (₂ Γ)) (₂ (B S.[ S.< u > ]T)))
     --   (
@@ -242,7 +233,7 @@ $ʳ {Γ}{a}{B}t u e
         (_ , tu~))
 
 $NIʳ : ∀ {Γ}{T : Set k}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
-      (u : T)  → 
+      (u : T)  →
     Tmʳ (t S.$NI u)
     ≡
       ((Tmʳ {A = (S.ΠNI B)}t) M.$NI u)
@@ -252,13 +243,13 @@ $NIʳ {T = T}{B = B}t u =
   ap (λ e → coe! e (M._$NI_ (Tmʳ t) u)) {y = refl} (uip _ _)
 
 $Infʳ : ∀ {Γ}{T : Set k}{B : T → S.Tm Γ S.U}(t : S.Tm Γ (S.El (S.ΠInf B)))
-      (u : T)  → 
+      (u : T)  →
     Tmʳ (t S.$Inf u)
     ≡
       ((Tmʳ {A = (S.El (S.ΠInf B))}t) M.$Inf u)
 $Infʳ {T = T}{B = B}t u =
-   ap (λ e → coe! e (M._$Inf_ (Tmʳ t) u)) {y = refl} (uip _ _) 
-   
+   ap (λ e → coe! e (M._$Inf_ (Tmʳ t) u)) {y = refl} (uip _ _)
+
 
 iniMorUnivΠ : UnivΠMor syntaxUnivΠ M.RewUnivΠ iniMor
 iniMorUnivΠ = record {
@@ -308,8 +299,8 @@ Tyʳ'= {Γ} {A} | .(₁ (ΣCon~ (₂ Γ))) | Am | A~ | refl =
 Tmʳ'= : ∀ {Γ : S.Con}{A}{t : S.Tm Γ A} → Mor.Tmʳ t == Tmʳ t
   [ (λ x → M.Tm (₁ x)(₂ x)) ↓ pair= (Conʳ'= {Γ}) (Tyʳ'= {Γ} {A}) ]
 
-Tmʳ'= {Γ}{A}{t} 
-  with 
+Tmʳ'= {Γ}{A}{t}
+  with
     Mor.Conʳ Γ | Mor.Tyʳ A | Mor.Tmʳ t | Mor.morTm~ (₂ Γ)(₂ A) (₂ t) | Conʳ'= {Γ} | Tyʳ'= {Γ}{A}
 
 -- ... | Γm | Am | tm | t~ | eΓ | eA = {!eΓ!}
@@ -323,9 +314,8 @@ Subʳ'= : ∀ {Γ Δ : S.Con}{σ : S.Sub Γ Δ} → Mor.Subʳ σ == Subʳ σ
   [ (λ x → M.Sub (₁ x)(₂ x)) ↓ pair×= (Conʳ'= {Γ}) (Conʳ'= {Δ}) ]
 
 Subʳ'= {Γ}{Δ}{σ}
-  with 
+  with
     Mor.Conʳ Γ | Mor.Conʳ Δ | Mor.Subʳ σ | Mor.morSub~ (₂ Γ)(₂ Δ) (₂ σ) | Conʳ'= {Γ} | Conʳ'= {Δ}
 -- ... | Γm | Δm | σm | σ~ | eΓ | eΔ = {!!}
 Subʳ'= {Γ} {Δ} {σ} | .(₁ (ΣCon~ (₂ Γ))) | .(₁ (ΣCon~ (₂ Δ))) | σm | σ~ | refl | refl =
   fst= (prop-path (SubP _ _ _) (_ , σ~) (ΣSubʳ σ))
-
