@@ -787,61 +787,6 @@ wkTw Aw Bw = liftTw Aw ∙p Bw
 wktw : ∀ {Γp}{Bp}(Bw : Γp ⊢ Bp){Ap}{tp}(tw : Γp ⊢ tp ∈ Ap) →  (Γp ▶p Bp) ⊢ (wkt tp) ∈ (wkT Ap)
 wktw Aw tw = lifttw Aw ∙p tw
 
-subTelw : ∀ {Γp Ap Δp up}(uw :  Γp ⊢ up ∈ Ap)(Δw : (Γp ▶p Ap ^^ Δp) ⊢) → (Γp ^^ (subTel up Δp )) ⊢
-subTw : ∀ {Γp Ap Δp up Bp }(uw :  Γp ⊢ up ∈ Ap)(Bw : (Γp ▶p Ap ^^ Δp) ⊢ Bp )
-  →  (Γp ^^ (subTel up Δp )) ⊢ ( Bp [ ∣ Δp ∣ ↦ up ]T )
-subtw : ∀ {Γp Ap Δp up Bp tp}(uw : Γp ⊢ up ∈ Ap)(tw : (Γp ▶p Ap ^^ Δp) ⊢ tp ∈ Bp )
-  → (Γp ^^ (subTel up Δp )) ⊢  ( tp [ ∣ Δp ∣ ↦ up ]t ) ∈ ( Bp [ ∣ Δp ∣ ↦ up ]T )
-
-subVw : ∀ {Γp Ap Δp up Bp xp}(uw : Γp ⊢ up ∈ Ap)(xw : (Γp ▶p Ap ^^ Δp) ⊢ xp ∈v Bp)
-  → (Γp ^^ (subTel up Δp )) ⊢ (xp [  ∣ Δp ∣ ↦ up ]V ) ∈ ( Bp [ ∣ Δp ∣ ↦ up ]T )
-
-subTelw {Γp} {Ap} {∙p} {up} uw (▶w Δw Aw) = Δw
-subTelw {Γp} {Ap} {Δp ▶p Bp} {up} uw (▶w Δw Bw) = ▶w (subTelw uw Δw) (subTw uw Bw)
-
-
-
-subTw {Γp} {Ep} {Δp} {zp} {.Up} zw (Uw  Γw) = Uw  (subTelw zw Γw)
-subTw {Γp} {Ep} {Δp} {zp} {.(ΠΠp ( _) _)} zw (Πw Γw Aw Bw) =
-  Πw (subTelw zw Γw) (subtw {Δp = Δp} zw Aw) (subTw zw Bw )
-subTw {Γp} {Ep} {Δp} {zp}  zw (ΠNIw Γw Bw) = ΠNIw (subTelw zw Γw) (λ a → subTw zw (Bw a) )
-  -- Πw (subTelw zw Γw) (subtw {Δp = Δp} zw Aw) (subTw zw Bw )
-subTw {Γp} {Ep} {Δp} {zp} {.(Elp _)} zw (Elw Γw aw) = Elw (subTelw zw Γw) (subtw zw aw)
-
-subtw {Γp} {Ep} {Δp} {zp} {tp} zw (vw xw) = subVw zw xw
-subtw {Γp} {Ep} {Δp} {zp}  zw (appw Γw {ap₁} tw {Bp} Bw {t} tw₁ {u} tw₂)
-  rewrite l-subT-subT ∣ Δp ∣ zp u Bp
-  = appw {Γp ^^ subTel zp Δp} (subTelw zw Γw)
-    (subtw zw tw)
-    (subTw zw Bw)
-    (subtw zw tw₁)
-    (subtw zw tw₂)
-subtw {Γp} {Ep} {Δp} {zp}  zw (appNIw {.(Γp ▶p Ep ^^ Δp)} Γw {T} { Bp} Bw {t} tw₁ u) =
-  appNIw (subTelw zw Γw) (λ a → subTw zw (Bw a)) (subtw zw tw₁) u
-subtw {Γp} {Ep} {Δp} {zp}  zw (appInfw {.(Γp ▶p Ep ^^ Δp)} Γw {T} { Bp} Bw {t} tw₁ u) =
-  appInfw (subTelw zw Γw) (λ a → subtw zw (Bw a)) (subtw zw tw₁) u
-subtw {Γp} {Ep} {Δp} {zp}  zw (ΠInfw Γw Bw) = ΠInfw (subTelw zw Γw) (λ a → subtw zw (Bw a) )
-
--- subVw {Γp} {Ap} {Δp} {up} {Bp} {xp} uw xw = {!!}
-subVw {Γp₁} {Ap₁} {∙p} {up} {.(liftT 0 Ap₁)} {.0} uw (V0w {Γp₁} Γw {Ap₁} Aw)
-  rewrite subT-wkT Ap₁ up = uw
-subVw {Γp} {Ap} {∙p} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw {Γp} Γw {Ap} Aw {Bp} Bw {xp} xw)
-  rewrite subT-wkT Bp up = vw xw
-
-subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Cp)} {.0} uw (V0w  Γw  Aw)
- rewrite l-subT-wkT ∣ Δp ∣ up Cp
-  = vw (V0w {Γp ^^ subTel up Δp} (subTelw uw Γw)
-    (subTw uw Aw))
-
-subVw {Γp} {Ap} {Δp ▶p Cp} {up} {.(liftT 0 Bp)} {.(S xp)} uw (VSw  Γw  Aw {Bp} Bw {xp} xw)
-  rewrite l-subT-wkT ∣ Δp ∣ up Bp =
-  lifttw {Γp ^^ subTel up Δp}  (subTw uw Aw) ∙p
-      ( subVw uw xw)
-
-
-
-
-
 
 
 -- needed for keepw : keep preserve typing of substitutions
@@ -849,7 +794,6 @@ wkSw : ∀ {Γp}{Δp}{σp}(σw :  Γp ⊢ σp ⇒ Δp)
   {Ap}(Aw : Γp ⊢ Ap) → (Γp ▶p Ap) ⊢ (wkS σp) ⇒ Δp
 wkSw nilw Aw = nilw
 wkSw (,sw Δw σw Aw tw) Bw  = ,sw Δw (wkSw σw Bw) Aw (transport! (λ A → _ ⊢ _ ∈ A) (wkT=wkS _ _) (wktw Bw tw ))
-
 
 
 
