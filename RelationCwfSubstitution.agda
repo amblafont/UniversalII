@@ -106,11 +106,11 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → (Γ ▶p Elp (A [ σ ]t)) ⊢ 0 ∈v x) (liftT=wkS 0 σ (Elp A))
+      (transport! (λ x → (Γ ▶p Elp (A [ σ ]t)) ⊢ 0 ∈v x) ([keep∘wk]T 0 σ (Elp A))
       (V0w Γw  (Tyw[] (Elw Δw Aw) Γw σw)))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am M.[ ₁ σm ]t))) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
-    vz~ rewrite (liftT=wkS 0 σ (Elp A)) =
+    vz~ rewrite ([keep∘wk]T 0 σ (Elp A)) =
       Γm ,
       (M.El (₁ Am M.[ ₁ σm ]t) , (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl) ,
       -- Ty[]~ Γm Δm σm Am) ,
@@ -197,7 +197,7 @@ Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {Am} {A} {.(V _)} {vw xw} tm = Var[
 Tm[]~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ} {σw} σm {_} {_} {_}
    {appw Δw' Aw {Bp} Bw tw {u} uw}
    (_ , am , Bm , tm , um , refl , refl)
-   rewrite l-sub[]T 0 Bp u σ
+   rewrite [↦][keep]T 0 Bp u σ
    =
     -- let Bm[]~ = Ty[]~ (_ , Γm , (_ , am[] , refl) , refl) {Δw = Δaw} (_ , Δa~) σam Bm in
     let tm[] = (₁ tm M.[ ₁ σm ]t) , Tm[]~ Γm Δm σm {tw = tw} tm in
@@ -257,11 +257,11 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → (Γ ▶p (Elp A [ σ ]T)) ⊢ 0 ∈v x) (liftT=wkS 0 σ (Elp A))
+      (transport! (λ x → (Γ ▶p (Elp A [ σ ]T)) ⊢ 0 ∈v x) ([keep∘wk]T 0 σ (Elp A))
       (V0w Γw  (Elw Γw (Tmw[] Aw Γw σw))))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
-    vz~ rewrite (liftt=wkS 0 σ A) =
+    vz~ rewrite ([keep∘wk]t 0 σ A) =
       Γm ,
       ((_ , (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl)) ,
       refl ,
@@ -293,10 +293,10 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
 
     tm₂ :  Tm~
       (transport! (λ B → (Γ ▶p A) ⊢ V 0 ∈ B)
-      (wkT=wkS (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw))
+      ([wkS]T (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw))
       (vw (V0w Γw Aw)))
       tm₁
-    tm₂ rewrite (wkT=wkS (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw)) =
+    tm₂ rewrite ([wkS]T (idp ∣ Γ ∣) A ◾ ap wkT ([idp]T Aw)) =
       Γm ,
       Am ,
       refl ,

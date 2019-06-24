@@ -264,12 +264,12 @@ wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {_} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {t
       tm'₁ : (M.Tm ((₁ Γm) M.▶ (₁ Em)) (₁ Am M.[ ₁ σm M.∘ M.wk ]T))
       tm'₁ = tr (M.Tm _) (M.[][]T {A = ₁ Am}) ((₁ tm) M.[ M.wk ]t)
       tm'₂ :  Tm~
-              (transport! (λ A → (Γ ▶p E) ⊢ (liftt 0 tp) ∈ A ) (wkT=wkS σp Ap)
+              (transport! (λ A → (Γ ▶p E) ⊢ (liftt 0 tp) ∈ A ) ([wkS]T σp Ap)
                 (wktw Ew tw))
               tm'₁
       tm' = tm'₁ , tm'₂
       etm = from-transp _ _ refl
-      tm'₂ rewrite wkT=wkS σp Ap =
+      tm'₂ rewrite [wkS]T σp Ap =
         tr-over (λ A t → Tm~ (lifttw Ew ∙p tw) {Am = A} t)
            etm
         (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , Level.lift refl) {tw = tw} tm)
