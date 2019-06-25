@@ -1,4 +1,9 @@
 {-
+ITA : In The Article (means it has been stated in the article)
+  not yet updated
+
+NITA : not in the article (and this is wanted)
+
 Non-inductive parameters, and infinitary parameters, makes functional extensionality necessary.
 This file should work without K,
 
@@ -228,6 +233,7 @@ Lemmas about commutations of lift
 
 -}
 -- auxiliary lemmas to proof lift-lift*
+-- ITA
 lift-liftV : ∀ n p q → liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
 
 lift-liftV 0 p 0 = refl
@@ -267,6 +273,7 @@ lift-liftT n p (ΠNI B) = ap ΠNI (funext (λ a → lift-liftT n p (B a) ))
 -- TODO généraliser à l-subT
 
 -- auxiliary lemmas to prove liftn[n]T 0
+-- ITA
 liftn[n]V : ∀ n x z → (liftV n x) [ n ↦ z ]V  ≡ V x
 
 liftn[n]V 0 0 z = refl
@@ -298,6 +305,7 @@ liftn[n]T n (ΠNI B) u rewrite  (funext (λ a → liftn[n]T n (B a) u)) = refl
 
 
 -- auxiliary lemmas to prove lift-subT
+-- ITA
 lift+[↦]V : ∀ n p u x → liftt (n + p) (x [ n ↦ u ]V) ≡ (liftV (S (n + p)) x) [ n ↦ (liftt p u) ]V
 
 lift+[↦]V 0 p u (S x) = refl
@@ -366,12 +374,14 @@ lift[+]T Δ u n (ΠNI B)
 -- A ,  Δ  ⊢  B
 -- donc A , Δ , E ⊢ wk B et ensuite Δ , E ⊢ (wk B)[u]
 -- mais on peut aussi faire l'inverse: Δ ⊢ B[u] et Δ , E ⊢ wk (B[u]), et ça doit donner la même chose
+-- ITA
 wk[↦]T : ∀ Δ u B →  (wkT B) [ (S Δ) ↦ u ]T ≡ wkT ( B [ Δ ↦ u ]T)
 wk[↦]T Δ u = lift[+]T Δ u 0
 
 wk[↦]t : ∀ Δ u t →  (wkt t) [ (S Δ) ↦ u ]t ≡ wkt (t [ Δ ↦ u ]t)
 wk[↦]t Δ u = lift[+]t Δ u 0
 
+-- ITA
 [↦][↦]V : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]t  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]t) ]t
 
 [↦][↦]V 0 p z u 0 = refl
@@ -410,6 +420,7 @@ wk[↦]t Δ u = lift[+]t Δ u 0
 
 -- A substitution is merely a list of terms
 Subp = List Tmp
+
 
 -- Γ ⊢ σ : Δ
 -- Γ , A ⊢ wkS σ : Δ
@@ -451,11 +462,12 @@ Elp x [ s ]T = Elp (x [ s ]t)
 and Γ , B , Δ'[σ] ⊢ lift_Δ' (x[keep^n σ])
 -}
 -- cas general de [wkS]T
-[keep∘wk]V : ∀ n σp xp → (xp [ iter n keep (wkS σp) ]V ) ≡  (liftt n (xp [ iter n keep σp ]V))
+-- ITA
+[keep-wkS]V : ∀ n σp xp → (xp [ iter n keep (wkS σp) ]V ) ≡  (liftt n (xp [ iter n keep σp ]V))
 
 -- [wkS]V n σp xp = ?
 
-[keep∘wk]V 0 l xp = olookup-map (liftt 0) xp err l
+[keep-wkS]V 0 l xp = olookup-map (liftt 0) xp err l
 -- [wkS]V 0 (x ∷ σp) (S xp) = {!olookup-map (liftt 0) xp err σp!}
 
 -- x[(wkS (keep^n nil))] = liftt (S n) (x[(wkS (keep^n nil)))])
@@ -482,83 +494,104 @@ et par lift-liftt, c'est
 (olookup (map (liftt 0 . liftt n) (iter n (λ σ → V 0 ∷ map (liftt 0) σ) nil)) xp err)
 
 -}
-[keep∘wk]V (S n) l (S xp)
+[keep-wkS]V (S n) l (S xp)
   rewrite olookup-map (liftt 0) xp err (iter n keep l)
   | olookup-map (liftt 0) xp err (iter n keep (wkS l))
   =
-  ap (liftt 0) ([keep∘wk]V n l xp) ◾ ! (lift-liftt 0 n _)
-[keep∘wk]V (S n) σp 0 = refl
+  ap (liftt 0) ([keep-wkS]V n l xp) ◾ ! (lift-liftt 0 n _)
+[keep-wkS]V (S n) σp 0 = refl
 -- [wkS]V n l 0 = {!j!}
 
 -- [wkS]V n (x ∷ σp) (S xp) = {!!}
 
 
-[keep∘wk]t : ∀ n σp tp → (tp [ iter n keep (wkS σp) ]t ) ≡ liftt n (tp [ iter n keep σp ]t)
-[keep∘wk]t n σ (V x) = [keep∘wk]V n σ x
-[keep∘wk]t n σ (app t u) rewrite [keep∘wk]t n σ t | [keep∘wk]t n σ u = refl
-[keep∘wk]t n σ (appNI t u) rewrite [keep∘wk]t n σ t = refl
-[keep∘wk]t n σ (ΠInf B) rewrite funext (λ a → [keep∘wk]t n σ (B a)) = refl
-[keep∘wk]t n σ err = refl
+[keep-wkS]t : ∀ n σp tp → (tp [ iter n keep (wkS σp) ]t ) ≡ liftt n (tp [ iter n keep σp ]t)
+[keep-wkS]t n σ (V x) = [keep-wkS]V n σ x
+[keep-wkS]t n σ (app t u) rewrite [keep-wkS]t n σ t | [keep-wkS]t n σ u = refl
+[keep-wkS]t n σ (appNI t u) rewrite [keep-wkS]t n σ t = refl
+[keep-wkS]t n σ (ΠInf B) rewrite funext (λ a → [keep-wkS]t n σ (B a)) = refl
+[keep-wkS]t n σ err = refl
 
--- [keep∘wk]T : ∀ σp Ap → (Ap [ (wkS σp) ]T ) ≡ wkT (Ap [ σp ]T)
+-- [keep-wkS]T : ∀ σp Ap → (Ap [ (wkS σp) ]T ) ≡ wkT (Ap [ σp ]T)
 -- cas general de [wkS]T
-[keep∘wk]T : ∀ n σp Ap → (Ap [ iter n keep (wkS σp) ]T ) ≡ liftT n (Ap [ iter n keep σp ]T)
-[keep∘wk]T n σp Up = refl
-[keep∘wk]T n σp (Elp x) = ap Elp ([keep∘wk]t n σp x)
-[keep∘wk]T n σp (ΠΠp Ap Bp) rewrite [keep∘wk]t n σp Ap
-  | [keep∘wk]T (S n) σp Bp
+[keep-wkS]T : ∀ n σp Ap → (Ap [ iter n keep (wkS σp) ]T ) ≡ liftT n (Ap [ iter n keep σp ]T)
+[keep-wkS]T n σp Up = refl
+[keep-wkS]T n σp (Elp x) = ap Elp ([keep-wkS]t n σp x)
+[keep-wkS]T n σp (ΠΠp Ap Bp) rewrite [keep-wkS]t n σp Ap
+  | [keep-wkS]T (S n) σp Bp
   = refl
-[keep∘wk]T n σp (ΠNI Bp) rewrite
-   funext (λ a → [keep∘wk]T n σp (Bp a))
+[keep-wkS]T n σp (ΠNI Bp) rewrite
+   funext (λ a → [keep-wkS]T n σp (Bp a))
   = refl
 
 -- needed to prove wkSw (weakening preserve well typed substitution)
+-- ITA
 [wkS]T : ∀ σp Ap → (Ap [ (wkS σp) ]T ) ≡ wkT (Ap [ σp ]T)
-[wkS]T = [keep∘wk]T 0
+[wkS]T = [keep-wkS]T 0
 
 [wkS]t : ∀ σp tp → (tp [ (wkS σp) ]t ) ≡ wkt (tp [ σp ]t)
-[wkS]t = [keep∘wk]t 0
+[wkS]t = [keep-wkS]t 0
 
 [wkS]V : ∀ σp xp → (xp [ (wkS σp) ]V ) ≡ wkt (xp [ σp ]V)
-[wkS]V = [keep∘wk]V 0
+[wkS]V = [keep-wkS]V 0
+
+
+infix  6 _∘p_
+-- s2: Γ → Δ et s1 : Δ → Y
+-- alors s1 ∘ s2 : Γ → Y
+_∘p_ : Subp → Subp → Subp
+s1 ∘p s2 = map (_[ s2 ]t) s1
+
+-- We deduce
+-- ITA
+∘wkS : ∀ σ τ → σ ∘p (wkS τ) ≡ wkS (σ ∘p τ)
+∘wkS σ τ = 
+   pw-map=  (λ x →  [wkS]t τ x) _  ◾ ! (map-∘  wkt (_[ τ ]t)σ) 
 
 
 -- \wk_n[\keep^n\circ \cons]
 -- cas général de wk[,]T
-wk[keep∘::]V : ∀ n xp σp tp → (liftV n xp [ iter n keep (tp ∷ σp) ]V) ≡ (xp [ iter n keep σp ]V)
+-- ITA
+wk[keep-,]V : ∀ n xp σp tp → (liftV n xp [ iter n keep (tp ∷ σp) ]V) ≡ (xp [ iter n keep σp ]V)
 
-wk[keep∘::]V 0 x σ z = refl
-wk[keep∘::]V (S n) 0 σ z = refl
-wk[keep∘::]V (S n) (S x) σ z rewrite olookup-map (liftt 0) (liftV n x) err (iter n keep (z ∷ σ))
-  | wk[keep∘::]V n x σ z = ! (olookup-map (liftt 0) x err (iter n keep ( σ)))
+wk[keep-,]V 0 x σ z = refl
+wk[keep-,]V (S n) 0 σ z = refl
+wk[keep-,]V (S n) (S x) σ z rewrite olookup-map (liftt 0) (liftV n x) err (iter n keep (z ∷ σ))
+  | wk[keep-,]V n x σ z = ! (olookup-map (liftt 0) x err (iter n keep ( σ)))
 
-wk[keep∘::]t : ∀ n up σp tp → (liftt n up [ iter n keep (tp ∷ σp) ]t) ≡ (up [ iter n keep σp ]t)
+wk[keep-,]t : ∀ n up σp tp → (liftt n up [ iter n keep (tp ∷ σp) ]t) ≡ (up [ iter n keep σp ]t)
 
-wk[keep∘::]t n (V x) σp tp = wk[keep∘::]V  n x σp tp
-wk[keep∘::]t n (app tp up) σp zp rewrite wk[keep∘::]t n tp σp zp | wk[keep∘::]t n up σp zp = refl
-wk[keep∘::]t n (appNI tp up) σp zp rewrite wk[keep∘::]t n tp σp zp = refl
-wk[keep∘::]t n (ΠInf B) σp zp rewrite funext (λ  a →   wk[keep∘::]t n (B a) σp zp) = refl
-wk[keep∘::]t n err σp zp = refl
+wk[keep-,]t n (V x) σp tp = wk[keep-,]V  n x σp tp
+wk[keep-,]t n (app tp up) σp zp rewrite wk[keep-,]t n tp σp zp | wk[keep-,]t n up σp zp = refl
+wk[keep-,]t n (appNI tp up) σp zp rewrite wk[keep-,]t n tp σp zp = refl
+wk[keep-,]t n (ΠInf B) σp zp rewrite funext (λ  a →   wk[keep-,]t n (B a) σp zp) = refl
+wk[keep-,]t n err σp zp = refl
 
-wk[keep∘::]T : ∀ n Ap σp tp → (liftT n Ap [ iter n keep (tp ∷ σp) ]T) ≡ (Ap [ iter n keep σp ]T)
+wk[keep-,]T : ∀ n Ap σp tp → (liftT n Ap [ iter n keep (tp ∷ σp) ]T) ≡ (Ap [ iter n keep σp ]T)
 
-wk[keep∘::]T n Up σp' tp = refl
-wk[keep∘::]T n (Elp x) σp' tp rewrite wk[keep∘::]t n x σp' tp  = refl
-wk[keep∘::]T n (ΠΠp Ap Bp) σp' tp rewrite wk[keep∘::]t n Ap σp' tp
-  = ap (ΠΠp _) ( wk[keep∘::]T (S n) Bp σp' tp )
-wk[keep∘::]T n (ΠNI Bp) σp' tp
-  = ap ΠNI  (funext (λ a → wk[keep∘::]T n (Bp a) σp' tp ))
+wk[keep-,]T n Up σp' tp = refl
+wk[keep-,]T n (Elp x) σp' tp rewrite wk[keep-,]t n x σp' tp  = refl
+wk[keep-,]T n (ΠΠp Ap Bp) σp' tp rewrite wk[keep-,]t n Ap σp' tp
+  = ap (ΠΠp _) ( wk[keep-,]T (S n) Bp σp' tp )
+wk[keep-,]T n (ΠNI Bp) σp' tp
+  = ap ΠNI  (funext (λ a → wk[keep-,]T n (Bp a) σp' tp ))
 
 -- cas particuler: needed to prove that substittion on variables presreve typing : Varw[]
 wk[,]T : ∀ Ap tp σp  → ((wkT Ap ) [ tp ∷ σp ]T) ≡ (Ap [ σp ]T)
 -- wk[,]T Ap tp σp  = {!Ap!}
-wk[,]T Ap tp σp = wk[keep∘::]T 0 Ap σp tp
+wk[,]T Ap tp σp = wk[keep-,]T 0 Ap σp tp
 
 wk[,]t : ∀ zp tp σp  → (wkt zp [ tp ∷ σp ]t) ≡ (zp [ σp ]t)
-wk[,]t zp tp σp = wk[keep∘::]t 0 zp σp tp
+wk[,]t zp tp σp = wk[keep-,]t 0 zp σp tp
 
 wk[,]V : ∀ xp tp σp  → (S xp [ tp ∷ σp ]V) ≡ (xp [ σp ]V)
-wk[,]V xp tp σp = wk[keep∘::]V 0 xp σp tp
+wk[,]V xp tp σp = wk[keep-,]V 0 xp σp tp
+
+-- ITA
+wk∘, : ∀ σ t δ → ((wkS σ) ∘p (t ∷ δ)) ≡ (σ ∘p δ)
+wk∘, σ t δ rewrite map-∘ (_[ t ∷ δ ]t) wkt σ =
+  pw-map= (λ x → wk[,]t x t δ ) σ
+
 
 -- cas général de [0↦][]T
 {-
@@ -578,6 +611,7 @@ l.h.s.
 
 -}
 -- ici je bloque!
+-- ITA
 [↦][keep]V : ∀ n x z σ
   -- (r : n < length σ)
   →
@@ -636,7 +670,7 @@ l.h.s.
 
 [0↦][]T =  [↦][keep]T 0
 
--- wk[keep∘::]T Ap nil
+-- wk[keep-,]T Ap nil
 
 
 
@@ -737,6 +771,7 @@ wkTel (Γ ▶p A) = wkTel Γ ▶p liftT ∣ Γ ∣ A
 
 
 -- do we really need to show this ?
+-- ITA
 wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
 liftTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}(Bw : (Γp ^^ Δp) ⊢ Bp) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftT ∣ Δp ∣ Bp)
 lifttw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}{tp}(tw : (Γp ^^ Δp) ⊢ tp ∈ Bp) →
@@ -799,6 +834,7 @@ wkSw (,sw Δw σw Aw tw) Bw  = ,sw Δw (wkSw σw Bw) Aw (transport! (λ A → _ 
 
 
 -- Tmw[] : ∀ {Γp}{tp}
+-- ITA
 Varw[] : ∀ {Γp}{xp}{Ap}(xw : Γp ⊢ xp ∈v Ap)
   {Δp}{σp}(σw :  Δp ⊢ σp ⇒ Γp) →
   Δp ⊢ (xp [ σp ]V ) ∈ (Ap [ σp ]T)
@@ -826,6 +862,8 @@ Tyw[] : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap) {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ 
 
 -- needed for the Π case of preservation of typing by the substitution. (Tyw[])
 -- Δw is needed for Elw
+-- this definition is not necessary but allows to factor some code
+-- NITA
 keepw : ∀ {Γp}(Γw : Γp ⊢){Δp}(Δw : Δp ⊢){σp}(σw :  Γp ⊢ σp ⇒ Δp) {Ap}(Aw : Δp ⊢ Ap ∈ Up ) → (Γp ▶p (Elp Ap [ σp ]T )) ⊢ (keep σp) ⇒ (Δp ▶p Elp Ap)
 
 
@@ -1068,29 +1106,27 @@ instance
   i-SubwP = SubwP _ _ _
 
 
-wkV-keep : ∀ s x →  (S x [ keep s ]V) ≡ wkt (x [ s ]V)
-wkV-keep s x = wk[,]V x (V 0) (wkS s) ◾ [wkS]V s x
+-- NITA
+wk[keep]V : ∀ s x →  (S x [ keep s ]V) ≡ wkt (x [ s ]V)
+wk[keep]V s x = wk[,]V x (V 0) (wkS s) ◾ [wkS]V s x
 
-wkt-keep : ∀ s t →  (wkt t [ keep s ]t) ≡ wkt (t [ s ]t)
-wkt-keep s t = wk[,]t t (V 0) (wkS s) ◾ [wkS]t s t
+wk[keep]t : ∀ s t →  (wkt t [ keep s ]t) ≡ wkt (t [ s ]t)
+wk[keep]t s t = wk[,]t t (V 0) (wkS s) ◾ [wkS]t s t
 
-infix  6 _∘p_
--- s2: Γ → Δ et s1 : Δ → Y
--- alors s1 ∘ s2 : Γ → Y
-_∘p_ : Subp → Subp → Subp
-s1 ∘p s2 = map (_[ s2 ]t) s1
 
 -- needed for keep∘
-wkS∘ : ∀ s1 s2 → wkS (s1 ∘p s2) ≡ ((wkS s1) ∘p (keep s2))
-wkS∘ s1 s2 = map-∘  wkt (_[ s2 ]t)s1 ◾
-  pw-map=  (λ x → ! (wkt-keep s2 x) ) _  ◾ ! (map-∘  (_[ keep s2 ]t) wkt s1)
+-- NITA
+wkS∘keep : ∀ s1 s2 → ((wkS s1) ∘p (keep s2)) ≡ wkS (s1 ∘p s2)
+wkS∘keep s1 s2 = wk∘, s1 _ _ ◾ ∘wkS s1 s2
 
 
 -- for the Π case of [∘]T
+-- NITA
 keep∘ : ∀ s1 s2 → (keep (s1 ∘p s2)) ≡ (keep s1 ∘p keep s2)
-keep∘ s1 s2 rewrite wkS∘ s1 s2 = refl
+keep∘ s1 s2 rewrite wkS∘keep s1 s2 = refl
 
 -- needed for the _[_]T case of setmodelCOmponents
+--ITA
 [∘]V : ∀ x s1 s2 → (x [ s1 ∘p s2 ]V) ≡ (x [ s1 ]V [ s2 ]t)
 [∘]V x s1 s2 = olookup-map (_[ s2 ]t) x err s1
 
@@ -1168,9 +1204,6 @@ idpw {(Γ ▶p A)} (▶w Γw Aw) = ,sw Γw (wkSw (idpw Γw) Aw) Aw
 -- idr nilw = refl
 -- idr (,sw σw Aw tw) = ap2 _∷_ ([idp]t tw) (idr σw)
 
-wk∘, : ∀ σ t δ → ((wkS σ) ∘p (t ∷ δ)) ≡ (σ ∘p δ)
-wk∘, σ t δ rewrite map-∘ (_[ t ∷ δ ]t) wkt σ =
-  pw-map= (λ x → wk[,]t x t δ ) σ
   -- pw-map= (λ x → {![wkS]t!}) σ
 
 idl : ∀ {Γ Δ : Conp}{σ}(σw :  Γ ⊢ σ ⇒ Δ) → (idp ∣ Δ ∣ ∘p σ) ≡ σ
@@ -1217,7 +1250,7 @@ ass {σ}{δ}{ν} =
 
 [<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 B)} {.0} (V0w  Γw Aw) z = refl
 [<>]V-n {Γ} {E} {Δ ▶p B} {.(liftT 0 Bp)} {.(S xp)} (VSw  Γw Aw {Bp} Bw {xp} xw) z =
-     wkV-keep
+     wk[keep]V
      (iter ∣ Δ ∣ keep < ∣ Γ ∣ ⊢ z >)
       xp
     ◾

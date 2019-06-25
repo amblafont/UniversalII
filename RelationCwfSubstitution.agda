@@ -106,11 +106,11 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → (Γ ▶p Elp (A [ σ ]t)) ⊢ 0 ∈v x) ([keep∘wk]T 0 σ (Elp A))
+      (transport! (λ x → (Γ ▶p Elp (A [ σ ]t)) ⊢ 0 ∈v x) ([keep-wkS]T 0 σ (Elp A))
       (V0w Γw  (Tyw[] (Elw Δw Aw) Γw σw)))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am M.[ ₁ σm ]t))) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
-    vz~ rewrite ([keep∘wk]T 0 σ (Elp A)) =
+    vz~ rewrite ([keep-wkS]T 0 σ (Elp A)) =
       Γm ,
       (M.El (₁ Am M.[ ₁ σm ]t) , (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl) ,
       -- Ty[]~ Γm Δm σm Am) ,
@@ -257,11 +257,11 @@ keep~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
     refl
   where
     vz~ : Var~
-      (transport! (λ x → (Γ ▶p (Elp A [ σ ]T)) ⊢ 0 ∈v x) ([keep∘wk]T 0 σ (Elp A))
+      (transport! (λ x → (Γ ▶p (Elp A [ σ ]T)) ⊢ 0 ∈v x) ([keep-wkS]T 0 σ (Elp A))
       (V0w Γw  (Elw Γw (Tmw[] Aw Γw σw))))
       (tr (M.Tm ((₁ Γm) M.▶ M.El (₁ Am) M.[ ₁ σm ]T)) (M.[][]T {A = M.El (₁ Am)}) M.vz)
 
-    vz~ rewrite ([keep∘wk]t 0 σ A) =
+    vz~ rewrite ([keep-wkS]t 0 σ A) =
       Γm ,
       ((_ , (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl)) ,
       refl ,
