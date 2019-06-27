@@ -427,6 +427,59 @@ module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
     is∙t : isTel Γ Γ
     is▶t : ∀ {Δ} → isTel Γ Δ → (A : Ty Δ) → isTel Γ (Δ ▶ A)
 
+  data Tel'   : (Γ : Con) → Set i where
+    ∙t' : ∀ {Γ} → Tel' Γ
+    _◀t_ : ∀ {Γ} → (A : Ty Γ) → Tel' (Γ ▶ A) → Tel' Γ
+
+  _^^'_ : (Γ : Con) (Δ : Tel' Γ) → Con
+  Γ ^^' ∙t' = Γ
+  Γ ^^' (A ◀t Δ) = (Γ ▶ A) ^^' Δ
+
+  _▶t'_ : ∀ {Γ}(Δ : Tel' Γ) (A : Ty (Γ ^^' Δ)) → Tel' Γ
+  -- Δ ▶t' A = ?
+  ∙t' ▶t' A = A ◀t ∙t'
+  (B ◀t Δ) ▶t' A = B ◀t (Δ ▶t' A)
+
+-- returns the maximum prefix of A ◀t Δ
+  firsts : ∀ {Γ}{A : Ty Γ}(Δ : Tel' (Γ ▶ A)) → Tel' Γ
+  firsts {A = A} ∙t' = ∙t'
+  firsts {A = A}(B ◀t Δ) = A ◀t firsts Δ
+
+  last : ∀ {Γ}{A : Ty Γ}(Δ : Tel' (Γ ▶ A)) → Ty (Γ ^^' firsts Δ)
+  -- last {A}Δ = ?
+  last {A = A} ∙t' = A
+  last {A = A} (B ◀t Δ) = last Δ
+
+  ▶t=◀t : ∀ {Γ}{A : Ty Γ}(Δ : Tel' (Γ ▶ A)) →
+     A ◀t Δ ≡ firsts Δ ▶t' last Δ
+  -- ▶t=◀t {Γ}{A}Δ  = {!!}
+  ▶t=◀t {Γ} {A} ∙t' = refl
+  ▶t=◀t {Γ} {A} (B ◀t Δ) = ap (_ ◀t_) (▶t=◀t Δ)
+
+  -- Telrec_last : ∀{i}(P : ∀ {Γ}(Δ : Tel' Γ) → Set i)
+  --   (P∙ : ∀ Γ → P {Γ} ∙t' )
+  --   (P▶ : ∀ {Γ} (Δ : Tel' Γ)(A : Ty (Γ ^^' Δ)) → P Δ → P (Δ ▶t' A))
+  --   → ∀ {Γ}(Δ : Tel' Γ) → P Δ
+  -- -- Telrec_last P P∙ P◀ {Γ}Δ = {!Δ!}
+  -- Telrec P last P∙ P▶ {Γ} ∙t' = P∙ Γ
+  -- Telrec P last P∙ P▶ {Γ} (A ◀t Δ) = transport! P ( ▶t=◀t Δ ) (P▶ (firsts Δ) (last Δ) {!!})
+  -- transport! P ( ▶t=◀t Δ ) {!!}
+
+  _[_]Te'  : {Γ Δ : Con} → ∀ (T : Tel' Δ) (s : Sub Γ Δ)  → Tel' Γ
+  ∙t' [ s ]Te' = ∙t'
+  (A ◀t T) [ s ]Te' = (A [ s ]T) ◀t (T [  s ^ A ]Te')
+
+  verylongWk : ∀ {Γ}(Δ : Tel' Γ) → Sub (Γ ^^' Δ) Γ
+  verylongWk {Γ} ∙t' = id
+  verylongWk {Γ} (A ◀t Δ) = wk ∘ verylongWk Δ
+
+  longₛ' : {Γ Δ : Con} → ∀ (T : Tel' Δ) (s : Sub Γ Δ)  → Sub (Γ ^^' (T [ s ]Te')) (Δ ^^' T)
+  longₛ' ∙t' s = s
+  longₛ' (A ◀t T) s = longₛ' T (s ^ A)
+
+  longWk' : ∀{Γ}{E : Ty Γ}(Δ : Tel' Γ) → Sub ((Γ ▶ E) ^^' (Δ [ wk {Γ = Γ} {A = E} ]Te')) (Γ ^^' Δ)
+  longWk' {Γ}{E} Δ = longₛ' Δ (wk {Γ = Γ}{A = E})
+
   Tel : Con → Set i
   Tel Γ = Σ _ (isTel Γ)
 

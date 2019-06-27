@@ -131,8 +131,6 @@ Now the UnivΠ part
 
 
 
-wkS=∘wk : ∀ {Γ}{Δ}{σ}(σw :  Γ ⊢ σ ⇒ Δ){A}(Aw : Γ ⊢ A) → wkS σ ≡ σ ∘p (wk ∣ Γ ∣)
-wkS=∘wk {Γ}{Δ}{σ}σw{A}Aw = ! (idr {σ = wkS σ} (wkSw σw Aw)) ◾ wk∘, _ _ _
 
 -- wkS (idp ∣ Γ ∣ ) ∘p  < ∣ Γ ▶p A ∣ ⊢ (V 0) >
 private

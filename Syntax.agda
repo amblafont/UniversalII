@@ -1293,5 +1293,64 @@ wk=[wk]t : ∀{Γ}{A}{t}(tw : Γ ⊢  t ∈ A) → wkt t ≡ t [ wk ∣ Γ ∣ ]
 wk=[wk]t {Γ}{A}{t}tw = ! ([wkS]t (idp ∣ Γ ∣) t ◾ ap wkt  ([idp]t tw))
 
 
+wkS=∘wk : ∀ {Γ}{Δ}{σ}(σw :  Γ ⊢ σ ⇒ Δ){A}(Aw : Γ ⊢ A) → wkS σ ≡ σ ∘p (wk ∣ Γ ∣)
+wkS=∘wk {Γ}{Δ}{σ}σw{A}Aw = ! (idr {σ = wkS σ} (wkSw σw Aw)) ◾ wk∘, _ _ _
 
 -- -}
+
+_^^'_ : Conp  → Conp → Conp
+Γ ^^' ∙p = Γ
+Γ ^^' (Δ ▶p A) = (Γ ▶p A) ^^' Δ
+
+-- like in mathcomp
+cats0 : ∀ Δp → ∙p ^^ Δp ≡ Δp
+cats0 ∙p = refl
+cats0 (Δp ▶p x) = ap (_▶p _) (cats0 Δp)
+
+-- Lemma catA s1 s2 s3 : s1 ++ s2 ++ s3 = (s1 ++ s2) ++ s3.
+-- Proof. by elim: s1 => //= x s1 ->. Qed.
+
+catA : ∀ s1 s2 s3 → (s1 ^^ s2) ^^ s3 ≡ s1 ^^ (s2 ^^ s3)
+catA s1 s2 ∙p = refl
+catA s1 s2 (s3 ▶p A) = ap (_▶p A) (catA s1 s2 s3)
+
+-- like last_ind of mathcomp
+Telrec-concat : ∀{i}(Γ : Conp)(P : ∀ (Δ : Conp) → Set i)
+    (P∙ :  P Γ )
+    (P▶ : ∀  (Δ : Conp)(A : Typ) → P Δ → P ((∙p ▶p A) ^^ Δ  ))
+    → ∀ (Δ : Conp) → P ( Δ ^^ Γ)
+
+Telrec-concat Γ P P∙ P▶ ∙p = transport! P (cats0 _) P∙ 
+Telrec-concat Γ P P∙ P▶ (Δ ▶p A) =  transport! P (catA Δ (∙p ▶p A) Γ) (Telrec-concat  (∙p ▶p A ^^ Γ) P
+  (P▶ Γ A P∙)
+  P▶ Δ )
+
+
+Tel-last-ind : ∀{i}(P : ∀ (Δ : Conp) → Set i)
+    (P∙ :  P ∙p )
+    (P▶ : ∀  (Δ : Conp)(A : Typ) → P Δ → P ((∙p ▶p A) ^^ Δ))
+    → ∀ (Δ : Conp) → P Δ
+
+Tel-last-ind P P∙ P▶ Δ =  ( Telrec-concat ∙p P P∙ P▶  Δ) 
+  -- Telrec_last : ∀{i}(P : ∀ {Γ}(Δ : Tel' Γ) → Set i)
+  --   (P∙ : ∀ Γ → P {Γ} ∙t' )
+  --   (P▶ : ∀ {Γ} (Δ : Tel' Γ)(A : Ty (Γ ^^' Δ)) → P Δ → P (Δ ▶t' A))
+  --   → ∀ {Γ}(Δ : Tel' Γ) → P Δ
+  -- -- Telrec_last P P∙ P◀ {Γ}Δ = {!Δ!}
+  -- Telrec P last P∙ P▶ {Γ} ∙t' = P∙ Γ
+  -- Telrec P last P∙ P▶ {Γ} (A ◀t Δ) = transport! P ( ▶t=◀t Δ ) (P▶ (firsts Δ) (last Δ) {!!})
+
+-- Lemma last_ind P :
+--   P [::] -> (forall s x, P s -> P (rcons s x)) -> forall s, P s.
+-- Proof.
+-- move=> Hnil Hlast s; rewrite -(cat0s s).
+-- elim: s [::] Hnil => [|x s2 IHs] s1 Hs1; first by rewrite cats0.
+-- by rewrite -cat_rcons; auto.
+-- Qed.
+^^'-^^ : ∀ Γ Δ E → Γ ^^' (Δ ^^ E) ≡ (Γ ^^' E) ^^' Δ
+^^'-^^ Γ Δ ∙p = refl
+^^'-^^ Γ Δ (E ▶p A) = ^^'-^^ (Γ ▶p A) Δ E
+
+∣^^∣ : ∀ Δ A → (∣ (∙p ▶p A) ^^ Δ ∣) ≡ S (∣ Δ ∣ )
+∣^^∣ ∙p A = refl
+∣^^∣ (Δ ▶p B) A = ap S (∣^^∣ Δ A)

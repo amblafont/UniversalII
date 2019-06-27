@@ -4,13 +4,163 @@
 open import Level
 open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import monlib
-open import Syntax as S
+
+open import Data.Nat renaming (suc to S)
 
 module RelationCwfWeakening {k : Level} where
 
 
+open import Syntax {k} as S
 import ModelCwf {k = k} as M
 open import RelationCwf
+
+
+Telw' : Conp  → Conp → Set (lsucc k)
+Telw' Γ ∙p = Lift (0 ≡ 0)
+Telw' Γ (Δ ▶p A) = Σ (Γ ⊢ A) (λ _ → (Telw' (Γ ▶p A) Δ))
+
+Tel~' : ∀ {Γ}{Δ}(Δw : Telw' Γ Δ){Γm}(Δm : M.Tel' Γm) → Set (lmax (lmax k M.i) M.j) 
+-- Tel~' {Γ}{Δ}Δw {Γm}Δm = {!Δ!}
+Tel~' {Γ} {∙p} Δw {Γm} Δm = Lift (Δm ≡ M.∙t')
+Tel~' {Γ} {Δ ▶p A} (Aw , Δw) {Γm} Em =
+  Σ (Σ _ (Ty~ Aw)) λ Am →
+  Σ (Σ _ (Tel~'  Δw )) λ Δm →
+  Em ≡ (₁ Am M.◀t ₁ Δm)
+
+Telrec-concat' : ∀{i}(Γ : Conp)(P : ∀ (Δ : Conp) → Set i)
+    (P∙ :  P Γ )
+    (P▶ : ∀  (Δ : Conp)(A : Typ) → P Δ → P (((∙p ▶p A) ^^ Δ )))
+    → ∀ (Δ : Conp) → P (Δ ^^ Γ)
+
+Telrec-concat' Γ P P∙ P▶ ∙p = {!!}
+Telrec-concat' Γ P P∙ P▶ (Δ ▶p A) = {! transport P ? (P▶ (Δ ^^ Γ) A ?) !}
+-- (Telrec-concat Γ P P∙ P▶ Δ)
+
+-- ^^'▶p : ∀ Γ Δ A → (Γ ^^' (Δ ▶))
+
+
+
+   -- → (wkw : Γ ^^' Δ ⊢ iter ∣ Δ ∣ wkS (idp ∣ Γ ∣) ⇒ Γ )
+   -- → (should be equal to iter ∣ Δ ∣ wkS (idp ∣ Γ ∣) ⇒ Γ )
+
+-- NTI: could be avoided. We want to state that it is equal to
+-- iter ∣ Δ ∣ wkS (idp ∣ Γ ∣) 
+verylongWk : Conp → Conp → Subp
+verylongWk ∙p Δ = nil
+verylongWk (Γ ▶p A) Δ = V ∣ Δ ∣ ∷ verylongWk Γ (Δ ▶p A)
+
+verlong▶pT : ∀ {Γ Δ A
+(A [ verylongWk Γ (( Δ) ▶p A) ]T)
+
+-- wkTel' : ℕ → Conp → Conp
+-- wkTel' n ∙p = ∙p
+-- wkTel' n (Δ ▶p A) = wkTel' (S n) Δ ▶p iter n wkT A
+
+{-
+Varn~ : ∀  {Γ} {Γw : Γ ⊢}{Γm}(Γr : Con~ Γw Γm)
+     {A}{Aw : Γ ⊢ A}{Am}(A~ : Ty~ Aw Am)
+     Δ'
+     {Δ}{Δw : Telw' (Γ ▶p A) (Δ ^^ Δ')} →
+    ∀ {Δm : M.Tel' (Γm M.▶ Am)}(Δ~ : Tel~' Δw Δm)
+    -- 
+    -- it should be equal to (A [ verylongWk Γ ((Δ ^^ Δ') ▶p A) ]T)
+     A'
+  (xw : ((Γ ▶p A) ^^' (Δ ^^ Δ')) ⊢ ∣ Δ ^^ Δ' ∣ ∈v
+        A') →
+        -- (A [ verylongWk Γ ((Δ' ^^ Δ) ▶p A) ]T)) →
+   Var~ xw
+      (tr (λ s → M.Tm (( Γm M.▶  Am) M.^^' Δm) ( Am M.[ s ]T))
+       (! M.wk∘) (M.π₂ (M.verylongWk Δm)))
+       -}
+
+
+
+Varnstat  =  λ Δ →
+   ∀  {Γ} {Γw : Γ ⊢}{Γm}(Γr : Con~ Γw Γm)
+     {A}{Aw : Γ ⊢ A}{Am}(A~ : Ty~ Aw Am)
+     {Δw : Telw' (Γ ▶p A) Δ} →
+    ∀ {Δm : M.Tel' (Γm M.▶ Am)}(Δ~ : Tel~' Δw Δm)
+    -- 
+    -- it should be equal to (A [ verylongWk Γ ((Δ ^^ Δ') ▶p A) ]T)
+     -- A'
+  (xw : ((Γ ▶p A) ^^' Δ) ⊢ ∣ Δ  ∣ ∈v
+        -- A'
+        (A [ verylongWk Γ (( Δ) ▶p A) ]T)
+        ) →
+   Var~ xw
+      (tr (λ s → M.Tm (( Γm M.▶  Am) M.^^' Δm) ( Am M.[ s ]T))
+       (! M.wk∘) (M.π₂ (M.verylongWk Δm)))
+
+Varn~ : ∀ {Δ} {Γ} {Γw : Γ ⊢}{Γm}(Γr : Con~ Γw Γm)
+     {A}{Aw : Γ ⊢ A}{Am}(A~ : Ty~ Aw Am)
+     {Δw : Telw' (Γ ▶p A) Δ} →
+    ∀ {Δm : M.Tel' (Γm M.▶ Am)}(Δ~ : Tel~' Δw Δm)
+    -- 
+    -- it should be equal to (A [ verylongWk Γ ((Δ ^^ Δ') ▶p A) ]T)
+     -- A'
+  (xw : ((Γ ▶p A) ^^' Δ) ⊢ ∣ Δ  ∣ ∈v
+        (A [ verylongWk Γ (( Δ) ▶p A) ]T)) →
+        -- (A [ verylongWk Γ ((Δ' ^^ Δ) ▶p A) ]T)) →
+   Var~ xw
+      (tr (λ s → M.Tm (( Γm M.▶  Am) M.^^' Δm) ( Am M.[ s ]T))
+       (! M.wk∘) (M.π₂ (M.verylongWk Δm)))
+
+Varn~ {Δ} = Tel-last-ind Varnstat {!Varnstat!} {!!} Δ
+
+
+Varn-succ~ : (Δ : Conp) (A : Typ) →
+      Varnstat Δ → Varnstat (∙p ▶p A ^^ Δ)
+Varn-succ~ Δ B vΔ {Γ}{Γw}{Γm}Γ~ {A}{Aw}{Am} A~ {Δw}{Δm}Δ~ xw rewrite ^^'-^^ (Γ ▶p A) (∙p ▶p B) Δ | ∣^^∣ Δ B
+  | Varw= _ _ _ xw {!VSw!}
+  = {!!}
+-- =
+--    λ { _ (VSw Γw' Aw' Bw xw ) →
+--      {!!}
+--      }
+-- Varn-succ~ Δ B vΔ {Γ} {Γw} {Γm} Γ~ {A} {Aw} {Am} A~ {Δw} {Δm} Δ~ _ (VSw Γw₁ Aw₁ Bw xw) | _ | refl | _ | refl = ?
+
+-- Varn~ {Γ}{Γw}{Γm}Γ~{A}{Aw}{Am}A~ {Δ}{Δw}{Δm}Δ~ A' xw = {!Δ!}
+
+-- Varn~ {Γ}{Γw}{Γm}Γ~{A}{Aw}{Am}A~{Δ}{Δw}{Δm}Δ~ xw = {!Δ!}
+-- Varn~ {Γ}{Γw}{Γm}Γ~{A}{Aw}{Am}A~ {Δ}{Δw}{Δm}Δ~ xw = {!Δ!}
+-- Varn~ {Γ} {Γw} {Γm} Γ~ {A} {Aw} {Am} A~ Δ' {_} {Δw} {Δm} Δ~ xw = {!!}
+-- -- Varn~ {Γ} {Γw} {Γm} Γ~ {A} {Aw} {Am} A~ Δ' {Δ ▶p B} {Δw} {Δm} Δ~ xw = {!!}
+-- Varn~ {Γ} {Γw} {Γm} Γ~ {A} {Aw} {Am} A~ Δ' {Δ ▶p B} {Δw} {Δm} Δ~ A' xw = {!xw!}
+
+
+wk^n~ : ∀ {Γ} {Γw : Γ ⊢}{Γm}(Γr : Con~ Γw Γm){Δ}{Δw : Telw' Γ Δ}
+   → ∀ {Δm : M.Tel' Γm}(Δ~ : Tel~' Δw Δm)
+-- {A}(Aw : Γ ⊢ A)
+   -- → (wkw : (Γ ▶p A) ^^' wkTel' 0 Δ ⊢ iter ∣ Δ ∣ wkS (idp ∣ Γ ∣) ⇒ Γ ^^' Δ)
+   -- → (wkw : Γ ^^' Δ ⊢ iter ∣ Δ ∣ wkS (idp ∣ Γ ∣) ⇒ Γ )
+   → (wkw : Γ ^^' Δ ⊢ verylongWk Γ Δ ⇒ Γ )
+   -- {Am : M.Ty Γm}
+   -- → ∀ {Γm}{Δm}(ΓΔm : M.isTel Γm Δm){Am : M.Ty Γm}
+   → Sub~ wkw (M.verylongWk  Δm)
+
+-- wk^n~ {Γ}{Γw}{Γm}Γr{Δ}Δw{A}Aw wkw Δm = {!!}
+-- wk^n~ {Γ}{Γw}{Γm}Γ~{Δ}{Δw}{Δm}Δ~ wkw  = {!!}
+wk^n~ {.∙p} {∙w} {Γm} Γ~ {Δ} {Δw} {Δm} Δ~ wkw = {!!}
+wk^n~ {.(_ ▶p _)} {▶w Γw Aw} (Γm , Am , refl) {Δ} {Δw} {Δm} Δ~ (,sw Γw' wkw {Ap = Ap}Aw' (vw xw))  
+  rewrite prop-has-all-paths Γw Γw' 
+    | prop-has-all-paths Aw' Aw =
+    Γm ,
+    (((M.verylongWk (₁ Am M.◀t Δm) ,
+       wk^n~ (₂ Γm) {Δ = Δ ▶p Ap } {Aw , Δw }
+        ((Am , (Δm , Δ~) , refl))
+        wkw
+        )) ,
+    Am ,
+    -- V ∣ Δ ∣ must be related to this guy
+      (
+      (
+      -- tr (M.Tm _) ( M.[][]T {A = ₁ Am} {M.verylongWk Δm}{M.wk}) (M.vz M.[  M.verylongWk Δm ]t)
+      tr (λ s → M.Tm _ (₁ Am M.[ s ]T)) (! M.wk∘) ( M.π₂  (M.verylongWk Δm) )
+      ,
+      {!!})
+      , refl , ! M.πη ◾ M.,s= (! M.wk∘) (from-transp _ (! M.wk∘) refl)))
+
+{-
 
 
 -- σar : (Sub~ (keepw Γw σw (Elw Δw aw)) (₁ σm M.^ M.El (₁ am)))
@@ -273,3 +423,5 @@ wkSub~ {Γ} {Γw} Γm {.(_ ▶p _)} {_} {,sw Δw {σp = σp} σw {Ap = Ap} Aw {t
         tr-over (λ A t → Tm~ (lifttw Ew ∙p tw) {Am = A} t)
            etm
         (liftt~ Γm {Ew = Ew}Em {Δw = Γw} (M.∙t _ , Level.lift refl) {tw = tw} tm)
+
+-- -}

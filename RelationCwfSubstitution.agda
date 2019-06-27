@@ -14,8 +14,30 @@ module RelationCwfSubstitution {k : Level} where
 
 import ModelCwf {k = k} as M
 open import RelationCwf
-open import RelationCwfWeakening {k = k}
+-- open import RelationCwfWeakening {k = k}
 
+-- not needed for the inhabitation
+∘~ : ∀{Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+      {Δ}{Δw : Δ ⊢}(Δm : ∃ (Con~ Δw))
+      {σ}{σw : Γ ⊢ σ ⇒ Δ}(σm : ∃ (Sub~ σw {₁ Γm}{₁ Δm}))
+      {Y}{Yw : Y ⊢}(Ym : ∃ (Con~ Yw))
+      {δ}{δw : Y ⊢ δ ⇒ Γ}(δm : ∃ (Sub~ δw {₁ Ym}{₁ Γm}))
+      →
+      Sub~ {σ = σ ∘p δ} (∘w σw Yw δw) {₁ Ym}{₁ Δm} (₁ σm M.∘ ₁ δm)
+∘~ = {!!}
+
+wkSub~ : ∀
+  {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
+  { Δ σ} {σw : Γ ⊢ σ ⇒ Δ}
+  { Δm}(σm : ∃ (Sub~ σw {(₁ Γm)}{Δm}))
+  {A }{Aw : Γ ⊢ A} (Am : Σ (M.Ty (₁ Γm)) (Ty~ Aw)) →
+  Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
+
+wkSub~ {Γ}{Γw}Γm{Δ}{σ}{σw}{Δm}σm{A}{Aw}Am with (wkSw σw Aw)
+...  | wσw rewrite wkS=∘wk σw Aw  = {!∘~ Γm !}
+
+
+{-
 
 Var[]~ : ∀
    {Γm Δm : M.Con}
@@ -85,6 +107,7 @@ Ty[]~ : ∀
   {A}{Aw : Δ ⊢ A} (Am : ∃ (Ty~ Aw {₁ Δm}))
   → Ty~ (Tyw[] Aw Γw σw) {₁ Γm} (₁ Am M.[ ₁ σm ]T)
   -- Ty[]~ {Γm}{Δm}{Γ}Γw{Δ}{σ}{σw}  σm{T}{Tw}Tm  = {!!}
+
 
 keepEl~ : ∀ {Γp}{Γw : Γp ⊢}(Γm : ∃ (Con~ Γw))
   {Δp}{Δw : Δp ⊢}(Δm : ∃ (Con~ Δw))
@@ -157,7 +180,7 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
    --  (₁ Bm M.[ ₁ σm M.^ (M.El (₁ am)) ]T) , Bm[]~
 
 
--- -}
+-- 
 
 
   -- TODO factoriser avec app
@@ -358,3 +381,5 @@ id~ {(Γ ▶p A)} {▶w Γw Aw} (_ , Γm , Am , refl) =
       rewrite ( ([∘]T Ap σp δ))
       = tr2 (λ A → Tm~ (Tmw[] tw Yw δw) {Am = A}) (M.[][]T{A = ₁ Am}) refl
           (Tm[]~ Ym Γm δm {Am = ₁ Am M.[ ₁ σm ]T}{tw = tw} tm )
+
+-- -}
