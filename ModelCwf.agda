@@ -12,9 +12,6 @@ The postulated rewrite rules are actually satisfied for the syntax seen as a mod
 It would be nice if we later only use the recursor for models which actually satisifies
 these equations definitionally.
 
-At the end, I define telescopes as it seems I need them to take into account the weakening
-whose definition precedes the one of full substitutions in the syntax (becaseu of the Π A B case:
-indeed B is in an extended context)
 
 
 -}
@@ -150,4 +147,3 @@ module Postulats where
 open Postulats public
 open CwF RewCwF public
 open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public
-open Telescope RewCwF public

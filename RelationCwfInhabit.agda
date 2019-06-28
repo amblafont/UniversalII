@@ -15,10 +15,6 @@ open import RelationCwfWeakening {k = k}
 open import RelationCwfSubstitution {k = k}
 
 
-Σ▶~ : ∀ {Γ}{Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
-   {A}{Aw : Γ ⊢ A}(Am : ∃ (Ty~ Aw {₁ Γm}))
-   → ∃ (Con~ (▶w Γw Aw))
-Σ▶~ Γm Am = _ , Γm , Am , refl
 
 Σ▶El~ : ∀ {Γ}{Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
    {A}
@@ -162,10 +158,13 @@ open import RelationCwfSubstitution {k = k}
     eC = fst=  (prop-path (ConP _) Cm (_ , ΓAm~ ))
     wE~ : Ty~ wkEw
           (transport! M.Ty eC (₁ Am M.[ M.wk ]T))
+
+    eConPh = ap (λ s → Ty~ _ (₁ Am M.[ s ]T)) (wkTelSᵐ∙= _ _)
     wE~ =
       tr!-over (λ a → Ty~ wkEw {a}) ( from-transp! M.Ty eC refl )
         (tr (λ w → Ty~ w (₁ Am M.[ M.wk {A = ₁ Am} ]T)) (prop-has-all-paths (wkTw Aw Aw) wkEw)
-          (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , Level.lift refl) Am))
+          (coe eConPh (liftT~ Γm Am {Δ = ∙p}{ Γw } Γm Am) ))
+          -- {! liftT~ Γm Am {Δ = ∙p}{ Γw } {! M.∙t _ , Level.lift refl !} Am !})
 
     eE = from-transp! _ _
       -- (fst=  (prop-has-all-paths Em (_ , {!wE~!})))
@@ -186,11 +185,12 @@ open import RelationCwfSubstitution {k = k}
    eC = fst=  (prop-path (ConP _) Cm (_ , ΓAm~ ))
    wE~ : Ty~ wkEw
     (transport! M.Ty eC (₁ Bm M.[ M.wk ]T))
+   eConPh = ap (λ s → Ty~ _ (₁ Bm M.[ s ]T)) (wkTelSᵐ∙= _ _)
     -- TODO: factoriser avec le cas Var~ précédent
    wE~ =
     tr!-over (λ a → Ty~ wkEw {a}) ( from-transp! M.Ty eC refl )
     (tr (λ w → Ty~ w (₁ Bm M.[ M.wk {A = ₁ Am} ]T)) (prop-has-all-paths (wkTw Aw Bw) wkEw)
-      (liftT~ Γm Am {Δ = ∙p}{ Γw } (M.∙t _ , Level.lift refl) Bm))
+      ( coe eConPh (liftT~ Γm Am {Δ = ∙p}{ Γw } Γm Bm) ))
 
    eE = from-transp! _ _
     (fst=  (prop-path (TyP _ _) Em (_ , wE~)))

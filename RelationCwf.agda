@@ -315,29 +315,16 @@ module RelationCwf {k : Level.Level}  where
       }}
 
 
+  -- heterogeneous
+  ConPh : ∀ {Γp} {Γw} {Γw'} (Γm : ∃ (Con~ {Γp} Γw))(Γm' : ∃ (Con~ {Γp} Γw'))
+    → ₁ Γm ≡ ₁ Γm'
+
+  ConPh {Γ}{Γw}{Γw'} Γm Γm' rewrite prop-has-all-paths Γw Γw' |
+    prop-path (ConP Γw') Γm Γm' = refl
 
 
-
--- La verion par récurrence sur Δp  est plus pratique dans certains cas que
--- la version Tel~ Δw Δm = Con~ Δw (₁ Δm)
--- mais beaucoup moinsdans le cas liftV~ quand le telescope est non vide.
--- en effet, dans ce cas, je dois pouvoir montrer que si le telescope est en relation
--- alors le contexte sous jacent l'est, et j'ai la flemme de le montrer.
--- Il semble cependant, j'en ai vraiment besoin dans l e cas liftV0 ∙p V0w
-  Tel~ : {Γp : Conp}{Δp : Conp}(Δw : Telw Γp Δp) → {Γm : M.Con} → M.Tel Γm → Set (lmax M.i (lmax M.j k))
-  -- Tel~ Δw Δm = Con~ Δw (₁ Δm)
-  -- Tel~ {Δp = Δp} Δw Δm = {!!}
-  Tel~ {Δp = ∙p} Δw Δm = Lift {ℓ   = lmax k M.j}(Δm ≡ M.∙t _)
-  Tel~ {Γ} {Δp = Δp ▶p Ap} (▶w Δw Aw) {Γm = Γm} Cm =
-    Σ (∃ (Tel~ {Γp = Γ }Δw {Γm}))
-    (λ Δm → Σ (∃ (Ty~ Aw {Γm M.^^ (₁ Δm)}))
-    λ Am → Cm ≡ (₁ Δm M.▶t ₁ Am))
-
-  ^^~ : {Γp : Conp}{Γw :  Γp ⊢}(Γm : ∃ (Con~ Γw))
-   {Δp : Conp}{Δw : Γp ^^ Δp ⊢} {Δm : M.Tel (₁ Γm)} →
-   (Δr : Tel~ {Γp = Γp}{Δp} Δw Δm) → Con~ Δw (₁ Γm M.^^ Δm)
-   -- Tel^^Con~{Γp}{Γw}Γm{Δp}{Δw}{Δm}Δr  = {!Δp!}
-  ^^~ {Γp} {Γw} Γm {∙p} {Δw} {_} (lift refl) rewrite prop-has-all-paths Δw Γw = ₂ Γm
-  ^^~ {Γp} {Γw} Γm {Δp ▶p Ap} {▶w Δw Aw}  (Δm , Am , refl) =
-     (_ , ^^~ Γm (₂ Δm)) ,
-     (Am , refl)
+  -- some helper
+  Σ▶~ : ∀ {Γ}{Γw : Γ ⊢} (Γm : ∃ (Con~ Γw))
+    {A}{Aw : Γ ⊢ A}(Am : ∃ (Ty~ Aw {₁ Γm}))
+    → ∃ (Con~ (▶w Γw Aw))
+  Σ▶~ Γm Am = _ , Γm , Am , refl

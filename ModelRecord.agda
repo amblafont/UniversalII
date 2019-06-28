@@ -282,10 +282,19 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
  wk∘^ : {Γ : Con}{Δ : Con}{A : Ty Δ}{σ : Sub Γ Δ} → wk ∘ (σ ^ A) ≡ σ ∘ wk
  wk∘^ = wk∘,
 
+ -- utile
+ [][]T=∘ : ∀{Γ}{Δ₁}{Δ₂}{E}(A : Ty E)
+    {σ₁ : Sub Γ Δ₁}{δ₁ : Sub Δ₁ E} 
+    {σ₂ : Sub Γ Δ₂}{δ₂ : Sub Δ₂ E} →
+   (e∘ : δ₁ ∘ σ₁ ≡ δ₂ ∘ σ₂)
+   → A [ δ₁ ]T [ σ₁ ]T ≡ A [ δ₂ ]T [ σ₂ ]T
+ [][]T=∘ A e∘ = [][]T ◾  ap (A [_]T) e∘ ◾ ! [][]T
+ 
+ -- [][]T ◾  ap (A [_]T) e∘ ◾ ! [][]T
+ 
  -- utile pour liftV0
-
  vz[^] : {Γ : Con}{Δ : Con}{A : Ty Δ}{σ : Sub Γ Δ} →
-   (vz [ (σ ^ A) ]t) == vz [ Tm _ ↓ [][]T ◾  ap (A [_]T) wk∘^ ◾ ! [][]T  ]
+   (vz [ (σ ^ A) ]t) == vz [ Tm _ ↓ [][]T=∘ A wk∘^ ]
 
  vz[^] {Γ}{Δ}{A}{σ} =
    ≅↓
@@ -365,10 +374,7 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
    ≡ ( B [ σ ^ A ]T [ < u [ σ ]t > ]T)
 
  [<>][]T {Γ}{A}{u}{B}{Y}{σ} =
-   [][]T {A =  B}{σ =  σ}{δ = _}
-   ◾ ap   (λ s → (B [ s ]T)) (<>∘ {A = A} ◾ ! ^∘<> )
-   ◾ (! ([][]T {A =  B} ))
-   -- {!!}
+   [][]T=∘ B (<>∘ {A = A} ◾ ! ^∘<> )
 
 
  [][]t : {Γ Δ : Con} {Σ : Con} {A : Ty Σ} {t : Tm Σ A}{σ : Sub Γ Δ}
@@ -385,6 +391,20 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
    where
    e : ((δ ∘ σ) ,s transport (Tm _ ) [][]T (t [ δ ]t [ σ ]t))  ≡  (< t > ∘ (δ ∘ σ))
    e =  (! (ap (_∘ σ) ( <>∘ ) ◾ ,∘ (from-transp _  [][]T refl) )) ◾ ass
+
+ -- utile
+ [][]t=∘ : ∀{Γ}{Δ₁}{Δ₂}{E}{A : Ty E}(t : Tm E A)
+    {σ₁ : Sub Γ Δ₁}{δ₁ : Sub Δ₁ E} 
+    {σ₂ : Sub Γ Δ₂}{δ₂ : Sub Δ₂ E} →
+   (e∘ : δ₁ ∘ σ₁ ≡ δ₂ ∘ σ₂)
+   → (t [ δ₁ ]t [ σ₁ ]t) == (t [ δ₂ ]t [ σ₂ ]t) [ Tm _ ↓ [][]T=∘ A e∘ ]
+ -- use of UIP (could probably be avoided here)
+ [][]t=∘ t e∘ = 
+    ≅↓
+      ((↓≅ [][]t)
+      ∘≅ (↓≅ (apd (t  [_]t) e∘))
+      ∘≅ ((↓≅ ([][]t)) !≅) )
+ 
 
  -- utilise [][]t
  wk[]t : ∀ {Γ}{Δ}{A : Ty Δ}{σ : Sub Γ Δ}{t : Tm Γ (A [ σ ]T)}
@@ -407,147 +427,6 @@ record CwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
 
 
 
-  {- ------------
-
-  Telescopes:
-  Ils sont nécessaires pour la raison suivante:
-  - preuve que la substitution préserve la relation ~ pour B du cas Π A B: j'ai un
-  weakening d'une substitution dont je dois prouver la relation
-  - j'en déduis que je dois d'abord prouver que le weakening préserve la relation
-  - Cela nécessite une notion de lift (le weakening ne suffit pas: Cf le cas Π A B) et donc de
-  télescope
-
-  je reprends la notion de télescope que j'avais faite pour le modèle standard
-
-  ------------   -}
-module Telescope {i : Level}{j : Level}(M : CwF {i} {j}) where
-  open CwF M
-
-  data isTel  (Γ : Con) : (Δ : Con) → Set i where
-    is∙t : isTel Γ Γ
-    is▶t : ∀ {Δ} → isTel Γ Δ → (A : Ty Δ) → isTel Γ (Δ ▶ A)
-
-  Tel : Con → Set i
-  Tel Γ = Σ _ (isTel Γ)
-
-  ∙t : (Γ : Con) → Tel Γ
-  ∙t Γ = _ , is∙t
-
-  _^^_ : (Γ : Con) (Δ : Tel Γ) → Con
-  _^^_ Γ Δ = ₁ Δ
-
-  _▶t_  : ∀ {Γ}(Δ : Tel Γ) → Ty (Γ ^^ Δ) → Tel Γ
-  _▶t_ {Γ} Δ A = (₁ Δ ▶ A) , is▶t (₂ Δ) A
-
-  Telₛ : {Γ Δ : Con} → ∀ {T}(iT : isTel Δ T) (s : Sub Γ Δ)  → Σ (Tel Γ) (λ x → Sub (Γ ^^ x) (Δ ^^ (_ , iT)))
-  Telₛ {_} {Δ} is∙t s  = ( _ , is∙t ) , s
-  -- Telₛ {Γ} {Δ} {.(Σ (₁ T) (₁ A) , _ , _)}  (is▶t T iT A) s  =
-  Telₛ {Γ} {Δ}   (is▶t {T} iT A) s  =
-    (_ , is▶t (₂ (₁ (Telₛ iT s))) (A [ ₂ (Telₛ iT s)  ]T)) ,
-    ((₂ (Telₛ iT s)) ^ A)
-
-  _[_]Te  : {Γ Δ : Con} → ∀ (T : Tel Δ) (s : Sub Γ Δ)  → Tel Γ
-  T [ s ]Te = ₁ (Telₛ (₂ T) s)
-
-  longₛ : {Γ Δ : Con} → ∀ (T : Tel Δ) (s : Sub Γ Δ)  → Sub (Γ ^^ (T [ s ]Te)) (Δ ^^ T)
-  longₛ T s = ₂ (Telₛ (₂ T) s)
-  longWk : ∀{Γ}{E : Ty Γ}(Δ : Tel Γ) → Sub ((Γ ▶ E) ^^ (Δ [ wk {Γ = Γ} {A = E} ]Te)) (Γ ^^ Δ)
-  longWk {Γ}{E} Δ = longₛ Δ (wk {Γ = Γ}{A = E})
-
-  wkTel : {Γ : Con}(E : Ty Γ)(Δ : Tel Γ) → Tel (Γ ▶ E)
-  wkTel {Γ} E Δ = Δ [ wk {Γ = Γ}{A = E} ]Te
-
-
-  liftT : {Γ : Con}(Δ : Tel Γ)(Ex : Ty Γ)(A : Ty (Γ ^^ Δ)) → Ty ((Γ ▶ Ex) ^^ wkTel Ex Δ)
-  liftT {Γ} Δ Ex A = A [ longWk {Γ = Γ}{Ex}Δ ]T
-
-  liftt : {Γ : Con}(Δ : Tel Γ)(Ex : Ty Γ){A : Ty (Γ ^^ Δ)}(t : Tm (Γ ^^ Δ) A) →
-    Tm ((Γ ▶ Ex) ^^ wkTel Ex Δ) (liftT Δ Ex A)
-  liftt {Γ} Δ Ex {A} t = t [ longWk Δ ]t
-
-
-  wk∘longWk : {Γ : Con}{Δ : Tel Γ}(A : Ty (Γ ^^ Δ))
-    {E : Ty Γ} →
-      wk ∘ longWk {E = E} (Δ ▶t A) ≡ longWk Δ ∘ wk
-
-  --
-  wk∘longWk {Γ}{Δ}A {E} =
-    (wk ∘ (longWk Δ ^ A))
-    =⟨  wk∘^ ⟩
-      (longWk Δ ∘  wk)
-    =∎
-
-
-  -- for this one, I checked the need of the explicit arguments
-  -- for the inference engine
-  lift-wkT : {Γ : Con}(Δ : Tel Γ){A : Ty (Γ ^^ Δ)}
-    (B : Ty (Γ ^^ Δ))
-    {E : Ty Γ} →
-    -- liftT Γ (Δ ▶t A) E (wkT (Γ ^^ Δ) A B) ≡
-    liftT (Δ ▶t A) E (B [ wk ]T) ≡ liftT Δ E B [ wk ]T
-    -- wkT (Γ ▶ E ^^ wkTel Γ E Δ) (liftT Γ Δ E A) (liftT Γ Δ E B)
-
-  lift-wkT {Γ} Δ {A} B {E} =
-
-    (B [ wk ]T [ longWk (Δ ▶t A)]T)
-
-      =⟨  [][]T {A = B} ⟩
-    (B [ wk ∘ longWk (Δ ▶t A)]T)
-
-      =⟨  ap (B [_]T) ( wk∘longWk {Δ = Δ} A {E} ) ⟩
-    (B [ longWk Δ ∘ wk ]T)
-
-      =⟨  ! ([][]T {A = B}) ⟩
-    (B [ longWk Δ ]T [ wk ]T)
-    =∎
-
-
-  lift-wkt : {Γ : Con}(Δ : Tel Γ){A : Ty (Γ ^^ Δ)}
-    {B : Ty (Γ ^^ Δ)}(t : Tm (Γ ^^ Δ) B)
-    {E : Ty Γ} →
-  -- liftT Γ (Δ ▶t A) E (wkT (Γ ^^ Δ) A B) ≡
-    liftt {Γ = Γ} (Δ ▶t A) E (t [ wk ]t) == liftt {Γ = Γ} Δ E t [ wk ]t [ Tm _ ↓ lift-wkT Δ B ]
-
-  lift-wkt {Γ}Δ{B}t{E} =
-    ≅↓
-      ((↓≅ [][]t)
-      ∘≅ (↓≅ (apd (t [_]t) ( wk∘longWk {Δ = Δ} B {E} )))
-      ∘≅ ((↓≅ ([][]t)) !≅) )
-
-  liftV0 : {Γ : Con}(Δ : Tel Γ) (A : Ty (Γ ^^ Δ))(Ex : Ty Γ) →
-    liftt  (Δ ▶t A)  Ex {A [ wk ]T} vz
-    == vz   [ Tm _ ↓ lift-wkT Δ A  ]
-
-  liftV0 {Γ} Δ A Ex =
-    ≅↓
-    ((vz [ longWk ( Δ ▶t A) ]t)
-        ≅⟨  ↓≅ vz[^] ⟩
-      vz
-      ≅∎)
-
-  <>∘longWk :
-    {Γ : Con}(Δ : Tel Γ){E : Ty Γ} {A : Ty (Γ ^^ Δ)}
-    {t : Tm (Γ ^^ Δ) A} →
-    (< t > ∘ longWk {E = E} Δ) ≡ (longWk {E = E}(Δ ▶t A) ∘ < t [ longWk Δ ]t >)
-  <>∘longWk {Γ}Δ{E}{A}{t} = <>∘ ◾ (! ^∘<>)
-
-  lift-subT : {Γ : Con}(Δ : Tel Γ){E : Ty Γ} {A : Ty (Γ ^^ Δ)}{B : Ty ((Γ ^^ Δ) ▶ A)}
-    {t : Tm (Γ ^^ Δ) A} →
-    liftT Δ E (B [ < t > ]T) ≡   (liftT (Δ ▶t A) E B) [ < (liftt Δ E t) > ]T
-
-  lift-subT {Γ} Δ {E}{A}{B}{t} =
-
-    (B [ < t > ]T [ longWk Δ ]T)
-
-      =⟨  [][]T {A = B} ⟩
-    (B [ < t > ∘ longWk Δ ]T)
-
-      =⟨  ap (B [_]T) (<>∘longWk  Δ {E = E} ) ⟩
-    (B [ longWk (Δ ▶t A) ∘ < t [ longWk Δ ]t > ]T)
-
-      =⟨  ! ([][]T {A = B}) ⟩
-    (B [ longWk (Δ ▶t A) ]T [ < t [ longWk Δ ]t > ]T)
-    =∎
 
 
 record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (lmax j k)))) where

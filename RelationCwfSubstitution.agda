@@ -96,8 +96,8 @@ keepEl~ {Γ}{Γw}Γm{Δ}{Δw}Δm{σ}{σw}σm{A}{Aw}Am
   rewrite prop-has-all-paths (Sub-Con2w σw) Δw
   =
     Δm ,
-    ((₁ σm M.∘ M.wk) , wkSub~ Γm σm (M.El (₁ Am M.[ ₁ σm ]t) ,
-       (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl)
+    ((₁ σm M.∘ M.wk) ,  wkSub~ Γm σm (M.El (₁ Am M.[ ₁ σm ]t)  ,
+       (_ , Tm[]~ Γm Δm σm {tw = Aw} Am) , refl) 
       -- (Tyw[] Aw Γw σw) (₁ Am M.[ ₁ σm ]T)
       ) ,
     (M.El (₁ Am) , Am , refl) ,
