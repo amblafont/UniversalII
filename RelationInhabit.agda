@@ -3,16 +3,16 @@
 -- proof Σ#~
 open import Level
 -- open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂)
-open import Hott renaming ( _∙_ to _◾_ ; transport to tr ; fst to ₁ ; snd to ₂)
-open import monlib
+open import EqLib renaming ( _∙_ to _◾_ ; transport to tr ; fst to ₁ ; snd to ₂)
+open import Lib
 
-module RelationCwfInhabit {k : Level} where
+module RelationInhabit {k : Level} where
 
-import ModelCwf {k} as M
+import ModelRew {k} as M
 open import Syntax {k} as S
-open import RelationCwf {k = k}
-open import RelationCwfWeakening {k = k}
-open import RelationCwfSubstitution {k = k}
+open import Relation {k = k}
+open import RelationWeakening {k = k}
+open import RelationSubstitution {k = k}
 
 
 

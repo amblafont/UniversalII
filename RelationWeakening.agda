@@ -1,17 +1,63 @@
 {-# OPTIONS  --rewriting --allow-unsolved-metas #-}
 
 
+{-
+
+In this file, we prove that weakening preserves the relation. This is useful to show that
+substitution preserves the relation, which is the ultimate goal.
+Indeed, for the substitution of the Π case, we want to show that:
+(Π A B)[σ] = Π A[σ] B[keep σ] relates their semantic counter-part.
+Using induction hypotheses, we are left to show that keep σ = 0 :: wkS σ relates to its semantic counterpart
+and so that wkS σ relates to its semantic counterpart when σ does.
+
+Hence, the goal of this file is to show that wkS σ relates to its semantic counterpart.
+It implies to show an analogous of this statement for terms and types, which is a bit tedious. It also requires to
+define a notion of telescope for the semantic model, in order to relate the weakening after a telescope
+to some semantic counterpart.
+
+-----------------------
+
+Now, I would like to suggest an alternative approach (not implemented)
+that avoid this painful recursion on the whole syntax to show that weakening preserve the relation.
+Let us go back to the step consisting in showing that wkS σ is related to its semantic counterpart.
+Actually, we can show that wkS σ = σ ∘ wk, so if can show that wk relates its semantic counterpart,
+we are done. 
+
+So it is enough to show that wk relates to its semantic counterpart, which must be possible even before
+the recursion showing that substitution preserves the relation.
+
+Here is a scheme.
+
+Recall that Γ ▶ B ⊢ wk_Γ : Γ and wk_Γ = wkS id_Γ
+We can try to show it by recursion: let's consider the extension case
+wk_Γ▶A = wkS (id_Γ▶A) = wkS (0 :: wkS id_Γ) = 1 :: wkS wkS id_Γ
+
+So actually, we are going to show by recursion on n < ∣ Γ ∣ that
+Γ ⊢ wkS ^ (n - Γ) : Γ_n
+
+where Γ_n is the prefix of Γ of length n
+
+That's the idea, but this requires to define the notion of prefix of a context in the model, which
+would replace the current notion of telescope that is needed here.
+Note that the current inductive isTel : M.Con → M.Con → Set could be renamed as isPrefix, or _≤_
+
+And actually, this wk^n already exists: it is longWk
+
+
+
+-}
+
 -- proof #~el
 open import Level
-open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂) hiding (_↦_)
-open import monlib
+open import EqLib renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂) hiding (_↦_)
+open import Lib
 open import Syntax as S
 
-module RelationCwfWeakening {k : Level} where
+module RelationWeakening {k : Level} where
 
 
-import ModelCwf {k = k} as M
-open import RelationCwf
+import ModelRew {k = k} as M
+open import Relation
 
 
 
@@ -302,7 +348,8 @@ liftV~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ ▶p C} {▶w Δw Cw} (_ , Δm , Cm , ref
 wkSub~ : ∀
   {Γ}{Γw : Γ ⊢}(Γm : ∃ (Con~ Γw))
   { Δ σ} {σw : Γ ⊢ σ ⇒ Δ}
-  { Δm}(σm : ∃ (Sub~ σw {(₁ Γm)}{Δm}))
+  { Δm}
+  (σm : ∃ (Sub~ σw {(₁ Γm)}{Δm}))
   {A }{Aw : Γ ⊢ A} (Am : Σ (M.Ty (₁ Γm)) (Ty~ Aw)) →
   Sub~ (wkSw σw Aw)(₁ σm M.∘ M.wk {A = ₁ Am})
 

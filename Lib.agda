@@ -2,10 +2,10 @@
 open import Level 
 -- open import HoTT renaming (_==_ to _≡_ ; _∙_ to _◾_ ; idp to refl ; transport to transport ; fst to ₁ ; snd to ₂)
 -- open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to transport ; fst to ₁ ; snd to ₂)
-open import Hott renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ )
+open import EqLib renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ )
 -- open import lib.types.Lift
 
-module monlib where
+module Lib where
 
 open import Relation.Binary.PropositionalEquality public using (_≡_; refl)
 open import Data.List public using (List; _∷_ ; map) renaming ([] to nil)
@@ -172,7 +172,7 @@ instance
 ₁mk-triple= refl refl = refl
 
 
--- stuff for ModelRecord (picken from Ambrus'repo)
+-- stuff for Model (picken from Ambrus'repo)
 tr2 :
   ∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
   {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
@@ -180,7 +180,7 @@ tr2 :
   → C a₀ b₀ → C a₁ b₁
 tr2 {B = B} C {a₀} a₂ b₂ c₀ = transport (λ x → C (₁ x) (₂ x)) (pair= a₂ (from-transp _ a₂ b₂)) c₀
 
--- this is for InitialMorphism
+-- this is for SyntaxIsInitial
 tr3 : 
   ∀ {i j k l}{A : Set i}{B : A → Set j}{C : ∀ a → B a → Set k}
   (D : ∀ a b → C a b → Set l)
@@ -190,7 +190,7 @@ tr3 :
   → D a₀ b₀ c₀ → D a₁ b₁ c₁
 tr3 {B = B} {C = C} D refl refl refl c₀ = c₀
 
--- -- this is for InitialMorphism
+-- -- this is for SyntaxIsInitial
 -- tr2=transport :
 --   ∀ {i j k}{A : Set i}{B : A → Set j}(C : ∀ a → B a → Set k)
 --   {a₀ : A}{a₁ : A}(a₂ : a₀ ≡ a₁)
@@ -198,12 +198,12 @@ tr3 {B = B} {C = C} D refl refl refl c₀ = c₀
 --   → (c : C a₀ b₀) → tr2 C a₂ b₂ c ≡ transport (λ x → C (₁ x) (₂ x)) (pair= a₂ (from-transp _ a₂ b₂)) c
 -- tr2=transport {B = B} C {a₀}{.a₀} refl refl c₀ = refl
 
--- can't find this in Hott Lib...
+-- can't find this in EqLib Lib...
 transpose-tr! :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x ≡ y)
   {a : B y} {b : B x} (e : a ≡ transport B p b) → transport B (! p) a ≡ b  
 transpose-tr!  B refl e = e
 
--- this is for ModelRecord
+-- this is for Model
 transpose-tr!' :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : x ≡ y)
   {a : B y} {b : B x} (e : transport B p b ≡ a ) → b ≡ transport B (! p) a
 transpose-tr!' B refl e = e
@@ -217,7 +217,7 @@ transpose-tr!' B refl e = e
 data ⊤' {i}: Type i  where
   unit' : ⊤'
 
--- can't find this in Hott Lib...
+-- can't find this in EqLib Lib...
 transpose-transport :  ∀ {i j} {A : Type i} (B : A → Type j) {x y : A} (p : y ≡ x)
   {a : B y} {b : B x} (e : a ≡ transport B (! p) b) → transport B p a ≡ b  
 transpose-transport  B refl e = e
@@ -254,8 +254,8 @@ coe-∙2' : ∀ {i } {A B C D : Type i} (p : A ≡ B) (q : B ≡ C)(r : C ≡ D)
   → coe r (coe q (coe p a)) ≡ coe (p ◾ q ◾ r) a
 coe-∙2' refl refl q a = refl
 
--- stuff for InitialMorphism2
--- I can't find this in Hott Lib, only the coe! version..
+-- stuff for SyntaxIsInitial2
+-- I can't find this in EqLib Lib, only the coe! version..
 transport-! : ∀ {i j} {A : Type i}(C : A → Type j) {x y : A} (p : x ≡ y)
   (b : C y) → transport C (! p) b ≡ transport! C p b
 transport-! C refl b = refl

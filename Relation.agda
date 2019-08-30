@@ -5,13 +5,13 @@
 
 -- open import HoTT.Base
 open import Level
-open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
+open import EqLib renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
 open import Data.Nat renaming (suc to S)
-open import monlib
-module RelationCwf {k : Level.Level}  where
+open import Lib
+module Relation {k : Level.Level}  where
 
   open import Syntax {k} as S
-  import ModelCwf {k}  as M
+  import ModelRew {k}  as M
 
 
   -- module M = Model {α}
