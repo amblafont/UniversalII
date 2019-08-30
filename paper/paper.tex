@@ -1,0 +1,199 @@
+\documentclass[a4paper]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipsnames]{xcolor} % for BrickRed color in abbrevs.tex
+\usepackage{hyperref}
+\usepackage{todonotes}
+
+\input{abbrevs.tex}
+
+\allowdisplaybreaks
+
+\begin{document}
+
+\title{Reducing finitary inductive-inductive types to inductive types}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Note by Ambrus: to be beautified, I only wanted to add the line of
+thought.
+
+Most mutual inductive types (e.g.\ isEven-isOdd) can be reduced to
+indexed inductive types where the index gives the information which
+sort we meant. (Indexed inductive types can be reduced to inductive
+types using a method similar to what we use here, preterms and
+well-formedness predicate.) Inductive-inductive types (IITs
+\cite{forsberg-phd}) allow the mutual definition of a type and a
+family of types over the first one. The above reduction does not work
+anymore.
+
+Examples of IITs: Con-Ty is the minimal interesting one, then we have
+James Chapman style \cite{chapman09eatitself} well-typed syntax for
+type theory.
+
+TODO: list examples here and explain. Also the elimination principles
+which is recursive-recursive. Talk about connection to setoidified
+CwFs (I think these are explained in some Dybjer paper) and maybe the
+initiality conjecture.
+
+Reduction of IITs to inductive types is an open problem. Forsberg
+showed that IITs can be reduced to inductive types in the setting of
+ETT, but he only constructed the nondependent (or simple? was this the
+non-recursive-recursive?) elimination principle. Hugunin \cite{jasper}
+reduced an example IIT to inductive types without UIP, but also only
+constructing the non-recursive-recursive eliminator. Streicher
+\cite{streichersemantics}. Brunerie \cite{} constructed the initial
+category with extra structure (TODO: fix this) using UIP.
+
+Kaposi and Kov{\'a}cs defined a type theory of signatures for higher
+inductive-inductive types (HIITs)
+\cite{kaposi_et_al:LIPIcs:2018:9190}. This is a small type theory in
+which every context encodes a valid IIT signature. For example, the
+signature for natural numbers is simply the context
+$(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$ and
+$suc$ are simply variable names). Later they showed
+\cite{Kaposi:2019:CQI:3302515.3290315} that if a subset of this theory
+of signatures exists, then any finitary QIIT can be defined from
+it. In this paper we further restrict the subset by not allowing
+equality constructors (thus only covering IITs) but at the same time
+we extend it to allow infinitary constructors. To derive the existence
+of all IITs from the theory of IIT signatures we use a variant of the
+CwF model \cite{Kaposi:2019:CQI:3302515.3290315} where types are
+modelled not by displayed CwFs but by CwF isofibrations. We need this
+extension to support infinitary constructors. Furthermore, using the
+method introduced by Streicher \cite{streichersemantics} we show the
+existence of the theory of IIT signatures. As opposed to Streicher, we
+don't use quotients in this construction as the theory of IIT
+signatures can be given only using neutral terms.
+
+Our metatheory is ETT. Using Hofmann \cite{}, Theo \cite{} translation
+we can translate our arguments to ITT+UIP+funext. Section
+\ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
+funext.
+
+\subsection{Structure of the paper}
+
+We first define a \emph{theory of IIT signatures} in which every
+context is a valid IIT signature (Section
+\ref{sec:theory_of_signatures}). We present this type theory using an
+algebraic \cite{ttintt} syntax, that is, as a quotient
+inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show
+that this QIIT can be constructed only using inductive types.
+
+\section{The theory of IIT signatures}
+\label{sec:theory_of_signatures}
+
+We use the naming convention: sorts, operators and equations. Sorts
+and operators might have parameters.
+\begin{alignat*}{5}
+  & \rlap{(1) Substitution calculus} \\[0.5em]
+  & \Con && : \Set \\
+  & \Ty  && : \Con\ra\Set \\
+  & \Sub  && : \Con\ra\Con\ra\Set \\
+  & \Tm  && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Set \\
+  & \id && : \Sub\,\Gamma\,\Gamma \\
+  & \blank\circ\blank && : \Sub\,\Theta\,\Delta\ra\Sub\,\Gamma\,\Theta\ra\Sub\,\Gamma\,\Delta \\
+  & \ass && : (\sigma \circ \delta) \circ \nu = \sigma \circ (\delta \circ \nu) \\
+  & \idl && : \id\circ\sigma = \sigma \\
+  & \idr && : \sigma\circ\id = \sigma \\
+  & \blank[\blank] && : \Ty\,\Delta\ra\Sub\,\Gamma\,\Delta\ra\Ty\,\Gamma \\
+  & \blank[\blank] && : \Tm\,\Delta\,A\ra(\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma]) \\
+  & [\id] && : A[\id] = A \\
+  & [\circ] && : A[\sigma \circ \delta] = A[\sigma][\delta] \\
+  & [\id] && : t[\id] = t \\
+  & [\circ] && : t[\sigma \circ \delta] = t[\sigma][\delta] \\
+  & \cdot && : \Con \\
+  & \epsilon && : \Sub\,\Gamma\,\cdot \\
+  & {\cdot\eta} && : \{\sigma : \Sub\,\Gamma\,\cdot\} \ra \sigma = \epsilon \\
+  & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
+  & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
+  & \p && : \Sub\,(\Gamma\ext A)\,\Gamma \\
+  & \q && : \Tm\,(\Gamma\ext A)\,(A[\p]) \\
+  & {\ext\beta_1} && : \p\circ(\sigma, t) = \sigma \\
+  & {\ext\beta_2} && : \q[\sigma, t] = t \\
+  & {\ext\eta} && : (\p, \q) = \id \\
+  & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\[0.5em]
+  & \rlap{(2) Sorts and operators} \\[0.5em]
+  & \U && : \Ty\,\Gamma \\
+  & \El && : \Tm\,\Gamma\,\U\ra\Ty\,\Gamma \\
+  & {\U[]} && : \U[\sigma] = \U \\
+  & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\[0.5em]
+  & \rlap{(3) Parameters} \\[0.5em]
+  & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
+  & \app && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B \\
+  & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma^\uparrow]) \\
+  & {\app[]} && : (\app\,t)[\sigma^\uparrow] = \app\,(t[\sigma]) \\[0.5em]
+  & \rlap{(4) Metatheoretic parameters} \\[0.5em]
+  & \Pim && : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma \\
+  & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
+  & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
+  & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha \\[0.5em]
+  & \rlap{(5) Infinitary parameters} \\[0.5em]
+  & \Pii && : (T:\Set)\ra(T\ra\Tm\,\Gamma\,\U)\ra\Tm\,\Gamma\,\U \\
+  & \blank\appi\blank && : \Tm\,\Gamma\,(\El\,(\Pii\,T\,b))\ra(\alpha:T)\ra\Tm\,\Gamma\,(\El\,(b\,\alpha)) \\
+  & {\Pii[]} && : (\Pii\,T\,b)[\sigma] = \Pii\,T\,(\lambda \alpha.(b\,\alpha)[\sigma]) \\
+  & {\appi[]} && : (t\appi\alpha)[\sigma] = (t[\sigma])\mathop{\appi}\alpha
+\end{alignat*}
+Abbreviation:
+\[
+  \sigma^\uparrow = (\sigma\circ\p,\q)
+\]
+
+TODO: add examples where all the different constructors are used,
+especially infinitary ones.
+
+\section{Constructing the theory of IIT signatures}
+\label{sec:ambroise}
+
+Show that the theory of IIT signatures as described in Section
+\ref{sec:theory_of_signatures} exists, that is, it can be defined only
+using indexed inductive types and a $\Prop$ sort.
+
+Ambroise has done this in Agda with funext and UIP using an
+extrinsic--intrinsic translation, but only for parts (1)--(5), and the
+following parts are missing: $(\prop{1})$--$(\prop{5})$. We need
+the $(\prop{1})$--$(\prop{5})$ parts to justify the next section.
+
+Ambroise formalisation: \url{https://github.com/amblafont/UniversalII/tree/cwf-syntax/Cwf}.
+
+In this formalization, there is a discrepancy for the typing rule of application
+compared to the one of Section~\ref{sec:theory_of_signatures}: it is not
+\[
+   \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B
+\]
+but
+\[
+   \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra(u : \Tm\,\Gamma\,(\El\,a))\ra\,\Tm\,\Gamma\,B[<u>].
+\]
+Actually, I started with the first version, but at some point I
+changed for the second one because it made some stuff easier (although
+I don't remember exactly what it was).
+
+I think this should be doable with only UIP (or a $\Prop$-valued
+equality type?) and not funext. This would be important for a
+computational justification of IITs.
+
+Unfortunately, it seems that funext is needed (see the use of funext in
+Syntax.agda) for the metatheoretic/infinitary
+parameters part (4-5), for example in the case of the metatheoretic
+$ \Pim  : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma $. This needs to be
+investigated more carefully.
+
+\paragraph{Construction}
+\input{universaliit}
+
+\section{Constructing all IITs from the theory of signatures}
+\label{sec:andras}
+
+Show using the CwF model that the existence of the theory of IIT
+signatures (Section \ref{sec:theory_of_signatures}) entails the
+existance of all IITs.
+
+\bibliographystyle{plain}
+\bibliography{b}
+
+\end{document}
