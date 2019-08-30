@@ -73,16 +73,17 @@
 \begin{abstract}
   Inductive-inductive types (IITs) are a generalisation of inductive
   types in type theory. They allow the mutual definition of types with
-  multiple sorts depending on each other. An example is the James
-  Chapman-style syntax of type theory with conversion relations for
-  each sort where e.g.\ the sort of types is indexed by contexts.  In
-  previous work it was shown that all IITs can be constructed from a
-  quotient inductive-inductive type (QIIT), namely the theory of IIT
-  signatures. This theory is a small domain-specific type theory where
-  a context is a signature for an IIT. In this paper we construct this
-  theory of signatures only using inductive types. All of the
-  constructions of this paper were formalised in the proof assistant
-  Agda.
+  multiple sorts where later sorts can be indexed by previous ones. An
+  example is the James Chapman-style syntax of type theory with
+  conversion relations for each sort where e.g.\ the sort of types is
+  indexed by contexts.  In previous work it was shown that all IITs
+  can be constructed from a quotient inductive-inductive type (QIIT),
+  namely the theory of IIT signatures. This theory is a small
+  domain-specific type theory where a context is a signature for an
+  IIT. In this paper we construct this theory of signatures only using
+  inductive types. We rely on function extensionality and uniqueness
+  of identity proofs. All of the constructions of this paper were
+  formalised in the proof assistant Agda.
 \end{abstract}
 
 \section{Introduction}
