@@ -144,6 +144,23 @@ we can translate our arguments to ITT+UIP+funext. Section
 \ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
 funext.
 
+This is the paper version of our TYPES 2019 talk.
+
+\subsection{Related work}
+
+Reduction of classes of inductive types: reduce indexed W-types to
+W-types. IR types to indexed types. IITs were introduced by
+Forsberg. What he did.  QIITs by Forsberg-lots of people. Our QIIT
+paper. Jakob TYPES 2019 abstract.  Jasper Huguin: he didn't do
+recursion-recursion. Without UIP.
+
+Similar techique for other type theories: Streicher. Initiality
+project, Brunerie. These all use quotients. Closest: Lafont TYPES
+abstract 2017. Does not use quotients.
+
+Constructing intrinsic syntax but different techniques: Chapman,
+Danielsson, Nuo. These use induction-induction which is our goal.
+
 \subsection{Structure of the paper}
 
 We first define a \emph{theory of IIT signatures} in which every
@@ -152,6 +169,10 @@ context is a valid IIT signature (Section
 algebraic \cite{ttintt} syntax, that is, as a quotient
 inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show
 that this QIIT can be constructed only using inductive types.
+
+\subsection{Formalisation}
+
+UIP, funext, rewrite rules, version of Agda.
 
 \section{The theory of IIT signatures}
 \label{sec:theory_of_signatures}
@@ -253,12 +274,15 @@ investigated more carefully.
 \paragraph{Construction}
 \input{universaliit}
 
-\section{Constructing all IITs from the theory of signatures}
+\section{Constructing all IITs from the theory IIT of signatures}
 \label{sec:andras}
 
-Show using the CwF model that the existence of the theory of IIT
-signatures (Section \ref{sec:theory_of_signatures}) entails the
-existance of all IITs.
+Explain that the previous paper was modular.
+
+\section{Further work}
+
+Infinitary, explain why it is difficult. Without UIP, without funext,
+for QIITs (in the setoid model).
 
 %%
 %% Bibliography
