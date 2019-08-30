@@ -85,7 +85,7 @@ to the relevant position in the context.
 % The type of (untyped) substitution is then defined as $\Subu = \List\,\Tmu$.
 % Note that $\Conu$ could also be defined as a list of types in a similar fashion.
 
-\subsubsection{Untyped weakening}
+\subsubsection{Weakening preserves typing}
 
 
 % Substitutions of types and terms are defined recursively.
@@ -109,7 +109,7 @@ For this reason, we need to generalize the weakening as occuring anywhere in the
   weakening occurs.
   Here, $\wkO$ weakens with respect to the last variable.
 
-  \subsubsection{Untyped substitution}
+  \subsubsection{Substitution preserves typing}
   We define by induction the specific substitution of one variable of the context:
   % & \rlap{(1) Substitution calculus} \\[0.5em]
 \begin{alignat*}{5}
@@ -299,7 +299,7 @@ Finally, we show the usual lemmas about substitution:
     (\Gamma \vdash t \in \Piiu \,T\, A)
     \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
 \end{alignat*}
-Note that there is possibility of redundancy in the arguments of
+There is possibility of redundancy in the arguments of
 the constructors. Here, we are rather ``{paranoid}'', so that we get more inductive
 hypotheses when performing recursion.
 
@@ -377,7 +377,7 @@ weakening, for contexts, types, terms, and substitutions:
   % \Gamma \vdash A [ \sigma ]
   % \\
   \end{alignat*}
-Then, we show that identity substitutions is neutral, for well-typed types,
+Then, we show that identity substitutions are neutral, for well-formed types,
 terms, and substitutions:
 \begin{alignat*}{5}
   % [idp]V : ∀ {Γ}{A}{x}(xw : Γ ⊢ x ∈v A) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
@@ -398,12 +398,13 @@ terms, and substitutions:
 
 
 \subsubsection{Uniqueness of typing and uniqueness of types}
-  We define what it means for a type $A$ to be a proposition as follows:
+  We define what it means for a type $T$ (of the meta-theory) to be a proposition as follows:
 
   \[
-    \isaprop\,A := (a : A) \ra (a' : A) \ra a = a'
+    \isaprop\,T := (a : T) \ra (a' : T) \ra a = a'
   \]
-  It states that there is at most one inhabitant.
+  Thus, a type is a proposition if there is at most
+  one inhabitant.
 We show by recursion that each of these typing judgments is unique in the
 following sense:
 \begin{align*}
@@ -421,7 +422,7 @@ following sense:
   \\
   &
         \isp{\wf\Sub}
-  : \isaprop\, (\Gamma\vdash \sigma \in \Delta)
+  : \isaprop\, (\Gamma\vdash \sigma \Rightarrow \Delta)
   \end{align*}
 Actually, the application and successor cases require to show uniqueness of
 types in a given context, before.
@@ -470,14 +471,14 @@ stage, $\rec$ is not available yet since the whole point of defining this
 relation is to construct $\rec$ in the end. For a type $A$ in a context $\Gamma$,
 it is natural to define the relation with a semantic type $\model{A}$ in a
 semantic context $\model{\Gamma}$ such that it is equivalent to  $(\rec\,\Gamma =
-\model{\Gamma})\times (\rec\,A = \model{A})$ (note that the first equality should
-be used to transport the right hand side of the second one).
+\model{\Gamma})\times (\rec\,A = \model{A})$ (note that the first equality is
+required for the second one to be well-typed).
 The discussion is similar for terms.
 
 The ultimate goal is to prove that
 $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
 $\sum_{\model{\Gamma}}({\model{A}:\model{\Ty}\,\model{\Gamma}})\times(A\sim\model{A})$
-are contractible. The first step consists in showing that these types are propositions.
+are contractible, i.e., have a unique inhabitant. The first step consists in showing that these types are propositions.
 % We explain below that this requires UIP.
 Actually, we take a different approach for the relation on types
 (and terms) which yields a more concise definition of the relation.
