@@ -369,7 +369,7 @@ module _   where
 
       where
         et :
-          Tmʳ (appNI t u , appNIw Γw' Bw tw u) ≡ M.app$NI (m.Tmʳ {A = _ , ΠNIw Γw' Bw} (t , tw)) u
+          Tmʳ (appNI t u , appNIw Γw' Bw tw u) ≡  (m.Tmʳ {A = _ , ΠNIw Γw' Bw} (t , tw)) M.$NI u
         et = $NIʳ (_ , tw) u
 
     morTm~ {Γp} Γw  sBw  (appInfw Γw'  Bw {t = t}tw u)
@@ -383,7 +383,7 @@ module _   where
 
       where
         et :
-          Tmʳ (appNI t u , appInfw Γw' Bw tw u) ≡ M.app$Inf (m.Tmʳ {A = _ , Elw Γw' (ΠInfw Γw' Bw)} (t , tw)) u
+          Tmʳ (appNI t u , appInfw Γw' Bw tw u) ≡ (m.Tmʳ {A = _ , Elw Γw' (ΠInfw Γw' Bw)} (t , tw)) M.$Inf u
         et = $Infʳ (_ , tw) u
 
     morTm~  Γw' (Uw Γw'') (ΠInfw Γw Bw)
