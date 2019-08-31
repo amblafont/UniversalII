@@ -56,8 +56,9 @@ This is a new pragma added to Agda to help create higher inductive types.
 -}
 
 infix 30 _↦_
-postulate  -- HIT
-  _↦_ : ∀ {i} {A : Type i} → A → A → Type i
+-- postulate  -- HIT
+_↦_ : ∀ {i} {A : Type i} → A → A → Type i
+_↦_ = _==_
 
 {-# BUILTIN REWRITE _↦_ #-}
 

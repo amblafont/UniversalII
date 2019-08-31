@@ -26,124 +26,91 @@ module ModelRew {k : Level.Level}   where
 
 open import Model
 
-
--- infixl 7 _[_]T
--- infixl 5 _,s_
--- infix  6 _∘_
--- infixl 8 _[_]t
--- infixl 4 _▶_
-module Postulats where
-
-  postulate
+postulate
     i : Level
     j : Level
     RewCwF : CwF {i} {j}
+    RewUnivΠ : UnivΠ {k = k} RewCwF
 
-  open  CwF RewCwF
-
-
-  -- Universe
-  --------------------------------------------------------------------------------
-
-  postulate
-    U    : ∀{Γ} → Ty Γ
-    -- U[]  : {Γ Δ : Con} {σ : Sub Γ Δ} → _≡_ {i} {Ty Γ} (_[_]T {Γ} {Δ} (U {Δ}) σ) (U {Γ})
-    U[]  : {Γ Δ : Con} {σ : Sub Γ Δ} → _↦_ {i} {Ty Γ} (_[_]T {Γ} {Δ} (U {Δ}) σ) (U {Γ})
-  {-# REWRITE U[]  #-}
-
-  postulate
-    El   : ∀{Γ}(a : Tm Γ U) → Ty Γ
-
-    El[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} →
-      _↦_ {_} {Ty Γ} (_[_]T {Γ} {Δ} (El {Δ} a) σ)
-      (El {Γ} (a [ σ ]t))
-  {-# REWRITE El[]  #-}
-
-
-
-  -- Inductive function
-  --------------------------------------------------------------------------------
-  postulate
-    Π : ∀{Γ}(a : Tm Γ U)(B : Ty (Γ ▶ El a)) → Ty Γ
-    Π[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {a : Tm Δ (U {Δ})} {B : Ty (Δ ▶ El {Δ} a)} →
-      ((Π a B) [ σ ]T) ↦ Π (a [ σ ]t) (B [ (_^_  σ  (El a)) ]T)
-
-  {-# REWRITE Π[]  #-}
-
-
-  postulate
-    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
-    app$ : ∀ {Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}(t : Tm Γ (Π a B))(u : Tm Γ (El a)) → Tm Γ (B [ < u > ]T)
-
-  -- TODO: voir si on peut le demander en définitional: est ce la cas dans la syntaxe ?
-    app$[] :
-        ∀ {Y}{Γ}{σ : Sub Y Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)}{t : Tm Γ (Π a B)}{u : Tm Γ (El a)}
-        → ((app$ t u) [ σ ]t) == ( app$  (t [ σ ]t)  (u [ σ ]t)) [ Tm _ ↓ [<>][]T {Γ}{El a}{u}{B} ]
-
-
-  -- Non-Inductive function
-  --------------------------------------------------------------------------------
-  postulate
-    ΠNI : ∀{Γ}{T : Set k}(B : T → Ty Γ) → Ty Γ
-    ΠNI[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Ty Δ} →
-      ((ΠNI B) [ σ ]T) ↦ ΠNI  (λ b → (B b) [ σ ]T)
-  {-# REWRITE ΠNI[]  #-}
-
-
-  postulate
-    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
-    app$NI : ∀ {Γ}{T : Set k}{B : T → Ty Γ}(t : Tm Γ (ΠNI B))(u : T) → Tm Γ (B u)
-
-    app$NI[] :
-        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T}
-        → ((app$NI t u) [ σ ]t) ↦ ( app$NI  (t [ σ ]t)  u)
-
-  {-# REWRITE app$NI[]  #-}
-
-  -- Infinitary parameters
-  --------------------------------------------------------------------------------
-  postulate
-    ΠInf : ∀{Γ}{T : Set k}(B : T → Tm Γ U) → Tm Γ U
-    ΠInf[] :
-      {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
-      ((ΠInf B) [ σ ]t) ↦ ΠInf  (λ b → (B b) [ σ ]t)
-  {-# REWRITE ΠInf[]  #-}
-
-
-  postulate
-    -- app : ∀{Γ}{a : Tm Γ U}{B : Ty (Γ ▶ El a)} → Tm Γ (Π a B) → Tm (Γ ▶ El a) B
-    app$Inf : ∀ {Γ}{T : Set k}{B : T → Tm Γ U}(t : Tm Γ (El (ΠInf B)))(u : T) → Tm Γ (El (B u))
-
-    app$Inf[] :
-        ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Tm Γ U}{t : Tm Γ (El (ΠInf B))}{u : T}
-        → ((app$Inf t u) [ σ ]t) ↦ ( app$Inf  (t [ σ ]t)  u)
-
-  {-# REWRITE app$Inf[]  #-}
-
-
-  RewUnivΠ : UnivΠ {k = k} RewCwF
-  RewUnivΠ = record
-               { U = U
-               ; U[] = refl
-               ; El = El
-               ; El[] = refl
-               ; Π = Π
-               ; Π[] = refl
-               ; _$_ = app$
-               ; $[] = app$[]
-               ; _$NI_ = app$NI
-               ; $NI[] = refl
-               ; _$Inf_ = app$Inf
-               ; $Inf[] = refl
-               }
-
-  open UnivΠ RewUnivΠ using (_$_ ; _$NI_ ; _$Inf_)
-
--- module ModelRew where
--- accessibles depuis l'exterieur
-open Postulats public
 open CwF RewCwF public
-open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public
+open UnivΠ RewUnivΠ public
+
+{-# REWRITE U[]  #-}
+
+postulate
+  U[]=1 : ∀ {Γ}{Δ}{σ} → U[]{Γ}{Δ}{σ} ↦ refl
+
+{-# REWRITE U[]=1  #-}
+
+
+
+
+{-# REWRITE El[]  #-}
+
+postulate
+  El[]=1 : ∀ {Γ}{Δ}{σ}{a} → El[]{Γ}{Δ}{σ}{a} ↦ refl
+
+{-# REWRITE El[]=1  #-}
+
+
+
+
+{-# REWRITE Π[]  #-}
+
+postulate
+  Π[]=1 : ∀ {Γ}{Δ}{σ}{a}{B} → Π[]{Γ}{Δ}{σ}{a}{B} ↦ refl
+
+{-# REWRITE Π[]=1  #-}
+
+
+
+{-# REWRITE ΠNI[]  #-}
+postulate
+   ΠNI[]=1 : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Ty Δ} →
+     ΠNI[] {Γ}{Δ}{σ}{T}{B} ↦ refl
+
+{-# REWRITE ΠNI[]=1  #-}
+
+
+
+{-# REWRITE $NI[]  #-}
+
+postulate
+  $NI[]=1 : ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T} →
+    $NI[] {Y}{Γ}{σ}{T}{B}{t}{u} ↦ refl
+
+{-# REWRITE $NI[]=1  #-}
+
+
+
+
+-- agda does not recognize ΠInf[] as a valid rewrite rule, but if I restates it, it is ok.
+postulate
+  ΠInf[]' : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
+        (((ΠInf {Δ} B) [ σ ]t) ↦ (ΠInf {Γ} {T} (λ a →    ((B a) [ σ ]t))) )
+
+{-# REWRITE ΠInf[]'  #-}
+
+postulate
+  ΠInf[]=1 : ∀ {Γ Δ } {σ} {T} {B} →
+        ΠInf[] {Γ}{Δ}{σ}{T}{B} ↦ refl
+
+{-# REWRITE ΠInf[]=1  #-}
+
+
+
+
+
+-- agda does not recognize $Inf[]' as a valid rewrite rule, but if I restates it, it is ok.
+postulate
+  $Inf[]' : ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Tm Γ U}{t : Tm Γ (El (ΠInf B))}{u : T}
+        → ((t $Inf u) [ σ ]t) ≡ (t [ σ ]t) $Inf u
+{-# REWRITE $Inf[]'  #-}
+
+postulate
+  $Inf[]=1 : ∀ {Y Γ σ T B t u} → $Inf[] {Y}{Γ}{σ}{T}{B}{t}{u} ↦ refl
+
+{-# REWRITE $Inf[]=1  #-}
+
+-- open CwF RewCwF public
+-- open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public
