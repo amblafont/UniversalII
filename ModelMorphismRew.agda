@@ -5,23 +5,23 @@ Postulate a model morphism with rewrite rules, show that it is related to the sy
 {-# OPTIONS  --rewriting  #-}
 
 open import Level
-open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
+open import EqLib renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
 open import Data.Nat renaming (suc to S)
-open import monlib hiding (tr2)
+open import Lib hiding (tr2)
 
-module ModelMorRew {k : Level}  where
+module ModelMorphismRew {k : Level}  where
 
-open import ModelRecord
+open import Model
 
 open import Syntax {i = k}
 open import SyntaxIsModel {i = k} renaming (module Syn to S)
-import ModelCwf {k = k} as M
+import ModelRew {k = k} as M
 
 open import ModelMorphism
-open import RelationCwfInhabit
-open import RelationCwf {k = k}
-open import RelationCwfSubstitution
+open import RelationInhabit
+open import Relation {k = k}
+open import RelationSubstitution
 
 
 

@@ -19,12 +19,12 @@ these equations definitionally.
 
 
 open import Level
-open import Hott hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-open import monlib hiding (tr2)
+open import EqLib hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+open import Lib hiding (tr2)
 
-module ModelCwf {k : Level.Level}   where
+module ModelRew {k : Level.Level}   where
 
-open import ModelRecord
+open import Model
 
 
 -- infixl 7 _[_]T

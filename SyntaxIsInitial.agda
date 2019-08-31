@@ -5,28 +5,28 @@ some complementary lemmas about the syntax
 {-# OPTIONS  --rewriting  #-}
 
 open import Level
-open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
+open import EqLib renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-open import monlib hiding (tr2)
+open import Lib hiding (tr2)
 
-module InitialMorphism {k : Level}  where
+module SyntaxIsInitial {k : Level}  where
 
-open import ModelRecord
+open import Model
 
 open import Syntax {i = k}
 open import SyntaxIsModel {i = k} renaming (module Syn to S)
 
-  -- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
-ex1 : Con
-ex1 = {!!}
+-- A: U, B : A -> U , ∙ : A , ▶ : (Γ : A) → B Γ → A , u : (Γ:A) → B Γ , el (Γ : A) →
+-- ex1 : Con
+-- ex1 = {!!}
 
-import ModelCwf {k = k} as M
+import ModelRew {k = k} as M
 
 open import ModelMorphism
-open import RelationCwfInhabit {k = k}
-open import RelationCwf {k = k}
-open import RelationCwfSubstitution {k = k}
-import ModelMorRew {k = k} as Mor
+open import RelationInhabit {k = k}
+open import Relation {k = k}
+open import RelationSubstitution {k = k}
+import ModelMorphismRew {k = k} as Mor
 
 ΣConʳ : ∀ (Γ : S.Con) → ∃ (Con~ (₂ Γ))
 ΣConʳ Γ = ΣCon~ (₂ Γ)

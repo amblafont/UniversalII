@@ -2,19 +2,19 @@
 
 -- proof #~el
 open import Level
-open import Hott renaming (_∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
-open import monlib
+open import EqLib renaming (_∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂)
+open import Lib
 -- open import Lib2 using (_&_)
 -- import Lib2 using (_⁻¹)
 open import Syntax as S
 
-module RelationCwfSubstitution {k : Level} where
+module RelationSubstitution {k : Level} where
 
 
 
-import ModelCwf {k = k} as M
-open import RelationCwf
-open import RelationCwfWeakening {k = k}
+import ModelRew {k = k} as M
+open import Relation
+open import RelationWeakening {k = k}
 
 
 Var[]~ : ∀

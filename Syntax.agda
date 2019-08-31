@@ -77,8 +77,8 @@ Complements lemmas and definitions:
 
 open import Level
 -- open import HoTT renaming ( _∙_ to _◾_ ; idp to refl ; transport to tr ; fst to ₁ ; snd to ₂) hiding (_∘_)
-open import Hott renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂ ; λ= to funext) hiding (_∘_ ; _↦_)
-open import monlib
+open import EqLib renaming ( _∙_ to _◾_ ;  transport to tr ; fst to ₁ ; snd to ₂ ; λ= to funext) hiding (_∘_ ; _↦_)
+open import Lib
 open import Data.Nat renaming (suc to S)
 
 module Syntax  {i : _} where
@@ -1227,7 +1227,7 @@ ass {σ}{δ}{ν} =
 
 
 
--- needed for the app case ModelCwfInhabit: subT z T = T [ <z> ]T
+-- needed for the app case ModelRewInhabit: subT z T = T [ <z> ]T
 <_⊢_> : ∀ n t → Subp
 < Γ ⊢ t > = t ∷ (idp Γ)
 
@@ -1277,12 +1277,12 @@ ass {σ}{δ}{ν} =
 [<>]T-n {Γ} {E} {Δ}  (ΠNIw Γw  Bw) z = ap ΠNI (funext (λ a → [<>]T-n (Bw a) z))
 [<>]T-n {Γ} {E} {Δ} {.(Elp _)} (Elw Γw aw) z = ap Elp ([<>]t-n aw z)
 
--- useful for RelationCwfInhabit : the app case
+-- useful for RelationInhabit : the app case
 [<>]T : ∀ {Γ E A} (Aw : (Γ ▶p E) ⊢ A) z →
   (A [ < ∣ Γ ∣  ⊢ z > ]T) ≡ A [ 0 ↦ z ]T
 [<>]T {Γ}{E}{ A} Aw z = [<>]T-n {Γ}{E} {∙p} Aw z
 
--- strange that i did not use this before InitialMorphism (variable case):
+-- strange that i did not use this before SyntaxIsInitial (variable case):
 wk : ∀ Γ → Subp
 wk Γ = wkS (idp Γ )
 

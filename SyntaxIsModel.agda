@@ -4,10 +4,10 @@ some complementary lemmas about the syntax
 
 
 open import Level
-open import Hott renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
+open import EqLib renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
   hiding (_∘_ ; _⁻¹ ; Π ; _$_ ; _↦_)
-open import monlib hiding (tr2)
-open import ModelRecord
+open import Lib hiding (tr2)
+open import Model
 
 
 

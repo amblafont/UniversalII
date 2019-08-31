@@ -2,10 +2,10 @@
 
 
 open import Level
-open import Hott renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ ) hiding (_∘_ ; _⁻¹ ; Π ; _$_)
-open import monlib hiding (tr2)
+open import EqLib renaming (fst to ₁ ; snd to ₂ ; _∙_ to _◾_ ) hiding (_∘_ ; _⁻¹ ; Π ; _$_)
+open import Lib hiding (tr2)
 
-module ModelRecord   where
+module Model   where
 
 
 record baseCwF {i : Level}{j : Level} : Set (Level.suc (lmax i j)) where
