@@ -26,7 +26,7 @@ open import ModelMorphism
 open import RelationInhabit {k = k}
 open import Relation {k = k}
 open import RelationSubstitution {k = k}
-import ModelMorphismRew {k = k} as Mor
+-- open import ModelMorphismRew {k = k}
 
 ΣConʳ : ∀ (Γ : S.Con) → ∃ (Con~ (₂ Γ))
 ΣConʳ Γ = ΣCon~ (₂ Γ)
@@ -284,6 +284,10 @@ to the one we constructed
 
 -}
 
+module Mor where
+  open import ModelMorphismRew {k = k} public
+  open CwFMor m1 public
+  open UnivΠMor m2 public
 
 -- uniqueness
 Conʳ'= : ∀ {Γ : S.Con} → Mor.Conʳ Γ ≡ Conʳ Γ
