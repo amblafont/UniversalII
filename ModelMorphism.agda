@@ -1,5 +1,6 @@
 -- copied from finitaryQiit/modelTemplate
-
+-- it seems it is not so useful (it does not simplify that much) that the postulated morphism lies between the syntax and the
+-- model with rewrite rules
 
 open import Level
 open import EqLib renaming (   fst to ₁ ; snd to ₂ ;  _∙_ to _◾_ ; transport to tr )
@@ -14,10 +15,11 @@ open import Model
 -- the idea that the base will be postulated with rewrite rules,
 -- and not the next (when postulating a morphism from the syntax to
 -- a model)
-record baseCwFMor
+record CwFMor
     {k : Level}{l : Level}(M : CwF {k} {l})
-    {i : Level}{j : Level}(N : CwF {i} {j}) : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
-    where
+    {i : Level}{j : Level}(N : CwF {i} {j})
+    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
+   where
  private
    module S = CwF M
  open CwF N
@@ -29,26 +31,10 @@ record baseCwFMor
   Subʳ : ∀ {Γ Δ} → S.Sub Γ Δ → Sub (Conʳ Γ) (Conʳ Δ)
   ,ʳ   : ∀ {Γ A} → Conʳ (Γ S.▶ A) ≡ (Conʳ Γ ▶ Tyʳ A)
 
-
-record nextCwFMor
-    {k : Level}{l : Level}{M : CwF {k} {l}}
-    {i : Level}{j : Level}{N : CwF {i} {j}} (m : baseCwFMor M N)
-    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
-   where
-
- private
-   module S = CwF M
- open CwF N
- open baseCwFMor m
-
- field
-
   ∙ʳ   : Conʳ S.∙ ≡ ∙
   []Tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ Δ} →
-            _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S._[_]T {Γ} {Δ} A σ))
-            (_[_]T {Conʳ Γ} {Conʳ Δ} (Tyʳ {Δ} A) (Subʳ {Γ} {Δ} σ))
+      (Tyʳ (A S.[ σ ]T)) ≡ Tyʳ A [ Subʳ σ ]T 
   -- these were rewrite rules
-
   []tʳ : {Γ Δ : S.Con} {A : S.Ty Δ} {t : S.Tm Δ A} {σ : S.Sub Γ Δ} →
            Tmʳ {Γ}  (t S.[ σ ]t )
            ==
@@ -56,110 +42,20 @@ record nextCwFMor
             [ Tm _  ↓ []Tʳ ]
 
   idʳ  : {Γ : S.Con} →
-           _≡_ {j} {Sub (Conʳ Γ) (Conʳ Γ)} (Subʳ {Γ} {Γ} (S.id {Γ}))
-           (id {Conʳ Γ})
+             (Subʳ (S.id {Γ})) ≡ id
 
   ∘ʳ   : {Γ Δ : S.Con} {Σ : S.Con} {σ : S.Sub Δ Σ} {δ : S.Sub Γ Δ} →
-           _≡_ {j} {Sub (Conʳ Γ) (Conʳ Σ)}
-           (Subʳ {Γ} {Σ} (S._∘_ {Γ} {Δ} {Σ} σ δ))
-           (_∘_ {Conʳ Γ} {Conʳ Δ} {Conʳ Σ} (Subʳ {Δ} {Σ} σ)
-            (Subʳ {Γ} {Δ} δ))
+           (Subʳ   (σ S.∘ δ)) ≡ ((Subʳ σ) ∘ (Subʳ δ))
 
   εʳ   : {Γ : S.Con} →
-    (Subʳ {Γ} {S.∙} (S.ε {Γ})) == (ε {Conʳ Γ}) [ Sub _ ↓ ∙ʳ ]
+    (Subʳ   (S.ε {Γ})) == ε  [ Sub _ ↓ ∙ʳ ]
 
   ,sʳ  : {Γ Δ : S.Con} {σ : S.Sub Γ Δ} {A : S.Ty Δ}
-         {t : S.Tm Γ (S._[_]T {Γ} {Δ} A σ)} →
-         (Subʳ {Γ} {Δ S.▶ A} (σ S.,s t))
+         {t : S.Tm Γ (A S.[ σ ]T)} →
+         (Subʳ   (σ S.,s t))
          ==
-         ((Subʳ {Γ} {Δ} σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
-          [ Sub _ ↓ ,ʳ  ]
-
-{-
- -- maybe this is needed for wkʳ ?
- π₁ʳ  : {Γ Δ : S.Con} {A : S.Ty Δ} {σ : S.Sub Γ (Δ S.▶ A)} →
-           (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
-           ≡
-           (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
-
- π₁ʳ {Γ}{Δ}{A}{σ} =
-
-      (Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ))
-
-           =⟨ {!!} ⟩
-       -- (π₁
-       --    ((Subʳ {Γ} {Δ} (S.π₁ {Γ} {Δ} {A} σ)) ,s tr (Tm _) []Tʳ (Tmʳ (S.π₂ {Γ} {Δ} {A} σ))))
-       {!!}
-
-
-           =⟨ {!!} ⟩
-       -- (π₁ (Subʳ (S.π₁ σ S.,s S.π₂ σ)))
-       {!!}
-
-           =⟨ {!ap↓!} ⟩
-      (π₁ {Conʳ Γ} {Conʳ Δ} {Tyʳ {Δ} A} (tr (Sub _) ,ʳ (Subʳ {Γ} {Δ S.▶ A} σ)))
-      ∎
-
- wkʳ : ∀ {Γ : S.Con}{A : S.Ty Γ} →
-    Subʳ (S.wk {A = A})== wk {A = Tyʳ A} [ (λ s → Sub s _) ↓ ,ʳ ]
- wkʳ {Γ}{A} =
-    ≅↓
-    (
-      Subʳ (S.wk {A = A})
-
-           ≅⟨ =≅ π₁ʳ ⟩
-      (π₁   {A = Tyʳ  A} (tr (Sub _) ,ʳ (Subʳ   S.id)))
-
-           ≅⟨ ↓≅
--- Sub (Conʳ (Γ S.▶ A)) (Conʳ Γ)
-             (
-             apd π₁ {x = (tr (Sub _) ,ʳ (Subʳ   S.id))}{y = id}{!!}
-             -- (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
-
-             -- ap↓ {B = λ s → Sub s _}{C = λ s → Sub s (Conʳ Γ)}
-
-             -- (π₁ {A = Tyʳ A})
-             -- {p = ,ʳ {A = A}}
-             --   -- (≅↓ (↓≅ (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl )))
-             --   (≅↓ (↓≅ {!!}))
-
-              )
-              -- ((≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅)))
--- Sub (Conʳ Γ ▶ Tyʳ A) (Conʳ Γ)
-             ⟩
-      (π₁   {A = Tyʳ  A} id)
-
-
-      ≅∎
-    )
-    -}
-    -- (↓-cst-in {p = refl}
-     -- (π₁ʳ {σ = S.id {Γ = Γ S.▶ A}}) ◾  ap (λ x → π₁ (tr (Sub (Conʳ (Γ S.▶ A))) ,ʳ x)) idʳ ) ∙ᵈ
-     -- {!
-     -- ap↓ {C = λ s → Sub s (Conʳ Γ)} (π₁ {A = Tyʳ A})
-     --   -- (≅↓ (↓≅ {! from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl !} !≅))
-     --   (≅↓ (↓≅  (from-transp (Sub (Conʳ (Γ S.▶ A))) ,ʳ {u = id}refl ) !≅))
-     --   !}
-    -- ≅↓ (↓≅ {! ap↓ {B = (Sub (Conʳ (Γ S.▶ A))) } π₁!})
-    -- ≅↓ (↓≅ {! ap↓ π₁ {p = ,ʳ}!})
-     -- {!J
-     -- (λ B e →
-     --  π₁ (tr (Sub (Conʳ (Γ S.▶ A))) e id)
-     --  == π₁ (id {Γ = B})
-     --  [ (λ s → Sub s (Conʳ Γ)) ↓ e ]
-     -- )!}
-
-    -- ≅↓ (↓≅ {! ap↓ π₁ (from-transp ? ,ʳ ?)!})
-
-      -- (wk {A = Tyʳ A})
-
-    -- -- ap↓ π₁ (from-transp _ _ {!!})
-    -- ap↓ {B = λ s → Sub s _} π₁ {p = {!,ʳ!}}
-    --   {u = tr (Sub (Conʳ (S._▶_ Γ A))) ,ʳ (Subʳ S.id)}
-    --   {v = id {Γ = _▶_ (Conʳ Γ) (Tyʳ A)}}
-    --    {!!}
-    -- ∙ᵈ {! !}
- -- apd Subʳ {!π₁ʳ!} ∙ᵈ {!!}
+         ((Subʳ σ) ,s tr (Tm _) []Tʳ (Tmʳ t))
+          [ Sub _ ↓ ,ʳ ]
 
  <>ʳ : ∀ {Γ : S.Con}{A : S.Ty Γ}{t : S.Tm Γ A} →
        Subʳ S.< t > == < Tmʳ t > [ Sub _ ↓ ,ʳ ]
@@ -181,21 +77,6 @@ record nextCwFMor
 
 
  [<>]T {Γ}{A}{u} = []Tʳ ∙' ap (_[_]T _ ) (to-transp! <>ʳ)
-
-
-
-
-
-record CwFMor
-    {k : Level}{l : Level}(M : CwF {k} {l})
-    {i : Level}{j : Level}(N : CwF {i} {j})
-    : Set (Level.suc (lmax (lmax i j)(lmax k l)) )
-   where
-  field
-     basecwfmor : baseCwFMor M N
-     nextcwfmor : nextCwFMor basecwfmor
-  open baseCwFMor basecwfmor public
-  open nextCwFMor nextcwfmor public
 {-
 
 I should do the proof, but now we can deduce that Subʳ commutes with π₁ and π₂
@@ -280,7 +161,7 @@ module _   {ll : Level}
 -- I need [<>^El]Tʳ before app
   record UnivMor  : Set (Level.suc (lmax (lmax i j)(lmax k l)) ) where
     field
-      Uʳ  : {Γ : S.Con} → _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.U {Γ})) U
+      Uʳ  : {Γ : S.Con} → Tyʳ (S.U {Γ}) ≡ U
 
       Elʳ : {Γ : S.Con} {a : S.Tm Γ (S.U {Γ})} →
         (Tyʳ {Γ} (S.El  a)) ≡ (El  (tr (Tm _) Uʳ (Tmʳ   a)))
@@ -317,9 +198,6 @@ module _   {ll : Level}
     -- module NN = UnivΠ NN
     open UnivMor um
 
-
-
-
     field
 
 
@@ -351,8 +229,8 @@ module _   {ll : Level}
            -- []Tʳ ◾ ap (λ s → Tyʳ B [ s ]T) (to-transp! <>ʳ) ◾ {!!} ]
 
       ΠNIʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Ty Γ} →
-        _≡_ {i} {Ty (Conʳ Γ)} (Tyʳ {Γ} (S.ΠNI B))
-        (ΠNI {Conʳ Γ} {T = T} λ a → Tyʳ (B a))
+        
+        (Tyʳ {Γ} (S.ΠNI B)) ≡ (ΠNI   (λ a → Tyʳ (B a)))
           -- (tr Ty (,ʳ ∙' ap ( _▶_ _ ) Elʳ) (Tyʳ {Γ S.▶ S.El {Γ} a} B)))
       $NIʳ : ∀ {Γ}{T : Set ll}{B : T → S.Ty Γ}(t : S.Tm Γ (S.ΠNI B))
             (u : T)
@@ -377,3 +255,4 @@ module _   {ll : Level}
       Πmor : ΠMor univmor
     open UnivMor univmor public
     open ΠMor Πmor public
+

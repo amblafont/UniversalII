@@ -150,15 +150,12 @@ idʳ {Γ} = fst=
 
 iniMor : CwFMor syntaxCwF M.RewCwF
 iniMor = record
-           { basecwfmor = record { Conʳ = Conʳ
+           {  Conʳ = Conʳ
            ; Tyʳ = Tyʳ
            ; Tmʳ = Tmʳ
            ; Subʳ = Subʳ
            ; ,ʳ = refl
-           }
-           ; nextcwfmor = record {
-
-             ∙ʳ = refl
+           ; ∙ʳ = refl
            ; []Tʳ = λ {Γ}{Δ}{A}{σ} → []Tʳ {A = A}{σ = σ}
            ; []tʳ = λ{Γ}{Δ}{A}{t}{σ} → []tʳ {t = t}{σ = σ}
            ; idʳ = λ{Γ}→ idʳ {Γ}
@@ -170,7 +167,6 @@ iniMor = record
            ; ,sʳ = λ {Γ}{Δ}{σ}{A}{t} → ,sʳ {Γ}{Δ}{σ}{A}{t}
            -- ; π₁ʳ = λ {Γ}{Δ}{A}{σ} → {! π₁ʳ {A = A}{σ = σ} !}
            -- ; π₂ʳ = {!!}
-           }
            }
 
 iniUnivMor : UnivMor syntaxUnivΠ M.RewUnivΠ iniMor
