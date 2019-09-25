@@ -849,12 +849,13 @@ Then, we show that the relation is stable under weakening and substitution.
   a way of defining $\Elw\wf{\Gamma}\wf{a}\sim \model{A}$ in this fashion so that
   UIP can be avoided to prove this statement.
 
-  \todo[inline]{András: Hugunin's paper has an example (which is
-     likely generalizable) that a notion of redundancy in
-     well-formedness relations implies that UIP is required.}
+  % \todo[inline]{András: Hugunin's paper has an example (which is
+  %    likely generalizable) that a notion of redundancy in
+  %    well-formedness relations implies that UIP is required.}
   \subsubsection{Stability under weakening}
-  Let us argue that it is necessary to show stability of the relation under
-  weakening before showing that it is stable under substitution.
+  % Let us argue that it is necessary to show s
+  Stability of the relation under
+  weakening must be proved before stability under substitution.
   Indeed, in the proof of stability under substitution, the $\Pi$ case
   requires to show that $\Pi \,A[\sigma] \,B[\keep\,\sigma]$ is related to
   $\model{\Pi}\,\model{A}\model{[\sigma]}
@@ -1176,10 +1177,18 @@ under the common hypotheses
 % know that this last type is related to $B[0 := u]$.
 
 
-\subsection{Existence and uniqueness of the initial QIIT morphism}
-Induction on the typing judgments shows that any QIIT morphism from the
-syntactic model $S$  to a semantic model $M$ sends well-typed syntax on a related
-semantic counter-part. More formally, we show by recursion:
+\subsection{Recursion}
+Recursion consists in building a morphism from the syntactic model to the
+semantic one.
+The image of a syntactic context is going to be a semantic context which relates
+to it (which is unique thanks to right uniqueness of the relation), and
+similarly for types and terms.
+% We construct it as the semantic
+% Induction on the typing judgments shows that any QIIT morphism from the
+% syntactic model $S$  to a semantic model $M$ sends well-typed syntax on a related
+% semantic counter-part.
+Thus, as a first step, we construct by induction on well-typed judgments the
+semantic counter-parts of the syntax:
   \begin{alignat*}{5}
      & \Sigma\Con{\sim} && :
     (\wf{\Gamma} : \Gamma \vdash ) \ra
@@ -1218,12 +1227,20 @@ semantic counter-part. More formally, we show by recursion:
     (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta ) \ra
     ({\model{\sigma}:\model{\Sub}\model\Gamma}\model{\Delta})\times ( \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
-  Right uniqueness of the relation is used in this recursion.
+  Right uniqueness of the relation is used in this induction.
 
-It is then straightforward to show that the first projection of these
-constructions yield a model morphism from the syntax to the model, using right
+It is then straightforward to show (without induction) that the first projection of these
+constructions yield a model morphism from the syntax to the model, again using right
 uniqueness of the relation.
-Now, to show that it is unique, suppose that we have a morphism from the
+\subsection{Uniqueness}
+Our goal is to show that the syntactic model is initial. What remains thus is to
+show that the morphism constructed in the previous section is actually the
+unique model morphism between the syntax and the arbitray model.
+To this end, we exploit right uniqueness of the relation: it is then enough to show
+that any such morphism maps a syntactic context to a related semantic context,
+and similarly for types and terms. 
+
+More formally, we assume an arbitrary morphism from the
 syntax to the model, inducing the following maps:
 \begin{alignat*}{5}
   &
@@ -1300,8 +1317,6 @@ the image is related:
 This justifies the uniqueness of the morphism, by right uniqueness of the relation.
 
 
-\subsection{Recursion}
-\subsection{Uniqueness}
 
 
 % \begin{description}
