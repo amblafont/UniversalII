@@ -523,7 +523,7 @@ possible because typechecking requires that $\model\Delta$ is
 the empty semantic context. This is precisely what ensured the removed hypothesis
 $\syn\cdot \sim \model\Delta$.
 Our way out here is to state that $\model\sigma$ relates to the empty
-substitution if the target semantic context is empty, and, acknowledging
+substitution if the target semantic context $\model\Delta$ is empty, and, acknowledging
 this equality, if $\model\sigma$ is
 the empty substitution.
 % The idea is that we will first prove that there is atmost one semantic type
@@ -1188,7 +1188,7 @@ similarly for types and terms.
 % syntactic model $S$  to a semantic model $M$ sends well-typed syntax on a related
 % semantic counter-part.
 Thus, as a first step, we construct by induction on well-typed judgments the
-semantic counter-parts of the syntax:
+related semantic counter-parts:
   \begin{alignat*}{5}
      & \Sigma\Con{\sim} && :
     (\wf{\Gamma} : \Gamma \vdash ) \ra
