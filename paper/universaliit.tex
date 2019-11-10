@@ -1,3 +1,6 @@
+
+\todo{Section on metatheoretic notation missing?}
+
 We work in the setting of extensional type theory, although we occasionally indicate through $e_1,\dots,e_n \#
 t$ that $t$ is well-typed thanks to the equalities $e_1$,\dots,$e_n$.
 % We are also careful to explain where UIP or functional extensionality that is
@@ -47,7 +50,7 @@ associated typing judgments.
 
 \subsubsection{Untyped syntax}
 The untyped syntax is defined as the following inductive datatype:
-\todo{András: two columns below perhaps}
+\todo{András: prettify below maybe}
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Conu && : \Set \\
@@ -1260,11 +1263,11 @@ straightforward to show (without induction) that the first projection of these
 constructions yield a model morphism from the syntax to the model, again using
 right uniqueness.
 \subsection{Uniqueness}
-Our goal is to show that the syntactic model is initial. Thus, what remains is
-to show that the morphism constructed in the previous section is unique. We
-exploit right uniqueness of the relation: it is enough to show that any such
-morphism maps a syntactic context to a related semantic context, and similarly
-for types and terms.
+Our goal is to show that the syntactic model is initial. Thus, it remains to
+show that the morphism constructed in the previous section is unique. We exploit
+right uniqueness of the relation: it is enough to show that any such morphism
+maps a syntactic context to a related semantic context, and similarly for types
+and terms.
 
 More formally, we assume an arbitrary morphism from the
 syntax to the model, inducing the following maps:

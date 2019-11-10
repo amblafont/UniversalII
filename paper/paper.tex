@@ -67,10 +67,8 @@
 \allowdisplaybreaks
 
 \begin{document}
-
 \maketitle
 
-%TODO mandatory: add short abstract of the document
 \begin{abstract}
   Inductive-inductive types (IITs) are a generalisation of inductive types in
   type theory. They allow the mutual definition of types with multiple sorts
@@ -80,10 +78,10 @@
   shown that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
-  IIT. In this paper we construct this theory of signatures only using inductive
-  types. We rely on function extensionality and uniqueness of identity
-  proofs. All of the constructions of this paper were formalised in the proof
-  assistant Agda.
+  IIT. In this paper we construct this theory of signatures using only inductive
+  types, thereby showing a reduction of all finitary IITs to inductive types.
+  We rely on function extensionality and uniqueness of identity proofs. All
+  constructions in this paper were formalised in the proof assistant Agda.
 \end{abstract}
 
 \section{Introduction}
@@ -280,10 +278,65 @@ investigated more carefully.
 \paragraph*{Construction}
 \input{universaliit}
 
-\section{Constructing IITs from the Theory IIT of Signatures}
+\section{Constructing IITs from the Theory of IIT Signatures}
 \label{sec:andras}
 
-Explain that the previous paper was modular.
+We construct all IITs describable by the theory of IIT signatures through the
+term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
+shown that from the syntax of the theory of signatures for finitary QIITs, one
+can construct any particular finitary QIIT. The idea is that for a signature
+$\Gamma$, the initial algebra can be built from sets of terms of the form
+$\Tm\,\Gamma\,(\El\,a)$.
+
+In this section, we only need to check that the signatures in
+\cite{Kaposi:2019:CQI:3302515.3290315} and the term model construction restricts
+to IITs, i.e.\ that from a syntax for the theory of IIT signatures all finitary
+IITs are constructible.
+
+\begin{itemize}
+\item
+  Finitary IIT signatures are obtained exactly by dropping equality constructors from
+  finitary QIIT signatures. It follows that any model for the theory of QIIT signatures
+  restricts to IITs, hence we inherit the categorical semantics of QIITs.
+\item
+  The term model construction also restrict in a straightforward way. For QIITs,
+  term algebras are constructed by induction on the syntax of signatures, and
+  then another induction constructs the eliminator (i.e.\ dependent induction
+  principle). In both cases, simply dropping equality constructors from the
+  induction yields restriction to IITs.
+\end{itemize}
+
+However, we shall mention that the Agda formalisation for the current paper
+cannot be directly plugged into the Agda code for
+\cite{Kaposi:2019:CQI:3302515.3290315} (which includes most of the term model
+construction). One reason is that the QIIT formalisation uses strict computation
+rules for induction over signatures, while here we show propositional
+computation. This mismatch can be in principle remedied by noting that both
+formalisations use UIP and function extensionality, hence by the known
+translations between extensional and intensional type
+theories\cite{hofmann95extensional,winterhalter2019eliminating}, we can switch
+between strict and propositional equalities.
+
+Also, the current paper proves initiality, i.e.\ unique recursion for
+signatures, while \cite{Kaposi:2019:CQI:3302515.3290315} uses dependent
+elimination. We expect that the two notions are equivalent. An extension of
+\cite{Kaposi:2019:CQI:3302515.3290315} to large infinitary QIITs would entail
+this equivalence, since that would cover the (large, infinitary) theory of IIT
+signatures.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{Further Work}
 
