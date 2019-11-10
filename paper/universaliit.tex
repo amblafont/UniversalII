@@ -3,7 +3,7 @@ t$ that $t$ is well-typed thanks to the equalities $e_1$,\dots,$e_n$.
 % We are also careful to explain where UIP or functional extensionality that is
 % available in extensional type theory are used.
 
-The steps consist of the following:
+The construction consists of the following steps:
 \begin{enumerate}
 \item Definition of untyped syntax (as a family of inductive datatypes) together
   with typing judgments (as inductive relations on the untyped
@@ -11,35 +11,43 @@ The steps consist of the following:
   signatures from well-formed terms, denoted $S$.
 \item Construction of a morphism $\rec:S\to M$ for arbitrary $M$, by:
   \begin{enumerate}
-  \item defining a relation $\blank \sim \blank$ between the (well typed) syntax and a given
-    model (the idea is that given a syntactic context $\Gamma$ and a semantic
+  \item defining a relation $\blank \sim \blank$ between the (well-typed) syntax and a given
+    model. The idea is that given a syntactic context $\Gamma$ and a semantic
     context $\model{\Gamma}$ of the model $M$, we have $\Gamma \sim
-    \model{\Gamma}$ if and only if $\rec\,\Gamma = \model{\Gamma}$, and
-    similarly for types, terms, and substitutions);
+    \model{\Gamma}$ if and only if $\rec\,\,\Gamma = \model{\Gamma}$, and
+    similarly for types, terms, and substitutions;
     % semantic context $\model{\Gamma}$ of
     % the model $M$ if and only if $\Gamma$ relates to $\rec\,{\Gamma}$;
     % enjoyed by the initial morphism from the
     % syntax to a given model;
   \item showing that this relation is functional.
     \end{enumerate}
-  \item Proving of the uniqueness of this morphism by showing that
-    any morphism $f:S\to M$ satisfies the relation
-    (in the sense, for contexts, that given any syntactic context $\Gamma$, we
-    have $\Gamma\sim f\,\Gamma$).
+  \item Proving the uniqueness of this morphism by showing that any morphism
+    $f:S\to M$ satisfies the relation. For example, for any syntactic context
+    $\Gamma$ we have $\Gamma\sim f\,\Gamma$.
       % TODO donner composantes sur les contextes
 \end{enumerate}
 The next sections detail each of these steps.
-\subsection{Syntactic model}
+\subsection{Syntactic Model}
 
-The goal is to define the syntactic model where contexts are pairs of an untyped 
-context together with a proof that it is well formed, and similarly for types,
-terms and substitutions.
-The next sections are devoted to the definition of the untyped syntax and their associated
-typing judgments.
+The goal is to define the syntactic model where contexts are pairs of a
+precontext together with a well-formedness proof, and similarly for types, terms
+and substitutions.
+
+Crucially, we do not have conversion relations for typed syntax, nor do we need
+to use quotients when giving the syntactic model. This is possible because there
+are no $\beta$-rules in the theory of signatures. Hence, we consider only normal
+terms in the untyped syntax, and define weakening and substitution by recursion.
+Avoiding quotients is important for two reasons. First, it greatly simplifies
+formalisation. Second, we aim to reduce IITs to a minimal feature set, and we
+get a stronger result if we do not use quotients.
+
+The next sections present the definition of the untyped syntax and the
+associated typing judgments.
 
 \subsubsection{Untyped syntax}
 The untyped syntax is defined as the following inductive datatype:
-
+\todo{András: two columns below perhaps}
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Conu && : \Set \\
@@ -65,10 +73,9 @@ The untyped syntax is defined as the following inductive datatype:
   & \rlap{(6) Default value} \\[0.5em]
   & \erru && : \Tmu
 \end{alignat*}
-Note that we choose to share the constructor for untyped application to infinitary and
-meta-theoretic parameters.
-Variables are modelled as De Bruijn indices, i.e. as natural numbers pointing
-to the relevant position in the context.
+Note that we overload the constructor for untyped application for infinitary and
+meta-theoretic parameters. Variables are modeled as de Bruijn indices, i.e.\ as
+natural numbers pointing to a position in the context.
 
 % The type of (untyped) substitution is then defined as $\Subu = \List\,\Tmu$.
 % Note that $\Conu$ could also be defined as a list of types in a similar fashion.
@@ -81,13 +88,12 @@ to the relevant position in the context.
 
 Note that $(\Piu \,A\,B)[\sigma]$ should be defined as $\Piu
 \,A[\sigma]\,B[\varu\, 0 \,\consu\, \wkO\,\sigma]$, and thus we need to define
-$\wk0$, the weakening of substitutions.
-The basic idea is to increment the de Bruijn indices of all the variables.
-Actually this is not so simple because of the $\Piu$ type:
-indeed, we want to define $\wk(\Piu\,A\,B)$ as the $\Pi$ type of the weakening
-of $A$ and $B$, but here, $B$ must be weakened with respect to the second last
-variable of the context, rather than the last one.
-For this reason, we need to generalize the weakening as occuring anywhere in the context.
+$\wk0$, the weakening of substitutions.  The basic idea is to increment the de
+Bruijn indices of all the variables.  Actually this is not so simple because of
+the $\Piu$ type: indeed, we want to define $\wk(\Piu\,A\,B)$ as the $\Pi$ type
+of the weakening of $A$ and $B$, but here, $B$ must be weakened with respect to
+the second last variable of the context, rather than the last one.  For this
+reason, we need to generalize the weakening as occuring anywhere in the context.
 \begin{alignat*}{5}
   & \wk_n && :  \Tyu\ra\Tyu \\
   & \wk_n && :  \Tmu\ra\Tmu \\
@@ -98,13 +104,11 @@ For this reason, we need to generalize the weakening as occuring anywhere in the
   weakening occurs.
   Here, $\wkO$ weakens with respect to the last variable.
 
-  Later, in Section~\ref{ss:weaken-typing}, we show that weakening preserves typing.
-  But as we just argued, weakening may occur anywhere in the context.
-Stating a typing rule for this operation requires to have a way to express
-the weakening occuring at the middle of a context.
-To this end, we consider pairs of untyped contexts, which should be thought
-of as a splitting at some place of a full context.
-This full context is recovered by merging the two components:
+Later, in Section~\ref{ss:weaken-typing}, we show that weakening preserves
+typing. Stating a typing rule for this operation requires to have a way to
+express the weakening occuring at the middle of a context. We consider pairs of
+untyped contexts, which should be thought of as a splitting of a context at some
+position. The full context is recovered by merging the two components:
 % (which appears in the typing rule of a weakening occuring in the middle of a context),
 % and the length $\length{\Gamma}$ of a
 % context $\Gamma$:
@@ -113,18 +117,18 @@ This full context is recovered by merging the two components:
   & \Gamma \merge \cdot && :=  \Gamma \\
   & \Gamma \merge (\Delta \extu A) && :=  (\Gamma \merge \Delta)\extu A
 \end{alignat*}
-We think of the second context as a telescope over the first context.
-We need to define the define also the weakening of a telescope in order to
-state the typing rule of weakening:
+We think of the second context as a telescope over the first one. We also define
+weakening for telescopes, which will be used to give typing rules for telescopes
+in Section \ref{sec:typing_judgments}:
 \begin{alignat*}{5}
   & \wkO && : \Conu\ra \Conu
   \\
   & \wkO\,\emptyu && := \emptyu
   \\
-  & \wkO\,(\Delta \extu A) && := \wkO\,\Delta \extu \wk_{\length{\Delta}}\,A
+  & \wkO\,(\Delta\,\extu A) && := \wkO\,\Delta\,\extu \wk_{\length{\Delta}}\,A
   \end{alignat*}
   \subsubsection{Untyped substitution}
-  We define by induction the specific substitution of one variable of the context:
+  We define single substitution by recursion on presyntax:
   % & \rlap{(1) Substitution calculus} \\[0.5em]
 \begin{alignat*}{5}
   & \blank[\blank := \blank] && : \Tyu\ra\N\ra\Tmu\ra\Tyu \\
@@ -132,30 +136,23 @@ state the typing rule of weakening:
   % \\
   % & \blank[\blank := \blank] && : \N\ra\N\ra\Tmu\ra\Tmu
   \end{alignat*}
-  This is enough to define the well-typed judgments: indeed, the typing rule of application
+  This is enough to define the typing judgments: indeed, the typing rule for application
   involves only a unary substitution.
 
-
   However, to construct the initial model of the QIIT, we need to define
-  full substitution calculus:
-  % First, we define
-
-  % We then define by mutual recursion the full substitution of types and terms.
+  the full substitution calculus:
 \begin{alignat*}{5}
   & \blank[\blank] && : \Tyu\ra\Subu\ra\Tyu \\
   & \blank[\blank] && : \Tmu\ra\Subu\ra\Tmu \\
   & \blank \circ \blank && : \Subu\ra\Subu\ra \Subu
   \end{alignat*}
-  These can be defined either by iterating unary substitutions, or
-  by recursion on the syntax on the untyped syntax: the two ways yield provably
-  equal definitions. In the following, we assume that it is defined by recursion.
- We use the additional default constructor
-$\erru:\Tmu$ in case of error (for example, when the substitution is not
-long enough).
-This is an irrelevant constructor in the end, as the typing
-judgments will not mention it.
-
-We also make use of the following definition:
+  These can be defined either by iterating unary substitutions, or by recursion
+  on untyped syntax: the two ways yield provably equal definitions. In the
+  following, we assume that it is defined by recursion.
+ We use the additional default constructor $\erru:\Tmu$ in case of error (for
+example, when the substitution is not long enough).  This is an irrelevant
+constructor in the end, as the typing judgments will not mention it. We also
+make use of the following definition:
   \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \keep && : \Subu \ra \Subu \\
@@ -181,8 +178,8 @@ We also make use of the following definition:
 
 
   \subsubsection{Exchange laws: weakening and substitution}
-  Many lemmas are shown by recursion on the untyped syntax, for terms and types
-  (below, $Z$ denotes either a term or a type):
+  Many lemmas for types and terms are shown by induction on the untyped syntax.
+  Below, $Z$ denotes either a term or a type.
 \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \wk\mhyphen\wk && : \wk_{n+p+1} (\wk_n\,Z) = \wk_n(\wk_{n+p}\,Z)\\
@@ -195,7 +192,7 @@ We also make use of the following definition:
   % l-subV-l-subV : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]Z  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]Z) ]Z
   & [][+] && : Z[n :=u][n+p:=z] = Z[n+p+1:=z][n:= (u[p:=z])]
   \end{alignat*}
-  The following lemmas are shown by recursion on the syntax, for types and terms:
+  Below, $\keep^n$ denotes $\keep$ iterated $n$ times.
 \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   % liftV=wkS
@@ -209,27 +206,23 @@ We also make use of the following definition:
   % l-sub[]V : ∀ n x z σ
     % ((x [ n := z ]V) [ iZer n keep σ ]Z) = (x [ iZer (S n) keep σ ]V) [ n := (z [ σ ]Z) ]Z
    & [:=][\keep] && : Z [ n:= u][\keep^n \sigma] =  Z[\keep^{n+1}\,\sigma][n := u[\sigma]]
-   \\
-   & {}{\circ}{}\wkO & & : \sigma \circ (\wkO \tau) = \wkO (\sigma \circ \tau)
-   \\
-  & \wkO{}{\circ}{}, && : \wkO\,\sigma \circ (t \consu \tau ) = \sigma \circ \tau
   \end{alignat*}
-  where $\keep^n$ is $\keep$ iterated $n$ times. As a particular case
-  for $n=0$, we get
+As particular cases for $n=0$, we get
 \begin{alignat*}{5}
+  & {}{\circ}{}\wkO & & : \sigma \circ (\wkO \tau) = \wkO (\sigma \circ \tau) \\
+  & \wkO{}{\circ}{}, && : \wkO\,\sigma \circ (t \consu \tau ) = \sigma \circ \tau \\
   & [\wkO] && : t[\wkO\,\sigma] = \wk_0 (t[\sigma]) \\
   & \wk_0[\cons] && : (\wk_0 Z)[u \consu \sigma] = Z[\sigma] \\
-   & [0:=][] && : Z [ 0:= u][ \sigma] =  Z[\keep\,\sigma][0 := u[\sigma]]
-  \end{alignat*}
-
-Finally, we show the usual lemmas about substitution:
+  & [0:=][] && : Z [ 0:= u][ \sigma] =  Z[\keep\,\sigma][0 := u[\sigma]]
+\end{alignat*}
+Finally, we show the following:
 \begin{alignat*}{5}
   & [][] && : Z[\sigma][\tau] = Z[\sigma\circ\tau]
   \\
   & \ass && : (\sigma\circ \delta)\circ\tau = \sigma\circ (\delta\circ\tau)
   \end{alignat*}
-  Other substitution lemmas are deferred after the definition of the typing
-  judgments, as the proofs require that some input are well-typed.
+We defer laws for identity substitutions to after the definition of the typing
+judgments, as the proofs require that some inputs are well-typed.
 
   % The two ways yield provably equal definitions, but
   % The advantage of the second
@@ -241,6 +234,7 @@ Finally, we show the usual lemmas about substitution:
 
 
   \subsubsection{Typing judgments}
+  \label{sec:typing_judgments}
   The typing judgments are defined as the following inductive datatype indexed over the
   untyped syntax:
 \begin{alignat*}{5}
@@ -275,10 +269,10 @@ Finally, we show the usual lemmas about substitution:
   \Elu\,a \vdash B)\ra\Gamma \vdash \Piu \, a \, B \\
   & \appw && :
     (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra(\Gamma \extu
-    \Elu\,a \vdash B)\ra
+    \Elu\,a \vdash B)
     \\
     & &&
-    (\Gamma \vdash t \in \Piu \, a \, B )
+    \ra(\Gamma \vdash t \in \Piu \, a \, B )
     \ra
     (\Gamma \vdash u \in \Elu\,a)
     \ra
@@ -291,10 +285,10 @@ Finally, we show the usual lemmas about substitution:
     \\
     & \appmw  && :
     (T:\Set)\ra(A : T\ra \Tyu)\ra(\Gamma \vdash)\ra
-    ((t : T)\ra\Gamma\vdash A\,t) \ra
+    ((t : T)\ra\Gamma\vdash A\,t)
     \\
     & &&
-    (\Gamma \vdash t \in \Pimu \,T\,A)
+    \ra(\Gamma \vdash t \in \Pimu \,T\,A)
     \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
     \\
   & \rlap{(5) Infinitary parameters} \\[0.5em]
@@ -313,17 +307,17 @@ Finally, we show the usual lemmas about substitution:
     (\Gamma \vdash t \in \Piiu \,T\, A)
     \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
 \end{alignat*}
-There is possibility of redundancy in the arguments of
-the constructors. Here, we are rather ``{paranoid}'', so that we get more inductive
-hypotheses when performing recursion.
+There is possibility of redundancy in the arguments of the constructors. Here,
+we are ``{paranoid}'', so that we get more inductive hypotheses when performing
+recursion.
 
 % The substitution part could be moved after the mutual definition of terms, types,
 % and contexts.
 
 \subsubsection{Weakening preserves typing}
 \label{ss:weaken-typing}
-We state and prove by mutual recursion that typing judgments are stable under
-weakening, for contexts, types, terms, and substitutions:
+We prove by mutual induction that typing judgments are stable under weakening,
+for contexts, types, terms, and substitutions:
 % wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
 % liftTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}(Bw : (Γp ^^ Δp) ⊢ Bp) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftT ∣ Δp ∣ Bp)
 \begin{alignat*}{5}
@@ -339,7 +333,7 @@ weakening, for contexts, types, terms, and substitutions:
   \Gamma \extu A \vdash \wkO\, \sigma \Rightarrow \Delta
   \end{alignat*}
 \subsubsection{Substitution preserves typing}
-  We show that judgments are stable under substitution, by mutual recursion:
+  First, we show that judgments are stable under substitution.
 \begin{alignat*}{5}
   % Tyw[] : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap) {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ σp ⇒ Γp) → Δp ⊢ (Ap [ σp ]T)
   & \wf{[]} && : (\Gamma \vdash)\ra(\Delta \vdash A)\ra
@@ -368,37 +362,34 @@ weakening, for contexts, types, terms, and substitutions:
   % \Gamma \vdash A [ \sigma ]
   % \\
   \end{alignat*}
-Then, we show that identity substitutions are neutral, for well-formed types,
-terms, and substitutions:
+\subsubsection{Laws for identity substitutions}
+We show category and functor laws involving identity substitution, for
+well-formed types, terms and substitutions.
 \begin{alignat*}{5}
   % [idp]V : ∀ {Γ}{A}{x}(xw : Γ ⊢ x ∈v A) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
   & [\idu] && : (\Gamma \vdash A)\ra A [ \idu\,\Gamma]  \\
   & [\idu] && : (\Gamma \vdash x \invar A)\ra x [ \idu\,\Gamma] = V x \\
   & [\idu] && : (\Gamma \vdash t \in A)\ra t [ \idu\,\Gamma] = t \\
-  & \idru && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \sigma \circ \idu\,\Gamma = \sigma
-  \end{alignat*}
-  In a seperate and independant recursion, one shows that:
-  \begin{alignat*}{5}
+  & \idru && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \sigma \circ \idu\,\Gamma = \sigma \\
   & \idlu && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \idu\,\Delta\circ \sigma = \sigma
   \end{alignat*}
-  Then, we show that the identity substitution itself is well typed:
+Finally, we show that the identity substitution itself is well typed:
   \begin{alignat*}{5}
   & \idw && : (\Gamma \vdash)\ra \Gamma \vdash \idu\,\Gamma \Rightarrow \Gamma
   \end{alignat*}
 
 
 
-\subsubsection{Uniqueness of typing and uniqueness of types}
+\subsubsection{Proof irrelevance and unicity of typing}
 \label{ss:uniq-typing-types}
-  We define what it means for a type $T$ (of the meta-theory) to be a proposition as follows:
-
+A type is a proposition, or proof-irrelevant, if it has at most one inhabitant.
   \[
     \isaprop\,T := (a : T) \ra (a' : T) \ra a = a'
   \]
-  Thus, a type is a proposition if there is at most
-  one inhabitant.
-We show by recursion that each of these typing judgments is unique in the
+We show that each of the typing judgments is unique in the
 following sense:
+
+\todo{Prettify table.}
 \begin{align*}
     \isp{\Conw}
   : \isaprop\, (\Gamma\vdash)
@@ -416,14 +407,7 @@ following sense:
         \isp{\wf\Sub}
   : \isaprop\, (\Gamma\vdash \sigma \Rightarrow \Delta)
   \end{align*}
-Actually, the application and successor cases require to show uniqueness of
-types in a given context, before.
-Let us consider for instance the application constructor $\appw$: it provides a
-type $B$ such that the final type is $C=B[0 := u]$. Even if $C$ is known a
-priori, there may be another $B$ for which $B[0 := u] = C$, possibly leading to
-many proofs that $t\appu u$ has type $C$. Uniqueness of types
-solves this issue, as $B$ is then uniquely determined by the type $\Piu\,A\,B$ of $t$.
-More formally, we show by recursion:
+We also show unicity of typing:
 \begin{alignat*}{5}
   &
   \Tmw{=}\Ty & &:
@@ -435,15 +419,29 @@ More formally, we show by recursion:
   (\Gamma \vdash x \invar A) \ra
   (\Gamma \vdash x \invar B) \ra A = B
   \end{alignat*}
+Let us consider for instance the application constructor $\appw$: for a codomain
+type $B$ it yields an overall type $C=B[0 := u]$ for an application. Even
+if $C$ is known a priori, there may be another $B$ for which $B[0 := u] = C$,
+possibly leading to many proofs that $t\appu u$ has type $C$. Unicity of typing
+solves this issue, as $B$ is then uniquely determined by the type $\Piu\,A\,B$
+of $t$.
+
+%% Actually, the application and successor cases require to show uniqueness of
+%% types in a given context, before.
+%% Let us consider for instance the application constructor $\appw$: it provides a
+%% type $B$ such that the final type is $C=B[0 := u]$. Even if $C$ is known a
+%% priori, there may be another $B$ for which $B[0 := u] = C$, possibly leading to
+%% many proofs that $t\appu u$ has type $C$. Uniqueness of types
+%% solves this issue, as $B$ is then uniquely determined by the type $\Piu\,A\,B$ of $t$.
+
 
 % \subsubsection{UIP and functional extensionality}
  % , which is not applyable without
  % functional extensionality.
 
  \subsubsection{Syntactic model}
- The syntactic model is obtained 
- by packing the untyped syntax
-with the typing judgments:
+ The syntactic model is obtained by packing the untyped syntax with the typing
+ judgments:
 % % \subsection{QIIT model}
 % Then, we show that they are stable by weakening and substitution.
 % Packing the untyped syntax with well-formed typed judgments yields
@@ -457,41 +455,66 @@ with the typing judgments:
  \\
  & \syn\Sub \,(\Gamma,\wf\Gamma)(\Delta,\wf \Delta)&& := \sum_\sigma \Gamma\vdash \sigma \Rightarrow \Delta
 \end{alignat*}
-The other fields are given straightforwardly.
-Regarding the equations, it is enough to prove them only for the untyped syntactic
-part: as we argued in Section~\ref{ss:uniq-typing-types}, the proofs of typing judgments are automatically
-equal.
+The other fields are given straightforwardly.  Regarding the equations, it is
+enough to prove them only for the untyped syntactic part: as we argued in
+Section~\ref{ss:uniq-typing-types}, the proofs of typing judgments are
+automatically equal.
 
-None of the constructions in this section uses UIP. Functional extensionality is
- necessary because the metatheoretic or infinitary (untyped) $\Pi$ takes a metatheoretic function
- as an argument. An example of induction step that uses it lies in the proof
- that identity substitutions do not change types (this is an equation satisfied
- by a model of the QIIT), in particular in the case  $(\Pim\,T\,
- A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is
- equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction hypothesis
- states that $(t:T)\ra (A\,t)[\id]=A\,t$.
+None of the constructions in this section use UIP. Functional extensionality is
+necessary because the metatheoretic or infinitary (untyped) $\Pi$ takes a
+metatheoretic function as an argument. An example induction step that uses it
+is in the type preservation proof for identity substitutions (this is an
+equation satisfied by a model of the QIIT), in particular in the case
+$(\Pim\,T\, A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is
+equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
+hypothesis states that $(t:T)\ra (A\,t)[\id]=A\,t$.
 
-\subsection{A functional relation}
-The previous section builds the syntactic model.
-The challenge remains to show that it is initial.
+\subsection{Relating the Syntax to a Model}
+It remains to show that the constructed syntactic model is initial. To achieve
+this, we first define a relation between the syntactic model and an arbitrary
+model, then show that the relation is functional, which lets us extract a
+homomorphism from the relation.
 
-Given a model $M$ of the QIIT, we define the functional relation satisfied by the initial
-morphism $\rec : S\to M$ by recursion on the typing judgments.
+This approach is an alternative version of Streicher's method for interpreting
+preterms in an arbitrary model\cite{streichersemantics}. Streicher first defines
+a family of partial maps from the presyntax to a model, then shows that the maps
+are total on well-formed input. We have found that our approach is significantly
+easier to formalise. Too see why, note that the right notion of partial map in
+type theory, which does not presume decidable definedness, is fairly
+heavyweight:
+\[
+  \mathsf{PartialMap}\,A\,B := A\ra (P : \mathsf{hProp})\times(P \ra B)
+\]
+Here $\mathsf{hProp}$ denotes a type which is propositional. In the above
+definition, we notice an opportunity for converting a fibered definition of a
+type family into an indexed one; if we drop the propositionality for $P$ for the
+time being, we may equivalently return a family indexed over $B$, which is
+exactly just a relation $A\ra B\ra\Set$. Then, in our approach, we recover
+uniqueness of $P$ through the functionality requirement on the $A\ra B\ra\Set$
+relation, and totality by already assuming well-formedness in the syntax. In type
+theory, using indexed families instead of display maps is a common convenience,
+since the former are natively supported in type theory, while the latter require
+carrying around auxiliary propositional equalities.
+
+\subsubsection{The functional relation}
+
+Given a model $M$ of the QIIT, we define the functional relation satisfied by
+the initial morphism $\rec : S\to M$ by recursion on the typing judgments.
 % As these judgments are propositions, we will sometimes
-If $\Gamma$ is a context in $S$ and $\model{\Gamma}$ is a semantic
-context (i.e. a context of the model $M$), we want to define a type $\Gamma\sim \model{\Gamma}$
-equivalent to $\rec(\Gamma)=\model{\Gamma}$. Of course, at this
-stage, $\rec$ is not available yet since the whole point of defining this
-relation is to construct $\rec$ in the end.
+If $\Gamma$ is a context in $S$ and $\model{\Gamma}$ is a semantic context
+(i.e.\ a context of the model $M$), we want to define a type
+$\Gamma\sim \model{\Gamma}$ equivalent to $\rec\,\,\Gamma=\model{\Gamma}$. Of
+course, at this stage, $\rec$ is not available yet since the point of
+defining this relation is to construct $\rec$ in the end.
 
 For a type $A$ in a context $\Gamma$, we want to define a relation
-$A\sim \model{A}$ that is equivalent to $\rec(A)=\model{A}$.
+$A\sim \model{A}$ that is equivalent to $\rec\,\,A=\model{A}$.
 % where $\model{A}$ is a
 % semantic type in a semantic context $\model{\Gamma}$.
 For this equality to make sense, the semantic type $\model{A}$ must live
-in the semantic context $\rec\ \Gamma$. But again, $\rec$ is not
+in the semantic context $\rec\,\,\Gamma$. But again, $\rec$ is not
 yet available at this stage. Exploiting the expected equivalence between
-$\Gamma\sim\model\Gamma$ and $\rec(\Gamma)=\model\Gamma$, we may consider defining $A\sim\model{A}$ under the
+$\Gamma\sim\model\Gamma$ and $\rec\,\,\Gamma=\model\Gamma$, we may consider defining $A\sim\model{A}$ under the
 hypotheses that $\model{A}$ lies in a semantics context $\model\Gamma$ which is
 related to $\Gamma$. Then, the type of the relation for types is
 \[
@@ -509,30 +532,28 @@ must be defined mutually with the relation on types (see for example the case of
 context extension), but here, the relation on contexts appears as the type of an
 argument of the relation on types.
 % We leave this possibility aside,
-As we do not assume that our metatheory
-supports this kind of recursive-recursive definitions, we refuse to further consider
- such a possiblity, and instead just remove the 
-hypothesis $\Gamma\sim\model\Gamma$ from the list of arguments.
-We proceed similarly for terms and substitutions. Actually, 
-this removal is not without harm. Consider for example the case of relating the
-empty substitution $\Gamma\vdash \epsilonu \Rightarrow \emptyu $
-with a semantic substitution $\model\sigma$ between semantic contexts
-$\model\Gamma$ and $\model\Delta$. We would like to assert that $\model\sigma$
-equals the empty semantic substitution $\model\epsilon$, but this is not
-possible because typechecking requires that $\model\Delta$ is 
-the empty semantic context. This is precisely what ensured the removed hypothesis
-$\syn\cdot \sim \model\Delta$.
-Our way out here is to state that $\model\sigma$ relates to the empty
-substitution if the target semantic context $\model\Delta$ is empty, and, acknowledging
-this equality, if $\model\sigma$ is
-the empty substitution.
+Our metatheory does not support this kind of recursive-recursive
+definitions\footnote{And to our knowledge there is no established semantics for
+it in existing literature.}, so we instead just remove the hypothesis
+$\Gamma\sim\model\Gamma$ from the list of arguments.  We proceed similarly for
+terms and substitutions. Actually, this removal is not without harm. For
+example, consider relating the empty substitution
+$\Gamma\vdash \epsilonu \Rightarrow \emptyu $ to a semantic substitution
+$\model\sigma : \model\Sub\,\model\Gamma\,\model\Delta$. We would like to assert
+that $\model\sigma$ equals the empty semantic substitution $\model\epsilon$, but
+this is not possible because typechecking requires that $\model\Delta$ is the
+empty semantic context. This is precisely what ensured the removed hypothesis
+$\syn\cdot \sim \model\Delta$.  Our way out here is to state that $\model\sigma$
+is related to the empty substitution if the target semantic context $\model\Delta$
+is empty, and, acknowledging this equality, if $\model\sigma$ is the empty
+substitution.
 % The idea is that we will first prove that there is atmost one semantic type
 % which relates to the syntactic one, and then later we will provide such a
 % semantic type under the hypothesis that the contexts are related.
 
-Let us mention another possible solution avoiding the recursive-recursive
-requirement: it consists in defining $A\sim\model{A}$ so that it is equivalent to
-$(e:\rec\,\Gamma = \model{\Gamma})\times (\rec\,A = e\#\model{A})$.
+Let us mention another possible solution for avoiding recursion-recursion:
+defining $A\sim\model{A}$ so that it is equivalent to $(e:\rec\,\Gamma
+= \model{\Gamma})\times (\rec\,A = e\#\model{A})$.
 % whereas the right hand side is of type $\model\Ty\model{\Gamma}$.
 % For a substitution $\sigma$ between contexts $\Gamma$ and $\Delta$,
 % a first idea consists in defining a relation $\sigma \sim_{\blank} \model{\sigma} : \Gamma
@@ -548,7 +569,7 @@ $(e:\rec\,\Gamma = \model{\Gamma})\times (\rec\,A = e\#\model{A})$.
 % $\sum_{\model{\Gamma}}({\model{A}:\model{\Ty}\,\model{\Gamma}})\times(A\sim\model{A})$
 % are contractible, i.e., have a unique inhabitant.
 %The first step consists in showing that these types are propositions.
-Our different approach
+In contrast to this, our approach
 % Actually, we take a different approach for the relation on types
 % (and terms) which
 yields a more concise definition of the relation.
@@ -830,24 +851,34 @@ Then, we show that the relation is stable under weakening and substitution.
     && : (\wf \sigma : \Gamma \vdash \sigma \Rightarrow \Delta) \ra
     \isaprop\, (\sum_{\model{\sigma}} \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
-  We mentionned that in order to avoid a recursive-recursive definition,
-  we removed some hypothesis in the list of arguments of the relation. Such
+  We mentionned that in order to avoid a recursive-recursive definition, we
+  removed some hypotheses in the list of arguments of the relation. Such
   hypotheses are sometimes missed, for example in the case of the empty
-  substitution as we explained, or in the case of variables, leading us to state additional equalities.
-  % some redundancies that we could not avoid when defining
-  % the relation, for example in the case of the empty substitution.
-  Because of this,
-  % It is because of the redundancies which we mentionned above
-  we need UIP to show that the
-  types $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
-  $\sum_{\model{A}}A\sim\model{A}$ are propositions.
-  One may believe that the use of UIP could be avoided by embracing fully the
-  alternative verbose definition that we suggested before, expecting that
+  substitution, or in the case of variables, requiring us to state additional
+  equalities.  % some redundancies that we could not avoid when defining % the
+  relation, for example in the case of the empty substitution.  Because of
+  this, % It is because of the redundancies which we mentionned above we need
+  UIP to show that the types $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
+  $\sum_{\model{A}}A\sim\model{A}$ are propositions.  One may believe that the
+  use of UIP could be avoided by embracing the alternative verbose definition
+  that we suggested before, expecting that
   $\sum_{\model{\Gamma}}\sum_{\model{A}}A\sim\model{A}$, rather than
-  $\sum_{\model{A}}A\sim\model{A}$, is a proposition.
-  However, this not so obvious. For example, we did not find
-  a way of defining $\Elw\wf{\Gamma}\wf{a}\sim \model{A}$ in this fashion so that
-  UIP can be avoided to prove this statement.
+  $\sum_{\model{A}}A\sim\model{A}$, is a proposition.  However, this not so
+  obvious. For example, we were not able to define
+  $\Elw\wf{\Gamma}\wf{a}\sim \model{A}$ in this fashion. In related work,
+  Hugunin investigated constructing inductive-inductive types without
+  UIP\cite{hugunin2019constructing}, and demonstrated that well-formedness
+  predicates used in syntactic models can be subtly incompatible with UIP. Also,
+  while Hugunin does not use UIP, he only shows a weak version of dependent
+  elimination for the constructed IITs. Hence, the question whether IITs are
+  reducible to inductive types in a UIP-free setting remains open.
+
+
+
+
+%% in this fashion so that
+%%   UIP can be avoided to prove this statement.
+
 
   % \todo[inline]{András: Hugunin's paper has an example (which is
   %    likely generalizable) that a notion of redundancy in
@@ -868,11 +899,6 @@ Then, we show that the relation is stable under weakening and substitution.
   $\wkO\,\sigma=\sigma\circ\wk$ (where $\wk=\wkO \id$)
   relates to its semantic counterpart.
 
-  To do that, we indeed show that $\wkO$ preserves the relation, for types and terms.
-  This requires to generalize a bit and show that $\wk_n$ preserves the relation,
-  as $\wk_0(\Pi\,A\,B)=\Pi\,(\wk_0\,A)(\wk_1\,B)$.
-  But remember that $\wk_n$ performs a weakening in the middle of a context, so
-  we first define the semantic counterpart of this:
 %   {-
 
 % Suppose that Γ ^^ Δ ⊢ and Γ ⊢ E
@@ -887,6 +913,12 @@ Then, we show that the relation is stable under weakening and substitution.
 %         {Δ }{Δw : Γ ^^ Δ ⊢}(Δm : ∃ (Con~ Δw)) →
         % ∃ λ T → M.Sub T (₁ Δm)
 
+
+  To do that, we show that $\wkO$ preserves the relation, for types and terms.
+  This requires to generalise a bit and show that $\wk_n$ preserves the relation,
+  as $\wk_0(\Pi\,A\,B)=\Pi\,(\wk_0\,A)(\wk_1\,B)$.
+  But remember that $\wk_n$ performs a weakening in the middle of a context, so
+  we first define the semantic counterpart of this:
 \begin{alignat*}{5}
   & \model{\Sigma\wkO{\Rightarrow}}  && :
    % & && \qquad
@@ -1026,7 +1058,7 @@ hypotheses
   % \\ &&& \qquad
   % \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\Delta}]}
 \end{alignat*}
-Then we deduce, still by recursion, that weakening of substitution preserves the
+Then we deduce, still by induction, that weakening of substitution preserves the
 relation:
 \begin{alignat*}{5}
     % wk
@@ -1096,20 +1128,18 @@ relation:
 % \end{alignat*}
 
 \subsubsection{Stability under substitution}
-Let us see an example of where stability under substitution is used in
-the recursion building a related semantic counterpart to the syntax.
- We want to prove that given any well-typed
-substitution from a context $\Gamma$ to a context $\Delta$, any semantic
-contexts $\model{\Gamma}$ and $\model{\Delta}$ which are related to $\Gamma$ and
-$\Delta$, there exists a semantic substitution which is related to the syntactic one.
-In the extension case $\Gamma\vdash \sigma \consu t \Rightarrow \Delta \extu A$, the
-induction hypothesis provides $\model{\sigma}$, $\model{\Delta}$, $\model{A}$ related to
-their syntactic counterpart. However, the premises of the induction hypothesis
-for getting a relevant $\model{t}$
-require to show that the type $\model{A}\model{[\model{\sigma}]}$ is
-related to the syntactic type $A[\sigma]$.
 
-We first establish preservation of the relation by substitution for variables:
+ We want to prove that given any well-typed substitution $\sigma
+: \Sub\,\Gamma\,\Delta$ and semantic contexts $\model{\Gamma}$ and
+$\model{\Delta}$, respectively related to $\Gamma$ and $\Delta$, there exists a
+semantic substitution which is related to $\sigma$.  In the extension case
+$\Gamma\vdash \sigma \consu\,t\Rightarrow \Delta\,\extu\,A$, the induction
+hypothesis provides $\model{\sigma}$, $\model{\Delta}$, $\model{A}$ related to
+their syntactic counterpart. However, the premises of the induction hypothesis
+for getting a relevant $\model{t}$ require showing that the type
+$\model{A}\model{[\model{\sigma}]}$ is related to the syntactic type
+$A[\sigma]$. We first establish preservation of the relation by substitution for
+variables:
 \begin{alignat*}{5}
     % []V~
   & []{\sim} && :
@@ -1122,7 +1152,7 @@ We first establish preservation of the relation by substitution for variables:
   % & && \qquad
    \wf{[]}\wf{x}\wf{\sigma} \sim \model{x}\model{[\model{\sigma}]}
 \end{alignat*}
-Then we show it for terms and types  by mutual recursion
+Then we show it for terms and types  by mutual induction
 under the common hypotheses
   $(\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta)$,
   $(\wf\sigma \sim \model{\sigma})$,
@@ -1148,7 +1178,7 @@ under the common hypotheses
   % & && \qquad
    \wf{[]}\wf{\Gamma}\wf{t}\wf{\sigma} \sim \model{t}\model{[\model{\sigma}]}
   \end{alignat*}
-  Eventually, we show under the same hypothese the following statement:
+  Eventually, we show under the same hypotheses the following statement
   \begin{alignat*}{5}
      & {\circ}{\sim} && :
     (\wf{E} : E \vdash ) \ra
@@ -1177,18 +1207,16 @@ under the common hypotheses
 % know that this last type is related to $B[0 := u]$.
 
 
-\subsection{Recursion}
-Recursion consists in building a morphism from the syntactic model to the
-semantic one.
-The image of a syntactic context is going to be a semantic context which relates
-to it (which is unique thanks to right uniqueness of the relation), and
-similarly for types and terms.
+\subsection{The Recursor}
+For the recursor, we build a morphism from the syntactic model to the semantic
+one. The image of a syntactic context is a unique semantic context which is
+related to it, and similarly for types and terms.
 % We construct it as the semantic
 % Induction on the typing judgments shows that any QIIT morphism from the
 % syntactic model $S$  to a semantic model $M$ sends well-typed syntax on a related
 % semantic counter-part.
-Thus, as a first step, we construct by induction on well-typed judgments the
-related semantic counter-parts:
+Thus, as a first step, we use induction on well-formedness judgments to construct
+semantic counterparts:
   \begin{alignat*}{5}
      & \Sigma\Con{\sim} && :
     (\wf{\Gamma} : \Gamma \vdash ) \ra
@@ -1227,18 +1255,16 @@ related semantic counter-parts:
     (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta ) \ra
     ({\model{\sigma}:\model{\Sub}\model\Gamma}\model{\Delta})\times ( \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
-  Right uniqueness of the relation is used in this induction.
-
-It is then straightforward to show (without induction) that the first projection of these
-constructions yield a model morphism from the syntax to the model, again using right
-uniqueness of the relation.
+  The right uniqueness of the relation is used in this induction. It is then
+straightforward to show (without induction) that the first projection of these
+constructions yield a model morphism from the syntax to the model, again using
+right uniqueness.
 \subsection{Uniqueness}
-Our goal is to show that the syntactic model is initial. What remains thus is to
-show that the morphism constructed in the previous section is actually the
-unique model morphism between the syntax and the arbitray model.
-To this end, we exploit right uniqueness of the relation: it is then enough to show
-that any such morphism maps a syntactic context to a related semantic context,
-and similarly for types and terms. 
+Our goal is to show that the syntactic model is initial. Thus, what remains is
+to show that the morphism constructed in the previous section is unique. We
+exploit right uniqueness of the relation: it is enough to show that any such
+morphism maps a syntactic context to a related semantic context, and similarly
+for types and terms.
 
 More formally, we assume an arbitrary morphism from the
 syntax to the model, inducing the following maps:
@@ -1275,7 +1301,7 @@ syntax to the model, inducing the following maps:
   (\Gamma\vdash \sigma \Rightarrow \Delta)\ra\model\Sub\,(\mor\Con\wf\Gamma)\,
   (\mor\Con\wf\Delta)
 \end{alignat*}
-Then, we show by recursion on the typing judgments that
+Then, we show by induction on typing judgments that
 the image is related:
 \begin{alignat*}{5}
   &
@@ -1314,9 +1340,8 @@ the image is related:
   (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta) \ra
   \wf\Gamma\sim \mor\Sub\,\wf\Gamma\,\wf{\Delta}\,\wf{\sigma}
 \end{alignat*}
-This justifies the uniqueness of the morphism, by right uniqueness of the relation.
-
-
+This justifies the uniqueness of the morphism, by right uniqueness of
+$\blank\sim\blank$.
 
 
 % \begin{description}

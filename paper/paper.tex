@@ -1,6 +1,6 @@
 
 \documentclass[a4paper,UKenglish,cleveref, autoref]{lipics-v2019}
-%This is a template for producing LIPIcs articles. 
+%This is a template for producing LIPIcs articles.
 %See lipics-manual.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
 %for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
@@ -11,14 +11,15 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{todonotes}
+\presetkeys{todonotes}{inline}{}
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-\title{For induction-induction, induction is enough} %TODO Please add
+\title{For Induction-Induction, Induction is Enough} %TODO Please add
 
-\titlerunning{For induction-induction, induction is enough}%optional, please use if title is longer than one line
+%% \titlerunning{For Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
 
 \author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by Thematic Excellence Programme, Industry and Digitization Subprogramme (NRDI Office, 2019) and by the European Union, co-financed by the European Social Fund (EFOP-3.6.2-16-2017-00013, Thematic Fundamental Research Collaborations Grounding Innovation in Informatics and Infocommunication).}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
 \author{Andr{\'a}s Kov{\'a}cs}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{kovacsandras@inf.elte.hu}{https://orcid.org/0000-0002-6375-9781}{this author was supported by the European Union, co-financed by the European Social Fund (EFOP-3.6.3-VEKOP-16-2017-00002).}
@@ -28,7 +29,7 @@
 
 \Copyright{A. Kaposi, A. Kov{\'a}cs and A. Lafont}%TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
-\ccsdesc[500]{Theory of computation~Logic~Type theory}%TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+\ccsdesc[500]{Theory of computation~Logic~Type theory}%TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
 
 \keywords{type theory, inductive types, inductive-inductive types}%TODO mandatory; please add comma-separated list of keywords
 
@@ -71,35 +72,38 @@
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-  Inductive-inductive types (IITs) are a generalisation of inductive
-  types in type theory. They allow the mutual definition of types with
-  multiple sorts where later sorts can be indexed by previous ones. An
-  example is the James Chapman-style syntax of type theory with
-  conversion relations for each sort where e.g.\ the sort of types is
-  indexed by contexts.  In previous work it was shown that all IITs
-  can be constructed from a quotient inductive-inductive type (QIIT),
-  namely the theory of IIT signatures. This theory is a small
-  domain-specific type theory where a context is a signature for an
-  IIT. In this paper we construct this theory of signatures only using
-  inductive types. We rely on function extensionality and uniqueness
-  of identity proofs. All of the constructions of this paper were
-  formalised in the proof assistant Agda.
+  Inductive-inductive types (IITs) are a generalisation of inductive types in
+  type theory. They allow the mutual definition of types with multiple sorts
+  where later sorts can be indexed by previous ones. An example is the James
+  Chapman-style syntax of type theory with conversion relations for each sort
+  where e.g.\ the sort of types is indexed by contexts.  In previous work it was
+  shown that all finitary IITs can be constructed from a quotient
+  inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
+  a small domain-specific type theory where a context is a signature for an
+  IIT. In this paper we construct this theory of signatures only using inductive
+  types. We rely on function extensionality and uniqueness of identity
+  proofs. All of the constructions of this paper were formalised in the proof
+  assistant Agda.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-Note by Ambrus: to be beautified, I only wanted to add the line of
-thought.
+\todo{Note by Ambrus: to be beautified, I only wanted to add the line of
+  thought.}
 
-Most mutual inductive types (e.g.\ isEven-isOdd) can be reduced to
-indexed inductive types where the index gives the information which
-sort we meant. (Indexed inductive types can be reduced to inductive
-types using a method similar to what we use here, preterms and
-well-formedness predicate.) Inductive-inductive types (IITs
-\cite{forsberg-phd}) allow the mutual definition of a type and a
-family of types over the first one. The above reduction does not work
-anymore.
+\todo{
+  András: construction of infinitary IITs doesn't (yet) work. Should we drop
+  infinitary functions from signatures?
+  }
+
+Most mutual inductive types (e.g.\ isEven-isOdd) can be reduced to indexed
+inductive types where the index gives the information which sort we
+meant. (Indexed inductive types can be reduced to inductive types using a method
+similar to what we use here, preterms and well-formedness predicate.)
+Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual definition
+of a type and a family of types over the first one. The above reduction does not
+work anymore.
 
 Examples of IITs: Con-Ty is the minimal interesting one, then we have
 James Chapman style \cite{chapman09eatitself} well-typed syntax for
@@ -147,7 +151,7 @@ funext.
 
 This is the paper version of our TYPES 2019 talk.
 
-\subsection{Related work}
+\subsection{Related Work}
 
 Reduction of classes of inductive types: reduce indexed W-types to
 W-types. IR types to indexed types. IITs were introduced by
@@ -162,20 +166,19 @@ abstract 2017. Does not use quotients.
 Constructing intrinsic syntax but different techniques: Chapman,
 Danielsson, Nuo. These use induction-induction which is our goal.
 
-\subsection{Structure of the paper}
+\subsection{Structure of the Paper}
 
-We first define a \emph{theory of IIT signatures} in which every
-context is a valid IIT signature (Section
-\ref{sec:theory_of_signatures}). We present this type theory using an
-algebraic \cite{ttintt} syntax, that is, as a quotient
-inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show
-that this QIIT can be constructed only using inductive types.
+We first define a \emph{theory of IIT signatures} in which every context is a
+valid IIT signature (Section \ref{sec:theory_of_signatures}). We present this
+type theory as an algebraic \cite{ttintt} theory, specifically as a quotient
+inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show that this
+QIIT can be constructed only using inductive types.
 
 \subsection{Formalisation}
 
-UIP, funext, rewrite rules, version of Agda.
+\todo{UIP, funext, rewrite rules, version of Agda.}
 
-\section{The theory of IIT signatures}
+\section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
 
 We use the naming convention: sorts, operators and equations. Sorts
@@ -234,11 +237,13 @@ Abbreviation:
   \sigma^\uparrow = (\sigma\circ\p,\q)
 \]
 
-TODO: add examples where all the different constructors are used,
-especially infinitary ones.
+\todo[inline]{add examples where all the different constructors are used}
 
-\section{Constructing the theory of IIT signatures}
+
+\section{Constructing the Theory of IIT Signatures}
 \label{sec:ambroise}
+
+\todo{Write this section}
 
 Show that the theory of IIT signatures as described in Section
 \ref{sec:theory_of_signatures} exists, that is, it can be defined only
@@ -275,70 +280,17 @@ investigated more carefully.
 \paragraph*{Construction}
 \input{universaliit}
 
-\section{Constructing all IITs from the theory IIT of signatures}
+\section{Constructing IITs from the Theory IIT of Signatures}
 \label{sec:andras}
 
 Explain that the previous paper was modular.
 
-\section{Further work}
+\section{Further Work}
 
 Infinitary, explain why it is difficult. Without UIP, without funext,
 for QIITs (in the setoid model).
 
-%%
-%% Bibliography
-%%
-
-%% Please use bibtex, 
 
 \bibliography{b}
-
-\appendix
-
-\section{Styles of lists, enumerations, and descriptions}\label{sec:itemStyles}
-
-List of different predefined enumeration styles:
-
-\begin{itemize}
-\item \verb|\begin{itemize}...\end{itemize}|
-\item \dots
-\item \dots
-%\item \dots
-\end{itemize}
-
-\begin{enumerate}
-\item \verb|\begin{enumerate}...\end{enumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{enumerate}
-
-\begin{alphaenumerate}
-\item \verb|\begin{alphaenumerate}...\end{alphaenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{alphaenumerate}
-
-\begin{romanenumerate}
-\item \verb|\begin{romanenumerate}...\end{romanenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{romanenumerate}
-
-\begin{bracketenumerate}
-\item \verb|\begin{bracketenumerate}...\end{bracketenumerate}|
-\item \dots
-\item \dots
-%\item \dots
-\end{bracketenumerate}
-
-\begin{description}
-\item[Description 1] \verb|\begin{description} \item[Description 1]  ...\end{description}|
-\item[Description 2] Fusce eu leo nisi. Cras eget orci neque, eleifend dapibus felis. Duis et leo dui. Nam vulputate, velit et laoreet porttitor, quam arcu facilisis dui, sed malesuada risus massa sit amet neque.
-\item[Description 3]  \dots
-%\item \dots
-\end{description}
 
 \end{document}
