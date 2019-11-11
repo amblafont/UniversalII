@@ -74,8 +74,8 @@
   type theory. They allow the mutual definition of types with multiple sorts
   where later sorts can be indexed by previous ones. An example is the James
   Chapman-style syntax of type theory with conversion relations for each sort
-  where e.g.\ the sort of types is indexed by contexts.  In previous work it was
-  shown that all finitary IITs can be constructed from a quotient
+  where e.g.\ the sort of types is indexed by contexts. It follows from previous
+  work that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
   IIT. In this paper we construct this theory using only inductive types,
@@ -90,6 +90,8 @@
 
 \todo{Note by Ambrus: to be beautified, I only wanted to add the line of
   thought.}
+
+\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)n}
 
 \todo{
   András: construction of infinitary IITs doesn't (yet) work. Should we drop
@@ -225,18 +227,14 @@ and operators might have parameters.
   & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha \\[0.5em]
-  & \rlap{(5) Infinitary parameters} \\[0.5em]
-  & \Pii && : (T:\Set)\ra(T\ra\Tm\,\Gamma\,\U)\ra\Tm\,\Gamma\,\U \\
-  & \blank\appi\blank && : \Tm\,\Gamma\,(\El\,(\Pii\,T\,b))\ra(\alpha:T)\ra\Tm\,\Gamma\,(\El\,(b\,\alpha)) \\
-  & {\Pii[]} && : (\Pii\,T\,b)[\sigma] = \Pii\,T\,(\lambda \alpha.(b\,\alpha)[\sigma]) \\
-  & {\appi[]} && : (t\appi\alpha)[\sigma] = (t[\sigma])\mathop{\appi}\alpha
 \end{alignat*}
+\todo{We may need more abbrevs here}
 Abbreviation:
 \[
   \sigma^\uparrow = (\sigma\circ\p,\q)
 \]
 
-\todo[inline]{add examples where all the different constructors are used}
+\todo{add examples where all the different constructors are used}
 
 
 \section{Constructing the Theory of IIT Signatures}

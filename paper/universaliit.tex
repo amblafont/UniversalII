@@ -49,7 +49,10 @@ The next sections present the definition of the untyped syntax and the
 associated typing judgments.
 
 \subsubsection{Untyped syntax}
-The untyped syntax is defined as the following inductive datatype:
+The untyped syntax is defined as the following inductive datatype. Variables are
+modeled as de Bruijn indices, i.e.\ as natural numbers pointing to a position in
+the context. We use the additional default constructor $\erru:\Tmu$ in case of
+error (ill-scoped substitution). The typing judgments will not mention $\erru$.
 \todo{András: prettify below maybe}
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
@@ -66,19 +69,17 @@ The untyped syntax is defined as the following inductive datatype:
   & \rlap{(2) Sorts and operators} \\[0.5em]
   & \Uu && : \Tyu \\
   & \Elu && : \Tmu\ra\Tyu \\
-  & \rlap{(3) Parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Piu && : \Tmu\ra\Tyu\ra\Tyu \\
   & \blank\appu\blank && : \Tmu\ra\Tmu\ra \Tmu \\
-  & \rlap{(4-5) Metatheoretic and infinitary parameters} \\[0.5em]
+  & \rlap{(4-5) Metatheoretic parameters} \\[0.5em]
   & \Pimu && : (T:\Set)\ra(T\ra\Tyu)\ra\Tyu \\
   & \Piiu && : (T:\Set)\ra(T\ra\Tmu)\ra\Tmu \\
   & \blank\appmu \blank && : \Tmu\ra(\alpha:T) \ra\Tmu\\
   & \rlap{(6) Default value} \\[0.5em]
   & \erru && : \Tmu
 \end{alignat*}
-Note that we overload the constructor for untyped application for infinitary and
-meta-theoretic parameters. Variables are modeled as de Bruijn indices, i.e.\ as
-natural numbers pointing to a position in the context.
+
 
 % The type of (untyped) substitution is then defined as $\Subu = \List\,\Tmu$.
 % Note that $\Conu$ could also be defined as a list of types in a similar fashion.
@@ -149,13 +150,10 @@ in Section \ref{sec:typing_judgments}:
   & \blank[\blank] && : \Tmu\ra\Subu\ra\Tmu \\
   & \blank \circ \blank && : \Subu\ra\Subu\ra \Subu
   \end{alignat*}
-  These can be defined either by iterating unary substitutions, or by recursion
-  on untyped syntax: the two ways yield provably equal definitions. In the
-  following, we assume that it is defined by recursion.
- We use the additional default constructor $\erru:\Tmu$ in case of error (for
-example, when the substitution is not long enough).  This is an irrelevant
-constructor in the end, as the typing judgments will not mention it. We also
-make use of the following definition:
+These can be defined either by iterating unary substitutions, or by recursion
+on untyped syntax: the two ways yield provably equal definitions. In the
+following, we assume that it is defined by recursion. We also make use of the
+following definition:
   \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \keep && : \Subu \ra \Subu \\
@@ -224,7 +222,7 @@ Finally, we show the following:
   \\
   & \ass && : (\sigma\circ \delta)\circ\tau = \sigma\circ (\delta\circ\tau)
   \end{alignat*}
-We defer laws for identity substitutions to after the definition of the typing
+We defer laws for identity substitutions after the definition of the typing
 judgments, as the proofs require that some inputs are well-typed.
 
   % The two ways yield provably equal definitions, but
@@ -266,7 +264,7 @@ judgments, as the proofs require that some inputs are well-typed.
   & \rlap{(2) Sorts and operators} \\[0.5em]
   & \Uw && : (\Gamma \vdash)\ra \Gamma \vdash \Uu \\
   & \Elw && : (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra\Gamma \vdash \Elu\,a \\
-  & \rlap{(3) Parameters} \\[0.5em]
+  & \rlap{(3) Inudctive parameters} \\[0.5em]
   & \Piw && :
     (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra(\Gamma \extu
   \Elu\,a \vdash B)\ra\Gamma \vdash \Piu \, a \, B \\
@@ -280,7 +278,7 @@ judgments, as the proofs require that some inputs are well-typed.
     (\Gamma \vdash u \in \Elu\,a)
     \ra
     \Gamma \vdash t \appu u \in  B [0 := u] \\
-  & \rlap{(4) Metatheoretic parameters} \\[0.5em]
+  & \rlap{(4) Inductive parameters} \\[0.5em]
   & \Pimw && :
     (T:\Set)\ra(A : T\ra \Tyu)\ra(\Gamma \vdash)\ra
     ((t : T)\ra\Gamma\vdash A\,t) \ra
@@ -292,22 +290,6 @@ judgments, as the proofs require that some inputs are well-typed.
     \\
     & &&
     \ra(\Gamma \vdash t \in \Pimu \,T\,A)
-    \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
-    \\
-  & \rlap{(5) Infinitary parameters} \\[0.5em]
-  & \Piiw && :
-    (T:\Set)\ra(A : T\ra \Tmu)\ra(\Gamma \vdash)\ra
-    ((t : T)\ra\Gamma\vdash A\,t\in \Uu)
-    \\ &&& \ra
-    \Gamma \vdash \Pimu \,T\,A \in \Uu
-  \\
-  & \appiw && :
-    (T:\Set)\ra(A : T\ra \Tmu)\ra(\Gamma \vdash)\ra
-    ((t : T)\ra\Gamma\vdash A\,t\in\Uu)
-    \\
-    & &&
-    \ra
-    (\Gamma \vdash t \in \Piiu \,T\, A)
     \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
 \end{alignat*}
 There is possibility of redundancy in the arguments of the constructors. Here,
@@ -376,7 +358,7 @@ well-formed types, terms and substitutions.
   & \idru && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \sigma \circ \idu\,\Gamma = \sigma \\
   & \idlu && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \idu\,\Delta\circ \sigma = \sigma
   \end{alignat*}
-Finally, we show that the identity substitution itself is well typed:
+Finally, we show that the identity substitution itself is well-typed:
   \begin{alignat*}{5}
   & \idw && : (\Gamma \vdash)\ra \Gamma \vdash \idu\,\Gamma \Rightarrow \Gamma
   \end{alignat*}
@@ -464,12 +446,12 @@ Section~\ref{ss:uniq-typing-types}, the proofs of typing judgments are
 automatically equal.
 
 None of the constructions in this section use UIP. Functional extensionality is
-necessary because the metatheoretic or infinitary (untyped) $\Pi$ takes a
-metatheoretic function as an argument. An example induction step that uses it
-is in the type preservation proof for identity substitutions (this is an
-equation satisfied by a model of the QIIT), in particular in the case
-$(\Pim\,T\, A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is
-equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
+necessary because the untyped metatheoretic $\Pi$ takes a metatheoretic function
+as an argument. An example induction step that uses it is in the type
+preservation proof for identity substitutions (this is an equation satisfied by
+a model of the QIIT), in particular in the case $(\Pim\,T\,
+A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is equal to
+$\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
 hypothesis states that $(t:T)\ra (A\,t)[\id]=A\,t$.
 
 \subsection{Relating the Syntax to a Model}
@@ -762,30 +744,6 @@ terms and substitutions.
       (e_B : \model{B} = \model{\Pim}\,T\,\model{A})
       \times
       (\model{x} = e_B \# \model{t}\model{\hat{\oldapp}}u)
-    \\
-  & \rlap{(5) Infinitary parameters} \\[0.5em]
-    & \Piiw T\,A\,\wf{\Gamma}\wf{A} \sim \model{B} &&
-    :=
-      \sum_{\model{A}} ((t : T) \ra \wf{A}\sim\model{A}\, t)
-      \times
-      (\model{B} = \model{\Pii}\,T\,\model{A})
-    \\
-    & \relt{\appiw T\,A\,\wf{\Gamma}\wf{A} \wf{t} u}{\model{\Gamma}}{\model{B}}{\model{x}}
-    % & \appiw T\,A\,\wf{\Gamma}\wf{A} \wf{t} u \sim
-    % \\
-    % & \qquad
-    % (\model{\Gamma}\vdash x\in \model{B})
-     &&
-     :=
-      \sum_{\model{A}} ((t : T) \ra \wf{A}\sim\model{A}\, t)
-      \times
-      \sum_{\model{t}} (\wf{t}\sim\model{t})
-      \times
-      \\ & &&
-      \qquad
-      (e_B : \model{B} = \model{\Pii}\,T\,\model{A})
-      \times
-      (\model{x} = e_B \# \model{t}\model{\tilde{\oldapp}}u)
 \end{alignat*}
 
 % As discussed above, when writing the definition of the type components, we assume that the input semantic context is already
@@ -854,22 +812,20 @@ Then, we show that the relation is stable under weakening and substitution.
     && : (\wf \sigma : \Gamma \vdash \sigma \Rightarrow \Delta) \ra
     \isaprop\, (\sum_{\model{\sigma}} \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
-  We mentionned that in order to avoid a recursive-recursive definition, we
+  We mentioned that in order to avoid a recursive-recursive definition, we
   removed some hypotheses in the list of arguments of the relation. Such
   hypotheses are sometimes missed, for example in the case of the empty
-  substitution, or in the case of variables, requiring us to state additional
-  equalities.  % some redundancies that we could not avoid when defining % the
-  relation, for example in the case of the empty substitution.  Because of
-  this, % It is because of the redundancies which we mentionned above we need
-  UIP to show that the types $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
-  $\sum_{\model{A}}A\sim\model{A}$ are propositions.  One may believe that the
-  use of UIP could be avoided by embracing the alternative verbose definition
-  that we suggested before, expecting that
+  substitution or in the case of variables, requiring us to state additional
+  equalities. Because of this, we need UIP to show that
+  $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
+  $\sum_{\model{A}}A\sim\model{A}$ are propositions.  One may think that the use
+  of UIP could be avoided by using the alternative verbose definition that we
+  suggested before, expecting that
   $\sum_{\model{\Gamma}}\sum_{\model{A}}A\sim\model{A}$, rather than
-  $\sum_{\model{A}}A\sim\model{A}$, is a proposition.  However, this not so
+  $\sum_{\model{A}}A\sim\model{A}$, is a proposition.  However, this is not
   obvious. For example, we were not able to define
   $\Elw\wf{\Gamma}\wf{a}\sim \model{A}$ in this fashion. In related work,
-  Hugunin investigated constructing inductive-inductive types without
+  Hugunin investigated constructing IITs without
   UIP\cite{hugunin2019constructing}, and demonstrated that well-formedness
   predicates used in syntactic models can be subtly incompatible with UIP. Also,
   while Hugunin does not use UIP, he only shows a weak version of dependent
