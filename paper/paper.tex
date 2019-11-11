@@ -182,7 +182,9 @@ of IIT signatures.
 We work in intensional Martin-Löf type theory, equipped with the following features:
 \begin{itemize}
   \item Predicative universes $\Set_i$. We usually omit level indices in this paper.
-  \item Dependent functions, notated as $(x : A)\ra B$, or as $A \ra B$ when non-dependent.
+  \item Dependent functions, notated as $(x : A)\ra B$, or as $A \ra B$ when
+    non-dependent. We sometimes omit function arguments, by implicitly
+    generalising over variables.
   \item $\Sigma$-types, notated either as $(x : A)\times B$, or as $\sum\limits_{x} B$
         when we want to leave the type of the first projection implicit. We use $A
         \times B$ for non-dependent pairs.
@@ -206,8 +208,10 @@ the previous section, this formalisation also uses equality reflection for some 
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
 
-We use the naming convention: sorts, operators and equations. Sorts
-and operators might have parameters.
+The theory of IIT signatures is given as an initial category with families
+(CwF)\cite{Dybjer96internaltype} with certain additional type formers. The CwF
+part constitutes the substitution calculus, while the type formers allow
+declaring new sorts and operators in a signature.
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Con && : \Set \\
@@ -225,9 +229,9 @@ and operators might have parameters.
   & [\circ] && : A[\sigma \circ \delta] = A[\sigma][\delta] \\
   & [\id] && : t[\id] = t \\
   & [\circ] && : t[\sigma \circ \delta] = t[\sigma][\delta] \\
-  & \cdot && : \Con \\
-  & \epsilon && : \Sub\,\Gamma\,\cdot \\
-  & {\cdot\eta} && : \{\sigma : \Sub\,\Gamma\,\cdot\} \ra \sigma = \epsilon \\
+  & \boldsymbol{\cdot} && : \Con \\
+  & \epsilon && : \Sub\,\Gamma\,\boldsymbol{\cdot} \\
+  & {\boldsymbol{\cdot}\eta} && : \{\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}\} \ra \sigma = \epsilon \\
   & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
   & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
   & \p && : \Sub\,(\Gamma\ext A)\,\Gamma \\
@@ -236,12 +240,12 @@ and operators might have parameters.
   & {\ext\beta_2} && : \q[\sigma, t] = t \\
   & {\ext\eta} && : (\p, \q) = \id \\
   & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\[0.5em]
-  & \rlap{(2) Sorts and operators} \\[0.5em]
+  & \rlap{(2) Universe} \\[0.5em]
   & \U && : \Ty\,\Gamma \\
   & \El && : \Tm\,\Gamma\,\U\ra\Ty\,\Gamma \\
   & {\U[]} && : \U[\sigma] = \U \\
   & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\[0.5em]
-  & \rlap{(3) Parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
   & \app && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B \\
   & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma^\uparrow]) \\
@@ -252,13 +256,24 @@ and operators might have parameters.
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha \\[0.5em]
 \end{alignat*}
-\todo{We may need more abbrevs here}
-Abbreviation:
-\[
-  \sigma^\uparrow = (\sigma\circ\p,\q)
-\]
+\subsubsection{Notation and abbreviations}
 
-\todo{add examples where all the different constructors are used}
+We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$. In the $\Pi$ function type
+for inductive parameters, we have $\app$ as a categorical version of function
+application. We recover the usual type-theoretic application as follows:
+\begin{alignat*}{5}
+  & \blank\appm\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
+  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
+  & t \appm u := \app\,t\,[\id\,u]
+\end{alignat*}
+We can also recover de Bruijn indices by having $n := q[p^n]$, where $p^n$ is
+$p$ composed with itself $n$ times. However, for informal examples we instead
+use a nameful notation, where we introduce names in context extension and in the
+$\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,(A : \U)\,\ext\,(a :
+\El\,A)$ in a signature for pointed sets.
+
+
+\subsubsection{Example signatures}
 
 
 \section{Constructing the Theory of IIT Signatures}
@@ -311,7 +326,7 @@ can construct any particular finitary QIIT. The idea is that for a signature
 $\Gamma$, the initial algebra can be built from sets of terms of the form
 $\Tm\,\Gamma\,(\El\,a)$. For example, taking the signature of natural numbers:
 \[
-  \Gamma := \cdot\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
+  \Gamma := \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
 \]
 we have that $\Tm\,\Gamma\,(\El\,N)$ is the set of natural numbers up to isomorphism,
 since the only way to construct these terms is by using $s$ and $z$ from $\Gamma$.

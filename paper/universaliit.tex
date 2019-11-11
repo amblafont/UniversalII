@@ -63,7 +63,7 @@ error (ill-scoped substitution). The typing judgments will not mention $\erru$.
   & \blank\extu\blank && : \Conu\ra\Tyu\ra\Conu \\
   & \blank\consu\blank && : \Subu\ra\Tmu\ra\Subu \\
   & \varu  && : \N \ra \Tmu \\
-  & \rlap{(2) Sorts and operators} \\[0.5em]
+  & \rlap{(2) Universe} \\[0.5em]
   & \Uu && : \Tyu \\
   & \Elu && : \Tmu\ra\Tyu \\
   & \rlap{(3) Inductive parameters} \\[0.5em]
@@ -258,7 +258,7 @@ judgments, as the proofs require that some inputs are well-typed.
   & \vzw  && : (\Gamma\vdash)\ra(\Gamma\vdash A)\ra\Gamma \extu  A \vdash 0 \invar \wku \, A \\
   & \vsw  && : (\Gamma\vdash)\ra(\Gamma\vdash A)\ra(\Gamma \vdash n \invar A) \ra (\Gamma \vdash B) \ra \Gamma \extu  B
   \vdash S\,n \invar \wku \, A \\
-  & \rlap{(2) Sorts and operators} \\[0.5em]
+  & \rlap{(2) Universe} \\[0.5em]
   & \Uw && : (\Gamma \vdash)\ra \Gamma \vdash \Uu \\
   & \Elw && : (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra\Gamma \vdash \Elu\,a \\
   & \rlap{(3) Inudctive parameters} \\[0.5em]
@@ -595,11 +595,11 @@ terms and substitutions.
   & \relV{\blank}{\model{\Gamma}}{\model{A}}{\blank}&& :  \Gamma \vdash x \invar A \, \ra \model{\Tm}\,\model{\Gamma}\,\model{A} \ra \Set \\
   & \relS{\blank}{\model{\Gamma}}{\model{\Delta}}{ \blank} && :  \Gamma \vdash \sigma \Rightarrow \Delta \, \ra \model{\Sub}\,\model{\Gamma}\,\model{\Delta} \ra \Set \\
   \\
-  & \emptyw\sim \model{\Gamma} && := \model{\Gamma}=\model{\cdot} \\
+  & \emptyw\sim \model{\Gamma} && := \model{\Gamma}=\model{\boldsymbol{\cdot}} \\
   & \relS{\epsilonw}{\model{\Gamma}}{\model{E}}{\model{\delta}}
   % (  \vdash \model{\delta}\Rightarrow \model{E})
   &&
- := (e_E : \model{E} = \model{\cdot})\times (\model{\delta} = e_E \#
+ := (e_E : \model{E} = \model{\boldsymbol{\cdot}})\times (\model{\delta} = e_E \#
  \model{\epsilon})
   \\
   & (\wf{\Gamma}\extw \wf{A})\sim \model{\Delta} &&
@@ -676,7 +676,7 @@ terms and substitutions.
      % & && \qquad
      (\model{t} = e_\Delta,e_C \# \model{\vs} \, \model{n})
   \\
-  & \rlap{(2) Sorts and operators} \\[0.5em]
+  & \rlap{(2) Universe} \\[0.5em]
   & \Uw \wf{\Gamma} \wf{A} \sim \model{A} &&
    := \model{A} = \model{\U}
   \\
@@ -763,7 +763,7 @@ terms and substitutions.
   %, although we know that these equalities are
   % already satisfied by our assumption.
   % As we argued before, in the  of empty substitution $\epsilon$: we require the equality
-  % $(e_C : \model{E} = \model{\cdot})$, although
+  % $(e_C : \model{E} = \model{\boldsymbol{\cdot}})$, although
   % our claimed external assumption that $\model{E}$ is  related to the
   % canonical proof $\epsilonw$ of the typing judgment $\epsilon \vdash$ should imply
   % it.
@@ -1047,7 +1047,7 @@ relation:
 %   First, we define the notion of being a prefix:
 % \begin{alignat*}{5}
 %   & \blank\leq\blank  && : \model\Con\ra \model\Con\ra\Set \\
-%   & {\leq}\cdot  && : \model{\Gamma} \leq \model{\Gamma} \\
+%   & {\leq}\boldsymbol{\cdot}  && : \model{\Gamma} \leq \model{\Gamma} \\
 %   & \blank{\leq}{\ext}\blank  && : \model{\Gamma} \leq \model{\Delta} \ra (A :
 %   \model{\Ty}\Delta) \ra \model{\Gamma}\leq\model{\Delta}\model{\ext}\model{A}
 % \end{alignat*}
@@ -1061,7 +1061,7 @@ relation:
 % \begin{alignat*}{5}
 %   & \blank\model{\merge}\blank  && := (\model{\Gamma} : \model{\Con}) \ra
 %   (\model{\Delta} : \Tel\,\model\Gamma) \ra \model{\Con} \\
-%   & \model\Gamma \merge (\model\Gamma,{\leq}\cdot) && :=  \model\Gamma \\
+%   & \model\Gamma \merge (\model\Gamma,{\leq}\boldsymbol{\cdot}) && :=  \model\Gamma \\
 %   & \model\Gamma \merge (\model\Delta\model{\ext}\model{A}, \Delta_{\leq} {\leq}{\ext} \model{A}) && :=  (\model\Gamma \model\merge \model\Delta)\model\ext \model{A}\\
 % \end{alignat*}
 % We then define a relevant relation between syntactic telescopes and semantic telescopes.
@@ -1074,7 +1074,7 @@ relation:
 %   & \blank\sim\blank  && := ( \Gamma \merge \Delta \vdash) \ra (\model\Gamma\leq\model\Delta)
 %   \ra \Set \\
 %   & (\wf\Gamma : \Gamma \merge \emptyu \vdash)\sim\model\Delta  && :=
-%   \model\Delta =  {\leq}\cdot\\
+%   \model\Delta =  {\leq}\boldsymbol{\cdot}\\
 %   & (\wf\Delta \extw \wf{A} : \Gamma \merge (\Delta \extu A) \vdash)\sim\model{E}  && :=
 %   \sum_{\model\Delta} (\wf\Delta\sim\model\Delta)
 %   \times
