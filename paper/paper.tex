@@ -91,7 +91,7 @@
 \todo{Note by Ambrus: to be beautified, I only wanted to add the line of
   thought.}
 
-\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)n}
+\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work finish, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)n}
 
 \todo{
   András: construction of infinitary IITs doesn't (yet) work. Should we drop
@@ -173,7 +173,9 @@ We first define a \emph{theory of IIT signatures} in which every context is a
 valid IIT signature (Section \ref{sec:theory_of_signatures}). We present this
 type theory as an algebraic \cite{ttintt} theory, specifically as a quotient
 inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show that this
-QIIT can be constructed only using inductive types.
+QIIT can be constructed only using inductive types. In Section
+\ref{sec:constructingiits} we describe the construction of IITs from the syntax
+of IIT signatures.
 
 \subsection{Formalisation}
 
@@ -278,21 +280,26 @@ investigated more carefully.
 \input{universaliit}
 
 \section{Constructing IITs from the Theory of IIT Signatures}
-\label{sec:andras}
+\label{sec:constructingiits}
 
 We construct all IITs describable by the theory of IIT signatures through the
 term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
 shown that from the syntax of the theory of signatures for finitary QIITs, one
 can construct any particular finitary QIIT. The idea is that for a signature
 $\Gamma$, the initial algebra can be built from sets of terms of the form
-$\Tm\,\Gamma\,(\El\,a)$.
+$\Tm\,\Gamma\,(\El\,a)$. For example, taking the signature of natural numbers:
+\[
+  \Gamma := \cdot\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
+\]
+we have that $\Tm\,\Gamma\,(\El\,N)$ is the set of natural numbers up to isomorphism,
+since the only way to construct these terms is by using $s$ and $z$ from $\Gamma$.
 
-In this section, we only need to check that the signatures in
-\cite{Kaposi:2019:CQI:3302515.3290315} and the term model construction restricts
-to IITs, i.e.\ that from a syntax for the theory of IIT signatures all finitary
-IITs are constructible.
+In this section, we only need to check that the signatures and term model
+construction in \cite{Kaposi:2019:CQI:3302515.3290315} restrict to IITs,
+i.e.\ that from a syntax for the theory of IIT signatures all finitary IITs are
+constructible.
 
-\begin{itemize}
+\begin{enumerate}
 \item
   Finitary IIT signatures are obtained exactly by dropping equality constructors from
   finitary QIIT signatures. It follows that any model for the theory of QIIT signatures
@@ -303,7 +310,7 @@ IITs are constructible.
   then another induction constructs the eliminator (i.e.\ dependent induction
   principle). In both cases, simply dropping equality constructors from the
   induction yields restriction to IITs.
-\end{itemize}
+\end{enumerate}
 
 However, we shall mention that the Agda formalisation for the current paper
 cannot be directly plugged into the Agda code for
@@ -326,8 +333,25 @@ signatures.
 
 \section{Further Work}
 
-Infinitary, explain why it is difficult. Without UIP, without funext,
-for QIITs (in the setoid model).
+\subsection{Infinitary IITs}.
+
+The current work only concerns finitary IITs. An extension would be to also
+allow infinitely branching inductive types such as W-types. This would first
+require giving semantics for infinitary IITs (to our knowledge there is no
+previously published semantics that we can borrow), and also giving a term model
+construction analogously to finitary QIITs. These steps seem feasible. However,
+it seems to be more difficult to construct the syntax of infinitary IIT
+signatures without using quotients. The reason is that such syntax would not be
+strictly restricted to neutral terms: we would need $\lambda$-abstraction and
+$\beta\eta$-rules for infinitary $\Pi$ types, in order to allow a term model
+construction for infinitary IITs. A definition for normal preterms and typing
+judgments on them may still be possible, but it appears to be much more
+complicated than before (the current authors have attempted this without
+conclusive success).
+
+\subsection{Construction without UIP and function extensionality}
+\todo{Without UIP, without funext,
+for QIITs (in the setoid model).}
 
 
 \bibliography{b}
