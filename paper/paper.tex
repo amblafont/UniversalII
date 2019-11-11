@@ -78,69 +78,126 @@
   work that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
-  IIT. In this paper we construct this theory using only inductive types,
+  IIT. In this paper we construct the theory of IIT signatures using only inductive types,
   thereby showing a reduction of all finitary IITs to inductive types.  We rely
   on function extensionality and uniqueness of identity proofs. We formalised
   the construction of the theory of IIT signatures in Agda.
-
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-\todo{Note by Ambrus: to be beautified, I only wanted to add the line of
-  thought.}
+\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work finish, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)}
 
-\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work finish, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)n}
+Most mutual inductive types can be reduced to indexed inductive types
+where the index gives the information which sort we meant. An example
+is the predicates $\mathsf{isEven}$ and $\mathsf{isOdd}$ defined
+mutually by the following constructors.
+\begin{alignat*}{5}
+  & \mathsf{isEven} && : \N\ra\Set \\
+  & \mathsf{isOdd} && : \N\ra \Set \\
+  & \mathsf{zeroEven} && : \mathsf{isEven}\,\mathsf{zero} \\
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isOdd}\,n\ra\mathsf{isEven}\,n \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven}\,n\ra\mathsf{isOdd}\,n
+\end{alignat*}
+These can be reduced to the following single inductive family.
+\begin{alignat*}{5}
+  & \mathsf{isEven?} && : \mathsf{Bool}\ra\N\ra\Set \\
+  & \mathsf{zeroEven} && : \mathsf{isEven?}\,\mathsf{true}\,\mathsf{zero} \\
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{false}\,n\ra\mathsf{isEven?}\,\mathsf{true}\,n \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{true}\,n\ra\mathsf{isEven?}\,\mathsf{false}\,n
+\end{alignat*}
 
-\todo{
-  András: construction of infinitary IITs doesn't (yet) work. Should we drop
-  infinitary functions from signatures?
-  }
+Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
+definition of a type and a family of types over the first one. IITs
+were originally introduced to represent the well-typed syntax of type
+theory itself, and the main example is still the James Chapman style
+\cite{chapman09eatitself} syntax for type theory. A minimal use case
+is the IIT of contexts and types given by the following constructors.
+\begin{alignat*}{5}
+  & \Con && : \Set \\
+  & \Ty && : \Con\ra\Set \\
+  & \mathsf{empty} && : \Con \\
+  & \mathsf{ext} && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
+  & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Con \\
+  & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
+%  & \mathsf{Pi} && : (\Gamma:\Con)(A:\Ty\,\Gamma)\ra\Ty\,(\mathsf{ext}\,\Gamma\,A)\ra\,\Ty\,\Gamma
+\end{alignat*}
+This type has two sorts, $\Con$ and $\Ty$. The $\mathsf{ext}$
+constructor of $\Con$ refers to $\Ty$ and the $\Ty$-constructor
+$\mathsf{U}$ refers to $\Con$, hence the two sorts have to be defined
+at the same time. Moreover, $\Ty$ is indexed over $\Con$, which
+precludes the above reduction which worked for
+$\mathsf{isEven}$--$\mathsf{isOdd}$ as we would get a type indexed
+over itself. Another unique feature of IITs (which also shows up in
+higher inductive types \cite{HoTTbook}) is that later constructors can
+refer to previous constructors: in our case, $\mathsf{El}$ mentions
+$\mathsf{ext}$.
+% \[
+%   \mathsf{Con?} : (b:\mathsf{Bool})\ra\mathsf{if}\,b\,\mathsf{then}\,\Set\,\mathsf{else}\,(\mathsf{Con?}\,\mathsf{false}\ra\Set),
+% \]
 
-Most mutual inductive types (e.g.\ isEven-isOdd) can be reduced to indexed
-inductive types where the index gives the information which sort we
-meant. (Indexed inductive types can be reduced to inductive types using a method
-similar to what we use here, preterms and well-formedness predicate.)
-Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual definition
-of a type and a family of types over the first one. The above reduction does not
-work anymore.
+The elimination principle for an IIT has two motives and one method
+for each constructor. It is an example of a \emph{recursive-recursive}
+function (following the nomenclature of \cite{forsberg-phd}) which
+means that there are two mutually defined functions where the type of
+the second function depends on the first function. The proof assistant
+Agda \cite{norell07thesis} allows the definition of such functions
+(even from non-IITs) and it is also currently the only proof assistant
+supporting IITs. The elimination principle for $\Con$--$\Ty$ says that
+given the following components,
+\begin{alignat*}{5}
+  & Con^M && : \Con\ra\Set \\
+  & Ty^M && : Con^M\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
+  & empty^M && : Con^M\,\mathsf{empty} \\
+  & ext^M && : (\Gamma^M:Con^M\,\Gamma)\ra Ty^M\,\Gamma^M\,A\ra Con^M\,(\mathsf{ext}\,\Gamma\,A) \\
+  & U^M && : (\Gamma^M:Con^M\,\Gamma)\ra Ty^M\,\Gamma^M\,(\mathsf{U}\,\Gamma) \\
+  & El^M && : (\Gamma^M:Con^M\,\Gamma)\ra\,Ty^M\,(ext^M\,\Gamma^M\,(U^M\,\Gamma^M))\,(\mathsf{El}\,\Gamma)
+%  & Pi^M && : (\Gamma^M:Con^M\,\Gamma)(A^M:Ty^M\,\Gamma^M\,A)\ra Ty^M\,(ext^M\,\Gamma^M\,A^M)\ra\,Ty^M\,\Gamma^M\,(\mathsf{Pi}\,\Gamma\,A\,B)
+\end{alignat*}
+we obtain two functions
+\begin{alignat*}{5}
+  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^M\,\Gamma \\
+  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^M\,(\mathsf{elimCon}\,\Gamma)
+\end{alignat*}
+with the following computation rules.
+\begin{alignat*}{5}
+  & \mathsf{elimCon}\,\mathsf{empty} && = empty^M \\
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = ext^M\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^M\,(\mathsf{elimCon}\,\Gamma) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^M\,(\mathsf{elimCon}\,\Gamma)
+\end{alignat*}
 
-Examples of IITs: Con-Ty is the minimal interesting one, then we have
-James Chapman style \cite{chapman09eatitself} well-typed syntax for
-type theory.
+As opposed to mutual inductive types, reducing IITs to inductive types
+is an open problem. Forsberg \cite{forsberg-phd} showed a reduction
+which only supports a simpler, non recursive-recursive elimination
+principle (\todo{check}). Hugunin \cite{jasper} reduced an example IIT
+to inductive types without UIP, but he also only constructed the
+simpler non recursive-recursive eliminator.
 
-TODO: list examples here and explain. Also the elimination principles
-which is recursive-recursive. Talk about connection to setoidified
-CwFs (I think these are explained in some Dybjer paper) and maybe the
-initiality conjecture.
-
-Reduction of IITs to inductive types is an open problem. Forsberg
-showed that IITs can be reduced to inductive types in the setting of
-ETT, but he only constructed the nondependent (or simple? was this the
-non-recursive-recursive?) elimination principle. Hugunin \cite{jasper}
-reduced an example IIT to inductive types without UIP, but also only
-constructing the non-recursive-recursive eliminator. Streicher
-\cite{streichersemantics}. Brunerie \cite{} constructed the initial
-category with extra structure (TODO: fix this) using UIP.
-
-Kaposi and Kov{\'a}cs defined a type theory of signatures for higher
-inductive-inductive types (HIITs)
-\cite{kaposi_et_al:LIPIcs:2018:9190}. This is a small type theory in
-which every context encodes a valid IIT signature. For example, the
-signature for natural numbers is simply the context
+The theory of signatures in \cite{Kaposi:2019:CQI:3302515.3290315} is
+a small type theory in which every context encodes a valid quotient
+inductive-inductive type (QIIT) signature. For example, the signature
+for natural numbers is simply the context
 $(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$ and
-$suc$ are simply variable names). Later they showed
-\cite{Kaposi:2019:CQI:3302515.3290315} that if a subset of this theory
-of signatures exists, then any finitary QIIT can be defined from
-it. In this paper we further restrict the subset by not allowing
-equality constructors (thus only covering IITs) but at the same time
-we extend it to allow infinitary constructors. To derive the existence
-of all IITs from the theory of IIT signatures we use a variant of the
-CwF model \cite{Kaposi:2019:CQI:3302515.3290315} where types are
-modelled not by displayed CwFs but by CwF isofibrations. We need this
-extension to support infinitary constructors. Furthermore, using the
-method introduced by Streicher \cite{streichersemantics} we show the
+$suc$ are variable names). \cite{Kaposi:2019:CQI:3302515.3290315}
+showed that if this theory of signatures exists, then any finitary
+QIIT can be defined from it. If we omit the type former $\mathsf{Id}$
+from the theory of signatures, we get a theory of finitary IIT
+signatures, and the construction of
+\cite{Kaposi:2019:CQI:3302515.3290315} still works: constructing an
+arbitrary IIT from the theory of IIT signatures does not need the
+$\mathsf{Id}$ type former to be present.
+
+In this paper, we construct the theory of IIT signatures only using
+indexed inductive types, thus \todo{rewrite from here}
+
+To derive the existence of all IITs from the theory of IIT signatures
+we use a variant of the CwF model
+\cite{Kaposi:2019:CQI:3302515.3290315} where types are modelled not by
+displayed CwFs but by CwF isofibrations. We need this extension to
+support infinitary constructors. Furthermore, using the method
+introduced by Streicher \cite{streichersemantics} we show the
 existence of the theory of IIT signatures. As opposed to Streicher, we
 don't use quotients in this construction as the theory of IIT
 signatures can be given only using neutral terms.
@@ -160,9 +217,20 @@ Forsberg. What he did.  QIITs by Forsberg-lots of people. Our QIIT
 paper. Jakob TYPES 2019 abstract.  Jasper Huguin: he didn't do
 recursion-recursion. Without UIP.
 
-Similar techique for other type theories: Streicher. Initiality
-project, Brunerie. These all use quotients. Closest: Lafont TYPES
-abstract 2017. Does not use quotients.
+(Indexed inductive types can be reduced to inductive types using a method
+similar to what we use here, preterms and well-formedness predicate.)
+
+Talk about connection to setoidified CwFs (I think these are explained
+in some Dybjer paper) and maybe the initiality conjecture.
+
+Kaposi and Kov{\'a}cs defined a type theory of signatures for higher
+inductive-inductive types (HIITs)
+\cite{kaposi_et_al:LIPIcs:2018:9190}.
+
+Similar techique for other type theories: Streicher
+\cite{streichersemantics}. Initiality project, Brunerie \cite{}. These
+all use quotients. Closest: Lafont TYPES abstract 2017. Does not use
+quotients.
 
 Constructing intrinsic syntax but different techniques: Chapman,
 Danielsson, Nuo. These use induction-induction which is our goal.
