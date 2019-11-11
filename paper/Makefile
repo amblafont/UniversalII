@@ -1,6 +1,6 @@
 all: paper.pdf
 
-paper.pdf : paper.tex abbrevs.tex
+paper.pdf : paper.tex abbrevs.tex universaliit.tex
 	latexmk -pdf $<
 
 clean:

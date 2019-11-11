@@ -89,10 +89,10 @@ error (ill-scoped substitution). The typing judgments will not mention $\erru$.
 
 
 Note that $(\Piu \,A\,B)[\sigma]$ should be defined as $\Piu
-\,A[\sigma]\,B[\varu\, 0 \,\consu\, \wkO\,\sigma]$, and thus we need to define
-$\wk0$, the weakening of substitutions.  The basic idea is to increment the de
+\,(A[\sigma])\,(B[\varu\, 0 \,\consu\, \wkO\,\sigma])$, and thus we need to define
+$\wkO$, the weakening of substitutions.  The basic idea is to increment the de
 Bruijn indices of all the variables.  Actually this is not so simple because of
-the $\Piu$ type: indeed, we want to define $\wk(\Piu\,A\,B)$ as the $\Pi$ type
+the $\Piu$ type: indeed, we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type
 of the weakening of $A$ and $B$, but here, $B$ must be weakened with respect to
 the second last variable of the context, rather than the last one.  For this
 reason, we need to generalize the weakening as occuring anywhere in the context.
@@ -129,7 +129,9 @@ in Section \ref{sec:typing_judgments}:
   \\
   & \wkO\,(\Delta\,\extu A) && := \wkO\,\Delta\,\extu \wk_{\length{\Delta}}\,A
   \end{alignat*}
-  \subsubsection{Untyped substitution}
+$\length{\Gamma}$ denotes the length of a the context $\Gamma$.
+  
+\subsubsection{Untyped substitution}
   We define single substitution by recursion on presyntax:
   % & \rlap{(1) Substitution calculus} \\[0.5em]
 \begin{alignat*}{5}
@@ -155,22 +157,20 @@ following definition:
   \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \keep && : \Subu \ra \Subu \\
-   &&& := \lambda \sigma. \varu\, 0 \,\consu\, \wkO\,\sigma
+   &&& := \lambda \sigma. (\varu\, 0 \,\consu\, \wkO\,\sigma)
   \end{alignat*}
   The idea is that if $\sigma$ is a substitution between contexts $\Gamma$ and
-  $\Delta$, then $\keep\,\sigma$ is a substitution between contexts $\Gamma, A[\sigma]$
-  and $\Delta,A$ for any type $A$. This occurs when defining
-  $(\Piu\,A\,B)[\sigma]$ as $\Piu (A[\sigma])(B[\keep \,\sigma])$.
+  $\Delta$, then $\keep\,\sigma$ is a substitution between contexts $\Gamma\ext A[\sigma]$
+  and $\Delta\ext A$ for any type $A$. This occurs when defining
+  $(\Piu\,A\,B)[\sigma]$ as $\Piu\,(A[\sigma])\,(B[\keep \,\sigma])$.
 
 
 
 
-  We can define the identity substitution on a context $\Gamma$ as follows,
-  where $\length{\Gamma}$ is the length of the context $\Gamma$, and
-  $\keep^{\length{\Gamma}}$ is $\keep$ iterated $\length{\Gamma}$ times:
+  We can define the identity substitution on a context $\Gamma$ as
+  follows, where $\keep^{\length{\Gamma}}$ is $\keep$ iterated
+  $\length{\Gamma}$ times:
 \begin{alignat*}{5}
-  & \length{\Gamma} && : \Conu\ra\N
-  \\
   & \idu && : \Conu \ra \Subu \\
   & && := \lambda \Gamma.\keep^{\length{\Gamma}} \epsilonu
   \end{alignat*}
@@ -262,7 +262,7 @@ judgments, as the proofs require that some inputs are well-typed.
   & \rlap{(2) Universe} \\[0.5em]
   & \Uw && : (\Gamma \vdash)\ra \Gamma \vdash \Uu \\
   & \Elw && : (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra\Gamma \vdash \Elu\,a \\
-  & \rlap{(3) Inudctive parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Piw && :
     (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra(\Gamma \extu
   \Elu\,a \vdash B)\ra\Gamma \vdash \Piu \, a \, B \\

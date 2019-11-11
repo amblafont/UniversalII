@@ -225,28 +225,28 @@ of IIT signatures.
 \subsection{Related Work}
 
 The current work builds heavily on the work of Kaposi et al.\ on quotient
-inductive-inductive types\cite{Kaposi:2019:CQI:3302515.3290315}; we reuse both
+inductive-inductive types \cite{Kaposi:2019:CQI:3302515.3290315}; we reuse both
 QIIT syntax and semantics by restricting to IITs, and we reuse the term model
 construction of QIITs as well.
 
-Forsberg\cite{forsberg-phd} specifies inductive-inductive types and develops a
+Forsberg \cite{forsberg-phd} specifies inductive-inductive types and develops a
 semantics based on dialgebras. He also provides a reduction of IITs to indexed
 inductive types, but only constructs a weak version of elimination.
 
-Hugunin\cite{jasper} constructs several IITs in cubical Agda from inductive
+Hugunin \cite{jasper} constructs several IITs in cubical Agda from inductive
 types. In this setting, the lack of UIP makes constructions significantly more
 involved, and essentially involves coinductive-coinductive well-formedness
 predicates defined as homotopy limits. Hugunin does not consider a generic
 syntax of IITs and only works on specific examples (although the examples vary
 greatly). He also does not construct full recursive-recursive eliminators.
 
-Streicher\cite{streichersemantics} presents an interpretation of the well-formed
+Streicher \cite{streichersemantics} presents an interpretation of the well-formed
 presyntax of a type theory into a categorical model, which is an important
 ingredient in constructing an initial model, although he does not present
 details on the construction of the term model or its initiality proof.
 
 Voevodsky was interested in constructing initial models of type theories
-from presyntaxes. There is a communal project \cite{
+from presyntaxes. There is a communal project \cite{}
 
 
 
@@ -303,7 +303,7 @@ Agda formalisation of Sections \ref{sec:theory_of_signatures} and
 \ref{sec:ambroise} can be found at
 \url{https://github.com/amblafont/UniversalII}. In addition to the features in
 the previous section, this formalisation also uses equality reflection for some
-equalities, through rewriting pragmas\cite{cockxsprinkles}. This is purely for
+equalities, through rewriting pragmas \cite{cockxsprinkles}. This is purely for
 convenience, and in principle we could eliminate the instances of equality
 reflection via UIP and function extensionality.
 
@@ -311,7 +311,7 @@ reflection via UIP and function extensionality.
 \label{sec:theory_of_signatures}
 
 The theory of IIT signatures is given as a category with families
-(CwF)\cite{Dybjer96internaltype} with certain additional type formers. The CwF
+(CwF) \cite{Dybjer96internaltype} with certain additional type formers. The CwF
 part constitutes the substitution calculus, while the type formers allow
 declaring new sorts and operators in a signature. Below, we list all components
 for the theory of signatures; this can be viewed as a notion of model for the
@@ -369,7 +369,7 @@ formers.
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha \\[0.5em]
 \end{alignat*}
-\subsubsection{Notation and abbreviations}
+\subsection{Notation and abbreviations}
 
 We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$. In the $\Pi$ function type
 for inductive parameters, we have $\app$ as a categorical version of function
@@ -377,31 +377,31 @@ application. We recover the usual type-theoretic application as follows:
 \begin{alignat*}{5}
   & \blank\oldapp\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
   \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
-  & t \oldapp u := \app\,t\,[\id\,u]
+  & t \oldapp u := (\app\,t)[\id\,u]
 \end{alignat*}
-We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[p])$ as $a\ra B$.
+We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\p])$ as $a\Ra B$.
 
-We can also recover de Bruijn indices by having $n := q[p^n]$, where $p^n$ is
-$p$ composed with itself $n$ times. However, for informal examples we instead
+We can also recover de Bruijn indices by having $n := \q[\p^n]$, where $\p^n$ is
+$\p$ composed with itself $n$ times. However, for informal examples we instead
 use a nameful notation, where we introduce names in context extension and in the
 $\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,A : \U\,\ext\,a :
 \El\,A$ in a signature for pointed sets.
 
-\subsubsection{Example signatures}
+\subsection{Example signatures}
 
 Natural numbers:
 \[
-\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
+\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
 \]
 Lists with elements of a given $A : \Set$ type. Here we use the $\Pim$ function
 to include an external type into the signature.
 \[
 \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,
-      cons : \Pim\,A\,(\lambda \_.\, L\ra L)
+      cons : \Pim\,A\,(\lambda \_.\, L\Ra L)
 \]
 The inductive-inductive example from Section \ref{sec:intro}:
 \begin{alignat*}{3}
-  & \boldsymbol{\cdot} \,\ext\,Con : \U\,\ext\,Ty : Con\ra\U\,\ext\,empty : \El\,Con\,\ext\,ext : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \ra Con) \\
+  & \boldsymbol{\cdot} \,\ext\,Con : \U\,\ext\,Ty : Con\Ra\U\,\ext\,empty : \El\,Con\,\ext\,ext : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra Con) \\
   & \hspace{0.5em}\,\ext\, U : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))
     \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
 \end{alignat*}
@@ -488,7 +488,7 @@ computation. This mismatch can be in principle remedied by noting that both
 formalisations use UIP and function extensionality, hence we can switch between
 strict and propositional equalities, via the known translations between
 extensional and intensional type
-theories\cite{hofmann95extensional,winterhalter2019eliminating}.
+theories \cite{hofmann95extensional,winterhalter2019eliminating}.
 
 Also, the current paper proves initiality, i.e.\ unique recursion for
 signatures, while \cite{Kaposi:2019:CQI:3302515.3290315} uses dependent
