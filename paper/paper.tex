@@ -292,7 +292,7 @@ In this section, we only need to check that the signatures in
 to IITs, i.e.\ that from a syntax for the theory of IIT signatures all finitary
 IITs are constructible.
 
-\begin{itemize}
+\begin{enumerate}
 \item
   Finitary IIT signatures are obtained exactly by dropping equality constructors from
   finitary QIIT signatures. It follows that any model for the theory of QIIT signatures
@@ -303,7 +303,7 @@ IITs are constructible.
   then another induction constructs the eliminator (i.e.\ dependent induction
   principle). In both cases, simply dropping equality constructors from the
   induction yields restriction to IITs.
-\end{itemize}
+\end{enumerate}
 
 However, we shall mention that the Agda formalisation for the current paper
 cannot be directly plugged into the Agda code for
@@ -326,8 +326,24 @@ signatures.
 
 \section{Further Work}
 
-Infinitary, explain why it is difficult. Without UIP, without funext,
-for QIITs (in the setoid model).
+\subsection{Infinitary IITs}.
+
+The current work only concerns finitary IITs. An extension would be to also
+allow infinitely branching inductive types such as W-types. This would first
+require giving semantics for infinitary IITs (to our knowledge there is no
+previously published semantics that we can borrow), and also giving a term model
+construction analogously to finitary QIITs. These steps seem feasible. However,
+it seems to be more difficult to construct the syntax of infinitary IIT
+signatures without using quotients. The reason is that such syntax would not be
+strictly restricted to neutral terms: we would need $\lambda$-abstraction and
+$\beta\eta$-rules for infinitary $\Pi$ types, in order to allow a term model
+construction for infinitary IITs. A definition for normal preterms and typing
+judgments on them may still be possible, but it appears to be much more
+complicated than before (the current authors attempted this without conclusive
+success).
+
+\todo{Without UIP, without funext,
+for QIITs (in the setoid model).}
 
 
 \bibliography{b}
