@@ -4,18 +4,19 @@
 % available in extensional type theory are used.
 
 The construction consists of the following steps:
+
 \begin{enumerate}
 \item Definition of untyped syntax (as a family of inductive datatypes) together
-  with typing judgments (as inductive relations on the untyped
-  syntax), and construction of a model of the theory of IIT
-  signatures from well-formed terms, denoted $S$.
+  with typing judgments (as inductive relations on the untyped syntax), and
+  construction of a model of the theory of IIT signatures from well-formed
+  terms, denoted $S$.
 \item Construction of a morphism $\rec:S\to M$ for arbitrary $M$, by:
   \begin{enumerate}
-  \item defining a relation $\blank \sim \blank$ between the (well-typed) syntax and a given
-    model. The idea is that given a syntactic context $\Gamma$ and a semantic
-    context $\model{\Gamma}$ of the model $M$, we have $\Gamma \sim
-    \model{\Gamma}$ if and only if $\rec\,\,\Gamma = \model{\Gamma}$, and
-    similarly for types, terms, and substitutions;
+  \item defining a relation $\blank \sim \blank$ between the well-typed syntax
+    and a given model. The idea is that given a syntactic context $\Gamma$ and a
+    semantic context $\model{\Gamma}$ of the model $M$, we have
+    $\Gamma \sim \model{\Gamma}$ if and only if $\rec\,\,\Gamma
+    = \model{\Gamma}$, and similarly for types, terms, and substitutions;
     % semantic context $\model{\Gamma}$ of
     % the model $M$ if and only if $\Gamma$ relates to $\rec\,{\Gamma}$;
     % enjoyed by the initial morphism from the
@@ -442,13 +443,13 @@ enough to prove them only for the untyped syntactic part: as we argued in
 Section~\ref{ss:uniq-typing-types}, the proofs of typing judgments are
 automatically equal.
 
-None of the constructions in this section use UIP. Functional extensionality is
-necessary because the untyped metatheoretic $\Pi$ takes a metatheoretic function
-as an argument. An example induction step that uses it is in the type
-preservation proof for identity substitutions (this is an equation satisfied by
-a model of the QIIT), in particular in the case $(\Pim\,T\,
-A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is equal to
-$\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
+Up until the construction of the syntactic model, UIP is not used. Function
+extensionality on the other hand is necessary because the untyped metatheoretic
+$\Pi$ takes a metatheoretic function as an argument. An example induction step
+that uses it is in the type preservation proof for identity substitutions (this
+is an equation satisfied by a model of the QIIT), in particular in the case
+$(\Pim\,T\, A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is
+equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
 hypothesis states that $(t:T)\ra (A\,t)[\id]=A\,t$.
 
 \subsection{Relating the Syntax to a Model}
@@ -465,18 +466,17 @@ easier to formalise. Too see why, note that the right notion of partial map in
 type theory, which does not presume decidable definedness, is fairly
 heavyweight:
 \[
-  \mathsf{PartialMap}\,A\,B := A\ra (P : \mathsf{hProp})\times(P \ra B)
+  \mathsf{PartialMap}\,A\,B := A\ra (P : \Set)\times\isaprop\,P\times (P \ra B)
 \]
-Here $\mathsf{hProp}$ denotes a type which is propositional. In the above
-definition, we notice an opportunity for converting a fibered definition of a
-type family into an indexed one; if we drop the propositionality for $P$ for the
-time being, we may equivalently return a family indexed over $B$, which is
-exactly just a relation $A\ra B\ra\Set$. Then, in our approach, we recover
-uniqueness of $P$ through the functionality requirement on the $A\ra B\ra\Set$
-relation, and totality by already assuming well-formedness of $A$. In type
-theory, using indexed families instead of display maps is a common convenience,
-since the former are natively supported in type theory, while the latter require
-carrying around auxiliary propositional equalities.
+In the above definition, we notice an opportunity for converting a fibered
+definition of a type family into an indexed one; if we drop the propositionality
+for $P$ for the time being, we may equivalently return a family indexed over
+$B$, which is exactly just a relation $A\ra B\ra\Set$. Then, in our approach, we
+recover uniqueness of $P$ through the functionality requirement on the $A\ra
+B\ra\Set$ relation, and totality by already assuming well-formedness of $A$. In
+type theory, using indexed families instead of display maps is a common
+convenience, since the former are natively supported in type theory, while the
+latter require carrying around auxiliary propositional equalities.
 
 \subsubsection{The functional relation}
 
@@ -685,7 +685,7 @@ terms and substitutions.
   \sum_{\model{a}} (\wf{a}\sim  \model{a}) \times
     (\model{A} = \model{\El}\,\model{a})
   \\
-  & \rlap{(3) Parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Piw \wf{\Gamma} \wf{a} \wf{B} \sim \model{C} &&
    :=
       \sum_{\model{a}} (\wf{a}\sim\model{a})
@@ -776,14 +776,14 @@ terms and substitutions.
   % then required to equal $\model{\Gamma}\model{\ext}\model{A}$.   As
   % $\blank \model{\ext}\blank$ is not guaranteed to be injective, these
   % relations are required to show that the relation is right unique.
-Next, we prove that this relation is right unique.
-Then, we show that the relation is stable under weakening and substitution.
-  The last step consists of giving a related semantic counterpart to any
-  well-typed context, type or term.
-  Everything is done by induction on the typing judgments.
+Next, we prove that this relation is right unique.  Then, we show that the
+relation is stable under weakening and substitution.  The last step consists of
+showing left-totality, i.e.\ giving a related semantic counterpart to any
+well-typed context, type or term.  Everything is done by induction on the typing
+judgments.
   \subsubsection{Right uniqueness}
   \label{sec:right_uniqueness}
-  We show by recursion that the relation is right unique in the following sense:
+  We show by induction that the relation is right unique in the following sense:
   \begin{alignat*}{5}
     &
     \isp{\Sigma{\sim}}
@@ -1164,8 +1164,7 @@ under the common hypotheses
 % Thus, we need to show that $\model{T}=\model{B}\model{[0 := \model{u}]}$ if we
 % know that this last type is related to $B[0 := u]$.
 
-
-\subsection{The Recursor}
+\subsection{Left-Totality and the Recursor}
 For the recursor, we build a morphism from the syntactic model to the semantic
 one. The image of a syntactic context is a unique semantic context which is
 related to it, and similarly for types and terms.
@@ -1214,9 +1213,10 @@ semantic counterparts:
     ({\model{\sigma}:\model{\Sub}\model\Gamma}\model{\Delta})\times ( \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
   The right uniqueness of the relation is used in this induction. It is then
-straightforward to show (without induction) that the first projection of these
-constructions yield a model morphism from the syntax to the model, again using
-right uniqueness.
+straightforward to show (without induction, but using right uniqueness) that the
+first projection of these constructions yield a model morphism from the syntax
+to the model.
+
 \subsection{Uniqueness}
 Our goal is to show that the syntactic model is initial. Thus, it remains to
 show that the morphism constructed in the previous section is unique. We exploit

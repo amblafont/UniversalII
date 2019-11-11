@@ -121,15 +121,14 @@ is the IIT of contexts and types given by the following constructors.
   & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
 %  & \mathsf{Pi} && : (\Gamma:\Con)(A:\Ty\,\Gamma)\ra\Ty\,(\mathsf{ext}\,\Gamma\,A)\ra\,\Ty\,\Gamma
 \end{alignat*}
-This type has two sorts, $\Con$ and $\Ty$. The $\mathsf{ext}$
-constructor of $\Con$ refers to $\Ty$ and the $\Ty$-constructor
-$\mathsf{U}$ refers to $\Con$, hence the two sorts have to be defined
-at the same time. Moreover, $\Ty$ is indexed over $\Con$, which
-precludes the above reduction which worked for
-$\mathsf{isEven}$--$\mathsf{isOdd}$, as we would get a type indexed
-over itself. Another unique feature of IITs (which also shows up in
-higher inductive types \cite{HoTTbook}) is that later constructors can
-refer to previous constructors: in our case, $\mathsf{El}$ mentions
+This type has two sorts, $\Con$ and $\Ty$. The $\mathsf{ext}$ constructor of
+$\Con$ refers to $\Ty$ and the $\Ty$-constructor $\mathsf{U}$ refers to $\Con$,
+hence the two sorts have to be defined at the same time. Moreover, $\Ty$ is
+indexed over $\Con$. This precludes a reduction analogous to the reduction of
+$\mathsf{isEven}$--$\mathsf{isOdd}$, as we would get a type indexed over
+itself. Another unique feature of IITs (which also shows up in higher inductive
+types \cite{HoTTbook}) is that later constructors can refer to previous
+constructors: in our case, $\mathsf{El}$ mentions
 $\mathsf{ext}$.
 % \[
 %   \mathsf{Con?} : (b:\mathsf{Bool})\ra\mathsf{if}\,b\,\mathsf{then}\,\Set\,\mathsf{else}\,(\mathsf{Con?}\,\mathsf{false}\ra\Set),
@@ -166,46 +165,62 @@ with the following computation rules.
   & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^M\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 
-As opposed to mutual inductive types, reducing IITs to inductive types is an
-open problem. Forsberg \cite{forsberg-phd} showed a reduction which only
-supports a simpler, non-recursive-recursive elimination principle
-(\todo{check}). Hugunin \cite{jasper} reduced several IITs to inductive types,
-working inside a UIP-free cubical type theory, but he also only constructed the
-simpler non-recursive-recursive eliminator.
+Reducing IITs to inductive types is an open problem. Forsberg
+\cite{forsberg-phd} showed a reduction which only supports a simpler,
+non-recursive-recursive elimination principle. Hugunin \cite{jasper} reduced
+several IITs to inductive types, working inside a cubical type theory, but he
+also only constructed a weaker eliminator.
 
-The theory of signatures in \cite{Kaposi:2019:CQI:3302515.3290315} is
-a small type theory in which every context encodes a valid quotient
-inductive-inductive type (QIIT) signature. For example, the signature
-for natural numbers is simply the context
-$(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$ and
-$suc$ are variable names). \cite{Kaposi:2019:CQI:3302515.3290315}
-showed that if this theory of signatures exists, then any finitary
-QIIT can be defined from it. If we omit the type former $\mathsf{Id}$
-from the theory of signatures, we get a theory of finitary IIT
-signatures, and the construction of
-\cite{Kaposi:2019:CQI:3302515.3290315} still works: constructing an
-arbitrary IIT from the theory of IIT signatures does not need the
-$\mathsf{Id}$ type former to be present.
+The theory of signatures in \cite{Kaposi:2019:CQI:3302515.3290315} is a small
+type theory in which every context encodes a valid quotient inductive-inductive
+type (QIIT) signature. For example, the signature for natural numbers is simply
+the context $(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$
+and $suc$ are variable names). \cite{Kaposi:2019:CQI:3302515.3290315} showed
+that if this theory of signatures exists, then any finitary QIIT can be derived
+from it via a term model construction. If we omit the type former for equality
+constructors from the theory of signatures, we get a theory of finitary IIT
+signatures, and the construction of \cite{Kaposi:2019:CQI:3302515.3290315} still
+works: constructing an arbitrary IIT from the theory of IIT signatures does not
+need the $\mathsf{Id}$ type former to be present.
 
-In this paper, we construct the theory of IIT signatures only using
-indexed inductive types, thus \todo{rewrite from here}
+However, the QIIT term model construction assumes that we already have the
+syntax of QIIT signatures, and we can do induction over it. Hence, it only shows
+that all finitary QIITs are derivable from a particular fairly complicated QIIT.
+Likewise, restriced to finitary IITs, we only know that they are constructible
+from a particular QIIT.
 
-To derive the existence of all IITs from the theory of IIT signatures
-we use a variant of the CwF model
-\cite{Kaposi:2019:CQI:3302515.3290315} where types are modelled not by
-displayed CwFs but by CwF isofibrations. We need this extension to
-support infinitary constructors. Furthermore, using the method
-introduced by Streicher \cite{streichersemantics} we show the
-existence of the theory of IIT signatures. As opposed to Streicher, we
-don't use quotients in this construction as the theory of IIT
-signatures can be given only using neutral terms.
+In this paper, we construct the theory of IIT signatures, which is a large
+infinitary QIIT, using only indexed inductive types, uniqueness of identity
+types (UIP) and function extensionality. Thus, we show that all finitary IITs are
+reducible to the same feature set.
 
-Our metatheory is ETT. Using Hofmann \cite{}, Theo \cite{} translation
-we can translate our arguments to ITT+UIP+funext. Section
-\ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
-funext.
+\subsection{Structure of the Paper}
 
-This is the paper version of our TYPES 2019 talk.
+We first define a theory of IIT signatures in which every context is a signature
+(Section \ref{sec:theory_of_signatures}). We present this as an algebraic
+\cite{ttintt} theory, specifically as a quotient inductive-inductive type
+(QIIT). In Section \ref{sec:ambroise} we show that this QIIT can be constructed
+using inductive types, UIP and function extensionality. In Section
+\ref{sec:constructingiits} we describe the construction of IITs from the syntax
+of IIT signatures.
+
+
+%% To derive the existence of all IITs from the theory of IIT signatures
+%% we use a variant of the CwF model
+%% \cite{Kaposi:2019:CQI:3302515.3290315} where types are modelled not by
+%% displayed CwFs but by CwF isofibrations. We need this extension to
+%% support infinitary constructors. Furthermore, using the method
+%% introduced by Streicher \cite{streichersemantics} we show the
+%% existence of the theory of IIT signatures. As opposed to Streicher, we
+%% don't use quotients in this construction as the theory of IIT
+%% signatures can be given only using neutral terms.
+
+%% Our metatheory is ETT. Using Hofmann \cite{}, Theo \cite{} translation
+%% we can translate our arguments to ITT+UIP+funext. Section
+%% \ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
+%% funext.
+
+%% This is the paper version of our TYPES 2019 talk.
 
 \subsection{Related Work}
 
@@ -233,15 +248,6 @@ quotients.
 Constructing intrinsic syntax but different techniques: Chapman,
 Danielsson, Nuo. These use induction-induction which is our goal.
 
-\subsection{Structure of the Paper}
-
-We first define a \emph{theory of IIT signatures} in which every context is a
-valid IIT signature (Section \ref{sec:theory_of_signatures}). We present this
-type theory as an algebraic \cite{ttintt} theory, specifically as a quotient
-inductive-inductive type (QIIT). In Section \ref{sec:ambroise} we show that this
-QIIT can be constructed only using inductive types. In Section
-\ref{sec:constructingiits} we describe the construction of IITs from the syntax
-of IIT signatures.
 
 \subsection{Metatheory and Notation}
 
@@ -269,15 +275,29 @@ We work in intensional Martin-Löf type theory, equipped with the following feat
 Agda formalisation of Sections \ref{sec:theory_of_signatures} and
 \ref{sec:ambroise} can be found at
 \url{https://github.com/amblafont/UniversalII}. In addition to the features in
-the previous section, this formalisation also uses equality reflection for some equalities, through rewriting pragmas\cite{cockxsprinkles}. This is purely for convenience, and in principle we could eliminate the instances of equality reflection via UIP and function extensionality.
+the previous section, this formalisation also uses equality reflection for some
+equalities, through rewriting pragmas\cite{cockxsprinkles}. This is purely for
+convenience, and in principle we could eliminate the instances of equality
+reflection via UIP and function extensionality.
 
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
 
-The theory of IIT signatures is given as an initial category with families
+The theory of IIT signatures is given as a category with families
 (CwF)\cite{Dybjer96internaltype} with certain additional type formers. The CwF
 part constitutes the substitution calculus, while the type formers allow
-declaring new sorts and operators in a signature.
+declaring new sorts and operators in a signature. Below, we list all components
+for the theory of signatures; this can be viewed as a notion of model for the
+theory, which is an iterated $\Sigma$ type. In this paper, we construct the
+\emph{initial} such model, i.e.\ a model equipped with a unique recursion principle.
+
+Note that initiality refers to a notion of homomorphism between models. As
+of now, there is no general metatheory for (large, infinitary) QIITs from which
+this notion would fall out. Hence, we give an ad-hoc definition for
+homomorphisms, which can be summarized as a functor between underlying
+categories which strictly preserves all additional family structure and type
+formers.
+
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Con && : \Set \\
@@ -359,52 +379,43 @@ The inductive-inductive Con-Ty example from Section \ref{sec:intro}:
     \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp U)))
 \end{alignat*}
 
-
-  %% & \Ty && : \Con\ra\Set \\
-  %% & \mathsf{empty} && : \Con \\
-  %% & \mathsf{ext} && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
-  %% & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Con \\
-  %% & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
-
-
 \section{Constructing the Theory of IIT Signatures}
 \label{sec:ambroise}
 
-\todo{Write this section}
+%% \todo{Write this section}
 
-Show that the theory of IIT signatures as described in Section
-\ref{sec:theory_of_signatures} exists, that is, it can be defined only
-using indexed inductive types and a $\Prop$ sort.
+%% Show that the theory of IIT signatures as described in Section
+%% \ref{sec:theory_of_signatures} exists, that is, it can be defined only
+%% using indexed inductive types and a $\Prop$ sort.
 
-Ambroise has done this in Agda with funext and UIP using an
-extrinsic--intrinsic translation.
+%% Ambroise has done this in Agda with funext and UIP using an
+%% extrinsic--intrinsic translation.
 
-Ambroise formalisation: \url{https://github.com/amblafont/UniversalII/tree/cwf-syntax/Cwf}.
+%% Ambroise formalisation: \url{https://github.com/amblafont/UniversalII/tree/cwf-syntax/Cwf}.
 
-In this formalization, there is a discrepancy for the typing rule of application
-compared to the one of Section~\ref{sec:theory_of_signatures}: it is not
-\[
-   \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B
-\]
-but
-\[
-   \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra(u : \Tm\,\Gamma\,(\El\,a))\ra\,\Tm\,\Gamma\,B[<u>].
-\]
-Actually, I started with the first version, but at some point I
-changed for the second one because it made some stuff easier (although
-I don't remember exactly what it was).
+%% In this formalization, there is a discrepancy for the typing rule of application
+%% compared to the one of Section~\ref{sec:theory_of_signatures}: it is not
+%% \[
+%%    \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B
+%% \]
+%% but
+%% \[
+%%    \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra(u : \Tm\,\Gamma\,(\El\,a))\ra\,\Tm\,\Gamma\,B[<u>].
+%% \]
+%% Actually, I started with the first version, but at some point I
+%% changed for the second one because it made some stuff easier (although
+%% I don't remember exactly what it was).
 
-I think this should be doable with only UIP (or a $\Prop$-valued
-equality type?) and not funext. This would be important for a
-computational justification of IITs.
+%% I think this should be doable with only UIP (or a $\Prop$-valued
+%% equality type?) and not funext. This would be important for a
+%% computational justification of IITs.
 
-Unfortunately, it seems that funext is needed (see the use of funext in
-Syntax.agda) for the metatheoretic/infinitary
-parameters part (4-5), for example in the case of the metatheoretic
-$ \Pim  : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma $. This needs to be
-investigated more carefully.
+%% Unfortunately, it seems that funext is needed (see the use of funext in
+%% Syntax.agda) for the metatheoretic/infinitary
+%% parameters part (4-5), for example in the case of the metatheoretic
+%% $ \Pim  : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma $. This needs to be
+%% investigated more carefully.
 
-\paragraph*{Construction}
 \input{universaliit}
 
 \section{Constructing IITs from the Theory of IIT Signatures}
