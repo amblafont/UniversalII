@@ -78,10 +78,11 @@
   shown that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
-  IIT. In this paper we construct this theory of signatures using only inductive
-  types, thereby showing a reduction of all finitary IITs to inductive types.
-  We rely on function extensionality and uniqueness of identity proofs. All
-  constructions in this paper were formalised in the proof assistant Agda.
+  IIT. In this paper we construct this theory using only inductive types,
+  thereby showing a reduction of all finitary IITs to inductive types.  We rely
+  on function extensionality and uniqueness of identity proofs. We formalised
+  the construction of the theory of IIT signatures in Agda.
+
 \end{abstract}
 
 \section{Introduction}
@@ -299,7 +300,7 @@ IITs are constructible.
   finitary QIIT signatures. It follows that any model for the theory of QIIT signatures
   restricts to IITs, hence we inherit the categorical semantics of QIITs.
 \item
-  The term model construction also restrict in a straightforward way. For QIITs,
+  The term model construction also restricts in a straightforward way. For QIITs,
   term algebras are constructed by induction on the syntax of signatures, and
   then another induction constructs the eliminator (i.e.\ dependent induction
   principle). In both cases, simply dropping equality constructors from the
@@ -312,10 +313,10 @@ cannot be directly plugged into the Agda code for
 construction). One reason is that the QIIT formalisation uses strict computation
 rules for induction over signatures, while here we show propositional
 computation. This mismatch can be in principle remedied by noting that both
-formalisations use UIP and function extensionality, hence by the known
-translations between extensional and intensional type
-theories\cite{hofmann95extensional,winterhalter2019eliminating}, we can switch
-between strict and propositional equalities.
+formalisations use UIP and function extensionality, hence we can switch between
+strict and propositional equalities, via the known translations between
+extensional and intensional type
+theories\cite{hofmann95extensional,winterhalter2019eliminating}.
 
 Also, the current paper proves initiality, i.e.\ unique recursion for
 signatures, while \cite{Kaposi:2019:CQI:3302515.3290315} uses dependent
@@ -323,19 +324,6 @@ elimination. We expect that the two notions are equivalent. An extension of
 \cite{Kaposi:2019:CQI:3302515.3290315} to large infinitary QIITs would entail
 this equivalence, since that would cover the (large, infinitary) theory of IIT
 signatures.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \section{Further Work}
