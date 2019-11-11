@@ -198,8 +198,10 @@ We work in intensional Martin-Löf type theory, equipped with the following feat
 
 \subsection{Formalisation}
 
-\todo{UIP, funext, rewrite rules, version of Agda.}
-
+Agda formalisation of Sections \ref{sec:theory_of_signatures} and
+\ref{sec:ambroise} can be found at
+\url{https://github.com/amblafont/UniversalII}. In addition to the features in
+the previous section, this formalisation also uses equality reflection for some equalities, through rewriting pragmas\cite{cockxsprinkles}. This is purely for convenience, and in principle we could eliminate the instances of equality reflection via UIP and function extensionality.
 
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
