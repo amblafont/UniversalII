@@ -333,8 +333,6 @@ signatures.
 
 \section{Further Work}
 
-\subsection{Infinitary IITs}.
-
 The current work only concerns finitary IITs. An extension would be to also
 allow infinitely branching inductive types such as W-types. This would first
 require giving semantics for infinitary IITs (to our knowledge there is no
@@ -344,15 +342,15 @@ it seems to be more difficult to construct the syntax of infinitary IIT
 signatures without using quotients. The reason is that such syntax would not be
 strictly restricted to neutral terms: we would need $\lambda$-abstraction and
 $\beta\eta$-rules for infinitary $\Pi$ types, in order to allow a term model
-construction for infinitary IITs. A definition for normal preterms and typing
+construction for infinitary IITs. A definition of normal preterms and typing
 judgments on them may still be possible, but it appears to be much more
 complicated than before (the current authors have attempted this without
 conclusive success).
 
-\subsection{Construction without UIP and function extensionality}
-\todo{Without UIP, without funext,
-for QIITs (in the setoid model).}
-
+As mentioned in Section \ref{sec:right_uniqueness}, it also remains an open
+problem whether IITs are reducible to inductive types in a UIP-free setting. To
+show this, we would need to construct the syntax of signatures without UIP, and
+also reproduce the semantics and term model construction for IITs without UIP.
 
 \bibliography{b}
 
