@@ -294,6 +294,7 @@ We work in intensional Martin-Löf type theory, equipped with the following feat
     $e_1$,\dots,$e_n$.
   \item Uniqueness of identity proofs (UIP), expressing $(e : t = t)\ra e = \refl$.
   \item Function extensionality, expressing $((x : A) \ra f\,x = g\,x) \ra f = g$.
+  \item TODO: natural numbers
 
 \end{itemize}
 
@@ -456,7 +457,7 @@ $\Gamma$, the initial algebra can be built from sets of terms of the form
 $\Tm\,\Gamma\,(\El\,a)$. For example, considering the signature for natural
 numbers
 \[
-  \Gamma := \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
+  \Gamma := \big(\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N\big),
 \]
 we have that $\Tm\,\Gamma\,(\El\,N)$ is the set of natural numbers up to isomorphism,
 since the only way to construct these terms is by using $s$ and $z$ from $\Gamma$.

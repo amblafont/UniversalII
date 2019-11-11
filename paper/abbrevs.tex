@@ -22,9 +22,9 @@
 \newcommand{\app}{\mathsf{app}}
 \newcommand{\oldapp}{\mathop{{\scriptstyle @}}}
 \newcommand{\Pim}{\hat{\Pi}}
-\newcommand{\appm}{\mathop{\hat{\oldapp}}}
+\newcommand{\appm}{\mathop{\hat{{\scriptstyle @}}}}
 \newcommand{\Pii}{\tilde{\Pi}}
-\newcommand{\appi}{\mathop{\tilde{\oldapp}}}
+\newcommand{\appi}{\mathop{\tilde{{\scriptstyle @}}}}
 \newcommand{\Id}{\mathsf{Id}}
 \newcommand{\reflect}{\mathsf{reflect}}
 
@@ -37,24 +37,24 @@
 \newcommand{\idu}{\untyp{\id}}
 \newcommand{\emptyu}{\untyp{\cdot}}
 \newcommand{\epsilonu}{\untyp{\epsilon}}
-\newcommand{\extu}{\untyp{\ext}}
-\newcommand{\consu}{\untyp{\cons}}
+\newcommand{\extu}{\mathbin{\untyp{\ext}}}
+\newcommand{\consu}{\mathbin{\untyp{\cons}}}
 \newcommand{\varu}{\untyp{\mathsf{var}}}
 \newcommand{\Uu}{\untyp{\U}}
 \newcommand{\Elu}{\untyp{\El}}
 \newcommand{\Piu}{\untyp{\Pi}}
-\newcommand{\appu}{\untyp{\oldapp}}
+\newcommand{\appu}{\mathbin{\untyp{{\scriptstyle @}}}}
 \newcommand{\Pipu}{\untyp{\Pi}}
 \newcommand{\Pimu}{\untyp{\Pim}}
 \newcommand{\Piiu}{\untyp{\Pii}}
-\newcommand{\appmu}{\mathop{\hat{\tilde{\oldapp}}}}
+\newcommand{\appmu}{\mathop{\hat{\tilde{{\scriptstyle @}}}}}
 \newcommand{\erru}{\untyp{\mathsf{err}}}
 \newcommand{\wku}{\untyp{\wk}}
 \newcommand{\idru}{\untyp{\idr}}
 \newcommand{\idlu}{\untyp{\idl}}
 
 % well-typed judgement
-\newcommand{\wf}[1]{{#1}^w}
+\newcommand{\wf}[1]{{#1}^{\mathsf{w}}}
 \newcommand{\Conw}{\wf{\Con}}
 \newcommand{\Tyw}{\wf{\Ty}}
 \newcommand{\Subw}{\wf{\Sub}}
@@ -62,12 +62,12 @@
 \newcommand{\invar}{\in_\N}
 \newcommand{\idw}{\wf{\id}}
 \newcommand{\emptyw}{\wf{\cdot}}
-\newcommand{\extw}{\wf{\ext}}
+\newcommand{\extw}{\mathbin{\wf{\ext}}}
 \newcommand{\consw}{\wf{\cons}}
 \newcommand{\epsilonw}{\wf{\epsilon}}
 \newcommand{\varw}{\wf{\mathsf{var}}}
-\newcommand{\vzw}{\wf{0}}
-\newcommand{\vsw}{\wf{S}}
+\newcommand{\vzw}{\wf{\mathsf{0}}}
+\newcommand{\vsw}{\wf{\mathsf{S}}}
 \newcommand{\Uw}{\wf{\U}}
 \newcommand{\Elw}{\wf{\El}}
 \newcommand{\Piw}{\wf{\Pi}}
@@ -85,7 +85,7 @@
 \newcommand{\mor}[1]{{#1}^f}
 
 % syntax model
-\newcommand{\syn}[1]{{#1}^S}
+\newcommand{\syn}[1]{{#1}^{\mathsf{S}}}
 
 % functional relation
 \newcommand{\rel}[1]{{#1}^r}
@@ -168,6 +168,6 @@
 \newcommand{\eqreflect}{\mathsf{eqreflect}}
 
 \newcommand{\isaprop}{\mathsf{is\text{-}prop}}
-\newcommand{\isp}[1]{{#1}^p}
+\newcommand{\isp}[1]{{#1}^{\mathsf{p}}}
 
 \mathchardef\mhyphen="2D
