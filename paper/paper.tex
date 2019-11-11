@@ -87,12 +87,10 @@
 \section{Introduction}
 \label{sec:intro}
 
-\todo{András: overall todos: introduction, section 2 examples, intro to section 3, future work finish, maybe changing big Sigma notation to (x : A) x B notation (or changing the other way?)}
-
-Most mutual inductive types can be reduced to indexed inductive types
-where the index gives the information which sort we meant. An example
-is the predicates $\mathsf{isEven}$ and $\mathsf{isOdd}$ defined
-mutually by the following constructors.
+Many mutual inductive types can be reduced to indexed inductive types, where the
+index disambiguates different sorts. An example is the predicates
+$\mathsf{isEven}$ and $\mathsf{isOdd}$ defined mutually by the following
+constructors.
 \begin{alignat*}{5}
   & \mathsf{isEven} && : \N\ra\Set \\
   & \mathsf{isOdd} && : \N\ra \Set \\
@@ -111,15 +109,15 @@ These can be reduced to the following single inductive family.
 Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
 definition of a type and a family of types over the first one. IITs
 were originally introduced to represent the well-typed syntax of type
-theory itself, and the main example is still the James Chapman style
-\cite{chapman09eatitself} syntax for type theory. A minimal use case
+theory itself, and the main example is still the Chapman-style
+\cite{chapman09eatitself} syntax for a type theory. A minimal use case
 is the IIT of contexts and types given by the following constructors.
 \begin{alignat*}{5}
   & \Con && : \Set \\
   & \Ty && : \Con\ra\Set \\
   & \mathsf{empty} && : \Con \\
   & \mathsf{ext} && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
-  & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Con \\
+  & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Gamma \\
   & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
 %  & \mathsf{Pi} && : (\Gamma:\Con)(A:\Ty\,\Gamma)\ra\Ty\,(\mathsf{ext}\,\Gamma\,A)\ra\,\Ty\,\Gamma
 \end{alignat*}
@@ -128,7 +126,7 @@ constructor of $\Con$ refers to $\Ty$ and the $\Ty$-constructor
 $\mathsf{U}$ refers to $\Con$, hence the two sorts have to be defined
 at the same time. Moreover, $\Ty$ is indexed over $\Con$, which
 precludes the above reduction which worked for
-$\mathsf{isEven}$--$\mathsf{isOdd}$ as we would get a type indexed
+$\mathsf{isEven}$--$\mathsf{isOdd}$, as we would get a type indexed
 over itself. Another unique feature of IITs (which also shows up in
 higher inductive types \cite{HoTTbook}) is that later constructors can
 refer to previous constructors: in our case, $\mathsf{El}$ mentions
@@ -137,10 +135,10 @@ $\mathsf{ext}$.
 %   \mathsf{Con?} : (b:\mathsf{Bool})\ra\mathsf{if}\,b\,\mathsf{then}\,\Set\,\mathsf{else}\,(\mathsf{Con?}\,\mathsf{false}\ra\Set),
 % \]
 
-The elimination principle for an IIT has two motives and one method
+The elimination principle for the above IIT has two motives and one method
 for each constructor. It is an example of a \emph{recursive-recursive}
 function (following the nomenclature of \cite{forsberg-phd}) which
-means that there are two mutually defined functions where the type of
+means that there are two mutually defined functions, where the type of
 the second function depends on the first function. The proof assistant
 Agda \cite{norell07thesis} allows the definition of such functions
 (even from non-IITs) and it is also currently the only proof assistant
@@ -168,12 +166,12 @@ with the following computation rules.
   & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^M\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 
-As opposed to mutual inductive types, reducing IITs to inductive types
-is an open problem. Forsberg \cite{forsberg-phd} showed a reduction
-which only supports a simpler, non recursive-recursive elimination
-principle (\todo{check}). Hugunin \cite{jasper} reduced an example IIT
-to inductive types without UIP, but he also only constructed the
-simpler non recursive-recursive eliminator.
+As opposed to mutual inductive types, reducing IITs to inductive types is an
+open problem. Forsberg \cite{forsberg-phd} showed a reduction which only
+supports a simpler, non-recursive-recursive elimination principle
+(\todo{check}). Hugunin \cite{jasper} reduced several IITs to inductive types,
+working inside a UIP-free cubical type theory, but he also only constructed the
+simpler non-recursive-recursive eliminator.
 
 The theory of signatures in \cite{Kaposi:2019:CQI:3302515.3290315} is
 a small type theory in which every context encodes a valid quotient
@@ -257,8 +255,8 @@ We work in intensional Martin-Löf type theory, equipped with the following feat
         when we want to leave the type of the first projection implicit. We use $A
         \times B$ for non-dependent pairs.
   \item Intensional propositional equality as $t = u$, with $\refl : t = t$. In
-    this paper, we use extensional notation, and do not write explicit
-    transports over equalities. However, we occasionally indicate by
+    this paper, we informally use extensional notation, and do not write
+    explicit transports over equalities. However, we occasionally indicate by
     $e_1,\dots,e_n \#t$ that $t$ is well-typed thanks to the equalities
     $e_1$,\dots,$e_n$.
   \item Uniqueness of identity proofs (UIP), expressing $(e : t = t)\ra e = \refl$.
@@ -330,18 +328,43 @@ We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$. In the $\Pi$ function type
 for inductive parameters, we have $\app$ as a categorical version of function
 application. We recover the usual type-theoretic application as follows:
 \begin{alignat*}{5}
-  & \blank\appm\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
+  & \blank\oldapp\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
   \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
-  & t \appm u := \app\,t\,[\id\,u]
+  & t \oldapp u := \app\,t\,[\id\,u]
 \end{alignat*}
+We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[p])$ as $a\ra B$.
+
 We can also recover de Bruijn indices by having $n := q[p^n]$, where $p^n$ is
 $p$ composed with itself $n$ times. However, for informal examples we instead
 use a nameful notation, where we introduce names in context extension and in the
-$\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,(A : \U)\,\ext\,(a :
-\El\,A)$ in a signature for pointed sets.
-
+$\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,A : \U\,\ext\,a :
+\El\,A$ in a signature for pointed sets.
 
 \subsubsection{Example signatures}
+
+Natural numbers:
+\[
+\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
+\]
+Lists with elements of a given $A : \Set$ type. Here we use the $\Pim$ function
+to include an external type into the signature.
+\[
+\boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,
+      cons : \Pim\,A\,(\lambda \_.\, L\ra L)
+\]
+The inductive-inductive Con-Ty example from Section \ref{sec:intro}:
+\begin{alignat*}{3}
+  & \boldsymbol{\cdot} \,\ext\,Con : \U\,\ext\,Ty : Con\ra\U\,\ext\,empty : \El\,Con\,\ext\,ext : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \ra Con) \\
+  & \hspace{0.5em}\,\ext\, U : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))
+    \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp U)))
+\end{alignat*}
+
+
+  %% & \Ty && : \Con\ra\Set \\
+  %% & \mathsf{empty} && : \Con \\
+  %% & \mathsf{ext} && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
+  %% & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Con \\
+  %% & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
 
 
 \section{Constructing the Theory of IIT Signatures}
@@ -392,7 +415,8 @@ term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
 shown that from the syntax of the theory of signatures for finitary QIITs, one
 can construct any particular finitary QIIT. The idea is that for a signature
 $\Gamma$, the initial algebra can be built from sets of terms of the form
-$\Tm\,\Gamma\,(\El\,a)$. For example, taking the signature of natural numbers:
+$\Tm\,\Gamma\,(\El\,a)$. For example, considering the signature for natural
+numbers
 \[
   \Gamma := \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \ra \El\,N
 \]
