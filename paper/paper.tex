@@ -224,6 +224,33 @@ of IIT signatures.
 
 \subsection{Related Work}
 
+The current work builds heavily on the work of Kaposi et al.\ on quotient
+inductive-inductive types\cite{Kaposi:2019:CQI:3302515.3290315}; we reuse both
+QIIT syntax and semantics by restricting to IITs, and we reuse the term model
+construction of QIITs as well.
+
+Forsberg\cite{forsberg-phd} specifies inductive-inductive types and develops a
+semantics based on dialgebras. He also provides a reduction of IITs to indexed
+inductive types, but only constructs a weak version of elimination.
+
+Hugunin\cite{jasper} constructs several IITs in cubical Agda from inductive
+types. In this setting, the lack of UIP makes constructions significantly more
+involved, and essentially involves coinductive-coinductive well-formedness
+predicates defined as homotopy limits. Hugunin does not consider a generic
+syntax of IITs and only works on specific examples (although the examples vary
+greatly). He also does not construct full recursive-recursive eliminators.
+
+Streicher\cite{streichersemantics} presents an interpretation of the well-formed
+presyntax of a type theory into a categorical model, which is an important
+ingredient in constructing an initial model, although he does not present
+details on the construction of the term model or its initiality proof.
+
+Voevodsky was interested in constructing initial models of type theories
+from presyntaxes. There is a communal project \cite{
+
+
+
+
 Reduction of classes of inductive types: reduce indexed W-types to
 W-types. IR types to indexed types. IITs were introduced by
 Forsberg. What he did.  QIITs by Forsberg-lots of people. Our QIIT
@@ -240,7 +267,7 @@ Kaposi and Kov{\'a}cs defined a type theory of signatures for higher
 inductive-inductive types (HIITs)
 \cite{kaposi_et_al:LIPIcs:2018:9190}.
 
-Similar techique for other type theories: Streicher
+Similar technique for other type theories: Streicher
 \cite{streichersemantics}. Initiality project, Brunerie \cite{}. These
 all use quotients. Closest: Lafont TYPES abstract 2017. Does not use
 quotients.
@@ -372,11 +399,11 @@ to include an external type into the signature.
 \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,
       cons : \Pim\,A\,(\lambda \_.\, L\ra L)
 \]
-The inductive-inductive Con-Ty example from Section \ref{sec:intro}:
+The inductive-inductive example from Section \ref{sec:intro}:
 \begin{alignat*}{3}
   & \boldsymbol{\cdot} \,\ext\,Con : \U\,\ext\,Ty : Con\ra\U\,\ext\,empty : \El\,Con\,\ext\,ext : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \ra Con) \\
   & \hspace{0.5em}\,\ext\, U : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))
-    \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp U)))
+    \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
 \end{alignat*}
 
 \section{Constructing the Theory of IIT Signatures}
@@ -456,7 +483,7 @@ However, we shall mention that the Agda formalisation for the current paper
 cannot be directly plugged into the Agda code for
 \cite{Kaposi:2019:CQI:3302515.3290315} (which includes most of the term model
 construction). One reason is that the QIIT formalisation uses strict computation
-rules for induction over signatures, while here we show propositional
+rules (given by Agda rewrite rules) for induction over signatures, while here we show propositional
 computation. This mismatch can be in principle remedied by noting that both
 formalisations use UIP and function extensionality, hence we can switch between
 strict and propositional equalities, via the known translations between
