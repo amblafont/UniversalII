@@ -177,9 +177,29 @@ QIIT can be constructed only using inductive types. In Section
 \ref{sec:constructingiits} we describe the construction of IITs from the syntax
 of IIT signatures.
 
+\subsection{Metatheory and Notation}
+
+We work in intensional Martin-Löf type theory, equipped with the following features:
+\begin{itemize}
+  \item Predicative universes $\Set_i$. We usually omit level indices in this paper.
+  \item Dependent functions, notated as $(x : A)\ra B$, or as $A \ra B$ when non-dependent.
+  \item $\Sigma$-types, notated either as $(x : A)\times B$, or as $\sum\limits_{x} B$
+        when we want to leave the type of the first projection implicit. We use $A
+        \times B$ for non-dependent pairs.
+  \item Intensional propositional equality as $t = u$, with $\refl : t = t$. In
+    this paper, we use extensional notation, and do not write explicit
+    transports over equalities. However, we occasionally indicate by
+    $e_1,\dots,e_n \#t$ that $t$ is well-typed thanks to the equalities
+    $e_1$,\dots,$e_n$.
+  \item Uniqueness of identity proofs (UIP), expressing $(e : t = t)\ra e = \refl$.
+  \item Function extensionality, expressing $((x : A) \ra f\,x = g\,x) \ra f = g$.
+
+\end{itemize}
+
 \subsection{Formalisation}
 
 \todo{UIP, funext, rewrite rules, version of Agda.}
+
 
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
