@@ -234,7 +234,7 @@ construction of QIITs as well.
 
 Forsberg \cite{forsberg-phd} specifies inductive-inductive types and develops a
 semantics based on dialgebras. He also provides a reduction of IITs to indexed
-inductive types, but only constructs a weak version of elimination.
+inductive types, but only constructs a weak version of the eliminator.
 
 Hugunin \cite{jasper} constructs several IITs in cubical Agda from inductive
 types. In this setting, the lack of UIP makes constructions significantly more
@@ -246,22 +246,21 @@ greatly). He also does not construct full recursive-recursive eliminators.
 Streicher \cite{streichersemantics} presents an interpretation of the well-formed
 presyntax of a type theory into a categorical model, which is an important
 ingredient in constructing an initial model, although he does not present
-details on the construction of the term model or its initiality proof. Our paper an indexed variant of his construction (see Subsection \ref{sec:streicher} for a comparison).
+details on the construction of the term model or its initiality proof. Our initiality proof can be seen as an indexed variant of his construction (see Subsection \ref{sec:streicher} for a comparison).
 
 Voevodsky was interested in constructing initial models of type
 theories from presyntaxes. Inspired by this, Brunerie \cite{brunerie}
 formalised Streicher's proof in Agda for a type theory with $\Pi$,
 $\Sigma$, $\mathbb{N}$, identity types and an infinite hierarchy of
 universes. He used UIP, function extensionality and quotient types in
-his formalisation. Our proof uses a similar approach, but we construct
-a much simpler type theory which does not have any computation rules,
-hence we can avoid using quotients.
+his formalisation. In this paper we construct a type theory without
+computation rules, hence we avoid using quotients.
 
-Intrinsic (well-typed) syntax for type theories were constructed
-before using IITs \cite{chapman09eatitself}, inductive-recursive types
+Intrinsic (well-typed) syntax for type theories were constructed using
+IITs \cite{chapman09eatitself}, inductive-recursive types
 \cite{nisse,Altenkirch:2014:CO:2631172.2631176} and QIITs
 \cite{ttintt}. In this paper we avoid using such general classes of
-inductive types, as our goal is to reduce IITs to indexed inductive
+inductive types as our goal is to reduce IITs to indexed inductive
 types.
 
 Reducing general classes of inductive types to simpler classes has a
@@ -269,7 +268,8 @@ long tradition in type theory. Indexed W-types were reduced to W-types
 \cite{indexedcont} (using the essentially Streicher's idea of preterms
 and a typing predicate), small inductive-recursive types to indexed
 W-types \cite{malatasta13smallir}, mutual inductive types to indexed
-W-types \cite{mutual}. Quotient inductive-inductive types (and
+W-types \cite{mutual}, W-types to natural numbers and quotients
+\cite{Ahrens2019}. Quotient inductive-inductive types (and
 inductive-inductive types) can be reduced to quotient inductive types
 using the reduction of generalised algebraic theories to essentially
 algebraic theories \cite{gat}.
