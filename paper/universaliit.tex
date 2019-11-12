@@ -88,7 +88,7 @@ error (ill-scoped substitution). The typing judgments will not mention $\erru$.
 
 
 Note that $(\Piu \,A\,B)[\sigma]$ should be defined as $\Piu
-\,(A[\sigma])\,(B[\varu\, \mathsf{0} \,\consu\, \wkO\,\sigma])$, and thus we need to define
+\,(A[\sigma])\,(B[\wkO\,\sigma \,\consu\, \varu\,\mathsf{0}])$, and thus we need to define
 $\wkO$, the weakening of substitutions.  The basic idea is to increment the de
 Bruijn indices of all the variables.  Actually this is not so simple because of
 the $\Piu$ type: indeed, we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type
