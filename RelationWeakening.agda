@@ -233,6 +233,8 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appNIw Γw {T
   = (λ a → _ , liftT~ Γm Em Δm (Bm a)) ,
   (_ , liftt~ Γm Em Δm {tw = tw} tm) ,
   refl , refl
+
+{- INF
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appInfw Γw {T} {Bp} Bw tw u} {_}
   (_ , Bm , tm , refl , refl)
  =
@@ -244,6 +246,7 @@ liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {appNI t _} {_} {appInfw Γw {
 liftt~ {Γ} {Γw'} Γm {E} {Ew} Em {Δ} {Δw} Δm {ΠInf B} {_} {ΠInfw Γw {T}{Bp} Bw} {_}
   (_ , Bm , refl , refl)
   = (λ a →  _ , liftt~ Γm Em Δm {tw = Bw a}(Bm a)) , refl , refl
+-}
 
 
 liftV~ {.(_ ▶p _)} {Γw'} Γm {E} {Ew} Em {∙p} {Δw} Δm {.0} {.(liftT 0 _)} {V0w Γw Aw} {Am} 

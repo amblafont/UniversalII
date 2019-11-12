@@ -237,6 +237,7 @@ module _   {ll : Level}
             →
           Tmʳ (t S.$NI u) ≡ tr (Tm _) ΠNIʳ (Tmʳ t) $NI u
 
+{- INF
       ΠInfʳ : {Γ : S.Con} {T : Set ll} {B : T → S.Tm Γ S.U} →
        (Tmʳ {Γ} (S.ΠInf B)) ==
         (ΠInf {Conʳ Γ} {T = T} λ a → tr (Tm _)  Uʳ (Tmʳ (B a)) ) [ Tm _ ↓ Uʳ ]
@@ -246,6 +247,7 @@ module _   {ll : Level}
             →
           Tmʳ (t S.$Inf u) ==  ( (tr (Tm _) (Elʳ ◾ ap El (to-transp ΠInfʳ)) (Tmʳ t)) $Inf u)
             [ Tm _ ↓ Elʳ ]
+-}
 
         -- {!Tmʳ (t S.$ u) == ((Tmʳ t) $ (Tmʳ u)) [ Tm _ ↓ ? ]!}
     -- $ʳ = {!!}

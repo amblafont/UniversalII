@@ -121,6 +121,7 @@ open import RelationSubstitution {k = k}
       = ₂ (  Bm u )
     eE =  fst=  (prop-path (TyP _ _) Em (_ , B[]~))
 
+{- INF
 ΣTm~ {Γw = Γw} Γm' {Aw = Elw Γw'' aw} (_ , am , refl) (appInfw Γw' Bw tw u) =
   _ ,
   Bm ,
@@ -144,6 +145,7 @@ open import RelationSubstitution {k = k}
 
 ΣTm~ {Γw = Γw} Γm' {Aw = Uw Γw''} (_ , lift refl) (ΠInfw Γw' Bw) =
   _ , (λ a → ΣTm~ Γm' {Aw = Uw Γw'} (_ , lift refl) (Bw a)  ) , refl , refl
+-}
 
 -- ΣVar~ Γw' Ew' xw Γm Em = {!xw!}
 ΣVar~ {Γw = Γw'} Cm {Aw = wkEw} Em (V0w Γw Aw)   =

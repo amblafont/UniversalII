@@ -252,9 +252,11 @@ El {Γ} a = _ , Elw (₂ Γ)(₂ a)
    (T → Ty Γ) → Ty Γ
 Π-NI {Γ} {T} B = _ , ΠNIw (₂ Γ) (λ a → (₂ (B a)))
 
+{- INF
 Π-Inf : {Γ : Con} {T : Set i} →
    (T → Tm Γ U) → Tm Γ U
 Π-Inf {Γ} {T} B = _ , ΠInfw (₂ Γ) (λ a → (₂ (B a)))
+-}
 
 
 -- (! ([<>]T (₂ B) (₁ u)) ◾ ap (_[_]T (₁ B)) (<>=<>  u))
@@ -276,8 +278,10 @@ syntaxUnivΠ = record
                 ; Π[] = λ {Γ}{Δ}{σ}{a}{B} → Π[]
                 ; ΠNI = Π-NI
                 ; ΠNI[] = refl
+{- INF
                 ; ΠInf = Π-Inf
                 ; ΠInf[] = refl
+-}
 
                 ; _$_ = λ {Γ}{a}{B}t u  →
                    (app (₁ t) (₁ u)) ,
@@ -301,8 +305,10 @@ syntaxUnivΠ = record
                 ; _$NI_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appNIw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u
                 ; $NI[] = refl
 
+{- INF
                 ; _$Inf_ =  λ {Γ}{T}{B}t u → appNI (₁ t) u , appInfw (₂ Γ) (λ a → ₂ (B a)) (₂ t) u
                 ; $Inf[] = refl
+-}
 
 
 

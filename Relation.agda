@@ -73,6 +73,7 @@ module Relation {k : Level.Level}  where
     Σ (∃ (Tm~ tw {Δm} {M.ΠNI  (λ a → ₁ (Bm a))})) λ tm →
     Σ (Em ≡ (₁ (Bm u)) ) λ eC →
       zm == (₁ tm) M.$NI u [ M.Tm Δm ↓ eC ]
+{- INF
   Tm~   {t = appNI t u} (appInfw Γw {T} {Bp} Bw tw u) {Δm} {Em} zm =
 
     Σ (∀ a → ∃ (Tm~ (Bw a) {Δm} )) λ Bm →
@@ -84,6 +85,7 @@ module Relation {k : Level.Level}  where
      Σ (∀ a → ∃ (Tm~ (Bw a) {Cm} )) λ Bm →
       Σ (Em ≡ M.U) λ eE →
       zm == M.ΠInf  (λ a → ₁ (Bm a) ) [ M.Tm _ ↓ eE ]
+-}
 
 
 -- Var~ {Γ}{E}{x} xw {Cm}{Em} xm = {!Ew!}
@@ -218,6 +220,7 @@ module Relation {k : Level.Level}  where
           pathOverto-is-prop (M.Tm Γm) eC' _
 
         }}
+{- INF
     TmP   {t = appNI t u} (appInfw Γw {T}{Bp} Bw tw u) {Γm} Am =
 
        equiv-preserves-level
@@ -243,6 +246,7 @@ module Relation {k : Level.Level}  where
        {{ Σ-level (Π-level (λ a → TmP (Bw a) _)) λ Bm' →
             Σ-level ( all-paths-is-prop uip ) λ eT →
              pathOverto-is-prop (M.Tm Γm) eT _ }}
+-}
 
     VarP (V0w Γw Aw) {Γm} Am =
       equiv-preserves-level

@@ -84,6 +84,7 @@ postulate
 
 
 
+{- INF
 -- agda does not recognize ΠInf[] as a valid rewrite rule, but if I restates it, it is ok.
 postulate
   ΠInf[]' : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
@@ -111,6 +112,7 @@ postulate
   $Inf[]=1 : ∀ {Y Γ σ T B t u} → $Inf[] {Y}{Γ}{σ}{T}{B}{t}{u} ↦ refl
 
 {-# REWRITE $Inf[]=1  #-}
+-}
 
 -- open CwF RewCwF public
 -- open UnivΠ RewUnivΠ using (_$_ ; $[] ; _$NI_ ; _$Inf_ ) public

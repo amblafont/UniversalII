@@ -482,6 +482,7 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
         ∀ {Y}{Γ}{σ : Sub Y Γ}{T : Set k}{B : T → Ty Γ}{t : Tm Γ (ΠNI B)}{u : T}
         → ((t $NI u) [ σ ]t) ≡ (  (transport (Tm _) ΠNI[] (t [ σ ]t)) $NI u )
 
+{- INF
       ΠInf : ∀{Γ}{T : Set k}(B : T → Tm Γ U) → Tm Γ U
       ΠInf[] : {Γ Δ : Con} {σ : Sub Γ Δ} {T : Set k} {B : T → Tm Δ U} →
         (((ΠInf {Δ} B) [ σ ]t) == (ΠInf {Γ} {T} (λ a → transport (Tm _) U[] ((B a) [ σ ]t))) [ Tm _ ↓ U[] ])
@@ -492,6 +493,7 @@ record UnivΠ {i : _}{j : _}{k : _}(M : CwF {i}{j}) : Set ((Level.suc (lmax i (l
         → ((t $Inf u) [ σ ]t) ==
              transport (Tm Y) (El[] ◾ ap El (to-transp ΠInf[])) (t [ σ ]t)
              $Inf u [ Tm _ ↓ El[] ]
+-}
 
 
 

@@ -211,6 +211,7 @@ postulate
 
 
 
+{- INF
 
 -- Agda does not accept ΠNIʳ as a valid rewrite rule
 postulate
@@ -236,6 +237,7 @@ postulate
 
 {-# REWRITE ΠInfʳ=1  #-}
 
+-}
 
 
 
@@ -355,6 +357,7 @@ morTm~ {Γp} Γw  sBw  (appNIw Γw'  Bw {t = t}tw u)
       Tmʳ (appNI t u , appNIw Γw' Bw tw u) ≡  (Tmʳ {A = _ , ΠNIw Γw' Bw} (t , tw)) M.$NI u
     et = $NIʳ (_ , tw) u
 
+{- INF
 morTm~ {Γp} Γw  sBw  (appInfw Γw'  Bw {t = t}tw u)
   rewrite prop-has-all-paths sBw (Elw Γw' (Bw u))
     | prop-has-all-paths Γw Γw'
@@ -376,6 +379,7 @@ morTm~  Γw' (Uw Γw'') (ΠInfw Γw Bw)
   -- (λ a → {! (? , ?)!}) , {!!}
   (λ a →  (_ , morTm~ Γw' (Uw Γw') (Bw a))) , (refl , refl)
 
+-}
 
 
 
