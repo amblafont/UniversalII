@@ -353,11 +353,11 @@ formers.
   & {\boldsymbol{\cdot}\eta} && : \{\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}\} \ra \sigma = \epsilon \\
   & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
   & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
-  & \p && : \Sub\,(\Gamma\ext A)\,\Gamma \\
-  & \q && : \Tm\,(\Gamma\ext A)\,(A[\p]) \\
-  & {\ext\beta_1} && : \p\circ(\sigma, t) = \sigma \\
-  & {\ext\beta_2} && : \q[\sigma, t] = t \\
-  & {\ext\eta} && : (\p, \q) = \id \\
+  & \pi_1 && : \Sub\,\Gamma\,(\Delta\ext A)\ra \Sub\,\Gamma\,\Delta \\
+  & \pi_2 && : (\sigma : \Sub\,\Gamma\,(\Delta\ext A))\ra \Tm\,\Gamma\,(A[\pi_1 \sigma]) \\
+  & {\pi_1\beta} && : \pi_1(\sigma, t) = \sigma \\
+  & {\pi_2\beta} && : \pi_2(\sigma, t) = t \\
+  & {\pi\eta} && : (\pi_1\,\sigma, \pi_2\,\sigma) = \sigma \\
   & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\[0.5em]
   & \rlap{(2) Universe} \\[0.5em]
   & \U && : \Ty\,\Gamma \\
@@ -366,9 +366,10 @@ formers.
   & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\[0.5em]
   & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
-  & \app && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B \\
+  & \blank\oldapp\blank && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
+  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
   & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma^\uparrow]) \\
-  & {\app[]} && : (\app\,t)[\sigma^\uparrow] = \app\,(t[\sigma]) \\[0.5em]
+  & {\oldapp[]} && : (t\oldapp\alpha)[\sigma] = (t[\sigma])\mathop{\oldapp}(\alpha[\sigma]) \\[0.5em]
   & \rlap{(4) Metatheoretic parameters} \\[0.5em]
   & \Pim && : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma \\
   & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
@@ -377,21 +378,16 @@ formers.
 \end{alignat*}
 \subsection{Notation and abbreviations}
 
-We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$. In the $\Pi$ function type
-for inductive parameters, we have $\app$ as a categorical version of function
-application. We recover the usual type-theoretic application as follows:
-\begin{alignat*}{5}
-  & \blank\oldapp\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
-  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
-  & t \oldapp u := (\app\,t)[\id\,u]
-\end{alignat*}
-We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\p])$ as $a\Ra B$.
-
-We can also recover de Bruijn indices by having $n := \q[\p^n]$, where $\p^n$ is
-$\p$ composed with itself $n$ times. However, for informal examples we instead
+We define $\wk : \Sub\,(\Gamma\ext A)\ra \Gamma$ as $\pi_1\,\id$.
+We can recover de Bruijn indices by having $0= \pi_2 \,\id$ and $n+1 = n[\wk]$.
+However, for informal examples we instead
 use a nameful notation, where we introduce names in context extension and in the
 $\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,A : \U\,\ext\,a :
 \El\,A$ in a signature for pointed sets.
+
+We define $\sigma^\uparrow$ as $(\sigma\circ\wk,0)$.
+We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\wk])$ as $a\Ra B$.
+
 
 \subsection{Example signatures}
 
