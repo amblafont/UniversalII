@@ -141,28 +141,29 @@ means that there are two mutually defined functions, where the type of
 the second function depends on the first function. The proof assistant
 Agda \cite{norell07thesis} allows the definition of such functions
 (even from non-IITs) and it is also currently the only proof assistant
-supporting IITs. The elimination principle for $\Con$--$\Ty$ says that
+supporting IITs\footnote{An experimental version of Coq with IITs is also
+  available on github.}. The elimination principle for $\Con$--$\Ty$ says that
 given the following components,
 \begin{alignat*}{5}
-  & Con^D && : \Con\ra\Set \\
-  & Ty^D && : Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
-  & empty^D && : Con^D\,\mathsf{empty} \\
-  & ext^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,A\ra Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
-  & U^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
-  & El^D && : (\Gamma^D:Con^D\,\Gamma)\ra\,Ty^D\,(ext^D\,\Gamma^D\,(U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
-%  & Pi^D && : (\Gamma^D:Con^D\,\Gamma)(A^D:Ty^D\,\Gamma^D\,A)\ra Ty^D\,(ext^D\,\Gamma^D\,A^D)\ra\,Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
+  & \Con^D && : \Con\ra\Set \\
+  & \Ty^D && : \Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
+  & \mathsf{empty}^D && : \Con^D\,\mathsf{empty} \\
+  & \mathsf{ext}^D && : (\Gamma^D:\Con^D\,\Gamma)\ra \Ty^D\,\Gamma^D\,A\ra \Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
+  & \U^D && : (\Gamma^D:\Con^D\,\Gamma)\ra \Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
+  & \El^D && : (\Gamma^D:\Con^D\,\Gamma)\ra\,\Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,(\U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
+%  & Pi^D && : (\Gamma^D:\Con^D\,\Gamma)(A^D:\Ty^D\,\Gamma^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,A^D)\ra\,\Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
 \end{alignat*}
 we obtain two functions
 \begin{alignat*}{5}
-  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^D\,\Gamma \\
-  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^D\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon} && : (\Gamma:\Con)\ra \Con^D\,\Gamma \\
+  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra \Ty^D\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 with the following computation rules.
 \begin{alignat*}{5}
-  & \mathsf{elimCon}\,\mathsf{empty} && = empty^D \\
-  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = ext^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
-  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^D\,(\mathsf{elimCon}\,\Gamma) \\
-  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^D\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon}\,\mathsf{empty} && = \mathsf{empty}^D \\
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = \mathsf{ext}^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = \U^D\,(\mathsf{elimCon}\,\Gamma) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = \El^D\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 
 Reducing IITs to inductive types is an open problem. Forsberg
