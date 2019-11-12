@@ -90,11 +90,11 @@ error (ill-scoped substitution). The typing judgments will not mention $\erru$.
 Note that $(\Piu \,A\,B)[\sigma]$ should be defined as $\Piu
 \,(A[\sigma])\,(B[\wkO\,\sigma \,\consu\, \varu\,\mathsf{0}])$, and thus we need to define
 $\wkO$, the weakening of substitutions.  The basic idea is to increment the de
-Bruijn indices of all the variables.  Actually this is not so simple because of
-the $\Piu$ type: indeed, we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type
+Bruijn indices of all the variables.  Actually, this is not so simple because of
+the $\Piu$ type: we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type
 of the weakening of $A$ and $B$, but here, $B$ must be weakened with respect to
 the second last variable of the context, rather than the last one.  For this
-reason, we need to generalize the weakening as occuring anywhere in the context.
+reason, we need to generalise the weakening as occuring anywhere in the context.
 \begin{alignat*}{5}
   & \wk_n && :  \Tyu\ra\Tyu \\
   & \wk_n && :  \Tmu\ra\Tmu \\
@@ -106,10 +106,10 @@ reason, we need to generalize the weakening as occuring anywhere in the context.
   Here, $\wkO$ weakens with respect to the last variable.
 
 Later, in Section~\ref{ss:weaken-typing}, we show that weakening preserves
-typing. Stating a typing rule for this operation requires to have a way to
-express the weakening occuring at the middle of a context. We consider pairs of
-untyped contexts, which should be thought of as a splitting of a context at some
-position. The full context is recovered by merging the two components:
+typing. Stating a typing rule for this operation requires weakening at the
+middle of a context. We consider pairs of untyped contexts, which should be
+thought of as a splitting of a context at some position. The full context is
+recovered by merging the two components:
 % (which appears in the typing rule of a weakening occuring in the middle of a context),
 % and the length $\length{\Gamma}$ of a
 % context $\Gamma$:
@@ -129,7 +129,7 @@ in Section \ref{sec:typing_judgments}:
   & \wkO\,(\Delta\,\extu A) && := \wkO\,\Delta\,\extu \wk_{\length{\Delta}}\,A
   \end{alignat*}
 $\length{\Gamma}$ denotes the length of a the context $\Gamma$.
-  
+
 \subsubsection{Untyped substitution}
   We define single substitution by recursion on presyntax:
   % & \rlap{(1) Substitution calculus} \\[0.5em]
@@ -592,7 +592,7 @@ terms and substitutions.
   & (\wf{\Gamma}\extw \wf{A})\sim \model{\Delta} &&
    :=
     \sum_{\model{\Gamma}} (\wf{\Gamma}\sim\model{\Gamma}) \times
-    \sum_{\model{A}} (\wf{A}\sim\model{A}) \times 
+    \sum_{\model{A}} (\wf{A}\sim\model{A}) \times
     \\
     & && \qquad
     (\model{\Delta} = \model{\Gamma} \model{\ext} \model{A})
@@ -1201,7 +1201,7 @@ semantic counterparts:
   \end{alignat*}
   The right uniqueness of the relation is used in this induction. It is then
 straightforward to show (without induction, but using right uniqueness) that the
-first projection of these constructions yield a model morphism from the syntax
+first projection of these constructions yields a model morphism from the syntax
 to the model.
 
 \subsection{Uniqueness}
