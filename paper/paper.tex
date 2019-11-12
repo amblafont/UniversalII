@@ -144,25 +144,25 @@ Agda \cite{norell07thesis} allows the definition of such functions
 supporting IITs. The elimination principle for $\Con$--$\Ty$ says that
 given the following components,
 \begin{alignat*}{5}
-  & Con^M && : \Con\ra\Set \\
-  & Ty^M && : Con^M\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
-  & empty^M && : Con^M\,\mathsf{empty} \\
-  & ext^M && : (\Gamma^M:Con^M\,\Gamma)\ra Ty^M\,\Gamma^M\,A\ra Con^M\,(\mathsf{ext}\,\Gamma\,A) \\
-  & U^M && : (\Gamma^M:Con^M\,\Gamma)\ra Ty^M\,\Gamma^M\,(\mathsf{U}\,\Gamma) \\
-  & El^M && : (\Gamma^M:Con^M\,\Gamma)\ra\,Ty^M\,(ext^M\,\Gamma^M\,(U^M\,\Gamma^M))\,(\mathsf{El}\,\Gamma)
-%  & Pi^M && : (\Gamma^M:Con^M\,\Gamma)(A^M:Ty^M\,\Gamma^M\,A)\ra Ty^M\,(ext^M\,\Gamma^M\,A^M)\ra\,Ty^M\,\Gamma^M\,(\mathsf{Pi}\,\Gamma\,A\,B)
+  & Con^D && : \Con\ra\Set \\
+  & Ty^D && : Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
+  & empty^D && : Con^D\,\mathsf{empty} \\
+  & ext^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,A\ra Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
+  & U^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
+  & El^D && : (\Gamma^D:Con^D\,\Gamma)\ra\,Ty^D\,(ext^D\,\Gamma^D\,(U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
+%  & Pi^D && : (\Gamma^D:Con^D\,\Gamma)(A^D:Ty^D\,\Gamma^D\,A)\ra Ty^D\,(ext^D\,\Gamma^D\,A^D)\ra\,Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
 \end{alignat*}
 we obtain two functions
 \begin{alignat*}{5}
-  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^M\,\Gamma \\
-  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^M\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^D\,\Gamma \\
+  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^D\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 with the following computation rules.
 \begin{alignat*}{5}
-  & \mathsf{elimCon}\,\mathsf{empty} && = empty^M \\
-  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = ext^M\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
-  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^M\,(\mathsf{elimCon}\,\Gamma) \\
-  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^M\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon}\,\mathsf{empty} && = empty^D \\
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = ext^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^D\,(\mathsf{elimCon}\,\Gamma) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^D\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
 
 Reducing IITs to inductive types is an open problem. Forsberg
@@ -193,6 +193,9 @@ In this paper, we construct the theory of IIT signatures, which is a large
 infinitary QIIT, using only indexed inductive types, uniqueness of identity
 types (UIP) and function extensionality. Thus, we show that all finitary IITs are
 reducible to the same feature set.
+
+The contents of this paper were presented at the TYPES 2019 conference
+in Oslo \cite{types}.
 
 \subsection{Structure of the Paper}
 
@@ -243,38 +246,40 @@ greatly). He also does not construct full recursive-recursive eliminators.
 Streicher \cite{streichersemantics} presents an interpretation of the well-formed
 presyntax of a type theory into a categorical model, which is an important
 ingredient in constructing an initial model, although he does not present
-details on the construction of the term model or its initiality proof.
+details on the construction of the term model or its initiality proof. Our paper an indexed variant of his construction (see Subsection \ref{sec:streicher} for a comparison).
 
-Voevodsky was interested in constructing initial models of type theories
-from presyntaxes. There is a communal project \cite{}
+Voevodsky was interested in constructing initial models of type
+theories from presyntaxes. Inspired by this, Brunerie \cite{brunerie}
+formalised Streicher's proof in Agda for a type theory with $\Pi$,
+$\Sigma$, $\mathbb{N}$, identity types and an infinite hierarchy of
+universes. He used UIP, function extensionality and quotient types in
+his formalisation. Our proof uses a similar approach, but we construct
+a much simpler type theory which does not have any computation rules,
+hence we can avoid using quotients.
 
+Intrinsic (well-typed) syntax for type theories were constructed
+before using IITs \cite{chapman09eatitself}, inductive-recursive types
+\cite{nisse,Altenkirch:2014:CO:2631172.2631176} and QIITs
+\cite{ttintt}. In this paper we avoid using such general classes of
+inductive types, as our goal is to reduce IITs to indexed inductive
+types.
 
+Reducing general classes of inductive types to simpler classes has a
+long tradition in type theory. Indexed W-types were reduced to W-types
+\cite{indexedcont} (using the essentially Streicher's idea of preterms
+and a typing predicate), small inductive-recursive types to indexed
+W-types \cite{malatasta13smallir}, mutual inductive types to indexed
+W-types \cite{mutual}. Quotient inductive-inductive types (and
+inductive-inductive types) can be reduced to quotient inductive types
+using the reduction of generalised algebraic theories to essentially
+algebraic theories \cite{gat}.
 
-
-Reduction of classes of inductive types: reduce indexed W-types to
-W-types. IR types to indexed types. IITs were introduced by
-Forsberg. What he did.  QIITs by Forsberg-lots of people. Our QIIT
-paper. Jakob TYPES 2019 abstract.  Jasper Huguin: he didn't do
-recursion-recursion. Without UIP.
-
-(Indexed inductive types can be reduced to inductive types using a method
-similar to what we use here, preterms and well-formedness predicate.)
-
-Talk about connection to setoidified CwFs (I think these are explained
-in some Dybjer paper) and maybe the initiality conjecture.
-
-Kaposi and Kov{\'a}cs defined a type theory of signatures for higher
-inductive-inductive types (HIITs)
-\cite{kaposi_et_al:LIPIcs:2018:9190}.
-
-Similar technique for other type theories: Streicher
-\cite{streichersemantics}. Initiality project, Brunerie \cite{}. These
-all use quotients. Closest: Lafont TYPES abstract 2017. Does not use
-quotients.
-
-Constructing intrinsic syntax but different techniques: Chapman,
-Danielsson, Nuo. These use induction-induction which is our goal.
-
+Our reduction of IITs to indexed inductive types goes through two
+steps: first we construct a concrete QIIT using inductive types, then
+we construct all IITs from this particular QIIT. A more direct
+approach is proposed by \cite{erasure}: here the initial algebra would
+be constructed directly for any IIT signature without going through an
+intermediate step.
 
 \subsection{Metatheory and Notation}
 
@@ -294,7 +299,7 @@ We work in intensional Martin-Löf type theory, equipped with the following feat
     $e_1$,\dots,$e_n$.
   \item Uniqueness of identity proofs (UIP), expressing $(e : t = t)\ra e = \refl$.
   \item Function extensionality, expressing $((x : A) \ra f\,x = g\,x) \ra f = g$.
-  \item TODO: natural numbers
+  \item Natural numbers $\mathbb{N}$ with constructors $\mathsf{0}:\mathbb{N}$ and $\mathsf{S}:\mathbb{N}\ra\mathbb{N}$.
 
 \end{itemize}
 
