@@ -378,14 +378,16 @@ formers.
 \end{alignat*}
 \subsection{Notation and abbreviations}
 
-We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$.
-We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\p])$ as $a\Ra B$.
-
-We can also recover de Bruijn indices by having $n := \q[\p^n]$, where $\p^n$ is
-$\p$ composed with itself $n$ times. However, for informal examples we instead
+We define $\wk : \Sub\,(\Gamma\ext A)\ra \Gamma$ as $\pi_1\,\id$.
+We can recover de Bruijn indices by having $0= \pi_2 \,\id$ and $n+1 = n[\wk]$.
+However, for informal examples we instead
 use a nameful notation, where we introduce names in context extension and in the
 $\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,A : \U\,\ext\,a :
 \El\,A$ in a signature for pointed sets.
+
+We define $\sigma^\uparrow$ as $(\sigma\circ\wk,0)$.
+We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\wk])$ as $a\Ra B$.
+
 
 \subsection{Example signatures}
 
