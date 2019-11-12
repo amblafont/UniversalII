@@ -366,9 +366,10 @@ formers.
   & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\[0.5em]
   & \rlap{(3) Inductive parameters} \\[0.5em]
   & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
-  & \app && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B \\
+  & \blank\oldapp\blank && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
+  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
   & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma^\uparrow]) \\
-  & {\app[]} && : (\app\,t)[\sigma^\uparrow] = \app\,(t[\sigma]) \\[0.5em]
+  & {\oldapp[]} && : (t\oldapp\alpha)[\sigma] = (t[\sigma])\mathop{\oldapp}(\alpha[\sigma]) \\[0.5em]
   & \rlap{(4) Metatheoretic parameters} \\[0.5em]
   & \Pim && : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma \\
   & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
@@ -377,14 +378,7 @@ formers.
 \end{alignat*}
 \subsection{Notation and abbreviations}
 
-We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$. In the $\Pi$ function type
-for inductive parameters, we have $\app$ as a categorical version of function
-application. We recover the usual type-theoretic application as follows:
-\begin{alignat*}{5}
-  & \blank\oldapp\blank : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
-  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
-  & t \oldapp u := (\app\,t)[\id\,u]
-\end{alignat*}
+We define $\sigma^\uparrow$ as $(\sigma\circ\p,\q)$.
 We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\p])$ as $a\Ra B$.
 
 We can also recover de Bruijn indices by having $n := \q[\p^n]$, where $\p^n$ is
