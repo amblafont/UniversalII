@@ -353,11 +353,11 @@ formers.
   & {\boldsymbol{\cdot}\eta} && : \{\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}\} \ra \sigma = \epsilon \\
   & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
   & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
-  & \p && : \Sub\,(\Gamma\ext A)\,\Gamma \\
-  & \q && : \Tm\,(\Gamma\ext A)\,(A[\p]) \\
-  & {\ext\beta_1} && : \p\circ(\sigma, t) = \sigma \\
-  & {\ext\beta_2} && : \q[\sigma, t] = t \\
-  & {\ext\eta} && : (\p, \q) = \id \\
+  & \pi_1 && : \Sub\,\Gamma\,(\Delta\ext A)\ra \Sub\,\Gamma\,\Delta \\
+  & \pi_2 && : (\sigma : \Sub\,\Gamma\,(\Delta\ext A))\ra \Tm\,\Gamma\,(A[\pi_1 \sigma]) \\
+  & {\pi_1\beta} && : \pi_1(\sigma, t) = \sigma \\
+  & {\pi_2\beta} && : \pi_2(\sigma, t) = t \\
+  & {\pi\eta} && : (\pi_1\,\sigma, \pi_2\,\sigma) = \sigma \\
   & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\[0.5em]
   & \rlap{(2) Universe} \\[0.5em]
   & \U && : \Ty\,\Gamma \\
