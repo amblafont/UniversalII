@@ -51,6 +51,10 @@ The untyped syntax is defined as the following inductive datatype. Variables are
 modeled as de Bruijn indices, i.e.\ as natural numbers pointing to a position in
 the context. We use the additional default constructor $\erru:\Tmu$ in case of
 error (ill-scoped substitution). The typing judgments will not mention $\erru$.
+The main interest of $\erru$ is that it behaves like a closed term (which the
+theory of signatures lacks), in the sense that it is
+invariant under substitution. This makes expected equalities about 
+substitution (see Section~\ref{ss:exch-laws}) true even in the ill-typed case, thus reducing the amount of hypotheses.
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Conu && : \Set \\
@@ -176,6 +180,7 @@ following definition:
 
 
   \subsubsection{Exchange laws: weakening and substitution}
+  \label{ss:exch-laws}
   Many lemmas for types and terms are shown by induction on the untyped syntax.
   Below, $Z$ denotes either a term or a type.
 \begin{alignat*}{5}
@@ -450,7 +455,7 @@ This approach is an alternative version of Streicher's method for interpreting
 preterms in an arbitrary model \cite{streichersemantics}. Streicher first defines
 a family of partial maps from the presyntax to a model, then shows that the maps
 are total on well-formed input. We have found that our approach is significantly
-easier to formalise. Too see why, note that the right notion of partial map in
+easier to formalise. To see why, note that the right notion of partial map in
 type theory, which does not presume decidable definedness, is fairly
 heavyweight:
 \[
@@ -811,7 +816,7 @@ judgments.
   obvious. For example, we were not able to define
   $\Elw\,\wf{\Gamma}\,\wf{a}\sim \model{A}$ in this fashion. In related work,
   Hugunin investigated constructing IITs without
-  UIP \cite{hugunin2019constructing} in cubical type theory, and demonstrated
+  UIP \cite{jasper} in cubical type theory, and demonstrated
   that well-formedness predicates used in syntactic models can subtly break
   in that setting. Also, while Hugunin does not use UIP, he only shows a
   weak version of dependent elimination for the constructed IITs. Hence, the

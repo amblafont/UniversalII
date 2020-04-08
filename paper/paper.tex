@@ -17,7 +17,7 @@
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-\title{For Induction-Induction, Induction is Enough} %TODO Please add
+\title{For finitary induction-Induction, Induction is Enough} %TODO Please add
 
 %% \titlerunning{For Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
 
@@ -88,22 +88,22 @@
 \label{sec:intro}
 
 Many mutual inductive types can be reduced to indexed inductive types, where the
-index disambiguates different sorts. An example is the predicates
+index disambiguates different sorts. An example is the predicates (or \emph{indexed sorts})
 $\mathsf{isEven}$ and $\mathsf{isOdd}$ defined mutually by the following
 constructors.
 \begin{alignat*}{5}
   & \mathsf{isEven} && : \N\ra\Set \\
   & \mathsf{isOdd} && : \N\ra \Set \\
   & \mathsf{zeroEven} && : \mathsf{isEven}\,\mathsf{zero} \\
-  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isOdd}\,n\ra\mathsf{isEven}\,n \\
-  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven}\,n\ra\mathsf{isOdd}\,n
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isOdd}\,n\ra\mathsf{isEven}\,(n+1) \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven}\,n\ra\mathsf{isOdd}\,(n+1)
 \end{alignat*}
 These can be reduced to the following single inductive family.
 \begin{alignat*}{5}
   & \mathsf{isEven?} && : \mathsf{Bool}\ra\N\ra\Set \\
   & \mathsf{zeroEven} && : \mathsf{isEven?}\,\mathsf{true}\,\mathsf{zero} \\
-  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{false}\,n\ra\mathsf{isEven?}\,\mathsf{true}\,n \\
-  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{true}\,n\ra\mathsf{isEven?}\,\mathsf{false}\,n
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{false}\,n\ra\mathsf{isEven?}\,\mathsf{true}\,(n+1) \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{true}\,n\ra\mathsf{isEven?}\,\mathsf{false}\,(n+1)
 \end{alignat*}
 
 Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
@@ -123,7 +123,7 @@ is the IIT of contexts and types given by the following constructors.
 \end{alignat*}
 This type has two sorts, $\Con$ and $\Ty$. The $\mathsf{ext}$ constructor of
 $\Con$ refers to $\Ty$ and the $\Ty$-constructor $\mathsf{U}$ refers to $\Con$,
-hence the two sorts have to be defined at the same time. Moreover, $\Ty$ is
+hence the two sorts have to be defined simultaneously. Moreover, $\Ty$ is
 indexed over $\Con$. This precludes a reduction analogous to the reduction of
 $\mathsf{isEven}$--$\mathsf{isOdd}$, as we would get a type indexed over
 itself. Another unique feature of IITs (which also shows up in higher inductive
@@ -144,6 +144,8 @@ Agda \cite{norell07thesis} allows the definition of such functions
 supporting IITs\footnote{An experimental version of Coq with IITs is also
   available on github.}. The elimination principle for $\Con$--$\Ty$ says that
 given the following components,
+where the variable $\Gamma$ is implicitly universally quantified when required
+(we indeed sometimes omit universal quantification in the following, for readability),
 \begin{alignat*}{5}
   & \Con^D && : \Con\ra\Set \\
   & \Ty^D && : \Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
@@ -327,7 +329,7 @@ theory, which is an iterated $\Sigma$ type. In this paper, we construct the
 
 Note that initiality refers to a notion of homomorphism between models. As
 of now, there is no general metatheory for (large, infinitary) QIITs from which
-this notion would fall out. Hence, we give an ad-hoc definition for
+this notion would be deduced. Hence, we give an ad-hoc definition for
 homomorphisms, which can be summarized as a functor between underlying
 categories which strictly preserves all additional family structure and type
 formers.
@@ -400,7 +402,7 @@ Lists with elements of a given $A : \Set$ type. Here we use the $\Pim$ function
 to include an external type into the signature.
 \[
 \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,
-      cons : \Pim\,A\,(\lambda \_.\, L\Ra L)
+      cons : \Pim\,A\,(\lambda \_.\, L\Ra \El\,L)
 \]
 The inductive-inductive example from Section \ref{sec:intro}:
 \begin{alignat*}{3}
