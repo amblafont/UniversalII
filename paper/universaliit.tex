@@ -54,7 +54,9 @@ error (ill-scoped substitution). The typing judgments will not mention $\erru$.
 The main interest of $\erru$ is that it behaves like a closed term (which the
 theory of signatures lacks), in the sense that it is
 invariant under substitution. This makes expected equalities about 
-substitution (see Section~\ref{ss:exch-laws}) true even in the ill-typed case, thus reducing the amount of hypotheses.
+substitution true even in the ill-typed case,
+thus reducing the number of hypotheses for the corresponding lemmas
+(see Section~\ref{ss:exch-laws}).
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
   & \Conu && : \Set \\

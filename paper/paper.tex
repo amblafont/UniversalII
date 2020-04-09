@@ -75,7 +75,7 @@
   where later sorts can be indexed by previous ones. An example is the James
   Chapman-style syntax of type theory with conversion relations for each sort
   where e.g.\ the sort of types is indexed by contexts. It follows from previous
-  work that all finitary IITs can be constructed from a quotient
+  work by T. Altenkirch, A. Kaposi, and A. Kov{\'a}cs, that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
   IIT. In this paper we construct the theory of IIT signatures using only inductive types,
@@ -88,8 +88,9 @@
 \label{sec:intro}
 
 Many mutual inductive types can be reduced to indexed inductive types, where the
-index disambiguates different sorts. An example is the predicates (or \emph{indexed sorts})
-$\mathsf{isEven}$ and $\mathsf{isOdd}$ defined mutually by the following
+index disambiguates different sorts. An example is the mutual inductive datatype
+with two sorts
+$\mathsf{isEven}$ and $\mathsf{isOdd}$, defined by the following
 constructors.
 \begin{alignat*}{5}
   & \mathsf{isEven} && : \N\ra\Set \\
@@ -142,10 +143,13 @@ the second function depends on the first function. The proof assistant
 Agda \cite{norell07thesis} allows the definition of such functions
 (even from non-IITs) and it is also currently the only proof assistant
 supporting IITs\footnote{An experimental version of Coq with IITs is also
-  available on github.}. The elimination principle for $\Con$--$\Ty$ says that
-given the following components,
-where the variable $\Gamma$ is implicitly universally quantified when required
-(we indeed sometimes omit universal quantification in the following, for readability),
+  available on github.}.
+
+We now state  
+the elimination principle for $\Con$--$\Ty$.
+We implicitly universally quantify over the variables $\Gamma$ of type $\Con$
+and $A$ of type $\Ty$ when required (later in the development, we may similarly omit universal quantification).
+Given the following components,
 \begin{alignat*}{5}
   & \Con^D && : \Con\ra\Set \\
   & \Ty^D && : \Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
@@ -180,7 +184,11 @@ type (QIIT) signature. For example, the signature for natural numbers is simply
 the context $(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$
 and $suc$ are variable names). \cite{Kaposi:2019:CQI:3302515.3290315} showed
 that if this theory of signatures exists, then any finitary QIIT can be derived
-from it via a term model construction. If we omit the type former for equality
+from it via a term model construction.
+Here, by finitary QIIT, we mean that infinitary constructors, such as the following
+one, are not allowed:
+\[ TODO \]
+If we omit the type former for equality
 constructors from the theory of signatures, we get a theory of finitary IIT
 signatures, and the construction of \cite{Kaposi:2019:CQI:3302515.3290315} still
 works: constructing an arbitrary IIT from the theory of IIT signatures does not
@@ -189,7 +197,7 @@ need the $\mathsf{Id}$ type former to be present.
 However, the QIIT term model construction assumes that we already have the
 syntax of QIIT signatures, and we can do induction over it. Hence, it only shows
 that all finitary QIITs are derivable from a particular fairly complicated QIIT.
-Likewise, restriced to finitary IITs, we only know that they are constructible
+Likewise, restricted to finitary IITs, we only know that they are constructible
 from a particular QIIT.
 
 In this paper, we construct the theory of IIT signatures, which is a large
