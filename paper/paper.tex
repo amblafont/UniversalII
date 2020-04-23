@@ -12,12 +12,14 @@
 \usepackage{hyperref}
 \usepackage{todonotes}
 \presetkeys{todonotes}{inline}{}
+\usepackage{csquotes} %for \llbracket and \rrbracket
+\usepackage{stmaryrd}
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-\title{For finitary induction-Induction, Induction is Enough} %TODO Please add
+\title{For Finitary Induction-Induction, \\ Induction is Enough} %TODO Please add
 
 %% \titlerunning{For Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
 
@@ -72,10 +74,10 @@
 \begin{abstract}
   Inductive-inductive types (IITs) are a generalisation of inductive types in
   type theory. They allow the mutual definition of types with multiple sorts
-  where later sorts can be indexed by previous ones. An example is the James
+  where later sorts can be indexed by previous ones. An example is the
   Chapman-style syntax of type theory with conversion relations for each sort
   where e.g.\ the sort of types is indexed by contexts. It follows from previous
-  work by T. Altenkirch, A. Kaposi, and A. Kov{\'a}cs, that all finitary IITs can be constructed from a quotient
+  work by Altenkirch, Kaposi, and Kov{\'a}cs, that all finitary IITs can be constructed from a quotient
   inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
   a small domain-specific type theory where a context is a signature for an
   IIT. In this paper we construct the theory of IIT signatures using only inductive types,
@@ -88,7 +90,7 @@
 \label{sec:intro}
 
 Many mutual inductive types can be reduced to indexed inductive types, where the
-index disambiguates different sorts. An example is the mutual inductive datatype
+index disambiguates different sorts. For example, consider the mutual inductive datatype
 with two sorts
 $\mathsf{isEven}$ and $\mathsf{isOdd}$, defined by the following
 constructors.
@@ -96,22 +98,24 @@ constructors.
   & \mathsf{isEven} && : \N\ra\Set \\
   & \mathsf{isOdd} && : \N\ra \Set \\
   & \mathsf{zeroEven} && : \mathsf{isEven}\,\mathsf{zero} \\
-  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isOdd}\,n\ra\mathsf{isEven}\,(n+1) \\
-  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven}\,n\ra\mathsf{isOdd}\,(n+1)
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isOdd}\,n\ra\mathsf{isEven}\,(\mathsf{suc}\,n) \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven}\,n\ra\mathsf{isOdd}\,(\mathsf{suc}\,n)
 \end{alignat*}
-These can be reduced to the following single inductive family.
+This can be reduced to the following single inductive family where
+$\mathsf{isEven?}\,\mathsf{true}$ represents $\mathsf{isEven}$ and
+$\mathsf{isEven?}\,\mathsf{false}$ represent $\mathsf{isOdd}$.
 \begin{alignat*}{5}
   & \mathsf{isEven?} && : \mathsf{Bool}\ra\N\ra\Set \\
   & \mathsf{zeroEven} && : \mathsf{isEven?}\,\mathsf{true}\,\mathsf{zero} \\
-  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{false}\,n\ra\mathsf{isEven?}\,\mathsf{true}\,(n+1) \\
-  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{true}\,n\ra\mathsf{isEven?}\,\mathsf{false}\,(n+1)
+  & \mathsf{sucEven} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{false}\,n\ra\mathsf{isEven?}\,\mathsf{true}\,(\mathsf{suc}\,n) \\
+  & \mathsf{sucOdd} && : (n:\N)\ra\mathsf{isEven?}\,\mathsf{true}\,n\ra\mathsf{isEven?}\,\mathsf{false}\,(\mathsf{suc}\,n)
 \end{alignat*}
 
 Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
 definition of a type and a family of types over the first one. IITs
 were originally introduced to represent the well-typed syntax of type
 theory itself, and the main example is still the Chapman-style
-\cite{chapman09eatitself} syntax for a type theory. A minimal use case
+\cite{chapman09eatitself} syntax for a type theory. A minimsed version
 is the IIT of contexts and types given by the following constructors.
 \begin{alignat*}{5}
   & \Con && : \Set \\
@@ -135,77 +139,107 @@ $\mathsf{ext}$.
 %   \mathsf{Con?} : (b:\mathsf{Bool})\ra\mathsf{if}\,b\,\mathsf{then}\,\Set\,\mathsf{else}\,(\mathsf{Con?}\,\mathsf{false}\ra\Set),
 % \]
 
-The elimination principle for the above IIT has two motives and one method
-for each constructor. It is an example of a \emph{recursive-recursive}
-function (following the nomenclature of \cite{forsberg-phd}) which
-means that there are two mutually defined functions, where the type of
-the second function depends on the first function. The proof assistant
-Agda \cite{norell07thesis} allows the definition of such functions
-(even from non-IITs) and it is also currently the only proof assistant
-supporting IITs\footnote{An experimental version of Coq with IITs is also
-  available on github.}.
-
-We now state  
-the elimination principle for $\Con$--$\Ty$.
-We implicitly universally quantify over the variables $\Gamma$ of type $\Con$
-and $A$ of type $\Ty$ when required (later in the development, we may similarly omit universal quantification).
-Given the following components,
+The elimination principle for the above IIT has the following two
+motives (one for each sort) and four methods (one for each
+constructor).
 \begin{alignat*}{5}
-  & \Con^D && : \Con\ra\Set \\
-  & \Ty^D && : \Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
-  & \mathsf{empty}^D && : \Con^D\,\mathsf{empty} \\
-  & \mathsf{ext}^D && : (\Gamma^D:\Con^D\,\Gamma)\ra \Ty^D\,\Gamma^D\,A\ra \Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
-  & \U^D && : (\Gamma^D:\Con^D\,\Gamma)\ra \Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
-  & \El^D && : (\Gamma^D:\Con^D\,\Gamma)\ra\,\Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,(\U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
-%  & Pi^D && : (\Gamma^D:\Con^D\,\Gamma)(A^D:\Ty^D\,\Gamma^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,A^D)\ra\,\Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
+  & Con^D && : \Con\ra\Set \\
+  & Ty^D && : Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
+  & {empty}^D && : Con^D\,\mathsf{empty} \\
+  & {ext}^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,A\ra Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
+  & U^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
+  & El^D && : (\Gamma^D:Con^D\,\Gamma)\ra\,Ty^D\,({ext}^D\,\Gamma^D\,(U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
+%  & Pi^D && : (\Gamma^D:Con^D\,\Gamma)(A^D:\Ty^D\,\Gamma^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,A^D)\ra\,\Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
 \end{alignat*}
-we obtain two functions
+Above we used implicit quantifications for $\Gamma:\Con$ and
+$A:\Ty\,\Gamma$ to ease readability, e.g.\ $Ty^D$ has an implicit
+parameter $\Gamma$ before its explicit parameter of type
+$Con^D\,\Gamma$.
+
+Given the above motives and methods the elimination principle provides
+two functions
 \begin{alignat*}{5}
-  & \mathsf{elimCon} && : (\Gamma:\Con)\ra \Con^D\,\Gamma \\
-  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra \Ty^D\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^D\,\Gamma \\
+  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^D\,(\mathsf{elimCon}\,\Gamma)\,A
 \end{alignat*}
 with the following computation rules.
 \begin{alignat*}{5}
-  & \mathsf{elimCon}\,\mathsf{empty} && = \mathsf{empty}^D \\
-  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = \mathsf{ext}^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
-  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = \U^D\,(\mathsf{elimCon}\,\Gamma) \\
-  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = \El^D\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon}\,\mathsf{empty} && = {empty}^D \\
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = {ext}^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^D\,(\mathsf{elimCon}\,\Gamma) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^D\,(\mathsf{elimCon}\,\Gamma)
 \end{alignat*}
+The functions $\mathsf{elimCon}$ and $\mathsf{elimTy}$ are an example
+of a \emph{recursive-recursive} definition (using nomenclature from
+\cite{forsberg-phd}). This means two mutually defined functions where
+the type of the second function depends on the first function. The
+proof assistant Agda \cite{norell07thesis} allows defining such
+functions (even from non-IITs) and it is currently the only proof
+assistant supporting IITs\footnote{An experimental version of Coq with
+  IITs is also available on GitHub.}.
 
-Reducing IITs to inductive types is an open problem. Forsberg
-\cite{forsberg-phd} showed a reduction which only supports a simpler,
-non-recursive-recursive elimination principle. Hugunin \cite{jasper} reduced
-several IITs to inductive types, working inside a cubical type theory, but he
-also only constructed a weaker eliminator.
+Reducing IITs to inductive types (more precisely, to indexed W-types)
+is an open problem. Forsberg \cite{forsberg-phd} showed a reduction in
+extensional type theory however this only provides a simpler,
+non-recursive-recursive elimination principle. Hugunin \cite{jasper}
+reduced several IITs to inductive types, working inside a cubical type
+theory, but he also only constructed the simple eliminator. To
+illustrate the difference, we list the motives and methods and the
+simple elimination principle for the $\Con$--$\Ty$ example. Again, we
+use implicit quantifications.
+\begin{alignat*}{5}
+  & Con^S && : \Con\ra\Set \\
+  & Ty^S && : \Ty\,\Gamma\ra\Set \\
+  & {empty}^S && : Con^S\,\mathsf{empty} \\
+  & {ext}^S && : Con^S\,\Gamma\ra Ty^S\,\,A\ra Con^S\,(\mathsf{ext}\,\Gamma\,A) \\
+  & U^S && : Con^S\,\Gamma\ra Ty^S\,(\mathsf{U}\,\Gamma) \\
+  & El^S && : Con^S\,\Gamma\ra\,Ty^S\,(\mathsf{El}\,\Gamma) \\
+  & \mathsf{selimCon} && : (\Gamma:\Con)\ra Con^S\,\Gamma \\
+  & \mathsf{selimTy} && : (A:\Ty\,\Gamma)\ra Ty^S\,A
+\end{alignat*}
+This simple elimination principle is too weak to define e.g.\ the
+standard (metacircular) interpretation of our small syntax
+\cite{ttintt}. Using pattern matching notation, this interpretation is
+the following:
+\begin{alignat*}{5}
+  & \ll\blank\rr && : \Con\ra\Set_1 \\
+  & \ll\blank\rr && : \ll\Gamma\rr\ra\Set_1 \\
+  & \ll\mathsf{empty}\rr && := \top \\
+  & \ll\mathsf{ext}\,\Gamma\,A\rr && := (\gamma:\ll\Gamma\rr)\times\ll A\rr\,\gamma \\
+  & \ll\mathsf{U}\,\Gamma\rr\,\gamma && := \Set \\
+  & \ll\mathsf{El}\,\Gamma\rr\,(\gamma,X) && := X
+\end{alignat*}
+The reason that we need the general elimination principle is that
+$\ll\blank\rr$ for types refers to $\ll\blank\rr$ for contexts, hence
+this function is recursive-recursive.
 
-The theory of signatures in \cite{Kaposi:2019:CQI:3302515.3290315} is a small
-type theory in which every context encodes a valid quotient inductive-inductive
-type (QIIT) signature. For example, the signature for natural numbers is simply
-the context $(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of length three ($Nat$, $zero$
-and $suc$ are variable names). \cite{Kaposi:2019:CQI:3302515.3290315} showed
-that if this theory of signatures exists, then any finitary QIIT can be derived
-from it via a term model construction.
-Here, by finitary QIIT, we mean that infinitary constructors, such as the following
-infinitary $\Pi$, are not allowed:
+Kaposi, Kov{\'a}cs, and Altenkirch
+\cite{Kaposi:2019:CQI:3302515.3290315} introduced a small type theory
+called the theory of signatures to describe quotient
+inductive-inductive types (QIIT). QIITs are generalisations of IITs
+where equality constructors are also allowed. A QIIT signature is a
+context in the theory of QIIT signatures, for example natural numbers
+are specified by the context $(Nat:\U,zero:Nat,suc:Nat\ra Nat)$ of
+length three ($Nat$, $zero$ and $suc$ are variable names). The theory
+of QIIT signatures is itself a QIIT. In ibid., it is proved that if a
+model of extensional type theory supports the theory of QIIT
+signatures, then it supports all QIITs.
+
+By omitting the identity type former from the theory of QIIT
+signatures, we obtain a theory of IIT signatures and the construction
+is still valid. It follows that if a model of extensional type theory
+supports the theory of IIT signatures, it supports all IITs. In this
+paper we show that any model of extensional type theory with indexed
+W-types supports the theory of signatures, hence all IITs.
+
+Just as ibid., we only consider finitary IITs, that is, constructors
+can only have a finite number of recursive arguments. An example
+constructor for $\Con$--$\Ty$ which is not allowed is the following:
 \[
   \Pi_\infty : (\Gamma : \Con) \rightarrow (\mathbb{N} \rightarrow \Ty\,\Gamma) \rightarrow \Ty\,\Gamma
-   \]
-If we omit the type former for equality
-constructors from the theory of signatures, we get a theory of finitary IIT
-signatures, and the construction of \cite{Kaposi:2019:CQI:3302515.3290315} still
-works: constructing an arbitrary IIT from the theory of IIT signatures does not
-need the $\mathsf{Id}$ type former to be present.
+\]
 
-However, the QIIT term model construction assumes that we already have the
-syntax of QIIT signatures, and we can do induction over it. Hence, it only shows
-that all finitary QIITs are derivable from a particular fairly complicated QIIT.
-Likewise, restricted to finitary IITs, we only know that they are constructible
-from a particular QIIT.
-
-In this paper, we construct the theory of IIT signatures, which is a large
-infinitary QIIT, using only indexed inductive types, uniqueness of identity
-types (UIP) and function extensionality. Thus, we show that all finitary IITs are
-reducible to the same feature set.
+TODO: list of contributions here.
 
 The contents of this paper were presented at the TYPES 2019 conference
 in Oslo \cite{types}.
@@ -235,6 +269,8 @@ of IIT signatures.
 %% we can translate our arguments to ITT+UIP+funext. Section
 %% \ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
 %% funext.
+
+ (later in the development, we may similarly omit universal quantification)
 
 %% This is the paper version of our TYPES 2019 talk.
 
