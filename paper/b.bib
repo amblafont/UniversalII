@@ -261,12 +261,11 @@ isbn="978-3-030-17127-8"
   biburl    = {http://dblp.uni-trier.de/rec/bib/journals/jfp/AltenkirchGHMM15},
   bibsource = {dblp computer science bibliography, http://dblp.org}
 }
-@Unpublished{mutual,
+@inproceedings{mutual,
   author = 	 {Ambrus Kaposi and Jakob von Raumer},
   title = 	 {A Syntax for Mutual Inductive Families },
-  month =	 {October},
-  year =	 {2019},
-  note =	 {Unpublished draft},
+  booktitle =	 {To appear in: 5th International Conference on Formal Structures for Computation and Deduction (FSCD 2020)},
+  year =	 {2020},
   url = {https://bitbucket.org/javra/inductive-families/raw/master/main.pdf},
 }
 @Article{Ahrens2019,
@@ -287,9 +286,62 @@ doi="10.1007/s10817-018-9474-4",
 url="https://doi.org/10.1007/s10817-018-9474-4"
 }
 
-
-@book{large_inf_qiit,
-  title={Extensional concepts in intensional type theory (submitted)},
-  author={Kaposi, Ambrus and Kov\'{a}cs, Andr\'{a}s},
-  year={2020},
+@inproceedings{large_inf_qiit,
+  author =        {Kov{\'a}cs, Andr{\'a}s and Kaposi, Ambrus},
+  title =         {Large and Infinitary Quotient Inductive-Inductive Types},
+  booktitle =     {To appear in: 35th Annual {ACM/IEEE} Symposium on Logic in Computer Science, {LICS} 2020, Saarbr{\"u}cken, Germany, July 8-11, 2020},
+  year =          {2020},
+}
+@INPROCEEDINGS{nordvallforsbergSetzer2010inductiveinductive,
+  author    = {Nordvall Forsberg, Fredrik and Setzer, Anton},
+  title     = {Inductive-Inductive Definitions},
+  booktitle = {CSL 2010},
+  year      = {2010},
+  editor    = {Dawar, Anuj and Veith, Helmut},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {6247},
+  pages     = {454--468},
+  publisher = {Springer, Heidelberg}
+}
+@INPROCEEDINGS{Dybjer99afinite,
+    author = {Peter Dybjer and Anton Setzer},
+    title = {A finite axiomatization of inductive-recursive definitions},
+    booktitle = {Typed Lambda Calculi and Applications, volume 1581 of Lecture Notes in Computer Science},
+    year = {1999},
+    pages = {129--146},
+    publisher = {Springer}
+}
+@InProceedings{gabe,
+author="Altenkirch, Thorsten
+and Capriotti, Paolo
+and Dijkstra, Gabe
+and Kraus, Nicolai
+and Nordvall Forsberg, Fredrik",
+editor="Baier, Christel
+and Dal Lago, Ugo",
+title="Quotient Inductive-Inductive Types",
+booktitle="Foundations of Software Science and Computation Structures",
+year="2018",
+publisher="Springer International Publishing",
+address="Cham",
+pages="293--310",
+abstract="Higher inductive types (HITs) in Homotopy Type Theory allow the definition of datatypes which have constructors for equalities over the defined type. HITs generalise quotient types, and allow to define types with non-trivial higher equality types, such as spheres, suspensions and the torus. However, there are also interesting uses of HITs to define types satisfying uniqueness of equality proofs, such as the Cauchy reals, the partiality monad, and the well-typed syntax of type theory. In each of these examples we define several types that depend on each other mutually, i.e. they are inductive-inductive definitions. We call those HITs quotient inductive-inductive types (QIITs). Although there has been recent progress on a general theory of HITs, there is not yet a theoretical foundation for the combination of equality constructors and induction-induction, despite many interesting applications. In the present paper we present a first step towards a semantic definition of QIITs. In particular, we give an initial-algebra semantics. We further derive a section induction principle, stating that every algebra morphism into the algebra in question has a section, which is close to the intuitively expected elimination rules.",
+isbn="978-3-319-89366-2"
+}
+@Unpublished{szumiemail,
+  author = 	 {Ambrus Kaposi},
+  title = 	 {Re: separate definition of constructors?},
+  note = {Email to the {Agda} mailing list},
+  month =	 {May},
+  day =	 {24},
+  year =	 {2019},
+  url = {https://lists.chalmers.se/pipermail/agda/2019/011176.html}
+}
+@INPROCEEDINGS{Hofmann97syntaxand,
+    author = {Martin Hofmann},
+    title = {Syntax and Semantics of Dependent Types},
+    booktitle = {Semantics and Logics of Computation},
+    year = {1997},
+    pages = {79--130},
+    publisher = {Cambridge University Press}
 }

@@ -9,6 +9,7 @@
 %for enabling cleveref support, use "autoref"
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{hyperref}
 \usepackage{todonotes}
 \presetkeys{todonotes}{inline}{}
@@ -21,7 +22,7 @@
 
 \title{For Finitary Induction-Induction, \\ Induction is Enough} %TODO Please add
 
-%% \titlerunning{For Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
+\titlerunning{For Finitary Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
 
 \author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by Thematic Excellence Programme, Industry and Digitization Subprogramme (NRDI Office, 2019) and by the European Union, co-financed by the European Social Fund (EFOP-3.6.2-16-2017-00013, Thematic Fundamental Research Collaborations Grounding Innovation in Informatics and Infocommunication).}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
 \author{Andr{\'a}s Kov{\'a}cs}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{kovacsandras@inf.elte.hu}{https://orcid.org/0000-0002-6375-9781}{this author was supported by the European Union, co-financed by the European Social Fund (EFOP-3.6.3-VEKOP-16-2017-00002).}
@@ -83,7 +84,7 @@
   IIT. In this paper we construct the theory of IIT signatures using only inductive types,
   thereby showing a reduction of all finitary IITs to inductive types.  We rely
   on function extensionality and uniqueness of identity proofs. We formalised
-  the construction of the theory of IIT signatures in Agda.
+  the construction of the theory of IIT signatures in Agda. TODO: rewrite
 \end{abstract}
 
 \section{Introduction}
@@ -197,7 +198,7 @@ use implicit quantifications.
   & \mathsf{selimCon} && : (\Gamma:\Con)\ra Con^S\,\Gamma \\
   & \mathsf{selimTy} && : (A:\Ty\,\Gamma)\ra Ty^S\,A
 \end{alignat*}
-This simple elimination principle is too weak to define e.g.\ the
+This simple elimination principle is too weak e.g.\ to define the
 standard (metacircular) interpretation of our small syntax
 \cite{ttintt}. Using pattern matching notation, this interpretation is
 the following:
@@ -225,12 +226,21 @@ of QIIT signatures is itself a QIIT. In ibid., it is proved that if a
 model of extensional type theory supports the theory of QIIT
 signatures, then it supports all QIITs.
 
-By omitting the identity type former from the theory of QIIT
+By omitting the equality type former from the theory of QIIT
 signatures, we obtain a theory of IIT signatures and the construction
 is still valid. It follows that if a model of extensional type theory
-supports the theory of IIT signatures, it supports all IITs. In this
-paper we show that any model of extensional type theory with indexed
-W-types supports the theory of signatures, hence all IITs.
+supports the theory of IIT signatures, it supports all IITs.
+
+In this paper we show that any model of extensional type theory with
+indexed W-types supports the theory of IIT signatures, hence all
+IITs. The difficulty is that the theory of IIT signatures is a QIIT,
+it is both inductive-inductive and has equality constructors. However
+it can be seen as the well-typed syntax of a small type theory without
+any computation rules. Hence we can represent the syntax of normal
+forms without quotienting. We construct this well-typed normal syntax
+using preterms and typing relations from indexed W-types. Finally, we
+prove the elimination principle in the style of the initiality proof
+of Streicher \cite{streichersemantics}.
 
 Just as ibid., we only consider finitary IITs, that is, constructors
 can only have a finite number of recursive arguments. An example
@@ -254,48 +264,52 @@ using inductive types, UIP and function extensionality. In Section
 \ref{sec:constructingiits} we describe the construction of IITs from the syntax
 of IIT signatures.
 
-
-%% To derive the existence of all IITs from the theory of IIT signatures
-%% we use a variant of the CwF model
-%% \cite{Kaposi:2019:CQI:3302515.3290315} where types are modelled not by
-%% displayed CwFs but by CwF isofibrations. We need this extension to
-%% support infinitary constructors. Furthermore, using the method
-%% introduced by Streicher \cite{streichersemantics} we show the
-%% existence of the theory of IIT signatures. As opposed to Streicher, we
-%% don't use quotients in this construction as the theory of IIT
-%% signatures can be given only using neutral terms.
-
-%% Our metatheory is ETT. Using Hofmann \cite{}, Theo \cite{} translation
-%% we can translate our arguments to ITT+UIP+funext. Section
-%% \ref{sec:ambroise} was formalised in Agda using UIP, rewrite rules and
-%% funext.
-
- (later in the development, we may similarly omit universal quantification)
-
-%% This is the paper version of our TYPES 2019 talk.
-
 \subsection{Related Work}
 
-The current work builds heavily on the work of Kaposi et al.\ on quotient
-inductive-inductive types \cite{Kaposi:2019:CQI:3302515.3290315}; we reuse both
-QIIT syntax and semantics by restricting to IITs, and we reuse the term model
-construction of QIITs as well.
+The current work builds heavily on the work of Kaposi et al.\
+\cite{Kaposi:2019:CQI:3302515.3290315} on finitary quotient
+inductive-inductive types (QIITs); we reuse both QIIT syntax and
+semantics by restricting to IITs, and we reuse the term model
+construction of QIITs as well. We also make use of the extesion to
+infinitary QIITs \cite{large_inf_qiit} to derive the specification of
+the elimination principle for the theory of IIT signatures.
 
-Forsberg \cite{forsberg-phd} specifies inductive-inductive types and develops a
-semantics based on dialgebras. He also provides a reduction of IITs to indexed
-inductive types, but only constructs a weak version of the eliminator.
+IITs (however not by this name) were first used to describe the
+well-typed syntax of type theory \cite{nisse,chapman09eatitself}. Agda
+supported these general inductive definitions even before they were
+named IITs and given semantics by Nordvall Forsberg and Setzer
+\cite{nordvallforsbergSetzer2010inductiveinductive}. Nordvall
+Forsberg's thesis \cite{forsberg-phd} contains a specification similar
+in style to Dybjer and Setzer's codes for inductive-recursive types
+\cite{Dybjer99afinite}. He also develops a categorical semantics based
+on dialgebras and provides a reduction of IITs to indexed inductive
+types, however only constructs the simple elimination principle as
+opposed to the general one. Altenkirch et al.\ \cite{gabe} define
+signatures for QIITs (thus IITs as well) and their categorical
+semantics, however without proving existence of initial
+algebras. Their notion of signature, just as Nordvall Forsberg's
+involves more encoding overhead than ours.
 
-Hugunin \cite{jasper} constructs several IITs in cubical Agda from inductive
-types. In this setting, the lack of UIP makes constructions significantly more
-involved, and essentially involves coinductive-coinductive well-formedness
-predicates defined as homotopy limits. Hugunin does not consider a generic
-syntax of IITs and only works on specific examples (although the examples vary
-greatly). He also does not construct full recursive-recursive eliminators.
+Cartmell \cite{gat} introduced generalised algebraic theories using a
+type-theoretic syntax. Removing equations from his signatures, we
+obtain finitary IIT signatures similar to ours. He does not consider
+constructing initial algebras using simpler classes of inductive
+types.
+
+Hugunin \cite{jasper} constructs several IITs in cubical Agda from
+inductive types. In this setting, the lack of UIP makes constructions
+significantly more involved, and essentially involves
+coinductive-coinductive well-formedness predicates defined as homotopy
+limits. Hugunin does not consider a generic syntax of IITs and only
+works on specific examples (although the examples vary greatly). He
+also only constructs the simple elimination principle.
 
 Streicher \cite{streichersemantics} presents an interpretation of the well-formed
 presyntax of a type theory into a categorical model, which is an important
 ingredient in constructing an initial model, although he does not present
-details on the construction of the term model or its initiality proof. Our initiality proof can be seen as an indexed variant of his construction (see Subsection \ref{sec:streicher} for a comparison).
+details on the construction of the term model or its initiality proof. Our
+initiality proof can be seen as an indexed variant of his construction
+(see Subsection \ref{sec:streicher} for a comparison).
 
 Voevodsky was interested in constructing initial models of type
 theories from presyntaxes. Inspired by this, Brunerie et al.\ \cite{brunerie}
@@ -318,10 +332,11 @@ long tradition in type theory. Indexed W-types were reduced to W-types
 and a typing predicate), small inductive-recursive types to indexed
 W-types \cite{malatasta13smallir}, mutual inductive types to indexed
 W-types \cite{mutual}, W-types to natural numbers and quotients
-\cite{Ahrens2019}. Quotient inductive-inductive types (and
-inductive-inductive types) can be reduced to quotient inductive types
+\cite{Ahrens2019}. (Q)IITs can be reduced to quotient inductive types
 using the reduction of generalised algebraic theories to essentially
-algebraic theories \cite{gat}.
+algebraic theories \cite{gat}. Using the same reduction as mutual
+inductive types to indexed inductive types, (Q)IITs with more than two
+sorts can be reduced to (Q)IITs with only two sorts \cite{szumiemail}.
 
 Our reduction of IITs to indexed inductive types goes through two
 steps: first we construct a concrete QIIT using inductive types, then
@@ -330,57 +345,83 @@ approach is proposed by \cite{erasure}: here the initial algebra would
 be constructed directly for any IIT signature without going through an
 intermediate step.
 
-\subsection{Metatheory and Notation}
+\subsection{Notation and Formalisation}
 
-We work in intensional Martin-Löf type theory, equipped with the following features:
+\begin{definition}[Model of extensional type theory (ETT)]
+  By a model of ETT we mean a category with families (CwF)
+  \cite{Dybjer96internaltype,Hofmann97syntaxand} with an infinite
+  predicative hierarchy of universes closed under the following type
+  formers: $\Pi$, $\Sigma$, $0$, $1$, $2$, indexed W-types
+  \cite{indexedcont} and an identity type with uniqueness of identity
+  proofs and equality reflection.
+\end{definition}
+
+We will use Agda-like type theoretic syntax to work in the internal
+language of models of ETT:
 \begin{itemize}
-  \item Predicative universes $\Set_i$. We usually omit level indices in this paper.
-  \item Dependent functions, notated as $(x : A)\ra B$, or as $A \ra B$ when
-    non-dependent. We sometimes omit function arguments, by implicitly
-    generalising over variables.
-  \item $\Sigma$-types, notated either as $(x : A)\times B$, or as $\sum\limits_{x} B$
-        when we want to leave the type of the first projection implicit. We use $A
-        \times B$ for non-dependent pairs.
-  \item Intensional propositional equality as $t = u$, with $\refl : t = t$. In
-    this paper, we informally use extensional notation, and do not write
-    explicit transports over equalities. However, we occasionally indicate by
-    $e_1,\dots,e_n \#t$ that $t$ is well-typed thanks to the equalities
-    $e_1$,\dots,$e_n$.
-  \item Uniqueness of identity proofs (UIP), expressing $(e : t = t)\ra e = \refl$.
-  \item Function extensionality, expressing $((x : A) \ra f\,x = g\,x) \ra f = g$.
-  \item Natural numbers $\mathbb{N}$ with constructors $\mathsf{0}:\mathbb{N}$ and $\mathsf{S}:\mathbb{N}\ra\mathbb{N}$.
-
+\item Universes are written $\Set_i$. We usually omit level indices in this paper.
+\item $\Pi$ types are notated as $(x : A)\ra B$, or as $A \ra B$ when
+  non-dependent. We sometimes omit function arguments, by implicitly
+  generalising over variables.
+\item $\Sigma$-types, notated either as $(x : A)\times B$, or as
+  $\sum\limits_{x} B$ when we want to leave the type of the first
+  projection implicit. We use $A \times B$ for non-dependent pairs.
+\item We will define indexed W-types \cite{indexedcont} by listing
+  their constructors and using pattern matching to eliminate from
+  them.
+\item The equality (identity) type is written $t = u$, it has a
+  constructor $\refl : t = t$, and equality reflection, hence we use
+  the same $=$ sign for definitional equality. We occasionally
+  indicate by $e_1,\dots,e_n \#t$ that $t$ is well-typed thanks to the
+  equalities $e_1$,\dots,$e_n$. We also have uniqueness of identity
+  proofs (UIP), expressing $(e : t = t)\ra e = \refl$. Note that
+  function extensionality, expressing
+  $((x : A) \ra f\,x = g\,x) \ra f = g$ is derivable.
 \end{itemize}
 
-\subsection{Formalisation}
-
-Agda formalisation of Sections \ref{sec:theory_of_signatures} and
-\ref{sec:ambroise} can be found at
-\url{https://github.com/amblafont/UniversalII}. In addition to the features in
-the previous section, this formalisation also uses equality reflection for some
-equalities, through rewriting pragmas \cite{cockxsprinkles}. This is purely for
-convenience, and in principle we could eliminate the instances of equality
-reflection via UIP and function extensionality.
+The contents of Sections \ref{sec:theory_of_signatures} and
+\ref{sec:ambroise} were formalised in Agda, the formalisation is
+available at \url{https://github.com/amblafont/UniversalII}. Agda's
+pattern matching mechanism implies uniqueness of identity proofs, we
+assumed function extensionality as an axiom and used rewrite rules
+\cite{cockxsprinkles} to obtain limited equality reflection.
 
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
 
-The theory of IIT signatures is given as a category with families
-(CwF) \cite{Dybjer96internaltype} with certain additional type formers. The CwF
-part constitutes the substitution calculus, while the type formers allow
-declaring new sorts and operators in a signature. Below, we list all components
-for the theory of signatures; this can be viewed as a notion of model for the
-theory, which is an iterated $\Sigma$ type. In this paper, we construct the
-\emph{initial} such model, i.e.\ a model equipped with a unique recursion principle.
+In this section we describe signatures for IITs. We will say what it
+means that a model of ETT supports the theory of IIT signatures. The
+theory of IIT signatures is a particular QIIT, and supporting a QIIT
+means that we have a notion of algebra and morphism, and there is an
+initial algebra with a unique morphism to every other algebra (called
+recursor or non-dependent eliminator).
 
-Here, initiality refers to the notion of homomorphism between models deduced
-from the general theory of large infinitary QIITs developed in \cite{large_inf_qiit}.
-Roughly, a homomorphism is a functor between underlying
-categories which strictly preserves all additional family structure and type
-formers.
+This description is analogous to saying that a model of ETT supports
+natural numbers as follows: Using the internal language of the model,
+a natural number algebra is given by a $\mathsf{Nat}:\Set$,
+$\mathsf{zero}:\mathsf{Nat}$ and
+$\mathsf{suc}:\mathsf{Nat}\ra \mathsf{Nat}$, while a morphism between
+algebras $M$ and $N$ is given by a function
+$f:\mathsf{Nat}^M\ra\mathsf{Nat}^N$ such that
+$f\,\mathsf{zero}^M=\mathsf{zero}^N$ and
+$f\,(\mathsf{suc}^M\,m)=\mathsf{suc}^N\,(f\,m)$. Natural numbers
+themselves are given by an algebra equipped with a unique morphism
+into any other algebra (the recursor).
 
+We will call \emph{theory of IIT signature algebras} simply
+\emph{signature algebras}. A signature algebra can be seen as a model
+of a small type theory which consists of (1) a substitution calculus
+(CwF \cite{Dybjer96internaltype}) equipped with (2) a universe, (3) a
+function space where the domain is small and (3) another function
+space with external domain. We explain the usage of these type
+formers through examples after the definitions.
+
+\begin{definition}[Signature algebra]\label{def:algebra}
+  In a model of ETT, a signature algebra consists of the following
+  four (families of) sets, 17 operations and 18 equalities written in
+  the internal language.
 \begin{alignat*}{5}
-  & \rlap{(1) Substitution calculus} \\[0.5em]
+  & \rlap{(1) Substitution calculus} \\
   & \Con && : \Set \\
   & \Ty  && : \Con\ra\Set \\
   & \Sub  && : \Con\ra\Con\ra\Set \\
@@ -398,7 +439,7 @@ formers.
   & [\circ] && : t[\sigma \circ \delta] = t[\sigma][\delta] \\
   & \boldsymbol{\cdot} && : \Con \\
   & \epsilon && : \Sub\,\Gamma\,\boldsymbol{\cdot} \\
-  & {\boldsymbol{\cdot}\eta} && : \{\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}\} \ra \sigma = \epsilon \\
+  & {\boldsymbol{\cdot}\eta} && : (\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}) \ra \sigma = \epsilon \\
   & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
   & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
   & \pi_1 && : \Sub\,\Gamma\,(\Delta\ext A)\ra \Sub\,\Gamma\,\Delta \\
@@ -406,54 +447,111 @@ formers.
   & {\pi_1\beta} && : \pi_1(\sigma, t) = \sigma \\
   & {\pi_2\beta} && : \pi_2(\sigma, t) = t \\
   & {\pi\eta} && : (\pi_1\,\sigma, \pi_2\,\sigma) = \sigma \\
-  & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\[0.5em]
-  & \rlap{(2) Universe} \\[0.5em]
+  & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\
+  & \rlap{(2) Universe} \\
   & \U && : \Ty\,\Gamma \\
   & \El && : \Tm\,\Gamma\,\U\ra\Ty\,\Gamma \\
   & {\U[]} && : \U[\sigma] = \U \\
-  & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\[0.5em]
-  & \rlap{(3) Inductive parameters} \\[0.5em]
+  & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\
+  & \rlap{(3) Inductive parameters} \\
   & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
   & \blank\oldapp\blank && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
   \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
-  & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma^\uparrow]) \\
-  & {\oldapp[]} && : (t\oldapp\alpha)[\sigma] = (t[\sigma])\mathop{\oldapp}(\alpha[\sigma]) \\[0.5em]
-  & \rlap{(4) Metatheoretic parameters} \\[0.5em]
+  & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma\circ\p,\q]) \\
+  & {\oldapp[]} && : (t\oldapp\alpha)[\sigma] = (t[\sigma])\mathop{\oldapp}(\alpha[\sigma]) \\
+  & \rlap{(4) External parameters} \\
   & \Pim && : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma \\
   & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
-  & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha \\[0.5em]
+  & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha
 \end{alignat*}
-\subsection{Notation and abbreviations}
+\end{definition}
 
-We define $\wk : \Sub\,(\Gamma\ext A)\ra \Gamma$ as $\pi_1\,\id$.
-We can recover de Bruijn indices by having $0= \pi_2 \,\id$ and $n+1 = n[\wk]$.
-However, for informal examples we instead
-use a nameful notation, where we introduce names in context extension and in the
-$\Pi$ function domain, for example as $\boldsymbol{\cdot}\,\ext\,A : \U\,\ext\,a :
-\El\,A$ in a signature for pointed sets.
+The definition of morphism is determined by the notion of algebra, it
+can be computed following \cite{large_inf_qiit}, but we include it
+here for completeness.
+\begin{definition}[Signature morphism]\label{def:morphism}
+  A morphism between signature algebras $M$ and $N$ consists of four
+  functions and 17 equalities expressing that the functions preserve
+  the operations of the two algebras. We use the same naming as in
+  \Cref{def:algebra} and use superscripts to denote which algebra is
+  meant.
+\begin{alignat*}{5}
+  & \rlap{(1) Substitution calculus} \\
+  & \Con && : \Con^M && \ra\Con^N \\
+  & \Ty  && : \Ty^M\,\Gamma && \ra\Ty^N\,(\Con\,\Gamma) \\
+  & \Sub  && : \Sub^M\,\Gamma\,\Delta && \ra\Sub^N(\Con\,\Gamma)\,(\Con\,\Delta) \\
+  & \Tm  && : \Tm^M\,\Gamma\,A && \ra\Tm^N\,(\Con\,\Gamma)\,(\Ty\,A) \\
+  & \id && : \Sub\,\id^M && = \id^N \\
+  & {\circ} && : \sigma\circ^M\delta && = \Sub\,\sigma\circ^N\Sub\,\delta \\
+  & [] && : A[\sigma]^M && = \Ty\,A[\Sub\,\sigma]^N \\
+  & [] && : t[\sigma]^M && = \Tm\,t[\Sub\,\sigma]^N \\
+  & \boldsymbol{\cdot} && : \Con\,\boldsymbol{\cdot}^M && = \boldsymbol{\cdot}^N \\
+  & \epsilon && : \Sub\,\epsilon^M && = \epsilon^N \\
+  & \ext && : \Con\,(\Gamma\ext^M A) && = \Con\,\Gamma\ext^N\Ty\,A \\
+  & , && : \Sub\,(\sigma,^M t) && = \Sub\,\sigma ,^N\Tm\,t \\
+  & \pi_1 && : \Sub\,(\pi_1^M\,\sigma) && = \pi_1^N\,(\Sub\,\sigma) \\
+  & \pi_2 && : \Tm\,(\pi_2^M\,\sigma) && = \pi_2^N\,(\Sub\,\sigma) \\
+  & \rlap{(2) Universe} \\
+  & \U && : \Ty\,\U^M && = \U^N \\
+  & \El && : \Ty\,(\El^M\,a) && = \El^N\,(\Tm\,a) \\
+  & \rlap{(3) Inductive parameters} \\
+  & \Pi && : \Ty\,(\Pi^M\,a\,B) && = \Pi^N\,(\Tm\,a)\,(\Ty\,B) \\
+  & \oldapp && : \Tm\,(t\mathbin{{\oldapp}^M} u) && = \Tm\,t\mathbin{{\oldapp}^N}\,\Tm\,u \\
+  & \rlap{(4) External parameters} \\
+  & \Pim && : \Ty\,(\Pim^M\,T\,B) && = \Pim^N\,T\,(\lambda\alpha.\Ty\,(B\,\alpha)) \\
+  & \appm && : \Tm\,(t\mathbin{{\appm}^M}\alpha) && = \Tm\,t\mathbin{{\appm}^N}\alpha
+\end{alignat*}
+\end{definition}
+\begin{definition}\label{def:theoryofsignatures}
+  A model of ETT supports the theory of IIT signatures if there is a
+  signature algebra equipped with a unique morphism into any
+  algebra. We call this algebra the syntax or initial algebra, the
+  morphism is called recursor.
+\end{definition}
+\begin{definition}[Abbreviations]\label{def:abbrevs}
+  For any signature algebra, we use
+  $\wk : \Sub\,(\Gamma\ext A)\ra \Gamma$ to mean $\pi_1\,\id$. We
+  recover de Bruijn indices by having $0= \pi_2 \,\id$ and
+  $1+n = n[\wk]$. $\Pi\,a\,(B[\wk])$ is abbreviated by $a\Ra B$,
+  $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
+\end{definition}
 
-We define $\sigma^\uparrow$ as $(\sigma\circ\wk,0)$.
-We also abbreviate non-dependent $\Pi$ functions by writing $\Pi\,a\,(B[\wk])$ as $a\Ra B$.
-
-
-\subsection{Example signatures}
-
-Natural numbers:
+In a model supporting the theory of IIT signatures, we can write down
+signatures as elements of $\Con^\S$ (the $\Con$ component in the
+syntax). For example, natural numbers are given by the following
+signature. For readability, on the right we list the version of the
+signature using variable names instead of CwF-combinators.
 \[
+\boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,1 \Ra \El\,1 \hspace{5.9em}
 \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
 \]
-Lists with elements of a given $A : \Set$ type. Here we use the $\Pim$ function
-to include an external type into the signature.
-\[
-\boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,
-      cons : \Pim\,A\,(\lambda \_.\, L\Ra \El\,L)
-\]
-The inductive-inductive example from Section \ref{sec:intro}:
-\begin{alignat*}{3}
-  & \boldsymbol{\cdot} \,\ext\,Con : \U\,\ext\,Ty : Con\Ra\U\,\ext\,empty : \El\,Con\,\ext\,ext : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra Con) \\
-  & \hspace{0.5em}\,\ext\, U : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))
-    \,\ext\,El : \Pi\,(\Gamma : Con)(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
+Natural numbers are given by a context of length 3, starting with the
+empty context $\boldsymbol{\cdot}$ and declaring a sort by $\U$,
+saying that we have an operator producing an element of $\El\,0$ where
+$0$ is a de Bruijn index referring to the sort $\U$. Finally we have
+an operator which takes as input an element of the sort $1$ and
+produces an element of the same sort. Note the assymetry of the
+function type $\Ra$: on the left there needs to be an element of $\U$,
+while on the right any type can appear (including another function
+type). This ensures strict positivity of the operators.
+
+Lists with elements of a given $T : \Set$ type are given by the
+following signature. Here we use the function space with external domain $\Ram$ to include
+an $T$ in the signature.
+\begin{alignat*}{10}
+ & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
+\end{alignat*}
+The $\Con$--$\Ty$ example from \Cref{sec:intro} is specified as
+follows.
+\begin{alignat*}{5}
+  & \boldsymbol{\cdot} \,\ext                                                 && \boldsymbol{\cdot} \,\ext                                                                \\
+  & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
+  & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
+  & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
+  & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
+  & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
+  & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
 \end{alignat*}
 
 \section{Constructing the Theory of IIT Signatures}
