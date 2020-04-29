@@ -15,6 +15,7 @@
 \presetkeys{todonotes}{inline}{}
 \usepackage{csquotes} %for \llbracket and \rrbracket
 \usepackage{stmaryrd}
+% \usepackage{pdflscape} % if we want \begin{landscape} ... \end{landscape}
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
@@ -86,6 +87,8 @@
   on function extensionality and uniqueness of identity proofs. We formalised
   the construction of the theory of IIT signatures in Agda. TODO: rewrite
 \end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
 \label{sec:intro}
@@ -249,7 +252,7 @@ constructor for $\Con$--$\Ty$ which is not allowed is the following:
   \Pi_\infty : (\Gamma : \Con) \rightarrow (\mathbb{N} \rightarrow \Ty\,\Gamma) \rightarrow \Ty\,\Gamma
 \]
 
-TODO: list of contributions here.
+TODO: list of contributions here. Notion of signature free from encoding.
 
 The contents of this paper were presented at the TYPES 2019 conference
 in Oslo \cite{types}.
@@ -272,7 +275,8 @@ inductive-inductive types (QIITs); we reuse both QIIT syntax and
 semantics by restricting to IITs, and we reuse the term model
 construction of QIITs as well. We also make use of the extesion to
 infinitary QIITs \cite{large_inf_qiit} to derive the specification of
-the elimination principle for the theory of IIT signatures.
+the elimination principle for the theory of IIT signatures. TODO: also
+for specifying signatures.
 
 IITs (however not by this name) were first used to describe the
 well-typed syntax of type theory \cite{nisse,chapman09eatitself}. Agda
@@ -351,9 +355,10 @@ intermediate step.
   By a model of ETT we mean a category with families (CwF)
   \cite{Dybjer96internaltype,Hofmann97syntaxand} with an infinite
   predicative hierarchy of universes closed under the following type
-  formers: $\Pi$, $\Sigma$, $0$, $1$, $2$, indexed W-types
+  formers: $\Pi$, $\Sigma$, $\bot$, $\top$, $\Bool$, indexed W-types
   \cite{indexedcont} and an identity type with uniqueness of identity
-  proofs and equality reflection.
+  proofs and equality reflection. TODO: remove indexed W-types, bot
+  and bool.
 \end{definition}
 
 We will use Agda-like type theoretic syntax to work in the internal
@@ -365,7 +370,9 @@ language of models of ETT:
   generalising over variables.
 \item $\Sigma$-types, notated either as $(x : A)\times B$, or as
   $\sum\limits_{x} B$ when we want to leave the type of the first
-  projection implicit. We use $A \times B$ for non-dependent pairs.
+  projection implicit. Projections are either named or given by
+  $\proj_1$ and $\proj_2$. We use $A \times B$ for non-dependent
+  pairs.
 \item We will define indexed W-types \cite{indexedcont} by listing
   their constructors and using pattern matching to eliminate from
   them.
@@ -386,15 +393,20 @@ pattern matching mechanism implies uniqueness of identity proofs, we
 assumed function extensionality as an axiom and used rewrite rules
 \cite{cockxsprinkles} to obtain limited equality reflection.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{The Theory of IIT Signatures}
 \label{sec:theory_of_signatures}
 
-In this section we describe signatures for IITs. We will say what it
-means that a model of ETT supports the theory of IIT signatures. The
-theory of IIT signatures is a particular QIIT, and supporting a QIIT
-means that we have a notion of algebra and morphism, and there is an
-initial algebra with a unique morphism to every other algebra (called
-recursor or non-dependent eliminator).
+TODO: rewrite.
+
+In this section we show how to describe signatures for IITs using a
+QIIT, the theory of IIT signatures. We will say what it means for a
+model of ETT to support the theory of IIT signatures. First we need to
+say what a \emph{theory of IIT signature algebra} is and what
+morphisms between such algebras are. Then supporting the theory of IIT
+signatures means that there exists an algebra with a unique morphism
+to every other algebra.
 
 This description is analogous to saying that a model of ETT supports
 natural numbers as follows: Using the internal language of the model,
@@ -416,10 +428,10 @@ function space where the domain is small and (3) another function
 space with external domain. We explain the usage of these type
 formers through examples after the definitions.
 
-\begin{definition}[Signature algebra]\label{def:algebra}
-  In a model of ETT, a signature algebra consists of the following
-  four (families of) sets, 17 operations and 18 equalities written in
-  the internal language.
+\begin{definition}[Signature algebra, $\SignAlg$]\label{def:algebra}
+  In a model of ETT, a signature algebra is an iterated $\Sigma$ type
+  consisting of the following components: four (families of) sets, 17
+  operations and 18 equalities.
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\
   & \Con && : \Set \\
@@ -465,7 +477,214 @@ formers through examples after the definitions.
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha
 \end{alignat*}
+Given an $M:\SignAlg$, we denote its components as $\Con^M$, $\Ty^M$,
+$\Sub^M$, $\Tm^M$, $\id^M$, and so on.
 \end{definition}
+
+\begin{definition}[Abbreviations]\label{def:abbrevs}
+  For any signature algebra, we use
+  $\wk : \Sub\,(\Gamma\ext A)\,\Gamma$ to mean $\pi_1\,\id$. We
+  recover de Bruijn indices by setting $0:= \pi_2 \,\id$ and
+  $1+n := n[\wk]$. $\Pi\,a\,(B[\wk])$ is abbreviated by $a\Ra B$,
+  $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
+\end{definition}
+
+\begin{definition}[IIT signature]
+  An IIT signature is a context in an arbitrary signature algebra,
+  that is, a function $(M:\SignAlg)\ra\Con^M$.
+\end{definition}
+Note that the notion of IIT signature is relative to a model of ETT:
+it is expressed as a term (of a function type) in the model. This is
+necessary because of the function space $\Pim$ which has as domain an
+arbitrary type in the model. We make use of $\Pim$ in signatures with
+external parameters, like the type of the elements in lists.
+
+\begin{example}[Example signatures]\label{ex:signatures}
+  The signature for natural numbers is given by the function
+  \[
+    \lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M).
+  \]
+  For readability we write the same signature without the $\lambda$
+  and the superscripts below on the left and we also write an informal
+  version with variable names on the right for comparison.
+  \[
+  \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,1 \Ra \El\,1 \hspace{5.9em}
+  \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
+  \]
+  This signature is given by a context of length three. We start with
+  the empty context $\boldsymbol{\cdot}$, then we declare a sort by
+  $\U$, then we declare an operator producing an element of $\El\,0$
+  where $0$ is a de Bruijn index referring to the sort $\U$. Finally
+  we declare an operator which takes as input an element of the sort
+  $1$ and produces an element of the same sort. Note the assymetry of
+  the function type $\Ra$: on the left there needs to be an element of
+  $\U$, while on the right any type can appear (including another
+  function type). This ensures strict positivity of the operators.
+
+  Lists with elements of a given $T : \Set$ type are given by the
+  following signature. Here we use the function space with external
+  domain $\Ram$ to include a $T$ in the signature. Again, we omit the
+  $\lambda$ and the superscripts for readability.
+  \begin{alignat*}{10}
+    & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
+  \end{alignat*}
+ 
+  The $\Con$--$\Ty$ example from \Cref{sec:intro} is specified as
+  follows.
+  \begin{alignat*}{5}
+    & \boldsymbol{\cdot} \,\ext                                                 && \boldsymbol{\cdot} \,\ext                                                                \\
+    & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
+    & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
+    & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
+    & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
+    & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
+    & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
+  \end{alignat*}
+\end{example}
+
+Given a model of ETT and an IIT signature in it, we would like to say
+what it means that the model supports the given IIT. For this we
+define the signature algebra $\ADS$ which will provide notions of
+algebras, displayed algebras and sections for each signature. This is
+the same as the $\blank^\A$, $\blank^\D$ and $\blank^\S$ operations in
+\cite{Kaposi:2019:CQI:3302515.3290315}. Before defining $\ADS$, we
+illustrate its usage by an example.
+
+\begin{example}[Algebras, displayed algebras and sections for natural
+  numbers]
+  For the signature of natural numbers as given in
+  \Cref{ex:signatures}, algebras are given by the $\Sigma$-type
+  $(N:\Set)\times N\times(N\ra N)$. A displayed algebra over $(N,z,s)$
+  is given by the $\Sigma$-type
+  \[
+    (N^D:N\ra\Set)\times N^D\,z \times((n:N)\ra N^D\,n\ra N^D\,(s\,n)),
+  \]
+  and a section of a displayed algebra $(N^D,z^D,s^D)$ over $(N,z,s)$
+  is given by the $\Sigma$-type
+  \[
+    (N^S:(n:N)\ra N^D\,n)\times (N^S\,z = z^D) \times((n:N)\ra N^S\,(s\,n) = s^D\,n\,(N^S\,n)).
+  \]
+  Displayed algebras over the initial algebra are called motives and
+  methods of the eliminator, while a section of a displayed algebra
+  over the initial algebra is the eliminator together with its
+  computation rules.
+\end{example}
+  
+\begin{definition}[The signature algebra $\ADS$]\label{def:ads}
+  We define an element of $\SignAlg$ by listing all its components
+  $\Con$, $\Ty$, $\Sub$, and so on, one per line. Each such components
+  has three parts denoted by $^\A$, $^\D$ and $^\S$. The equality
+  components of $\SignAlg$ are omitted as they are all reflexivity.
+  \begin{alignat*}{10}
+    & (\Gamma^\A:\Set) && \hspace{-0.3em}\times && (\Gamma^\D:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (\Gamma^\S:(\gamma:\Gamma^\A)\ra\Gamma^\D\,\gamma\ra\Set) \\
+    & (A^\A:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (A^\D:\Gamma^\D\,\gamma\ra A^\A\,\gamma\ra\Set) && \hspace{-0.3em}\times && (A^\S:\Gamma^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra \\
+    & && && && && \hspace{1em} A^\D\,\gamma^D\,\alpha\ra\Set) \\
+    & (\sigma^\A:\Gamma^\A\ra\Delta^\A) && \hspace{-0.3em}\times && (\sigma^\D:\Gamma^\D\,\gamma\ra\Delta^\D\,(\sigma^\A\,\gamma)) && \hspace{-0.3em}\times && (\sigma^\S:\Gamma^\S\,\gamma\,\gamma^D\ra \\
+    & && && && && \hspace{1em} \Delta^\S\,(\sigma^\A\,\gamma)\,(\sigma^\D\,\gamma^D)) \\
+    & (t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma) && \hspace{-0.3em}\times && (t^\D:(\gamma^D:\Gamma^\D\,\gamma)\ra && \hspace{-0.3em}\times && (t^\S:(\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\ra \\
+    & && && \hspace{1em} A^\D\,\gamma^D\,(t^\A\,\gamma)) && && \hspace{1em}  A^\S\,(t^\A\,\gamma)\,(t^\D\,\gamma^D)) \\
+    & \id^\A\,\gamma := \gamma && && \id^\D\,\gamma^D:=\gamma^D && && \id^\S\,\gamma^S := \gamma^S \\
+    & (\sigma\circ\delta)^\A\,\gamma := \sigma^\A\,(\delta^\A\,\gamma) && && (\sigma\circ\delta)^\D\,\gamma^D := \sigma^\D\,(\delta^\D\,\gamma^D) && && (\sigma\circ\delta)^\S\,\gamma^S := \sigma^\S\,(\delta^\S\,\gamma^S) \\
+    & (A[\sigma])^\A\,\gamma := A^\A\,(\sigma^\A\,\gamma) && && (A[\sigma])^\D\,\gamma^D := A^\D\,(\sigma^\D\,\gamma^D) && && (A[\sigma])^\S\,\gamma^S := A^\S\,(\sigma^\S\,\gamma^S) \\
+    & (t[\sigma])^\A\,\gamma := t^\A\,(\sigma^\A\,\gamma) && && (t[\sigma])^\D\,\gamma^D := t^\D\,(\sigma^\D\,\gamma^D) && && (t[\sigma])^\S\,\gamma^S := t^\S\,(\sigma^\S\,\gamma^S) \\
+    & \cdot^\A := \top && && \cdot^\D\,\_ := \top && && \cdot^\S\,\_\,\_ := \top \\
+    & \epsilon^\A\,\_ := \tt && && \epsilon^\D\,\_ := \tt && && \epsilon^\S\,\_ := \tt \\
+    & (\Gamma\rhd A)^\A := && && (\Gamma\rhd A)^\D\,(\gamma,\alpha) :=  && && (\Gamma\rhd A)^\S\,(\gamma,\alpha)\,(\gamma^D,\alpha^D) := \\
+    & \hspace{1em} (\gamma:\Gamma^\A)\times A^\A\,\gamma && && \hspace{1em} (\gamma^D:\Gamma^\D\,\gamma)\times A^\D\,\gamma^D\,\alpha && && \hspace{1em} (\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\times A^\S\,\gamma^S\,\alpha\,\alpha^D \\
+    & (\sigma,t)^\A\,\gamma := (\sigma^\A\,\gamma,t^\A\,\gamma) && && (\sigma,t)^\D\,\gamma^D := (\sigma^\D\,\gamma^D,t^\D\,\gamma^D) && && (\sigma,t)^\S\,\gamma^S := (\sigma^\S\,\gamma^S,t^\S\,\gamma^S) \\
+    & (\pi_1\,\sigma)^\A\,\gamma := \proj_1\,(\sigma^\A\,\gamma) && && (\pi_1\,\sigma)^\D\,\gamma^D := \proj_1\,(\sigma^\D\,\gamma^D) && && (\pi_1\,\sigma)^\S\,\gamma^S := \proj_1\,(\sigma^\S\,\gamma^S) \\
+    & (\pi_2\,\sigma)^\A\,\gamma := \proj_2\,(\sigma^\A\,\gamma) && && (\pi_2\,\sigma)^\D\,\gamma^D := \proj_2\,(\sigma^\D\,\gamma^D) && && (\pi_2\,\sigma)^\S\,\gamma^S := \proj_2\,(\sigma^\S\,\gamma^S) \\
+    & \U^\A\,\gamma := \Set && && \U^\D\,\gamma^D\,T := T\ra\Set && && \U^\S\,\gamma^S\,T\,T^D := (\alpha:T)\ra T^D\,\alpha \\
+    & (\El\,a)^\A\,\gamma := a^\A\,\gamma && && (\El\,a)^\D\,\gamma^D\,\alpha := a^\D\,\gamma^D\,\alpha && && (\El\,a)^\S\,\gamma^S\,\alpha\,\alpha^D := (a^\S\,\gamma^S\,\alpha = \alpha^D) \\
+    & (\Pi\,a\,B)^\A\,\gamma := && && (\Pi\,a\,B)^\D\,\gamma^D\,f := && && (\Pi\,a\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:a^\A\,\gamma)\ra \\
+    & \hspace{1em} (\alpha:a^\A\,\gamma)\ra B^\A\,(\gamma,\alpha) && && \hspace{1em}  (\alpha^D:a^\D\,\gamma^D\,\alpha)\ra && && \hspace{1em} B^\S\,(\gamma^S,\refl_{a^\S\,\gamma^S\,\alpha})\,(f\,\alpha)\,\\
+    & && && \hspace{1em}  B^\D\,(\gamma^D,\alpha^D)\,(f\,\alpha) && && \hspace{1em}\hphantom{B^\S\,}(f^D\,(a^\S\,\gamma^S\,\alpha)) \\
+    & (t\oldapp u)^\A\,\gamma := t^\A\,\gamma\,(u^\A\,\gamma) && &&  (t\oldapp u)^\D\,\gamma^D := t^\D\,\gamma^D\,(u^\D\,\gamma^D) && &&  (t\oldapp u)^\S\,\gamma^S := u^\S\,\gamma^S \# t^\S\,\gamma^\S\,(u^\A\,\gamma) \\
+    & (\Pim\,T\,B)^\A\,\gamma := && && (\Pim\,T\,B)^\D\,\gamma^D\,f := && && (\Pim\,T\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:T)\ra \\
+    & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\D\,\gamma^D\,(f\,\alpha) && && \hspace{1em} (B\,\alpha)^\S\,\gamma^S\,(f\,\alpha)\,(f^D\,\alpha) \\
+    & (t\appm \alpha)^\A\,\gamma := t^\A\,\gamma\,\alpha && && (t\appm \alpha)^\D\,\gamma^D := t^\D\,\gamma^D\,\alpha && && (t\appm \alpha)^\S\,\gamma^S := t^\S\,\gamma^S\,\alpha
+  \end{alignat*}
+\end{definition}
+\Cref{def:ads} can be explained by columns (see
+\cite[Sections 4 and 6]{Kaposi:2019:CQI:3302515.3290315} for more details) or by rows
+(see \cite[Section 7.4]{Kaposi:2019:CQI:3302515.3290315}).
+
+We first explain it by columns: the first column ($^A$ components)
+corresponds to the standard model (set model, metacircular
+interpretation \cite{ttintt}): contexts are sets, types are families,
+terms are functions, the universe $\U$ is given by $\Set$, function
+spaces are given by the external function space. The $^D$ column is a
+logical predicate interpretation, $^\A$ and $^\D$ together are a unary
+version of the parametric model for dependent types
+\cite{10.1145/2535838.2535852}. Contexts are predicates, types are
+families of predicates, terms say that the $^\A$ interpretation
+respects the predicates (this is ususally called fundamental lemma of
+the logical predicate). $\U$ is given by predicate space, the
+predicate at a $\Pi$ type holds for a function if it respects the
+predicates. For $\Pim$, the predicate is defined pointwise. The last
+column ($^\S$) is a modified dependent logical relation which refers
+to both $^A$ and $^\D$. Contexts are binary relations where the second
+parameter depends on the first one, types are dependent variants of
+this, terms say that the relation is respected by $^\A$ and $^\D$,
+respectively. $\U$ is however not relation space, but a function and
+$(\El\,a)^\S$ is the graph of the function $a^\S$. $\Pi^\S$ for a
+function again says that the function respects the relation, however
+we don't simply say
+\[
+  (\Pi\,a\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:a^\A\,\gamma)(\alpha^D:a^\D\,\gamma^D\,\alpha)(\alpha^\S:(\El\,a)^\S\,\gamma^S\,\alpha\,\alpha^D)\ra B^\S\,\dots,
+\]
+as $(\El\,a)^\S\,\gamma^S\,\alpha\,\alpha^D$ is just an equality
+$a^\S\,\gamma^S\,\alpha = \alpha^D$ which we can singleton
+contract. So we omit $\alpha^D$ and this equality as an input and
+replace $\alpha^D$ by $a^\S\,\gamma^S\,\alpha$ in the definition.
+
+When viewing $\ADS$ by rows, we can see that it is a part of the CwF
+model of type theory \cite[Section
+7.4]{Kaposi:2019:CQI:3302515.3290315}. In the CwF model, a context is
+given by a CwF. From the category, we only have objects ($\Gamma^\A$),
+and from the families, we have the families for types $\Gamma^\D$ and
+terms $\Gamma^\S$. Types are the corresponding parts of displayed
+CwFs, substitutions are parts of CwF morphisms, terms are parts of CwF
+sections. $\U$ is part of the CwF of sets, $\El\,a$ is the part of the
+discrete displayed CwF coming from $a$ (which is a CwF-morphism from
+$\Gamma$ to the CwF of sets). $\Pi$ is given as by a dependent product
+of displayed CwFs where it is essential that the domain is discrete,
+$\Pim$ is the pointwise direct product.
+
+\begin{definition}[A model of ETT supports IITs]
+  A model of ETT supports IITs if for any signature signature
+  $\Omega:(M:\SignAlg)\ra\Con^M$ we have an $$
+\end{definition}
+
+Now, given a signature $f:(M:\SignAlg)\ra\Con^M$, we obtain
+$(f\,\ADS)^\A$
+
+
+  We describe the most important
+  components, a full definition is given in the appendix (TODO). A
+  $\Gamma:\Con$ is given by a $\Sigma$ type with three elements:
+  \[
+    (\Gamma^\A:\Set) \times (\Gamma^\D:\Gamma^\A\ra\Set) \times (\Gamma^\S:(\gamma:\Gamma^\A)\ra\Gamma^\D\,\gamma\ra\Set)
+  \]
+  As a signature is a context in an arbitrary signature algebra, using
+  $\ADS$ a signature provides an algebra $\Gamma^\A$, a displayed
+  algebra $\Gamma^\D$ and a section $\Gamma^\S$.
+
+  A type in $\ADS$ is given by dependent versions of $\Con$:
+  \begin{alignat*}{6}
+    & (A:\Ty\,\Gamma) := \,\,&& (A^\A:\Gamma^A\ra\Set) \times (A^\D:\Gamma^\D\,\gamma\ra A^\A\,\gamma\ra\Set) \times \\
+    & && (A^\S:\Gamma^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra A^\D\,\gamma^D\,\alpha\ra\Set)
+  \end{alignat*}
+  Substitutions (and terms) are given by (dependent) functions which
+  respect the predicates $^\D$ and relations $^\S$.
+  \begin{alignat*}{10}
+    & (\sigma:\Sub\,\Gamma\,\Delta) && := \,\, && (\sigma^\A:\Gamma^\A\ra\Delta^\A) \times (\sigma^\D:\Gamma^\D\,\gamma\ra\Delta^\D\,(\sigma^\A\,\gamma)) \times \\
+    & && && \rlap{$(\sigma^\S:\Gamma^\S\,\gamma\,\gamma^D\ra\Delta^\S\,(\sigma^A\,\gamma)\,(\sigma^\D\,\gamma^D))$} \\
+    & (t:\Tm\,\Gamma\,A) && := && (t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma) \times (t^\D:(\gamma^D:\Gamma^\D\,\gamma)\ra A^\D\,\gamma^D\,(t^\A\,\gamma)) \times \\
+    & && && (t^\S:(\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\ra A^\S\,(t^A\,\gamma)\,(t^\D\,\gamma^D))
+  \end{alignat*}
+
+  xxx
 
 The definition of morphism is determined by the notion of algebra, it
 can be computed following \cite{large_inf_qiit}, but we include it
@@ -509,92 +728,16 @@ here for completeness.
   algebra. We call this algebra the syntax or initial algebra, the
   morphism is called recursor.
 \end{definition}
-\begin{definition}[Abbreviations]\label{def:abbrevs}
-  For any signature algebra, we use
-  $\wk : \Sub\,(\Gamma\ext A)\ra \Gamma$ to mean $\pi_1\,\id$. We
-  recover de Bruijn indices by having $0= \pi_2 \,\id$ and
-  $1+n = n[\wk]$. $\Pi\,a\,(B[\wk])$ is abbreviated by $a\Ra B$,
-  $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
-\end{definition}
 
-In a model supporting the theory of IIT signatures, we can write down
-signatures as elements of $\Con^\S$ (the $\Con$ component in the
-syntax). For example, natural numbers are given by the following
-signature. For readability, on the right we list the version of the
-signature using variable names instead of CwF-combinators.
-\[
-\boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,1 \Ra \El\,1 \hspace{5.9em}
-\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
-\]
-Natural numbers are given by a context of length 3, starting with the
-empty context $\boldsymbol{\cdot}$ and declaring a sort by $\U$,
-saying that we have an operator producing an element of $\El\,0$ where
-$0$ is a de Bruijn index referring to the sort $\U$. Finally we have
-an operator which takes as input an element of the sort $1$ and
-produces an element of the same sort. Note the assymetry of the
-function type $\Ra$: on the left there needs to be an element of $\U$,
-while on the right any type can appear (including another function
-type). This ensures strict positivity of the operators.
-
-Lists with elements of a given $T : \Set$ type are given by the
-following signature. Here we use the function space with external domain $\Ram$ to include
-an $T$ in the signature.
-\begin{alignat*}{10}
- & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
-\end{alignat*}
-The $\Con$--$\Ty$ example from \Cref{sec:intro} is specified as
-follows.
-\begin{alignat*}{5}
-  & \boldsymbol{\cdot} \,\ext                                                 && \boldsymbol{\cdot} \,\ext                                                                \\
-  & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
-  & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
-  & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
-  & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
-  & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
-  & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
-\end{alignat*}
-
-\section{Constructing the Theory of IIT Signatures}
-\label{sec:ambroise}
-
-%% \todo{Write this section}
-
-%% Show that the theory of IIT signatures as described in Section
-%% \ref{sec:theory_of_signatures} exists, that is, it can be defined only
-%% using indexed inductive types and a $\Prop$ sort.
-
-%% Ambroise has done this in Agda with funext and UIP using an
-%% extrinsic--intrinsic translation.
-
-%% Ambroise formalisation: \url{https://github.com/amblafont/UniversalII/tree/cwf-syntax/Cwf}.
-
-%% In this formalization, there is a discrepancy for the typing rule of application
-%% compared to the one of Section~\ref{sec:theory_of_signatures}: it is not
-%% \[
-%%    \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra\Tm\,(\Gamma\ext \El\,a)\,B
-%% \]
-%% but
-%% \[
-%%    \app  : \Tm\,\Gamma\,(\Pi\,a\,B)\ra(u : \Tm\,\Gamma\,(\El\,a))\ra\,\Tm\,\Gamma\,B[<u>].
-%% \]
-%% Actually, I started with the first version, but at some point I
-%% changed for the second one because it made some stuff easier (although
-%% I don't remember exactly what it was).
-
-%% I think this should be doable with only UIP (or a $\Prop$-valued
-%% equality type?) and not funext. This would be important for a
-%% computational justification of IITs.
-
-%% Unfortunately, it seems that funext is needed (see the use of funext in
-%% Syntax.agda) for the metatheoretic/infinitary
-%% parameters part (4-5), for example in the case of the metatheoretic
-%% $ \Pim  : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma $. This needs to be
-%% investigated more carefully.
-
-\input{universaliit}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Constructing IITs from the Theory of IIT Signatures}
 \label{sec:constructingiits}
+
+In this section, we first specify what it means that a model of ETT
+supports all IITs. In order to even say this, the model already has to
+support the theory of IIT signatures as given in
+\Cref{def:theoryofsignatures}. 
 
 We construct all IITs describable by the theory of IIT signatures through the
 term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
@@ -645,6 +788,14 @@ elimination. We expect that the two notions are equivalent. An extension of
 this equivalence, since that would cover the (large, infinitary) theory of IIT
 signatures.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Constructing the Theory of IIT Signatures}
+\label{sec:ambroise}
+
+\input{universaliit}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Further Work}
 
@@ -667,6 +818,14 @@ problem whether IITs are reducible to inductive types in a UIP-free setting. To
 show this, we would need to construct the syntax of signatures without UIP, and
 also reproduce the semantics and term model construction for IITs without UIP.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \bibliography{b}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\appendix
 
 \end{document}
