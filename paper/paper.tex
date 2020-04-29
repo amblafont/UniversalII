@@ -395,38 +395,32 @@ assumed function extensionality as an axiom and used rewrite rules
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The Theory of IIT Signatures}
+\section{A Definition of Inductive-Inductive Types}
 \label{sec:theory_of_signatures}
 
-TODO: rewrite.
+In this section we say what it means that a model of ETT supports
+IITs. We first define the notion of IIT signature. Signatures for
+algebraic theories are usually given by inductive definitions. On the
+one hand, we take this even further: our notion of signature is given
+by a small type theory tailer-made to describe signatures, we call
+this the \emph{theory of IIT signatures}. On the other hand we would
+like to avoid using a complicated inductive definition (a type theory
+is a quotient inductive-inductive type) to describe a simpler class of
+inductive types. Hence we use a Church encoding of the theory of IIT
+signatures to define signatures thus avoiding the need for
+pre-existing inductive definitions. Another feature of our signatures
+is that as they can include types inside the model of ETT (such as
+$\N$ in the $\mathsf{isEven}$--$\mathsf{isOdd}$), hence signatures
+arex internal to the particular model of ETT.
 
-In this section we show how to describe signatures for IITs using a
-QIIT, the theory of IIT signatures. We will say what it means for a
-model of ETT to support the theory of IIT signatures. First we need to
-say what a \emph{theory of IIT signature algebra} is and what
-morphisms between such algebras are. Then supporting the theory of IIT
-signatures means that there exists an algebra with a unique morphism
-to every other algebra.
-
-This description is analogous to saying that a model of ETT supports
-natural numbers as follows: Using the internal language of the model,
-a natural number algebra is given by a $\mathsf{Nat}:\Set$,
-$\mathsf{zero}:\mathsf{Nat}$ and
-$\mathsf{suc}:\mathsf{Nat}\ra \mathsf{Nat}$, while a morphism between
-algebras $M$ and $N$ is given by a function
-$f:\mathsf{Nat}^M\ra\mathsf{Nat}^N$ such that
-$f\,\mathsf{zero}^M=\mathsf{zero}^N$ and
-$f\,(\mathsf{suc}^M\,m)=\mathsf{suc}^N\,(f\,m)$. Natural numbers
-themselves are given by an algebra equipped with a unique morphism
-into any other algebra (the recursor).
-
-We will call \emph{theory of IIT signature algebras} simply
-\emph{signature algebras}. A signature algebra can be seen as a model
-of a small type theory which consists of (1) a substitution calculus
-(CwF \cite{Dybjer96internaltype}) equipped with (2) a universe, (3) a
-function space where the domain is small and (3) another function
-space with external domain. We explain the usage of these type
-formers through examples after the definitions.
+We define the theory of IIT signatures by saying what its algebras
+(models) are. We call the \emph{theory of IIT signatures algebras}
+simply \emph{signature algebras}. The theory of signatures is a small
+type theory consisting of a (1) a substitution calculus (category with
+families, CwF \cite{Dybjer96internaltype}) equipped with (2) a
+universe, (3) a function space where the domain is in the universe and
+(4) another function space with external domain. We explain the usage
+of these type formers through examples after the definitions.
 
 \begin{definition}[Signature algebra, $\SignAlg$]\label{def:algebra}
   In a model of ETT, a signature algebra is an iterated $\Sigma$ type
@@ -493,6 +487,10 @@ $\Sub^M$, $\Tm^M$, $\id^M$, and so on.
   An IIT signature is a context in an arbitrary signature algebra,
   that is, a function $(M:\SignAlg)\ra\Con^M$.
 \end{definition}
+This can be seen as a Church encoding of $\Con$. For our purposes it
+is not a problem that signatures don't live at the lowest universe
+level.
+
 Note that the notion of IIT signature is relative to a model of ETT:
 it is expressed as a term (of a function type) in the model. This is
 necessary because of the function space $\Pim$ which has as domain an
@@ -551,7 +549,7 @@ the same as the $\blank^\A$, $\blank^\D$ and $\blank^\S$ operations in
 illustrate its usage by an example.
 
 \begin{example}[Algebras, displayed algebras and sections for natural
-  numbers]
+  numbers]\label{ex:adsnat}
   For the signature of natural numbers as given in
   \Cref{ex:signatures}, algebras are given by the $\Sigma$-type
   $(N:\Set)\times N\times(N\ra N)$. A displayed algebra over $(N,z,s)$
@@ -613,7 +611,7 @@ We first explain it by columns: the first column ($^A$ components)
 corresponds to the standard model (set model, metacircular
 interpretation \cite{ttintt}): contexts are sets, types are families,
 terms are functions, the universe $\U$ is given by $\Set$, function
-spaces are given by the external function space. The $^D$ column is a
+spaces are given by the external function space. The $^\D$ column is a
 logical predicate interpretation, $^\A$ and $^\D$ together are a unary
 version of the parametric model for dependent types
 \cite{10.1145/2535838.2535852}. Contexts are predicates, types are
@@ -652,13 +650,14 @@ of displayed CwFs where it is essential that the domain is discrete,
 $\Pim$ is the pointwise direct product.
 
 \begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
-  A model of ETT supports IITs if for any signature signature
-  $f:(M:\SignAlg)\ra\Con^M$ we have a $\con_f: (f\,\ADS)^\A$ and an
-  $\elim_f : (\gamma^D:(f\,\ADS)^\D\,\con_f)\ra (f\,\ADS)^\S\,\con_f\,\gamma^D$.
+  A model of ETT supports IITs if for any signature
+  $f:(M:\SignAlg)\ra\Con^M$ there is a $\con_f: (f\,\ADS)^\A$ and an
+  $\elim_f : (\gamma^D:(f\,\ADS)^\D\,\con_f)\ra
+  (f\,\ADS)^\S\,\con_f\,\gamma^D$.
 \end{definition}
 In other words, for any signature, we have an algebra called $\con$
 (constructors) and for any displayed algebra over the constructors, we
-have a section.
+have a section (called the eliminator).
 
 One can check that \Cref{sec:hasiits} gives the right
 notion of constructors and elimination principle for the signatures in
@@ -669,26 +668,55 @@ notion of constructors and elimination principle for the signatures in
   \begin{alignat*}{5}
     & ({nat}\,\ADS)^\A = \\
     & (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\A = \\
-    & \Big(\big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,(\pi_2\,(\pi_1\,\id)) \Ra \El\,(\pi_2\,(\pi_1\,\id))\Big)^\A = \\
+    & \Big(\big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\A = \\
+    & \Big(\gamma'':\big(\gamma':((\gamma:\boldsymbol{\cdot}^\A)\times \U^\A\,\gamma)\big)\times (\El\,(\pi_2\,\id))^\A\,\gamma'\Big)\times\Big(\Pi\,\big(\pi_2\,(\pi_1\,\id)\big)\,\big(\pi_2\,(\pi_1\,(\pi_1\,\id))\big)\Big)^\A\,\gamma'' = \\
     & \Big(\gamma'':\big(\gamma':((\gamma:\top)\times\Set)\big)\times(\proj_2\,\gamma')\Big)\times\big(\proj_2\,(\proj_1\,\gamma'')\ra\proj_2\,(\proj_1\,\gamma'')\big),
   \end{alignat*}
-  which is the left-associated $\Sigma$ type isomorphic to its
-  right-associated counterpart
+  which is a left-nested $\Sigma$ type isomorphic to its
+  right-nested counterpart
   \[
     (N:\Set)\times \big(N \times (N\ra N)\big).
   \]
-  Pretending that we always had the right-associated variant, the type
-  of $\elim_{nat}$ computes as follows.
+  Writing $(((\tt,\mathsf{Nat}),\mathsf{zero}),\mathsf{suc})$ for
+  $\con_{nat}$, the type of $\elim_{nat}$ computes as follows.
   \begin{alignat*}{5}
-    & (\gamma^D:\,\, && ({nat}\,\ADS)^\D\,\con_{nat})\ra ({nat}\,\ADS)^\S\,\con_{nat}\,\gamma^D = \\
-    & (\gamma^D:\,\, && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\D\,\con_{nat})\ra \\
-    & && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\S\,\con_{nat}\,\gamma^D = \\
-    & (\gamma^D:\,\, && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\D\,\con_{nat})\ra \\
-    & && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\S\,\con_{nat}\,\gamma^D = \\
+    & \rlap{$(\gamma^D: ({nat}\,\ADS)^\D\,\con_{nat})\ra ({nat}\,\ADS)^\S\,\con_{nat}\,\gamma^D =$} \\
+    & \rlap{$\bigg(\gamma^D: \Big( \big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\D\,\con_{nat}\bigg)\ra$} \\
+    & \rlap{$\Big( \big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\S\,\con_{nat}\,\gamma^D =$} \\
+    & \rlap{$\bigg(\gamma^D: \Big( \big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\D\,$} \\
+    & \rlap{$\hspace{1em} \big(((\tt,\mathsf{Nat}),\mathsf{zero}),\mathsf{suc}\big)\bigg)\ra$} \\
+    & \rlap{$\Big(\big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\S\,\big(((\tt,\mathsf{Nat}),\mathsf{zero}),\mathsf{suc}\big)\,\gamma^D = $} \\
+    & \bigg(\big(((\tt,N^D),z^D),s^D\big): && \Big( {\gamma^D}'':\big({\gamma^D}':((\gamma^D:\boldsymbol{\cdot}^\D\,\tt)\times \U^\D\,\gamma^D\,\mathsf{Nat})\big)\times (\El\,(\pi_2\,\id))^\D\,{\gamma^D}'\,\mathsf{zero}\Big)\times \\
+    & && \Big(\Pi\,\big(\pi_2\,(\pi_1\,\id)\big)\,\big(\pi_2\,(\pi_1\,(\pi_1\,\id))\big)\Big)^\D\,{\gamma^D}''\,\mathsf{suc}\bigg)\ra \\
+    & \rlap{$ \Big(\big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,\big(\pi_2\,(\pi_1\,\id)\big) \Ra \El\,\big(\pi_2\,(\pi_1\,\id)\big)\Big)^\S\,(((\tt,\mathsf{Nat}),\mathsf{zero}),\mathsf{suc})\,$} \\
+    & \rlap{$\hspace{1em} \big(((\tt,N^D),z^D),s^D\big) =$} \\
+    & \bigg(\big(((\tt,N^D),z^D),s^D\big): && \Big( {\gamma^D}'':\big({\gamma^D}':((\gamma^D:\boldsymbol{\cdot}^\D\,\tt)\times \U^\D\,\gamma^D\,\mathsf{Nat})\big)\times (\El\,(\pi_2\,\id))^\D\,{\gamma^D}'\,\mathsf{zero}\Big)\times \\
+    & && \Big(\Pi\,\big(\pi_2\,(\pi_1\,\id)\big)\,\big(\pi_2\,(\pi_1\,(\pi_1\,\id))\big)\Big)^\D\,{\gamma^D}''\,\mathsf{suc}\bigg)\ra \\
+    & \rlap{$ \Big( {\gamma^S}'':\big({\gamma^S}':((\gamma^S:\boldsymbol{\cdot}^\S\,\tt\,\tt)\times \U^\S\,\gamma^S\,\mathsf{Nat}\,N^D)\big)\times (\El\,(\pi_2\,\id))^\S\,{\gamma^S}'\,\mathsf{zero}\,z^D\Big)\times$} \\
+    & \rlap{$ \Big(\Pi\,\big(\pi_2\,(\pi_1\,\id)\big)\,\big(\pi_2\,(\pi_1\,(\pi_1\,\id))\big)\Big)^\S\,{\gamma^S}''\,\mathsf{suc}\,s^D = $} \\
+    & \bigg(\big(((\tt,N^D),z^D),s^D\big): && \Big( {\gamma^D}'':\big({\gamma^D}':((\gamma^D:\top)\times (\mathsf{Nat}\ra\Set))\big)\times \proj_2\,{\gamma^D}'\,\mathsf{zero}\Big)\times \\
+    & && \big(\proj_2\,(\proj_1\,{\gamma^D}'')\,n\ra\proj_2\,(\proj_1\,{\gamma^D}'')\,(\mathsf{suc}\,n)\big)\bigg)\ra \\
+    & \rlap{$ \Big( {\gamma^S}'':\big({\gamma^S}':((\gamma^S:\top)\times ((n:\mathsf{Nat})\ra N^D\,n))\big)\times \proj_2\,{\gamma^S}'\,\mathsf{zero} = z^D\Big)\times$} \\
+    & \rlap{$ \Big(\big(n:\mathsf{Nat}\big)\ra\proj_2\,(\proj_1\,(\proj_1\,{\gamma^S}''))\,(\mathsf{suc}\,n) = s^D\,\big(\proj_2\,(\proj_1\,(\proj_1\,{\gamma^S}''))\,n\big)\Big)$}
+  \end{alignat*}
+  This is again a left-nested version of the expected elimination
+  principle
+  \begin{alignat*}{10}
+    & (N^D:\mathsf{Nat}\ra\Set)(z^D:N^D\,\mathsf{zero})\big(s^D:(n:\mathsf{Nat})\ra N^D\,n\ra N^D\,(\mathsf{suc}\,n)\big)\ra \\
+    & \big(N^S:(n:\mathsf{Nat})\ra N^D\,n\big)\times(N^S\,\mathsf{zero} = z^D)\times \big((n:\mathsf{Nat})\ra N^S\,(\mathsf{suc}\,n) = s^D\,(N^S\,n)\big)
   \end{alignat*}
 \end{example}
+\begin{remark}
+  Note that as we work in a model of ETT, the computation rules that
+  are expected from the elimination principle are given up to the
+  internal equality type, however by equality reflection we also get
+  them as definitional equalities.
+\end{remark}
 
-xxx
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Constructing IITs from the Theory of IIT Signatures}
+\label{sec:constructingiits}
 
 The definition of morphism is determined by the notion of algebra, it
 can be computed following \cite{large_inf_qiit}, but we include it
@@ -733,10 +761,9 @@ here for completeness.
   morphism is called recursor.
 \end{definition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Constructing IITs from the Theory of IIT Signatures}
-\label{sec:constructingiits}
+
+
 
 In this section, we first specify what it means that a model of ETT
 supports all IITs. In order to even say this, the model already has to
