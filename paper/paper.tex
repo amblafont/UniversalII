@@ -502,7 +502,7 @@ external parameters, like the type of the elements in lists.
 \begin{example}[Example signatures]\label{ex:signatures}
   The signature for natural numbers is given by the function
   \[
-    \lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M).
+    nat := \lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M).
   \]
   For readability we write the same signature without the $\lambda$
   and the superscripts below on the left and we also write an informal
@@ -572,7 +572,7 @@ illustrate its usage by an example.
   
 \begin{definition}[The signature algebra $\ADS$]\label{def:ads}
   We define an element of $\SignAlg$ by listing all its components
-  $\Con$, $\Ty$, $\Sub$, and so on, one per line. Each such components
+  $\Con$, $\Ty$, $\Sub$, and so on, one per row. Each such components
   has three parts denoted by $^\A$, $^\D$ and $^\S$. The equality
   components of $\SignAlg$ are omitted as they are all reflexivity.
   \begin{alignat*}{10}
@@ -651,40 +651,44 @@ $\Gamma$ to the CwF of sets). $\Pi$ is given as by a dependent product
 of displayed CwFs where it is essential that the domain is discrete,
 $\Pim$ is the pointwise direct product.
 
-\begin{definition}[A model of ETT supports IITs]
+\begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
   A model of ETT supports IITs if for any signature signature
-  $\Omega:(M:\SignAlg)\ra\Con^M$ we have an $$
+  $f:(M:\SignAlg)\ra\Con^M$ we have a $\con_f: (f\,\ADS)^\A$ and an
+  $\elim_f : (\gamma^D:(f\,\ADS)^\D\,\con_f)\ra (f\,\ADS)^\S\,\con_f\,\gamma^D$.
 \end{definition}
+In other words, for any signature, we have an algebra called $\con$
+(constructors) and for any displayed algebra over the constructors, we
+have a section.
 
-Now, given a signature $f:(M:\SignAlg)\ra\Con^M$, we obtain
-$(f\,\ADS)^\A$
-
-
-  We describe the most important
-  components, a full definition is given in the appendix (TODO). A
-  $\Gamma:\Con$ is given by a $\Sigma$ type with three elements:
+One can check that \Cref{sec:hasiits} gives the right
+notion of constructors and elimination principle for the signatures in
+\Cref{ex:signatures}.
+\begin{example}[An IIT supports natural numbers]
+  For the signature $nat$ of natural numbers in \Cref{ex:signatures},
+  the type of $\con_{nat}$ is
+  \begin{alignat*}{5}
+    & ({nat}\,\ADS)^\A = \\
+    & (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\A = \\
+    & \Big(\big((\boldsymbol{\cdot}\,\ext\,\U)\,\ext\,\El\,(\pi_2\,\id)\big)\,\ext\,(\pi_2\,(\pi_1\,\id)) \Ra \El\,(\pi_2\,(\pi_1\,\id))\Big)^\A = \\
+    & \Big(\gamma'':\big(\gamma':((\gamma:\top)\times\Set)\big)\times(\proj_2\,\gamma')\Big)\times\big(\proj_2\,(\proj_1\,\gamma'')\ra\proj_2\,(\proj_1\,\gamma'')\big),
+  \end{alignat*}
+  which is the left-associated $\Sigma$ type isomorphic to its
+  right-associated counterpart
   \[
-    (\Gamma^\A:\Set) \times (\Gamma^\D:\Gamma^\A\ra\Set) \times (\Gamma^\S:(\gamma:\Gamma^\A)\ra\Gamma^\D\,\gamma\ra\Set)
+    (N:\Set)\times \big(N \times (N\ra N)\big).
   \]
-  As a signature is a context in an arbitrary signature algebra, using
-  $\ADS$ a signature provides an algebra $\Gamma^\A$, a displayed
-  algebra $\Gamma^\D$ and a section $\Gamma^\S$.
-
-  A type in $\ADS$ is given by dependent versions of $\Con$:
-  \begin{alignat*}{6}
-    & (A:\Ty\,\Gamma) := \,\,&& (A^\A:\Gamma^A\ra\Set) \times (A^\D:\Gamma^\D\,\gamma\ra A^\A\,\gamma\ra\Set) \times \\
-    & && (A^\S:\Gamma^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra A^\D\,\gamma^D\,\alpha\ra\Set)
+  Pretending that we always had the right-associated variant, the type
+  of $\elim_{nat}$ computes as follows.
+  \begin{alignat*}{5}
+    & (\gamma^D:\,\, && ({nat}\,\ADS)^\D\,\con_{nat})\ra ({nat}\,\ADS)^\S\,\con_{nat}\,\gamma^D = \\
+    & (\gamma^D:\,\, && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\D\,\con_{nat})\ra \\
+    & && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\S\,\con_{nat}\,\gamma^D = \\
+    & (\gamma^D:\,\, && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\D\,\con_{nat})\ra \\
+    & && (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\S\,\con_{nat}\,\gamma^D = \\
   \end{alignat*}
-  Substitutions (and terms) are given by (dependent) functions which
-  respect the predicates $^\D$ and relations $^\S$.
-  \begin{alignat*}{10}
-    & (\sigma:\Sub\,\Gamma\,\Delta) && := \,\, && (\sigma^\A:\Gamma^\A\ra\Delta^\A) \times (\sigma^\D:\Gamma^\D\,\gamma\ra\Delta^\D\,(\sigma^\A\,\gamma)) \times \\
-    & && && \rlap{$(\sigma^\S:\Gamma^\S\,\gamma\,\gamma^D\ra\Delta^\S\,(\sigma^A\,\gamma)\,(\sigma^\D\,\gamma^D))$} \\
-    & (t:\Tm\,\Gamma\,A) && := && (t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma) \times (t^\D:(\gamma^D:\Gamma^\D\,\gamma)\ra A^\D\,\gamma^D\,(t^\A\,\gamma)) \times \\
-    & && && (t^\S:(\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\ra A^\S\,(t^A\,\gamma)\,(t^\D\,\gamma^D))
-  \end{alignat*}
+\end{example}
 
-  xxx
+xxx
 
 The definition of morphism is determined by the notion of algebra, it
 can be computed following \cite{large_inf_qiit}, but we include it
