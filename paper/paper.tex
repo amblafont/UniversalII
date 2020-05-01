@@ -645,9 +645,10 @@ illustrate its usage by an example.
   
 \begin{definition}[The signature algebra $\ADS$]\label{def:ads}
   We define an element of $\SignAlg$ by listing all its components
-  $\Con$, $\Ty$, $\Sub$, and so on, one per row. Each such components
-  has three parts denoted by $^\A$, $^\D$ and $^\S$. The equality
-  components of $\SignAlg$ are omitted as they are all reflexivity.
+  $\Con$, $\Ty$, $\Sub$, and so on, one per row. Each such component
+  has three parts denoted by $^\A$, $^\D$ and $^\S$, respectively. The
+  equality components of $\SignAlg$ are omitted as they are all
+  reflexivity.
   \begin{alignat*}{10}
     & (\Gamma^\A:\Set) && \hspace{-0.3em}\times && (\Gamma^\D:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (\Gamma^\S:(\gamma:\Gamma^\A)\ra\Gamma^\D\,\gamma\ra\Set) \\
     & (A^\A:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (A^\D:\Gamma^\D\,\gamma\ra A^\A\,\gamma\ra\Set) && \hspace{-0.3em}\times && (A^\S:\Gamma^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra \\
@@ -723,6 +724,16 @@ $\El\,a$ is the part of the discrete displayed CwF coming from $a$
 (which is a CwF-morphism from $\Gamma$ to the CwF of sets). $\Pi$ is
 given by a dependent product of displayed CwFs where it is essential
 that the domain is discrete, $\Pim$ is the pointwise direct product.
+
+\begin{definition}[The set signature algebra $\A$]\label{def:a}
+  $\A : \SignAlg$ is given by the first $^\A$ components of $\ADS$
+  (\Cref{def:ads}), that is, $\Con^\A := \Set$,
+  $\Ty^\A\,\Gamma := \Gamma\ra\Set$,
+  $\Sub^\A\,\Gamma\,\Delta := \Gamma\ra\Delta$, and so on. Note that
+  there is a morphism from $\ADS$ to $\A$ defined by $\blank^\A$ at
+  each component, which we also denote by
+  $\blank^\A : \SignMor\,\ADS\,\A$.
+\end{definition}
 
 \begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
   A model of ETT supports IITs if for any signature $(sig,nat):\Sign$
@@ -810,11 +821,81 @@ The contents of this section are an adjustment of \cite[Sections 4 and
 \begin{definition}\label{def:theoryofsignatures}
   A model of ETT supports the theory of IIT signatures if there is a
   signature algebra $\I : \SignAlg$ equipped with a unique morphism
-  into any algebra $\rec : (M:\SignAlg)\ra\SignMor\,\I\,M$. We call
-  this algebra the syntax or initial algebra, the morphism is called
-  recursor.
+  $\ll\blank\rr_{M} : \SignMor\,\I\,M$ into any algebra $M$. Sometimes
+  we omit the subscript $_M$. We call $\I$ the syntax or initial
+  algebra, the morphism $\ll\blank\rr$ is called recursor.
 \end{definition}
 
+First we define the term signature algebra using which we obtain the
+constructors $\con$ for any IIT signature. Then we will define another
+signature algebra which provides the eliminator. Before doing these,
+we illustrate the idea on natural numbers.
+\begin{example}
+  For natural numbers, we will define the constructors $\con$ as the
+  following natural number algebra
+  $(\mathsf{Nat},\mathsf{zero},\mathsf{suc})$. We write variable names
+  instead of de Bruijn indices for readability.
+  \begin{alignat*}{5}
+    & \mathsf{Nat} && := \Tm^\I\,(\cdot\rhd N:\U\rhd z:\El\,N\rhd s:N\Ra\El\,N)\,(\El\,N) \\
+    & \mathsf{zero} && := z \\
+    & \mathsf{suc} && := \lambda t. (s\oldapp t)
+  \end{alignat*}
+  Natural numbers are simply $\I$-terms of type $\El\,N$ in the
+  context representing the signature for natural numbers. In this
+  context, the only way to define a term of type $\El\,N$ is to use
+  $z$ and $s$, corresponding to the $\mathsf{zero}$ and $\mathsf{suc}$
+  constructors.
+
+  To define the action of the eliminator on a natural number
+  $n : \mathsf{Nat}$, let's look at the type of the displayed algebra
+  interpretation of the number:
+  \[
+    {\ll n \rr_\ADS}^\D : (\gamma^D : \ll\cdot\rhd N:\U\rhd z:\El\,N\rhd s:N\Ra\El\,N\rr^\D\,\con) \ra \ll\El\,N\rr^\D\,(\ll n\rr^\A\,\con)
+  \]
+  This says that for a displayed algebra $(N^D,z^D,s^D)$ over $\con$
+  (i.e.\ the motives and methods of the eliminator), we get a witness
+  of the predicate $\ll\El\,N\rr^\D = N^D$ at the algebra
+  interpretation of $n$. This is not yet good, as we would like to get
+  $N^D\,n$ instead of $N^D\,(\ll n\rr^\A\,\con)$ as a result. However,
+  interpretation into the term signature algebra will imply that
+  $n = \ll n\rr^\A\,\con$.
+\end{example}
+
+\begin{definition}[Term signature algebra $\A\blank\C_{\blank}$]
+  For an $M:\SignAlg$ and $\Omega:\Con^M$, we define ${\A M\C}_\Omega$
+  which we call the term signature algebra. It is equipped with
+  morphisms $\blank^\A : \SignMor\,({\A M\C}_\Omega)\,\A$ and
+  $\blank^M : \SignMor\,({\A M\C}_\Omega)\,M$.
+
+  We define ${\A M\C}_\Omega$ by listing all its components $\Con$,
+  $\Ty$, $\Sub$, and so on, one per row. Each component has three
+  parts denoted by $^\A$, $^M$ and $^\C$. The $^\A$ and $^M$ parts are
+  just reusing the corresponding parts from $\A$ and $M$,
+  respectively, and thus the morphisms $\blank^\A$ and $\blank^M$ are
+  defined as the obvious projections. We omit the equality components,
+  as they come from UIP or are trivial. We also omit the components
+  for terms and substitutions as their $^\C$ parts are uninformative
+  equational reasonings.
+  \begin{alignat*}{10}
+    & \Gamma^\A:\Set && \hspace{0.4em} && \Gamma^M:\Con^M && \hspace{0.4em} && \Gamma^\C: \Sub^M\,\Omega\,\Gamma^M\ra \Gamma^\A \\
+    & A^\A:\Gamma^\A\ra\Set && && A^M:\Ty^M\,\Gamma^M && && A^\C:(\nu:\Sub^M\,\Omega\,\Gamma^M)\ra \\
+    & && && && && \hspace{1em} \Tm^M\,\Omega\,(A^M[\nu])\ra A^\A\,(\Gamma^\C\,\nu) \\
+    & \sigma^\A:\Gamma^\A\ra\Delta^\A && && \sigma^M:\Sub^M\,\Gamma^M\,\Delta^M && && \sigma^\C:\Delta^\C\,(\sigma^M\circ\nu)=\sigma^A\,(\Gamma^\C\,\nu) \\
+    & t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma && && t^M:\Tm^M\,\Gamma^M\,A^M && && t^\C : A^\C\,\nu\,(t^M[\nu])= t^A\,(\Gamma^\C\,\nu) \\
+    & (A[\sigma])^\A\,\gamma := A^\A\,(\sigma^\A\,\gamma) && && (A[\sigma])^M := A^M[\sigma^M]^M && && (A[\sigma])^\C\,\nu\,t := A^\C\,(\sigma^M\circ\nu)\,t \\
+    & \cdot^\A := \top && && \cdot^M := \cdot^M && && \cdot^\C\,\nu := \tt \\
+    & (\Gamma\rhd A)^\A := && && (\Gamma\rhd A)^M :=  && && (\Gamma\rhd A)^\C\,\nu := \\
+    & \hspace{1em} (\gamma:\Gamma^\A)\times A^\A\,\gamma && && \hspace{1em} \Gamma^M\rhd^M A^M && && \hspace{1em} (\Gamma^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & \U^\A\,\gamma := \Set && && \U^M := \U^M && && \U^\C\nu\,a := \Tm^M\,\Omega\,(\El^M\,a) \\
+    & (\El\,a)^\A\,\gamma := a^\A\,\gamma && && (\El\,a)^M := \El^M\,a^M && && (\El\,a)^\C\,\nu\,t := (a^\C\,\nu) \# t \\
+    & (\Pi\,a\,B)^\A\,\gamma := && && (\Pi\,a\,B)^M := && && (\Pi\,a\,B)^\C\,\nu\,t :=  \\
+    & \hspace{1em} (\alpha:a^\A\,\gamma)\ra B^\A\,(\gamma,\alpha) && && \hspace{1em} \Pi^M\,a^M\,B^M && && \hspace{1em} \lambda\alpha.B^\C\,\big(\nu, (a^\C\,\nu)\#\alpha\big)\,\big(t\oldapp ((a^\C\,\nu) \#\alpha)\big) \\
+    & (\Pim\,T\,B)^\A\,\gamma := && && (\Pim\,T\,B)^M := && && (\Pim\,T\,B)^\C\,\nu\,t := \lambda\alpha.(B\,\alpha)^\C\,\nu\,(t\appm\alpha) \\
+    & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} \Pim^M\,T\,B^M && && 
+  \end{alignat*}
+\end{definition}
+
+xxx
 
 
 
