@@ -405,13 +405,22 @@ one hand, we take this even further: our notion of signature is given
 by a small type theory tailer-made to describe signatures, we call
 this the \emph{theory of IIT signatures}. On the other hand we would
 like to avoid using a complicated inductive definition (a type theory
-is a quotient inductive-inductive type) to describe a simpler class of
-inductive types. Hence we use a Church encoding of the theory of IIT
-signatures to define signatures thus avoiding the need for
-pre-existing inductive definitions. Another feature of our signatures
-is that as they can include types inside the model of ETT (such as
-$\N$ in the $\mathsf{isEven}$--$\mathsf{isOdd}$), hence signatures
-arex internal to the particular model of ETT.
+is a quotient inductive-inductive type \cite{ttintt}) to describe a
+simpler class of inductive types. Hence we use a Church encoding
+\cite{DBLP:conf/lics/AwodeyFS18} of the theory of IIT signatures thus
+avoiding the need for pre-existing inductive definitions. Another
+feature of our signatures is that they can include types from the
+model of ETT (such as $\N$ in the
+$\mathsf{isEven}$--$\mathsf{isOdd}$). This is why signatures are
+specified internally to the particular model of ETT.\footnote{There is
+  another method inspired by Capriotti \cite{paolo} which allows
+  stating what it means that any CwF $\mathcal{C}$ (not necessarily a
+  model of ETT) supports IITs with definitional computation rules. In
+  this method, signatures are described in the internal language of
+  $\hat{\mathcal{C}}$, the presheaf model over $\mathcal{C}$. We don't
+  use this approach because it is more technical, and it would not
+  strengthen our main theorem (TODO: refer) as theorem (TODO: refer)
+  needs $\mathcal{C}$ to be a model of ETT.}
 
 We define the theory of IIT signatures by saying what its algebras
 (models) are. We call the \emph{theory of IIT signatures algebras}
@@ -420,12 +429,12 @@ type theory consisting of a (1) a substitution calculus (category with
 families, CwF \cite{Dybjer96internaltype}) equipped with (2) a
 universe, (3) a function space where the domain is in the universe and
 (4) another function space with external domain. We explain the usage
-of these type formers through examples after the definitions.
+of these type formers through examples after the definition.
 
 \begin{definition}[Signature algebra, $\SignAlg$]\label{def:algebra}
   In a model of ETT, a signature algebra is an iterated $\Sigma$ type
-  consisting of the following components: four (families of) sets, 17
-  operations and 18 equalities.
+  consisting of the following four (families of) sets, 17 operations
+  and 18 equalities.
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\
   & \Con && : \Set \\
@@ -483,13 +492,61 @@ $\Sub^M$, $\Tm^M$, $\id^M$, and so on.
   $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
 \end{definition}
 
-\begin{definition}[IIT signature]
-  An IIT signature is a context in an arbitrary signature algebra,
-  that is, a function $(M:\SignAlg)\ra\Con^M$.
+The definition of morphism is determined by the notion of algebra, it
+can be computed following \cite{large_inf_qiit}, but we include it
+here for completeness.
+\begin{definition}[Signature morphism, $\SignMor$]\label{def:morphism}
+  A morphism from signature algebras $M$ to $N$ denoted
+  $\SignMor\,M\,N$ consists of four functions and 17 equalities
+  expressing that the functions preserve the operations of the two
+  algebras. We use the same naming as in \Cref{def:algebra} and use
+  superscripts to denote which algebra is meant.
+\begin{alignat*}{5}
+  & \rlap{(1) Substitution calculus} \\
+  & \Con && : \Con^M && \ra\Con^N \\
+  & \Ty  && : \Ty^M\,\Gamma && \ra\Ty^N\,(\Con\,\Gamma) \\
+  & \Sub  && : \Sub^M\,\Gamma\,\Delta && \ra\Sub^N(\Con\,\Gamma)\,(\Con\,\Delta) \\
+  & \Tm  && : \Tm^M\,\Gamma\,A && \ra\Tm^N\,(\Con\,\Gamma)\,(\Ty\,A) \\
+  & \id && : \Sub\,\id^M && = \id^N \\
+  & {\circ} && : \sigma\circ^M\delta && = \Sub\,\sigma\circ^N\Sub\,\delta \\
+  & [] && : A[\sigma]^M && = \Ty\,A[\Sub\,\sigma]^N \\
+  & [] && : t[\sigma]^M && = \Tm\,t[\Sub\,\sigma]^N \\
+  & \boldsymbol{\cdot} && : \Con\,\boldsymbol{\cdot}^M && = \boldsymbol{\cdot}^N \\
+  & \epsilon && : \Sub\,\epsilon^M && = \epsilon^N \\
+  & \ext && : \Con\,(\Gamma\ext^M A) && = \Con\,\Gamma\ext^N\Ty\,A \\
+  & , && : \Sub\,(\sigma,^M t) && = \Sub\,\sigma ,^N\Tm\,t \\
+  & \pi_1 && : \Sub\,(\pi_1^M\,\sigma) && = \pi_1^N\,(\Sub\,\sigma) \\
+  & \pi_2 && : \Tm\,(\pi_2^M\,\sigma) && = \pi_2^N\,(\Sub\,\sigma) \\
+  & \rlap{(2) Universe} \\
+  & \U && : \Ty\,\U^M && = \U^N \\
+  & \El && : \Ty\,(\El^M\,a) && = \El^N\,(\Tm\,a) \\
+  & \rlap{(3) Inductive parameters} \\
+  & \Pi && : \Ty\,(\Pi^M\,a\,B) && = \Pi^N\,(\Tm\,a)\,(\Ty\,B) \\
+  & \oldapp && : \Tm\,(t\mathbin{{\oldapp}^M} u) && = \Tm\,t\mathbin{{\oldapp}^N}\,\Tm\,u \\
+  & \rlap{(4) External parameters} \\
+  & \Pim && : \Ty\,(\Pim^M\,T\,B) && = \Pim^N\,T\,(\lambda\alpha.\Ty\,(B\,\alpha)) \\
+  & \appm && : \Tm\,(t\mathbin{{\appm}^M}\alpha) && = \Tm\,t\mathbin{{\appm}^N}\alpha
+\end{alignat*}
+Given an $f:\SignMor\,M\,N$, we denote its first four components just
+by $f_\Con$, $f_\Ty$, $f_\Sub$, $f_\Tm$ or just write $f$ if it is
+clear which one is meant.
 \end{definition}
-This can be seen as a Church encoding of $\Con$. For our purposes it
-is not a problem that signatures don't live at the lowest universe
-level.
+
+\begin{definition}[IIT signature]
+  An IIT signature is a context in an arbitrary signature algebra
+  which is compatible with morphisms:
+  \begin{alignat*}{6}
+    & \Sign :=\,\, && \big({sig}:(M:\SignAlg)\ra\Con^M\big)\times \\
+    & && \big((M\,N:\SignAlg)(f:\SignMor\,M\,N)\ra f_\Con\,({sig}\,M) = {sig}\,N \big).
+  \end{alignat*}
+\end{definition}
+The first component is the Church encoding of $\Con$, the second is
+the compatibility condition introduced by Awodey, Frey and Speight
+\cite{DBLP:conf/lics/AwodeyFS18}. We don't need impredicativity, as we
+don't require that $\Sign$ is the initial signature algebra. The
+compatibility condition says that if we obtain an $M$-context using
+${sig}$ in model $M$ and then we transport it to $N$ using $f$, we get
+the same $N$-context as directly applying ${sig}$ to $N$.
 
 Note that the notion of IIT signature is relative to a model of ETT:
 it is expressed as a term (of a function type) in the model. This is
@@ -498,31 +555,49 @@ arbitrary type in the model. We make use of $\Pim$ in signatures with
 external parameters, like the type of the elements in lists.
 
 \begin{example}[Example signatures]\label{ex:signatures}
-  The signature for natural numbers is given by the function
+  Using informal notation with variable names, the signature for
+  natural numbers would be
   \[
-    nat := \lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M).
+    \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N.
   \]
-  For readability we write the same signature without the $\lambda$
-  and the superscripts below on the left and we also write an informal
-  version with variable names on the right for comparison.
-  \[
-  \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,1 \Ra \El\,1 \hspace{5.9em}
-  \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
-  \]
-  This signature is given by a context of length three. We start with
-  the empty context $\boldsymbol{\cdot}$, then we declare a sort by
-  $\U$, then we declare an operator producing an element of $\El\,0$
-  where $0$ is a de Bruijn index referring to the sort $\U$. Finally
-  we declare an operator which takes as input an element of the sort
-  $1$ and produces an element of the same sort. Note the assymetry of
-  the function type $\Ra$: on the left there needs to be an element of
-  $\U$, while on the right any type can appear (including another
-  function type). This ensures strict positivity of the operators.
+  This signature is a context of length three. We start with the empty
+  context $\boldsymbol{\cdot}$, then we declare a sort $N:\U$, then we
+  declare an operator producing an element of $N$ denoted by $\El\,N$,
+  and finally we declare an operator which takes as input an element
+  of the sort $N$ and produces an element of the same sort. Note the
+  assymetry of the function type $\Ra$: on the left there needs to be
+  an element of $\U$, while on the right any type can appear
+  (including another function type). This ensures strict positivity of
+  the operators.
 
+  Our theory of signatures uses de Bruijn indices instead of variable
+  names, so we rewrite the above signature to
+  \[
+    \boldsymbol{\cdot}\,\ext\,\U\,\ext\,z : \El\,0\,\ext\,s : 1 \Ra \El\,1,
+  \]
+  and as we $\Sign$ is defined formally as a pair of a Church encoding
+  together with a compatibility condition, our final definition for
+  the signature for natural numbers is the following. The
+  compatibility condition is written using equational reasoning.
+  \begin{alignat*}{5}
+    & \rlap{$(nat,natc) := $} \\
+    & \hspace{1em} && \big( && \rlap{$\lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M),$} \\
+    & && && \lambda M\,N\,f\,.\, && f_\Con\,(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M) = \\
+    & && && && f_\Con\,(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M)\ext^N f_\Ty\,(1^N\Ra^N \El^N\,1^N) = \\
+    & && && && f_\Con\,(\boldsymbol{\cdot}^M\,\ext^M\,\U^M)\,\ext^N\,f_\Ty\,(\El^M\,0^M)\ext^N f_\Tm\,1^N\Ra^M f_\Ty\,(\El^N\,1^N) = \\
+    & && && && f_\Con\,\boldsymbol{\cdot}^M\,\ext^N\,f_\Ty\,\U^M\,\ext^N\,\El^N\,(f_\Tm\,0^M)\ext^N 1^M\Ra^M \El^M\,(f_\Tm\,1^N) = \\
+    & && && && \boldsymbol{\cdot}^N\,\ext^N\,\U^N\,\ext^N\,\El^N\,0^N\,\ext^N\,1^N \Ra^N \El^N\,1^N \big)
+  \end{alignat*}
+  The first component builds the context describing natural numbers in
+  $M$, the second one uses the fact that $f$ is a morphism, that is,
+  it preserves all operations.
+  
   Lists with elements of a given $T : \Set$ type are given by the
   following signature. Here we use the function space with external
-  domain $\Ram$ to include a $T$ in the signature. Again, we omit the
-  $\lambda$ and the superscripts for readability.
+  domain $\Ram$ to include a $T$ in the signature. For readability, we
+  omit the $\lambda$ and the superscripts and we don't write the
+  compatibility condition. On the right we list the same signature
+  with variable names.
   \begin{alignat*}{10}
     & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
   \end{alignat*}
@@ -607,7 +682,7 @@ illustrate its usage by an example.
 \cite[Sections 4 and 6]{Kaposi:2019:CQI:3302515.3290315} for more details) or by rows
 (see \cite[Section 7.4]{Kaposi:2019:CQI:3302515.3290315}).
 
-We first explain it by columns: the first column ($^A$ components)
+We first explain it by columns: the first column ($^\A$ components)
 corresponds to the standard model (set model, metacircular
 interpretation \cite{ttintt}): contexts are sets, types are families,
 terms are functions, the universe $\U$ is given by $\Set$, function
@@ -620,8 +695,8 @@ respects the predicates (this is ususally called fundamental lemma of
 the logical predicate). $\U$ is given by predicate space, the
 predicate at a $\Pi$ type holds for a function if it respects the
 predicates. For $\Pim$, the predicate is defined pointwise. The last
-column ($^\S$) is a modified dependent logical relation which refers
-to both $^A$ and $^\D$. Contexts are binary relations where the second
+column $^\S$ is a modified dependent logical relation which refers to
+both $^A$ and $^\D$. Contexts are binary relations where the second
 parameter depends on the first one, types are dependent variants of
 this, terms say that the relation is respected by $^\A$ and $^\D$,
 respectively. $\U$ is however not relation space, but a function and
@@ -639,21 +714,26 @@ replace $\alpha^D$ by $a^\S\,\gamma^S\,\alpha$ in the definition.
 When viewing $\ADS$ by rows, we can see that it is a part of the CwF
 model of type theory \cite[Section
 7.4]{Kaposi:2019:CQI:3302515.3290315}. In the CwF model, a context is
-given by a CwF. From the category, we only have objects ($\Gamma^\A$),
-and from the families, we have the families for types $\Gamma^\D$ and
-terms $\Gamma^\S$. Types are the corresponding parts of displayed
-CwFs, substitutions are parts of CwF morphisms, terms are parts of CwF
-sections. $\U$ is part of the CwF of sets, $\El\,a$ is the part of the
-discrete displayed CwF coming from $a$ (which is a CwF-morphism from
-$\Gamma$ to the CwF of sets). $\Pi$ is given as by a dependent product
-of displayed CwFs where it is essential that the domain is discrete,
-$\Pim$ is the pointwise direct product.
+given by a CwF. Now, from the category part of the CwF, we only have
+objects ($\Gamma^\A$), and from the families, we have the families for
+types $\Gamma^\D$ and terms $\Gamma^\S$. Types are the corresponding
+parts of displayed CwFs, substitutions are parts of CwF morphisms,
+terms are parts of CwF sections. $\U$ is part of the CwF of sets,
+$\El\,a$ is the part of the discrete displayed CwF coming from $a$
+(which is a CwF-morphism from $\Gamma$ to the CwF of sets). $\Pi$ is
+given by a dependent product of displayed CwFs where it is essential
+that the domain is discrete, $\Pim$ is the pointwise direct product.
 
 \begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
-  A model of ETT supports IITs if for any signature
-  $f:(M:\SignAlg)\ra\Con^M$ there is a $\con_f: (f\,\ADS)^\A$ and an
-  $\elim_f : (\gamma^D:(f\,\ADS)^\D\,\con_f)\ra
-  (f\,\ADS)^\S\,\con_f\,\gamma^D$.
+  A model of ETT supports IITs if for any signature $(sig,nat):\Sign$
+  there is a
+  \[
+    \con_{sig}: ({sig}\,\ADS)^\A
+  \]
+  and an
+  \[
+    \elim_{sig} : (\gamma^D:({sig}\,\ADS)^\D\,\con_{sig})\ra ({sig}\,\ADS)^\S\,\con_{sig}\,\gamma^D.
+  \]
 \end{definition}
 In other words, for any signature, we have an algebra called $\con$
 (constructors) and for any displayed algebra over the constructors, we
@@ -663,7 +743,7 @@ One can check that \Cref{sec:hasiits} gives the right
 notion of constructors and elimination principle for the signatures in
 \Cref{ex:signatures}.
 \begin{example}[An IIT supports natural numbers]
-  For the signature $nat$ of natural numbers in \Cref{ex:signatures},
+  For the signature $({nat},{natc})$ of natural numbers in \Cref{ex:signatures},
   the type of $\con_{nat}$ is
   \begin{alignat*}{5}
     & ({nat}\,\ADS)^\A = \\
@@ -707,10 +787,10 @@ notion of constructors and elimination principle for the signatures in
   \end{alignat*}
 \end{example}
 \begin{remark}
-  Note that as we work in a model of ETT, the computation rules that
-  are expected from the elimination principle are given up to the
-  internal equality type, however by equality reflection we also get
-  them as definitional equalities.
+  The computation rules of the elimination principle are only expected
+  up to the internal equality type, but as we work with a model of
+  ETT, by equality reflection we also get them as definitional
+  equalities.
 \end{remark}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -718,64 +798,26 @@ notion of constructors and elimination principle for the signatures in
 \section{Constructing IITs from the Theory of IIT Signatures}
 \label{sec:constructingiits}
 
-In this section we first define what it means that a model of ETT
-supports the theory of IIT signatures, then we show that if this is
-the case, then it supports all IITs.
+In the previous section, using the notions of signature algebras and
+signature morphisms, we defined signatures for IITs and what it means
+for a model of ETT to support all IITs. In this section we show that
+if a model of ETT supports the theory of IIT signatures, then it
+supports all IITs.
 
-We state 
+The contents of this section are an adjustment of \cite[Sections 4 and
+6]{Kaposi:2019:CQI:3302515.3290315} to our setting.
 
-
-The definition of morphism is determined by the notion of algebra, it
-can be computed following \cite{large_inf_qiit}, but we include it
-here for completeness.
-\begin{definition}[Signature morphism]\label{def:morphism}
-  A morphism between signature algebras $M$ and $N$ consists of four
-  functions and 17 equalities expressing that the functions preserve
-  the operations of the two algebras. We use the same naming as in
-  \Cref{def:algebra} and use superscripts to denote which algebra is
-  meant.
-\begin{alignat*}{5}
-  & \rlap{(1) Substitution calculus} \\
-  & \Con && : \Con^M && \ra\Con^N \\
-  & \Ty  && : \Ty^M\,\Gamma && \ra\Ty^N\,(\Con\,\Gamma) \\
-  & \Sub  && : \Sub^M\,\Gamma\,\Delta && \ra\Sub^N(\Con\,\Gamma)\,(\Con\,\Delta) \\
-  & \Tm  && : \Tm^M\,\Gamma\,A && \ra\Tm^N\,(\Con\,\Gamma)\,(\Ty\,A) \\
-  & \id && : \Sub\,\id^M && = \id^N \\
-  & {\circ} && : \sigma\circ^M\delta && = \Sub\,\sigma\circ^N\Sub\,\delta \\
-  & [] && : A[\sigma]^M && = \Ty\,A[\Sub\,\sigma]^N \\
-  & [] && : t[\sigma]^M && = \Tm\,t[\Sub\,\sigma]^N \\
-  & \boldsymbol{\cdot} && : \Con\,\boldsymbol{\cdot}^M && = \boldsymbol{\cdot}^N \\
-  & \epsilon && : \Sub\,\epsilon^M && = \epsilon^N \\
-  & \ext && : \Con\,(\Gamma\ext^M A) && = \Con\,\Gamma\ext^N\Ty\,A \\
-  & , && : \Sub\,(\sigma,^M t) && = \Sub\,\sigma ,^N\Tm\,t \\
-  & \pi_1 && : \Sub\,(\pi_1^M\,\sigma) && = \pi_1^N\,(\Sub\,\sigma) \\
-  & \pi_2 && : \Tm\,(\pi_2^M\,\sigma) && = \pi_2^N\,(\Sub\,\sigma) \\
-  & \rlap{(2) Universe} \\
-  & \U && : \Ty\,\U^M && = \U^N \\
-  & \El && : \Ty\,(\El^M\,a) && = \El^N\,(\Tm\,a) \\
-  & \rlap{(3) Inductive parameters} \\
-  & \Pi && : \Ty\,(\Pi^M\,a\,B) && = \Pi^N\,(\Tm\,a)\,(\Ty\,B) \\
-  & \oldapp && : \Tm\,(t\mathbin{{\oldapp}^M} u) && = \Tm\,t\mathbin{{\oldapp}^N}\,\Tm\,u \\
-  & \rlap{(4) External parameters} \\
-  & \Pim && : \Ty\,(\Pim^M\,T\,B) && = \Pim^N\,T\,(\lambda\alpha.\Ty\,(B\,\alpha)) \\
-  & \appm && : \Tm\,(t\mathbin{{\appm}^M}\alpha) && = \Tm\,t\mathbin{{\appm}^N}\alpha
-\end{alignat*}
-\end{definition}
 \begin{definition}\label{def:theoryofsignatures}
   A model of ETT supports the theory of IIT signatures if there is a
-  signature algebra equipped with a unique morphism into any
-  algebra. We call this algebra the syntax or initial algebra, the
-  morphism is called recursor.
+  signature algebra $\I : \SignAlg$ equipped with a unique morphism
+  into any algebra $\rec : (M:\SignAlg)\ra\SignMor\,\I\,M$. We call
+  this algebra the syntax or initial algebra, the morphism is called
+  recursor.
 \end{definition}
 
 
 
 
-
-In this section, we first specify what it means that a model of ETT
-supports all IITs. In order to even say this, the model already has to
-support the theory of IIT signatures as given in
-\Cref{def:theoryofsignatures}. 
 
 We construct all IITs describable by the theory of IIT signatures through the
 term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
