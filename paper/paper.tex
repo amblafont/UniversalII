@@ -25,7 +25,14 @@
 
 \titlerunning{For Finitary Induction-Induction, Induction is Enough}%optional, please use if title is longer than one line
 
-\author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by Thematic Excellence Programme, Industry and Digitization Subprogramme (NRDI Office, 2019) and by the European Union, co-financed by the European Social Fund (EFOP-3.6.2-16-2017-00013, Thematic Fundamental Research Collaborations Grounding Innovation in Informatics and Infocommunication).}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
+\author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by the National Research,
+Development and Innovation Fund of Hungary, financed under the
+Thematic Excellence Programme funding scheme, Project
+no. ED18-1-2019-0030 (Application-specific highly reliable IT
+solutions), by the New National Excellence Program of the Ministry
+for Innovation and Technology, Project no. ÚNKP-19-4-ELTE-874, and
+by the Bolyai Fellowship of the Hungarian Academy of Sciences,
+Project no. BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
 \author{Andr{\'a}s Kov{\'a}cs}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{kovacsandras@inf.elte.hu}{https://orcid.org/0000-0002-6375-9781}{this author was supported by the European Union, co-financed by the European Social Fund (EFOP-3.6.3-VEKOP-16-2017-00002).}
 \author{Ambroise Lafont}{IMT Atlantique, Inria, LS2N CNRS, Nantes, France}{ambroise.lafont@inria.fr}{https://orcid.org/0000-0002-9299-641X}{}
 
@@ -826,11 +833,21 @@ The contents of this section are an adjustment of \cite[Sections 4 and
   algebra, the morphism $\ll\blank\rr$ is called recursor.
 \end{definition}
 
+\begin{remark}
+  In a model of ETT supporting the theory of ITT signatures, we can
+  view elements of $\Con^\I$ as syntactic signatures. We can turn a
+  $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$ and an
+  $\Omega:\Con^\I$ into a $\Sign$ by
+  $(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.f\,(\ll\Omega\rr_M) =
+  \ll\Omega\rr_N)$ where the equality in the second component comes
+  from uniqueness of the recursor.
+\end{remark}
+
 First we define the term signature algebra using which we obtain the
 constructors $\con$ for any IIT signature. Then we will define another
 signature algebra which provides the eliminator. Before doing these,
 we illustrate the idea on natural numbers.
-\begin{example}
+\begin{example}\label{eg:nat_con}
   For natural numbers, we will define the constructors $\con$ as the
   following natural number algebra
   $(\mathsf{Nat},\mathsf{zero},\mathsf{suc})$. We write variable names
@@ -841,10 +858,10 @@ we illustrate the idea on natural numbers.
     & \mathsf{suc} && := \lambda t. (s\oldapp t)
   \end{alignat*}
   Natural numbers are simply $\I$-terms of type $\El\,N$ in the
-  context representing the signature for natural numbers. In this
-  context, the only way to define a term of type $\El\,N$ is to use
-  $z$ and $s$, corresponding to the $\mathsf{zero}$ and $\mathsf{suc}$
-  constructors.
+  context which is the syntactic signature for natural numbers. In
+  this context, the only way to define a term of type $\El\,N$ is to
+  use $z$ and $s$, corresponding to the $\mathsf{zero}$ and
+  $\mathsf{suc}$ constructors.
 
   To define the action of the eliminator on a natural number
   $n : \mathsf{Nat}$, let's look at the type of the displayed algebra
@@ -867,10 +884,10 @@ we illustrate the idea on natural numbers.
   morphisms $\blank^\A : \SignMor\,({\A M\C}_\Omega)\,\A$ and
   $\blank^M : \SignMor\,({\A M\C}_\Omega)\,M$.
 
-  We define ${\A M\C}_\Omega$ by listing all its components $\Con$,
-  $\Ty$, $\Sub$, and so on, one per row. Each component has three
-  parts denoted by $^\A$, $^M$ and $^\C$. The $^\A$ and $^M$ parts are
-  just reusing the corresponding parts from $\A$ and $M$,
+  We define ${\A M\C}_\Omega$ by listing its components $\Con$, $\Ty$,
+  $\Sub$, and so on, one per row. Each component has three parts
+  denoted by $^\A$, $^M$ and $^\C$. The $^\A$ and $^M$ parts are just
+  reusing the corresponding components from $\A$ and $M$,
   respectively, and thus the morphisms $\blank^\A$ and $\blank^M$ are
   defined as the obvious projections. We omit the equality components,
   as they come from UIP or are trivial. We also omit the components
@@ -894,9 +911,64 @@ we illustrate the idea on natural numbers.
     & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} \Pim^M\,T\,B^M && && 
   \end{alignat*}
 \end{definition}
+\begin{example}
+  Now given a syntactic signature $\Omega:\Con^\I$, we get the
+  constructors as an $\Omega$-algebra by
+  $(\ll\Omega\rr_{{\A\I\C}_\Omega})^\C\,\id^\I : \ll\Omega\rr^\A$. If
+  $\Omega$ is the syntactic signature for natural numbers, we get the
+  constructors as in \Cref{eg:nat_con}.
+
+  An $a : \Tm\,\Omega\,\U$ is a sort term for a signature $\Omega$. If
+  $\Omega$ is the syntactic signature for natural numbers, $a$ can
+  only be $N$ ($1$ as a de Bruijn index). If $\Omega$ is the syntactic
+  signature for $\Con$--$\Ty$ (\Cref{ex:signatures}), $a$ can be
+  $Con$, $Ty\oldapp{empty}$,
+  $Ty\oldapp({ext}\oldapp {empty}\oldapp(U\oldapp{empty}))$, and so
+  on. In any case, for such an $a$, we obtain
+  $(\ll a\rr_{{\A\I\C}_\Omega})^\C\,\id^\I : \Tm^\I\,\Omega\,(\El\,a)
+  = \ll a\rr^\A\,(\ll\Omega\rr^\C\,\id^\I)$. That is, the algebra
+  interpretation of a sort term at the constructors is equal to terms
+  of that sort.
+
+  A $t : \Tm\,\Omega\,(\El\,a)$ is a term of a sort type $a$
+  constructed using the constructors in $\Omega$. For natural numbers,
+  such a $t$ can only be $s$ applied iteratively to $z$. For such a
+  $t$, we obtain
+  $\ll t\rr^\C\,\id^\I : t = \ll
+  t\rr^\A\,(\ll\Omega\rr^\C\,\id^\I)$. That is, a constructor term is
+  equal to its algebra interpretation at the constructors. This is
+  exactly the equation needed at the end of \Cref{eg:nat_con}.
+\end{example}
+\begin{remark}
+  Given a syntactic signature $\Omega : \Con^\I$, we can use the term
+  signature algebra with choices other than $M = \I$. For example, if
+  $M = \A$, we usual get the Church encoding by
+  $(\ll\Omega\rr_{{\A\A\C}_{\ll\Omega\rr^\A}})^\C\,\id^\A$. In the
+  case of natural numbers, this computes (up to curry-uncurry) to
+  $(N:\Set)(z:N)(s:N\ra N)\ra N$. Using $M = {\A\M}$ (the signature
+  algebra $\A$ extended with the binary version of $\D$ also called
+  logical relations, see \cite[Section
+  5]{Kaposi:2019:CQI:3302515.3290315}), we obtain the Church encoding
+  of Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}.
+\end{remark}
+
+\begin{definition}[Eliminator signature algebra $\IE_{\blank}$]
+  Given an $\Omega:\Con^\I$,
+  $\omega^D : \ll\Omega\rr^\D\,(\ll\Omega\rr^\C\,\id^\I)$, we define a
+  the signature algebra $\IE_{\omega^\D}$ as follows. It is equipped
+  with a morphism $\blank^\I : \SignMor\,\IE_{\omega^D}\,\I$.
+
+  We define $\IE_{\omega^D}$ by listing its components $\Con$, $\Ty$,
+  $\Sub$, and so on, one per row. Each component has two parts denoted
+  by $^\I$, and $^\E$. The $^\I$ part just reuses the corresponding
+  components of $\I$, thus the morphism $\blank^\I$ is defined as the
+  obvious projection. We omit the equality components, as they come
+  from UIP or are trivial. We also omit the components for terms and
+  substitutions as their $^\E$ parts are uninformative equational
+  reasonings.
 
 xxx
-
+\end{definition}
 
 
 
