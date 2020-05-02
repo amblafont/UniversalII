@@ -834,10 +834,10 @@ notion of constructors and elimination principle for the signatures in
 \label{sec:constructingiits}
 
 In the previous section, using the notions of signature algebras and
-signature morphisms, we defined signatures for IITs and what it means
-for a model of ETT to support all IITs. In this section we show that
-if a model of ETT supports the theory of IIT signatures, then it
-supports all IITs.
+signature morphisms, we defined IIT signatures and what it means for a
+model of ETT to support all IITs. In this section we show that if a
+model of ETT supports the theory of IIT signatures, then it supports
+all IITs.
 
 The contents of this section are an adjustment of \cite[Sections 4 and
 6]{Kaposi:2019:CQI:3302515.3290315} to our setting.
@@ -863,7 +863,7 @@ The contents of this section are an adjustment of \cite[Sections 4 and
 First we define the term signature algebra using which we obtain the
 constructors $\con$ for any IIT signature. Then we will define another
 signature algebra which provides the eliminator. Before doing these,
-we illustrate the idea on natural numbers.
+we illustrate the idea of both constructions on natural numbers.
 \begin{example}\label{eg:nat_con}
   For natural numbers, we will define the constructors $\con$ as the
   following natural number algebra
@@ -886,9 +886,9 @@ we illustrate the idea on natural numbers.
   \[
     {\ll n \rr_\ADS}^\D : (\gamma^D : \ll\cdot\rhd N:\U\rhd z:\El\,N\rhd s:N\Ra\El\,N\rr^\D\,\con) \ra \ll\El\,N\rr^\D\,(\ll n\rr^\A\,\con)
   \]
-  This says that for a displayed algebra $(N^D,z^D,s^D)$ over $\con$
-  (i.e.\ the motives and methods of the eliminator), we get a witness
-  of the predicate $\ll\El\,N\rr^\D = N^D$ at the algebra
+  This says that for a displayed algebra $\gamma^D=(N^D,z^D,s^D)$ over
+  $\con$ (i.e.\ the motives and methods of the eliminator), we get a
+  witness of the predicate $\ll\El\,N\rr^\D = N^D$ at the algebra
   interpretation of $n$. This is not yet good, as we would like to get
   $N^D\,n$ instead of $N^D\,(\ll n\rr^\A\,\con)$ as a result. However,
   interpretation into the term signature algebra will imply that
