@@ -488,20 +488,74 @@ of these type formers through examples after the definition.
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha
 \end{alignat*}
 Given an $M:\SignAlg$, we denote its components as $\Con^M$, $\Ty^M$,
-$\Sub^M$, $\Tm^M$, $\id^M$, and so on.
+$\Sub^M$, $\Tm^M$, $\id^M$, and so on. We omit the indices if there is
+only one signature algebra in scope (e.g.\ in
+\Cref{def:abbrevs,ex:contexts}).
 \end{definition}
 
 \begin{definition}[Abbreviations]\label{def:abbrevs}
-  For any signature algebra, we use
-  $\wk : \Sub\,(\Gamma\ext A)\,\Gamma$ to mean $\pi_1\,\id$. We
-  recover de Bruijn indices by setting $0:= \pi_2 \,\id$ and
-  $1+n := n[\wk]$. $\Pi\,a\,(B[\wk])$ is abbreviated by $a\Ra B$,
-  $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
+  For a signature algebra, we use $\wk : \Sub\,(\Gamma\ext A)\,\Gamma$
+  to mean $\pi_1\,\id$. We recover de Bruijn indices by setting
+  $0:= \pi_2 \,\id$ and $1+n := n[\wk]$. $\Pi\,a\,(B[\wk])$ is
+  abbreviated by $a\Ra B$, $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
 \end{definition}
 
-The definition of morphism is determined by the notion of algebra, it
-can be computed following \cite{large_inf_qiit}, but we include it
-here for completeness.
+\begin{example}[Example contexts in a signature algebra]\label{ex:contexts}
+  Given a signature algebra, we can define a context in which
+  specifies natural numbers. For readability, the an informal version
+  of the same context is displayed on the right using variable names.
+  \[
+    \boldsymbol{\cdot}\,\ext\,\U\,\ext\,z : \El\,0\,\ext\,s : 1 \Ra \El\,1
+    \hspace{4.9em}
+    \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N
+  \]
+  We start with the empty context $\boldsymbol{\cdot}$, then we
+  declare a sort $\U$, then we declare an operator producing an
+  element of the sort denoted by $\El\,0$ where $0$ is the de Bruijn
+  index referring to the sort. Finally, we declare an operator which
+  takes as input an element of the sort (now it became de Bruijn index
+  $1$) and produces an element of the same sort. Note the assymetry of
+  the function type $\Ra$: on the left there needs to be an element of
+  $\U$, while on the right any type can appear (including another
+  function type). This ensures strict positivity of the operators.
+
+  Lists with elements of a given $T : \Set$ type are given by the
+  following context. Here we use the function space with external
+  domain $\Ram$ to include a $T$ in the signature. For readability, we
+  omit the $\lambda$ and the superscripts and we don't write the
+  compatibility condition. On the right we list the same signature
+  with variable names.
+  \begin{alignat*}{10}
+    & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
+  \end{alignat*}
+ 
+  The $\Con$--$\Ty$ example from \Cref{sec:intro} is given by the
+  following context.
+  \begin{alignat*}{5}
+    & \boldsymbol{\cdot} \,\ext                                                 && \boldsymbol{\cdot} \,\ext                                                                \\
+    & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
+    & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
+    & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
+    & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
+    & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
+    & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
+  \end{alignat*}
+\end{example}
+
+The above examples are contexts in any signature algebra, and we could
+take this as a definition of signature: $(M:\SignAlg)\ra\Con^M$ is the
+usual Church-encoding of contexts. However (as we will see in TODO)
+the notion of constructor for such signatures would be too
+strong. Another approach would be to assume that there is a syntax for
+signature algebras (an initial signature algebra), and then a
+signature would be a context in this signature algebra. We will define
+syntactic signatures using this approach in the next section
+(\Cref{def:syntacticsignature}), but for now we don't want to assume
+the existence of any inductive type. Instead, we will use a restricted
+Church encoding which needs the notion of morphism of signatures.
+
+The notion of morphism is determined by the notion of algebra
+\cite{large_inf_qiit}, but we include it here for completeness.
 \begin{definition}[Signature morphism, $\SignMor$]\label{def:morphism}
   A morphism from signature algebras $M$ to $N$ denoted
   $\SignMor\,M\,N$ consists of four functions and 17 equalities
@@ -539,6 +593,12 @@ by $f_\Con$, $f_\Ty$, $f_\Sub$, $f_\Tm$ or just write $f$ if it is
 clear which one is meant.
 \end{definition}
 
+We define IIT signatures using the Church encoding introduced by
+Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}. A
+difference is that we avoid the usage of impredicativity as we don't
+require that signatures form a signature algebra. It is also not a
+problem for our use case that signatures are not in the lowest
+universe.
 \begin{definition}[IIT signature]
   An IIT signature is a context in an arbitrary signature algebra
   which is compatible with morphisms:
@@ -547,13 +607,11 @@ clear which one is meant.
     & && \big((M\,N:\SignAlg)(f:\SignMor\,M\,N)\ra f_\Con\,({sig}\,M) = {sig}\,N \big).
   \end{alignat*}
 \end{definition}
-The first component is the Church encoding of $\Con$, the second is
-the compatibility condition introduced by Awodey, Frey and Speight
-\cite{DBLP:conf/lics/AwodeyFS18}. We don't need impredicativity, as we
-don't require that $\Sign$ is the initial signature algebra. The
-compatibility condition says that if we obtain an $M$-context using
-${sig}$ in model $M$ and then we transport it to $N$ using $f$, we get
-the same $N$-context as directly applying ${sig}$ to $N$.
+Note that as $\Sign$ refers to $\SignAlg$, it lives in a higher
+universe level than $\SignAlg$. The compatibility condition says that
+if we obtain an $M$-context using ${sig}$ in model $M$ and then we
+transport it to $N$ using $f$, we get the same $N$-context as directly
+applying ${sig}$ to $N$.
 
 Note that the notion of IIT signature is relative to a model of ETT:
 it is expressed as a term (of a function type) in the model. This is
@@ -561,31 +619,11 @@ necessary because of the function space $\Pim$ which has as domain an
 arbitrary type in the model. We make use of $\Pim$ in signatures with
 external parameters, like the type of the elements in lists.
 
-\begin{example}[Example signatures]\label{ex:signatures}
-  Using informal notation with variable names, the signature for
-  natural numbers would be
-  \[
-    \boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N.
-  \]
-  This signature is a context of length three. We start with the empty
-  context $\boldsymbol{\cdot}$, then we declare a sort $N:\U$, then we
-  declare an operator producing an element of $N$ denoted by $\El\,N$,
-  and finally we declare an operator which takes as input an element
-  of the sort $N$ and produces an element of the same sort. Note the
-  assymetry of the function type $\Ra$: on the left there needs to be
-  an element of $\U$, while on the right any type can appear
-  (including another function type). This ensures strict positivity of
-  the operators.
-
-  Our theory of signatures uses de Bruijn indices instead of variable
-  names, so we rewrite the above signature to
-  \[
-    \boldsymbol{\cdot}\,\ext\,\U\,\ext\,z : \El\,0\,\ext\,s : 1 \Ra \El\,1,
-  \]
-  and as we $\Sign$ is defined formally as a pair of a Church encoding
-  together with a compatibility condition, our final definition for
-  the signature for natural numbers is the following. The
-  compatibility condition is written using equational reasoning.
+\begin{example}[Example signature]\label{ex:signatures}
+  Now we can formally describe the contexts given in
+  \Cref{ex:contexts} as signatures. For natural numbers, we have the
+  following pair of functions. The second function returns an equality
+  proof which we describe using equational reasoning.
   \begin{alignat*}{5}
     & \rlap{$(nat,natc) := $} \\
     & \hspace{1em} && \big( && \rlap{$\lambda M.(\boldsymbol{\cdot}^M\,\ext^M\,\U^M\,\ext^M\,\El^M\,0^M\,\ext^M\,1^M \Ra^M \El^M\,1^M),$} \\
@@ -598,28 +636,8 @@ external parameters, like the type of the elements in lists.
   The first component builds the context describing natural numbers in
   $M$, the second one uses the fact that $f$ is a morphism, that is,
   it preserves all operations.
-  
-  Lists with elements of a given $T : \Set$ type are given by the
-  following signature. Here we use the function space with external
-  domain $\Ram$ to include a $T$ in the signature. For readability, we
-  omit the $\lambda$ and the superscripts and we don't write the
-  compatibility condition. On the right we list the same signature
-  with variable names.
-  \begin{alignat*}{10}
-    & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
-  \end{alignat*}
- 
-  The $\Con$--$\Ty$ example from \Cref{sec:intro} is specified as
-  follows.
-  \begin{alignat*}{5}
-    & \boldsymbol{\cdot} \,\ext                                                 && \boldsymbol{\cdot} \,\ext                                                                \\
-    & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
-    & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
-    & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
-    & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
-    & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
-    & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
-  \end{alignat*}
+
+  The signatures for lists and $\Con$--$\Ty$ can be given analogously.
 \end{example}
 
 Given a model of ETT and an IIT signature in it, we would like to say
@@ -736,14 +754,13 @@ that the domain is discrete, $\Pim$ is the pointwise direct product.
   $\A : \SignAlg$ is given by the first $^\A$ components of $\ADS$
   (\Cref{def:ads}), that is, $\Con^\A := \Set$,
   $\Ty^\A\,\Gamma := \Gamma\ra\Set$,
-  $\Sub^\A\,\Gamma\,\Delta := \Gamma\ra\Delta$, and so on. Note that
-  there is a morphism from $\ADS$ to $\A$ defined by $\blank^\A$ at
-  each component, which we also denote by
-  $\blank^\A : \SignMor\,\ADS\,\A$.
+  $\Sub^\A\,\Gamma\,\Delta := \Gamma\ra\Delta$, and so on. There is a
+  morphism from $\ADS$ to $\A$ defined by $\blank^\A$ at each
+  component, which we also denote by $\blank^\A : \SignMor\,\ADS\,\A$.
 \end{definition}
 
 \begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
-  A model of ETT supports IITs if for any signature $(sig,nat):\Sign$
+  A model of ETT supports IITs if for any signature $(sig,sigc):\Sign$
   there is a
   \[
     \con_{sig}: ({sig}\,\ADS)^\A
@@ -760,9 +777,9 @@ have a section (called the eliminator).
 One can check that \Cref{sec:hasiits} gives the right
 notion of constructors and elimination principle for the signatures in
 \Cref{ex:signatures}.
-\begin{example}[An IIT supports natural numbers]
-  For the signature $({nat},{natc})$ of natural numbers in \Cref{ex:signatures},
-  the type of $\con_{nat}$ is
+\begin{example}[A model of ETT supports natural numbers]
+  For the signature $({nat},{natc})$ of natural numbers in
+  \Cref{ex:signatures}, the type of $\con_{nat}$ is
   \begin{alignat*}{5}
     & ({nat}\,\ADS)^\A = \\
     & (\boldsymbol{\cdot}^\ADS\,\ext^\ADS\,\U^\ADS\,\ext^\ADS\,\El^\ADS\,0^\ADS\,\ext^\ADS\,1^\ADS \Ra^\ADS \El^\ADS\,1^\ADS)^\A = \\
@@ -807,8 +824,8 @@ notion of constructors and elimination principle for the signatures in
 \begin{remark}
   The computation rules of the elimination principle are only expected
   up to the internal equality type, but as we work with a model of
-  ETT, by equality reflection we also get them as definitional
-  equalities.
+  ETT, we also get them as definitional equalities by equality
+  reflection.
 \end{remark}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -833,15 +850,15 @@ The contents of this section are an adjustment of \cite[Sections 4 and
   algebra, the morphism $\ll\blank\rr$ is called recursor.
 \end{definition}
 
-\begin{remark}
-  In a model of ETT supporting the theory of ITT signatures, we can
-  view elements of $\Con^\I$ as syntactic signatures. We can turn a
+\begin{definition}[Syntactic signatures]\label{def:syntacticsignature}
+  In a model of ETT supporting the theory of ITT signatures, elements
+  of $\Con^\I$ are called syntactic signatures. We can turn a
   $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$ and an
   $\Omega:\Con^\I$ into a $\Sign$ by
   $(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.f\,(\ll\Omega\rr_M) =
   \ll\Omega\rr_N)$ where the equality in the second component comes
   from uniqueness of the recursor.
-\end{remark}
+\end{definition}
 
 First we define the term signature algebra using which we obtain the
 constructors $\con$ for any IIT signature. Then we will define another
@@ -921,7 +938,7 @@ we illustrate the idea on natural numbers.
   An $a : \Tm\,\Omega\,\U$ is a sort term for a signature $\Omega$. If
   $\Omega$ is the syntactic signature for natural numbers, $a$ can
   only be $N$ ($1$ as a de Bruijn index). If $\Omega$ is the syntactic
-  signature for $\Con$--$\Ty$ (\Cref{ex:signatures}), $a$ can be
+  signature for $\Con$--$\Ty$ (\Cref{ex:contexts}), $a$ can be
   $Con$, $Ty\oldapp{empty}$,
   $Ty\oldapp({ext}\oldapp {empty}\oldapp(U\oldapp{empty}))$, and so
   on. In any case, for such an $a$, we obtain
