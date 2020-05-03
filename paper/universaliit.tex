@@ -7,9 +7,9 @@ We construct the theory of IIT signatures in the following steps:
 \begin{enumerate}
 \item We view the theory of signatures as a type theory, and we define
   its untyped syntax as mutual inductive types together with typing
-  judgments given by inductive predicates on the untyped syntax. Then
+  judgments given by inductive relations on the untyped syntax. Then
   the syntax $\I : \SignAlg$ is constructed using those untyped terms
-  for which the typing predicate holds.
+  for which the typing relation holds.
 \item We construct $\ll\blank\rr:\SignMor\,\I\,M$ for arbitrary
   $M : \SignAlg$, by:
   \begin{enumerate}
@@ -71,7 +71,7 @@ The untyped syntax is defined as the following inductive datatype.
   & \rlap{(3) Inductive parameters} \\
   & \Piu && : \Tmu\ra\Tyu\ra\Tyu \\
   & \blank\appu\blank && : \Tmu\ra\Tmu\ra \Tmu \\
-  & \rlap{(4) Metatheoretic parameters} \\
+  & \rlap{(4) External parameters} \\
   & \Pimu && : (T:\Set)\ra(T\ra\Tyu)\ra\Tyu \\
   & \Piiu && : (T:\Set)\ra(T\ra\Tmu)\ra\Tmu \\
   & \blank\appmu \blank && : \Tmu\ra(\alpha:T) \ra\Tmu\\
@@ -305,7 +305,7 @@ judgments, as the proofs require that some inputs are well-typed.
     (\GG \vdash u \in \Elu\,a)
     \ra
     \GG \vdash t \appu u \in  B [0 := u] \\
-  & \rlap{(4) Inductive parameters} \\[0.5em]
+  & \rlap{(4) External parameters} \\[0.5em]
   & \Pimw && :
     (T:\Set)\ra(A : T\ra \Tyu)\ra(\GG \vdash)\ra
     ((t : T)\ra\GG\vdash A\,t) \ra
@@ -320,17 +320,15 @@ judgments, as the proofs require that some inputs are well-typed.
     \ra (u : T) \ra \GG \vdash t\,\appmu\,u \in A\,u
   \end{alignat*}
 \end{definition}
-There is possibility of redundancy in the arguments of the constructors. Here,
-we are ``{paranoid}'' (nomenclature from xxx), so that we get more inductive hypotheses when performing
-recursion.
+There is possibility of redundancy in the arguments of the
+constructors. Here, we are ``{paranoid}'' (nomenclature from
+\cite{paranoid}), so that we get more inductive hypotheses when
+performing recursion.
 
 % The substitution part could be moved after the mutual definition of terms, types,
 % and contexts.
 
-\subsubsection{Weakening preserves typing}
-\label{lem:weaken-typing}
-We prove by mutual induction that typing judgments are stable under weakening,
-for contexts, types, terms, and substitutions.
+\begin{lemma}[Weakening preserves typing]\label{lem:weaken-typing}
 % wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
 % liftTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}(Bw : (Γp ^^ Δp) ⊢ Bp) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftT ∣ Δp ∣ Bp)
 \begin{alignat*}{5}
@@ -345,8 +343,13 @@ for contexts, types, terms, and substitutions.
   \Rightarrow \GD) \ra
   \GG \extu A \vdash \wkO\, \sigma \Rightarrow \GD
   \end{alignat*}
-\subsubsection{Substitution preserves typing}
-  We show that judgments are stable under substitution.
+\end{lemma}
+\begin{proof}
+By mutual induction on the typing relations.
+\end{proof}
+
+We show that judgments are stable under substitution.
+\begin{lemma}[Substitution preserves typing]
 \begin{alignat*}{5}
   % Tyw[] : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap) {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ σp ⇒ Γp) → Δp ⊢ (Ap [ σp ]T)
   & \wf{[]} && : (\GG \vdash)\ra(\GD \vdash A)\ra
@@ -374,33 +377,39 @@ for contexts, types, terms, and substitutions.
   % (\GG \vdash \sigma \Rightarrow \GD) \ra
   % \GG \vdash A [ \sigma ]
   % \\
-  \end{alignat*}
-\subsubsection{Laws for identity substitutions}
-We show category and functor laws involving identity substitution for
-well-formed types, terms and substitutions.
+\end{alignat*}
+\end{lemma}
+\begin{proof}
+By mutual induction on the typing relations.
+\end{proof}
+
+We show the category and functor laws involving identity substitution
+for well-formed types, terms and substitutions.
+\begin{lemma}[Identity laws]\label{lem:identity}
 \begin{alignat*}{5}
   % [idp]V : ∀ {Γ}{A}{x}(xw : Γ ⊢ x ∈v A) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
-  & [\idu] && : (\GG \vdash A)\ra A [ \idu\,\GG]  \\
+  & [\idu] && : (\GG \vdash A)\ra A [ \idu\,\GG] = A \\
   & [\idu] && : (\GG \vdash x \invar A)\ra x [ \idu\,\GG] = V x \\
   & [\idu] && : (\GG \vdash t \in A)\ra t [ \idu\,\GG] = t \\
   & \idru && : (\GG \vdash \sigma \Rightarrow\GD)\ra \sigma \circ \idu\,\GG = \sigma \\
   & \idlu && : (\GG \vdash \sigma \Rightarrow\GD)\ra \idu\,\GD\circ \sigma = \sigma
   \end{alignat*}
+\end{lemma}
 Finally, we show that the identity substitution itself is well-typed:
+\begin{lemma}[Typing for the identity substitution]
   \begin{alignat*}{5}
   & \idw && : (\GG \vdash)\ra \GG \vdash \idu\,\GG \Rightarrow \GG
   \end{alignat*}
+\end{lemma}
 
-
-
-\subsubsection{Proof irrelevance and unicity of typing}
-\label{ss:uniq-typing-types}
-A type is a proposition, or proof-irrelevant, if it has at most one inhabitant.
+\begin{definition}[Proposition]
+  A type is a proposition, or proof-irrelevant, if it has at most one inhabitant.
   \[
     \isaprop\,T := (a : T) \ra (a' : T) \ra a = a'
   \]
-We show that each of the typing judgments is unique in the
-following sense:
+\end{definition}
+
+\begin{lemma}[Proof irrelevance of typing relations]\label{lem:uniq-typing-types}
 \begin{alignat*}{5}
  & \isp{\Conw} && : \isaprop\, (\GG\vdash) \\
  & \isp{\Tyw} && : \isaprop\, (\GG\vdash A) \\
@@ -408,7 +417,9 @@ following sense:
  & \isp{\Tmw} && : \isaprop\, (\GG\vdash t \in A) \\
  & \isp{\wf\Sub} && : \isaprop\, (\GG\vdash \sigma \Rightarrow \GD)
 \end{alignat*}
-We also show unicity of typing:
+\end{lemma}
+
+\begin{lemma}[Unicity of typing]
 \begin{alignat*}{5}
   &
   \Tmw{=}\Ty & &:
@@ -419,7 +430,8 @@ We also show unicity of typing:
   \wf\Var{=}\Ty & &:
   (\GG \vdash x \invar A) \ra
   (\GG \vdash x \invar B) \ra A = B
-  \end{alignat*}
+\end{alignat*}
+\end{lemma}
 Let us consider for instance the application constructor $\appw$: for a codomain
 type $B$ it yields an overall type $C=B[\mathsf{0} := u]$ for an application. Even
 if $C$ is known a priori, there may be another $B$ for which $B[\mathsf{0} := u] = C$,
@@ -440,9 +452,11 @@ of $t$.
  % , which is not applyable without
  % functional extensionality.
 
- \subsubsection{Syntactic model}
- The syntactic model is obtained by packing the untyped syntax with the typing
- judgments:
+\subsubsection{The syntax as a signature algebra}
+
+\begin{definition}[Syntax for the theory of signatures]\label{def:syntax}
+  We define the syntax as an element of $\SignAlg$ by pairs of untyped
+  syntax and typing relations:
 % % \subsection{QIIT model}
 % Then, we show that they are stable by weakening and substitution.
 % Packing the untyped syntax with well-formed typed judgments yields
@@ -458,32 +472,38 @@ of $t$.
 \end{alignat*}
 The other fields are given straightforwardly.  Regarding the equations, it is
 enough to prove them only for the untyped syntactic part: as we argued in
-Section~\ref{ss:uniq-typing-types}, the proofs of typing judgments are
+\Cref{lem:uniq-typing-types}, the proofs of typing judgments are
 automatically equal.
+\end{definition}
 
-Up until the construction of the syntactic model, UIP is not used. Function
-extensionality on the other hand is necessary because the untyped metatheoretic
-$\Pi$ takes a metatheoretic function as an argument. An example induction step
-that uses function extensionality is in the type preservation proof for identity substitutions (this
-is an equation satisfied by a model of the QIIT), in particular in the case
-$(\Pim\,T\, A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this equation is
-equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by definition, whereas the induction
-hypothesis states that $(t:T)\ra (A\,t)[\id]=A\,t$.
+\begin{remark}
+  Up until \Cref{def:syntax}, UIP is not used. Function extensionality
+  on the other hand is necessary because the untyped metatheoretic
+  $\Pi$ takes a metatheoretic function as an argument. An example
+  induction step that uses function extensionality is in
+  \Cref{lem:identity}, in particular in the case
+  $(\Pim\,T\, A)[\id]=\Pim\,T\,A$. Indeed, the left hand side of this
+  equation is equal to $\Pim\,T\,(\lambda t.(A\,t)[\id])$ by
+  definition, whereas the induction hypothesis states that
+  $(t:T)\ra (A\,t)[\id]=A\,t$.
+\end{remark}
 
 \subsection{Relating the Syntax to a Model}
 \label{sec:streicher}
-It remains to show that the constructed syntactic model is initial. To achieve
-this, we first define a relation between the syntactic model and an arbitrary
-model, then show that the relation is functional, which lets us extract a
-homomorphism from the relation.
 
-This approach is an alternative version of Streicher's method for interpreting
-preterms in an arbitrary model \cite{streichersemantics}. Streicher first defines
-a family of partial maps from the presyntax to a model, then shows that the maps
-are total on well-formed input. We have found that our approach is significantly
-easier to formalise. To see why, note that the right notion of partial map in
-type theory, which does not presume decidable definedness, is fairly
-heavyweight:
+It remains to show that the constructed syntax $\I$ is the initial
+signature algebra. To achieve this, we first define a relation between
+the syntax and any signature algebra, then show that the relation is
+functional, which lets us extract a signature morphism from the relation.
+
+This approach is an alternative presentation of Streicher's method for
+interpreting preterms in an arbitrary model of type theory
+\cite{streichersemantics}. Streicher first defines a family of partial
+maps from the presyntax to a model, then shows that the maps are total
+on well-formed input. We have found that our approach is significantly
+easier to formalise. To see why, note that the right notion of partial
+map in type theory, which does not presume decidable definedness, is
+fairly heavyweight:
 \[
   \mathsf{PartialMap}\,A\,B := A\ra \big((P : \Set)\times\isaprop\,P\times (P \ra B)\big)
 \]
@@ -499,7 +519,9 @@ latter require carrying around auxiliary propositional equalities.
 
 \subsubsection{The functional relation}
 
-Given a model $M$ of the QIIT, we define the functional relation satisfied by
+xxx
+
+Given an $M : \SignAlg$, we define the functional relation satisfied by
 the initial morphism $\rec : \mathsf{S}\to M$ by recursion on the typing judgments.
 % As these judgments are propositions, we will sometimes
 If $\GG$ is a context in $S$ and $\model{\GG}$ is a semantic context
