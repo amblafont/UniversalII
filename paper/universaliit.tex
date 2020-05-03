@@ -13,19 +13,19 @@ The construction consists of the following steps:
 \item Construction of a morphism $\rec:\mathsf{S}\to M$ for arbitrary $M$, by:
   \begin{enumerate}
   \item defining a relation $\blank \sim \blank$ between the well-typed syntax
-    and a given model. The idea is that given a syntactic context $\Gamma$ and a
-    semantic context $\model{\Gamma}$ of the model $M$, we have
-    $\Gamma \sim \model{\Gamma}$ if and only if $\rec\,\,\Gamma
-    = \model{\Gamma}$, and similarly for types, terms, and substitutions;
-    % semantic context $\model{\Gamma}$ of
-    % the model $M$ if and only if $\Gamma$ relates to $\rec\,{\Gamma}$;
+    and a given model. The idea is that given a syntactic context $\GG$ and a
+    semantic context $\model{\GG}$ of the model $M$, we have
+    $\GG \sim \model{\GG}$ if and only if $\rec\,\,\GG
+    = \model{\GG}$, and similarly for types, terms, and substitutions;
+    % semantic context $\model{\GG}$ of
+    % the model $M$ if and only if $\GG$ relates to $\rec\,{\GG}$;
     % enjoyed by the initial morphism from the
     % syntax to a given model;
   \item showing that this relation is functional.
     \end{enumerate}
   \item Proving the uniqueness of this morphism by showing that any morphism
     $f:\mathsf{S}\to M$ satisfies the relation. For example, for any syntactic context
-    $\Gamma$ we have $\Gamma\sim f\,\Gamma$.
+    $\GG$ we have $\GG\sim f\,\GG$.
       % TODO donner composantes sur les contextes
 \end{enumerate}
 The next sections detail each of these steps.
@@ -117,12 +117,12 @@ middle of a context. We consider pairs of untyped contexts, which should be
 thought of as a splitting of a context at some position. The full context is
 recovered by merging the two components:
 % (which appears in the typing rule of a weakening occuring in the middle of a context),
-% and the length $\length{\Gamma}$ of a
-% context $\Gamma$:
+% and the length $\length{\GG}$ of a
+% context $\GG$:
 \begin{alignat*}{5}
   & \blank \merge \blank && :  \Conu\ra\Conu\ra\Conu \\
-  & \Gamma \merge \cdot && :=  \Gamma \\
-  & \Gamma \merge (\Delta \extu A) && :=  (\Gamma \merge \Delta)\extu A
+  & \GG \merge \cdot && :=  \GG \\
+  & \GG \merge (\GD \extu A) && :=  (\GG \merge \GD)\extu A
 \end{alignat*}
 We think of the second context as a telescope over the first one. We also define
 weakening for telescopes, which will be used to give typing rules for telescopes
@@ -132,9 +132,9 @@ in Section \ref{sec:typing_judgments}:
   \\
   & \wkO\,\emptyu && := \emptyu
   \\
-  & \wkO\,(\Delta\,\extu A) && := \wkO\,\Delta\,\extu \wk_{\length{\Delta}}\,A
+  & \wkO\,(\GD\,\extu A) && := \wkO\,\GD\,\extu \wk_{\length{\GD}}\,A
   \end{alignat*}
-$\length{\Gamma}$ denotes the length of a the context $\Gamma$.
+$\length{\GG}$ denotes the length of a the context $\GG$.
 
 \subsubsection{Untyped substitution}
   We define single substitution by recursion on presyntax:
@@ -164,20 +164,20 @@ following definition:
   & \keep && : \Subu \ra \Subu \\
    &&& := \lambda \sigma. (\varu\, \mathsf{0} \,\consu\, \wkO\,\sigma)
   \end{alignat*}
-  The idea is that if $\sigma$ is a substitution between contexts $\Gamma$ and
-  $\Delta$, then $\keep\,\sigma$ is a substitution between contexts $\Gamma\ext A[\sigma]$
-  and $\Delta\ext A$ for any type $A$. This occurs when defining
+  The idea is that if $\sigma$ is a substitution between contexts $\GG$ and
+  $\GD$, then $\keep\,\sigma$ is a substitution between contexts $\GG\ext A[\sigma]$
+  and $\GD\ext A$ for any type $A$. This occurs when defining
   $(\Piu\,A\,B)[\sigma]$ as $\Piu\,(A[\sigma])\,(B[\keep \,\sigma])$.
 
 
 
 
-  We can define the identity substitution on a context $\Gamma$ as
-  follows, where $\keep^{\length{\Gamma}}$ is $\keep$ iterated
-  $\length{\Gamma}$ times:
+  We can define the identity substitution on a context $\GG$ as
+  follows, where $\keep^{\length{\GG}}$ is $\keep$ iterated
+  $\length{\GG}$ times:
 \begin{alignat*}{5}
   & \idu && : \Conu \ra \Subu \\
-  & && := \lambda \Gamma.\keep^{\length{\Gamma}} \epsilonu
+  & && := \lambda \GG.\keep^{\length{\GG}} \epsilonu
   \end{alignat*}
 
 
@@ -251,50 +251,50 @@ judgments, as the proofs require that some inputs are well-typed.
   & \blank \vdash \blank \Rightarrow \blank  && : \Conu\ra \Subu \ra \Conu\ra \Set \\
   % & \Subpre  && : \Set \\
   & \emptyw && : \emptyu \vdash \\
-  & \epsilonw && : \Gamma\vdash \epsilonu \Rightarrow \emptyu \\
-  & \blank\extw\blank && : ( \Gamma\vdash )  \ra  (\Gamma\vdash A)  \ra
-  \Gamma\extu A \vdash \\
+  & \epsilonw && : \GG\vdash \epsilonu \Rightarrow \emptyu \\
+  & \blank\extw\blank && : ( \GG\vdash )  \ra  (\GG\vdash A)  \ra
+  \GG\extu A \vdash \\
   & \consw && :
-    (\Delta \vdash) \ra
-    (\Gamma\vdash \sigma \Rightarrow\Delta)\ra
-    ( \Delta \vdash A) \ra
-    ( \Gamma \vdash t \in A[\sigma]) \ra
-    \Gamma \vdash t \consu \sigma \Rightarrow \Delta\extu A
+    (\GD \vdash) \ra
+    (\GG\vdash \sigma \Rightarrow\GD)\ra
+    ( \GD \vdash A) \ra
+    ( \GG \vdash t \in A[\sigma]) \ra
+    \GG \vdash t \consu \sigma \Rightarrow \GD\extu A
    \\
-  & \varw  && : (\Gamma \vdash n \invar A) \ra \Gamma \vdash \varu n \in A \\
-  & \vzw  && : (\Gamma\vdash)\ra(\Gamma\vdash A)\ra\Gamma \extu  A \vdash \mathsf{0} \invar \wku \, A \\
-  & \vsw  && : (\Gamma\vdash)\ra(\Gamma\vdash A)\ra(\Gamma \vdash n \invar A) \ra (\Gamma \vdash B) \ra \Gamma \extu  B
+  & \varw  && : (\GG \vdash n \invar A) \ra \GG \vdash \varu n \in A \\
+  & \vzw  && : (\GG\vdash)\ra(\GG\vdash A)\ra\GG \extu  A \vdash \mathsf{0} \invar \wku \, A \\
+  & \vsw  && : (\GG\vdash)\ra(\GG\vdash A)\ra(\GG \vdash n \invar A) \ra (\GG \vdash B) \ra \GG \extu  B
   \vdash \mathsf{S}\,n \invar \wku \, A \\
   & \rlap{(2) Universe} \\[0.5em]
-  & \Uw && : (\Gamma \vdash)\ra \Gamma \vdash \Uu \\
-  & \Elw && : (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra\Gamma \vdash \Elu\,a \\
+  & \Uw && : (\GG \vdash)\ra \GG \vdash \Uu \\
+  & \Elw && : (\GG \vdash)\ra (\GG \vdash a \in \Uu)\ra\GG \vdash \Elu\,a \\
   & \rlap{(3) Inductive parameters} \\[0.5em]
-  & \Piw && :
-    (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra(\Gamma \extu
-  \Elu\,a \vdash B)\ra\Gamma \vdash \Piu \, a \, B \\
+\  & \Piw && :
+    (\GG \vdash)\ra (\GG \vdash a \in \Uu)\ra(\GG \extu
+  \Elu\,a \vdash B)\ra\GG \vdash \Piu \, a \, B \\
   & \appw && :
-    (\Gamma \vdash)\ra (\Gamma \vdash a \in \Uu)\ra(\Gamma \extu
+    (\GG \vdash)\ra (\GG \vdash a \in \Uu)\ra(\GG \extu
     \Elu\,a \vdash B)
     \\
     & &&
-    \ra(\Gamma \vdash t \in \Piu \, a \, B )
+    \ra(\GG \vdash t \in \Piu \, a \, B )
     \ra
-    (\Gamma \vdash u \in \Elu\,a)
+    (\GG \vdash u \in \Elu\,a)
     \ra
-    \Gamma \vdash t \appu u \in  B [0 := u] \\
+    \GG \vdash t \appu u \in  B [0 := u] \\
   & \rlap{(4) Inductive parameters} \\[0.5em]
   & \Pimw && :
-    (T:\Set)\ra(A : T\ra \Tyu)\ra(\Gamma \vdash)\ra
-    ((t : T)\ra\Gamma\vdash A\,t) \ra
-    \Gamma \vdash \Pimu \,T\,A
+    (T:\Set)\ra(A : T\ra \Tyu)\ra(\GG \vdash)\ra
+    ((t : T)\ra\GG\vdash A\,t) \ra
+    \GG \vdash \Pimu \,T\,A
     \\
     & \appmw  && :
-    (T:\Set)\ra(A : T\ra \Tyu)\ra(\Gamma \vdash)\ra
-    ((t : T)\ra\Gamma\vdash A\,t)
+    (T:\Set)\ra(A : T\ra \Tyu)\ra(\GG \vdash)\ra
+    ((t : T)\ra\GG\vdash A\,t)
     \\
     & &&
-    \ra(\Gamma \vdash t \in \Pimu \,T\,A)
-    \ra (u : T) \ra \Gamma \vdash t\,\appmu\,u \in A\,u
+    \ra(\GG \vdash t \in \Pimu \,T\,A)
+    \ra (u : T) \ra \GG \vdash t\,\appmu\,u \in A\,u
 \end{alignat*}
 There is possibility of redundancy in the arguments of the constructors. Here,
 we are ``{paranoid}'', so that we get more inductive hypotheses when performing
@@ -310,45 +310,45 @@ for contexts, types, terms, and substitutions.
 % wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
 % liftTw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp{Bp}(Bw : (Γp ^^ Δp) ⊢ Bp) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢ (liftT ∣ Δp ∣ Bp)
 \begin{alignat*}{5}
-  & \wf{\wkO} && : (\Gamma \vdash A)\ra(\Gamma \merge \Delta\vdash) \ra
-  \Gamma \extu A \merge \wkO\, \Delta \vdash \\
+  & \wf{\wkO} && : (\GG \vdash A)\ra(\GG \merge \GD\vdash) \ra
+  \GG \extu A \merge \wkO\, \GD \vdash \\
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
-  & \wf{\wk} && : (\Gamma \vdash A)\ra(\Gamma \merge \Delta\vdash B) \ra
-  \Gamma \extu A \merge \wkO\,\Delta \vdash \wk_{\length{\Delta}}\, B  \\
-  & \wf{\wk} && : (\Gamma \vdash A)\ra(\Gamma \merge \Delta\vdash t\in B) \ra
-  \Gamma \extu A \merge \wkO\,\Delta \vdash \wk_{\length{\Delta}}\, t \in \wk_{\length{\Delta}}\,B  \\
-  & \wf{\wkO} && : (\Gamma \vdash A)\ra(\Gamma \vdash \sigma
-  \Rightarrow \Delta) \ra
-  \Gamma \extu A \vdash \wkO\, \sigma \Rightarrow \Delta
+  & \wf{\wk} && : (\GG \vdash A)\ra(\GG \merge \GD\vdash B) \ra
+  \GG \extu A \merge \wkO\,\GD \vdash \wk_{\length{\GD}}\, B  \\
+  & \wf{\wk} && : (\GG \vdash A)\ra(\GG \merge \GD\vdash t\in B) \ra
+  \GG \extu A \merge \wkO\,\GD \vdash \wk_{\length{\GD}}\, t \in \wk_{\length{\GD}}\,B  \\
+  & \wf{\wkO} && : (\GG \vdash A)\ra(\GG \vdash \sigma
+  \Rightarrow \GD) \ra
+  \GG \extu A \vdash \wkO\, \sigma \Rightarrow \GD
   \end{alignat*}
 \subsubsection{Substitution preserves typing}
   We show that judgments are stable under substitution.
 \begin{alignat*}{5}
   % Tyw[] : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap) {Δp}(Δw : Δp ⊢){σp}(σw :  Δp ⊢ σp ⇒ Γp) → Δp ⊢ (Ap [ σp ]T)
-  & \wf{[]} && : (\Gamma \vdash)\ra(\Delta \vdash A)\ra
-  (\Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  \Gamma \vdash A [ \sigma ]
+  & \wf{[]} && : (\GG \vdash)\ra(\GD \vdash A)\ra
+  (\GG \vdash \sigma \Rightarrow \GD) \ra
+  \GG \vdash A [ \sigma ]
   \\
-  & \wf{[]} && : (\Gamma \vdash)\ra(\Delta \vdash t \in A)\ra
-  (\Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  \Gamma \vdash t [\sigma] \in A [ \sigma ]
+  & \wf{[]} && : (\GG \vdash)\ra(\GD \vdash t \in A)\ra
+  (\GG \vdash \sigma \Rightarrow \GD) \ra
+  \GG \vdash t [\sigma] \in A [ \sigma ]
   \\
-  & \wf{[]} && : (\Delta \vdash x \invar A)\ra
-  (\Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  \Gamma \vdash x [\sigma] \in A [ \sigma ]
+  & \wf{[]} && : (\GD \vdash x \invar A)\ra
+  (\GG \vdash \sigma \Rightarrow \GD) \ra
+  \GG \vdash x [\sigma] \in A [ \sigma ]
   % ∘w : ∀ {Γ} {Δ σ} (σw :  Δ ⊢ σ ⇒ Γ)
   %  {Y}(Yw : Y ⊢) {δ} (δw :  Y ⊢ δ ⇒ Δ) →
   %  Y ⊢  (σ ∘p δ) ⇒ Γ
   \\
   & \wf{{\circ}} && :
-  (\Gamma \vdash) \ra
-  (\Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  (\Delta \vdash \tau \Rightarrow E) \ra
-  \Gamma \vdash \tau \circ \sigma \Rightarrow E
+  (\GG \vdash) \ra
+  (\GG \vdash \sigma \Rightarrow \GD) \ra
+  (\GD \vdash \tau \Rightarrow E) \ra
+  \GG \vdash \tau \circ \sigma \Rightarrow E
   % keepw : ∀ {Γp}(Γw : Γp ⊢){Δp}(Δw : Δp ⊢){σp}(σw :  Γp ⊢ σp ⇒ Δp) {Ap}(Aw : Δp ⊢ Ap ∈ Up ) → (Γp ▶p (Elp Ap [ σp ]T )) ⊢ (keep σp) ⇒ (Δp ▶p Elp Ap)
-  % & \wf{keep-\El} && : (\Gamma \vdash)\ra(\Delta \vdash A)\ra
-  % (\Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  % \Gamma \vdash A [ \sigma ]
+  % & \wf{keep-\El} && : (\GG \vdash)\ra(\GD \vdash A)\ra
+  % (\GG \vdash \sigma \Rightarrow \GD) \ra
+  % \GG \vdash A [ \sigma ]
   % \\
   \end{alignat*}
 \subsubsection{Laws for identity substitutions}
@@ -356,15 +356,15 @@ We show category and functor laws involving identity substitution for
 well-formed types, terms and substitutions.
 \begin{alignat*}{5}
   % [idp]V : ∀ {Γ}{A}{x}(xw : Γ ⊢ x ∈v A) → (x [ idp ∣ Γ ∣ ]V) ≡ V x
-  & [\idu] && : (\Gamma \vdash A)\ra A [ \idu\,\Gamma]  \\
-  & [\idu] && : (\Gamma \vdash x \invar A)\ra x [ \idu\,\Gamma] = V x \\
-  & [\idu] && : (\Gamma \vdash t \in A)\ra t [ \idu\,\Gamma] = t \\
-  & \idru && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \sigma \circ \idu\,\Gamma = \sigma \\
-  & \idlu && : (\Gamma \vdash \sigma \Rightarrow\Delta)\ra \idu\,\Delta\circ \sigma = \sigma
+  & [\idu] && : (\GG \vdash A)\ra A [ \idu\,\GG]  \\
+  & [\idu] && : (\GG \vdash x \invar A)\ra x [ \idu\,\GG] = V x \\
+  & [\idu] && : (\GG \vdash t \in A)\ra t [ \idu\,\GG] = t \\
+  & \idru && : (\GG \vdash \sigma \Rightarrow\GD)\ra \sigma \circ \idu\,\GG = \sigma \\
+  & \idlu && : (\GG \vdash \sigma \Rightarrow\GD)\ra \idu\,\GD\circ \sigma = \sigma
   \end{alignat*}
 Finally, we show that the identity substitution itself is well-typed:
   \begin{alignat*}{5}
-  & \idw && : (\Gamma \vdash)\ra \Gamma \vdash \idu\,\Gamma \Rightarrow \Gamma
+  & \idw && : (\GG \vdash)\ra \GG \vdash \idu\,\GG \Rightarrow \GG
   \end{alignat*}
 
 
@@ -378,23 +378,23 @@ A type is a proposition, or proof-irrelevant, if it has at most one inhabitant.
 We show that each of the typing judgments is unique in the
 following sense:
 \begin{alignat*}{5}
- & \isp{\Conw} && : \isaprop\, (\Gamma\vdash) \\
- & \isp{\Tyw} && : \isaprop\, (\Gamma\vdash A) \\
- & \isp{\wf\Var} && : \isaprop\, (\Gamma\vdash x \invar A) \\
- & \isp{\Tmw} && : \isaprop\, (\Gamma\vdash t \in A) \\
- & \isp{\wf\Sub} && : \isaprop\, (\Gamma\vdash \sigma \Rightarrow \Delta)
+ & \isp{\Conw} && : \isaprop\, (\GG\vdash) \\
+ & \isp{\Tyw} && : \isaprop\, (\GG\vdash A) \\
+ & \isp{\wf\Var} && : \isaprop\, (\GG\vdash x \invar A) \\
+ & \isp{\Tmw} && : \isaprop\, (\GG\vdash t \in A) \\
+ & \isp{\wf\Sub} && : \isaprop\, (\GG\vdash \sigma \Rightarrow \GD)
 \end{alignat*}
 We also show unicity of typing:
 \begin{alignat*}{5}
   &
   \Tmw{=}\Ty & &:
-  (\Gamma \vdash t \in A) \ra
-  (\Gamma \vdash t \in B) \ra A = B
+  (\GG \vdash t \in A) \ra
+  (\GG \vdash t \in B) \ra A = B
   \\
   &
   \wf\Var{=}\Ty & &:
-  (\Gamma \vdash x \invar A) \ra
-  (\Gamma \vdash x \invar B) \ra A = B
+  (\GG \vdash x \invar A) \ra
+  (\GG \vdash x \invar B) \ra A = B
   \end{alignat*}
 Let us consider for instance the application constructor $\appw$: for a codomain
 type $B$ it yields an overall type $C=B[\mathsf{0} := u]$ for an application. Even
@@ -424,13 +424,13 @@ of $t$.
 % Packing the untyped syntax with well-formed typed judgments yields
 % a model $S$ of the QIIT. Let us give the most important components:
 \begin{alignat*}{5}
- & \syn\Con && := \sum_\Gamma \Gamma\vdash
+ & \syn\Con && := \sum_\GG \GG\vdash
  \\
- & \syn\Ty \,(\Gamma,\wf\Gamma)&& := \sum_A \Gamma\vdash A
+ & \syn\Ty \,(\GG,\wf\GG)&& := \sum_A \GG\vdash A
  \\
- & \syn\Tm \,(\Gamma,\wf\Gamma)(A,\wf A)&& := \sum_t \Gamma\vdash t \in A
+ & \syn\Tm \,(\GG,\wf\GG)(A,\wf A)&& := \sum_t \GG\vdash t \in A
  \\
- & \syn\Sub \,(\Gamma,\wf\Gamma)(\Delta,\wf \Delta)&& := \sum_\sigma \Gamma\vdash \sigma \Rightarrow \Delta
+ & \syn\Sub \,(\GG,\wf\GG)(\GD,\wf \GD)&& := \sum_\sigma \GG\vdash \sigma \Rightarrow \GD
 \end{alignat*}
 The other fields are given straightforwardly.  Regarding the equations, it is
 enough to prove them only for the untyped syntactic part: as we argued in
@@ -478,29 +478,29 @@ latter require carrying around auxiliary propositional equalities.
 Given a model $M$ of the QIIT, we define the functional relation satisfied by
 the initial morphism $\rec : \mathsf{S}\to M$ by recursion on the typing judgments.
 % As these judgments are propositions, we will sometimes
-If $\Gamma$ is a context in $S$ and $\model{\Gamma}$ is a semantic context
+If $\GG$ is a context in $S$ and $\model{\GG}$ is a semantic context
 (i.e.\ a context of the model $M$), we want to define a type
-$\Gamma\sim \model{\Gamma}$ equivalent to $\rec\,\,\Gamma=\model{\Gamma}$. Of
+$\GG\sim \model{\GG}$ equivalent to $\rec\,\,\GG=\model{\GG}$. Of
 course, at this stage, $\rec$ is not available yet since the point of
 defining this relation is to construct $\rec$ in the end.
 
-For a type $A$ in a context $\Gamma$, we want to define a relation
+For a type $A$ in a context $\GG$, we want to define a relation
 $A\sim \model{A}$ that is equivalent to $\rec\,\,A=\model{A}$.
 % where $\model{A}$ is a
-% semantic type in a semantic context $\model{\Gamma}$.
+% semantic type in a semantic context $\model{\GG}$.
 For this equality to make sense, the semantic type $\model{A}$ must live
-in the semantic context $\rec\,\,\Gamma$. But again, $\rec$ is not
+in the semantic context $\rec\,\,\GG$. But again, $\rec$ is not
 yet available at this stage. Exploiting the expected equivalence between
-$\Gamma\sim\model\Gamma$ and $\rec\,\,\Gamma=\model\Gamma$, we may consider defining $A\sim\model{A}$ under the
-hypotheses that $\model{A}$ lies in a semantics context $\model\Gamma$ which is
-related to $\Gamma$. Then, the type of the relation for types is
+$\GG\sim\model\GG$ and $\rec\,\,\GG=\model\GG$, we may consider defining $A\sim\model{A}$ under the
+hypotheses that $\model{A}$ lies in a semantics context $\model\GG$ which is
+related to $\GG$. Then, the type of the relation for types is
 \[
-  (\Gamma : \syn\Con)\ra (A : \syn\Ty\,\syn\Gamma) \ra
-  (\model\Gamma : \model\Con)
+  (\GG : \syn\Con)\ra (A : \syn\Ty\,\syn\GG) \ra
+  (\model\GG : \model\Con)
   \ra
-  (\Gamma \sim \model\Gamma)
+  (\GG \sim \model\GG)
   \ra
-  (\model{A}:\model\Ty\,\model\Gamma)
+  (\model{A}:\model\Ty\,\model\GG)
   \ra
   \Set
 \]
@@ -511,16 +511,16 @@ argument of the relation on types.
 % We leave this possibility aside,
 We want to avoid using such recursive-recursive
 definitions as they are not allowed by the elimination principles of indexed inductive types, so we instead just remove the hypothesis
-$\Gamma\sim\model\Gamma$ from the list of arguments.  We proceed similarly for
+$\GG\sim\model\GG$ from the list of arguments.  We proceed similarly for
 terms and substitutions. Actually, this removal is not without harm. For
 example, consider relating the empty substitution
-$\Gamma\vdash \epsilonu \Rightarrow \emptyu $ to a semantic substitution
-$\model\sigma : \model\Sub\,\model\Gamma\,\model\Delta$. We would like to assert
+$\GG\vdash \epsilonu \Rightarrow \emptyu $ to a semantic substitution
+$\model\sigma : \model\Sub\,\model\GG\,\model\GD$. We would like to assert
 that $\model\sigma$ equals the empty semantic substitution $\model\epsilon$, but
-this is not possible because typechecking requires that $\model\Delta$ is the
+this is not possible because typechecking requires that $\model\GD$ is the
 empty semantic context. This is precisely what was ensured by the hypothesis
-$\syn\cdot \sim \model\Delta$ we removed.  Our way out here is to state that $\model\sigma$
-is related to the empty substitution if the target semantic context $\model\Delta$
+$\syn\cdot \sim \model\GD$ we removed.  Our way out here is to state that $\model\sigma$
+is related to the empty substitution if the target semantic context $\model\GD$
 is empty, and, acknowledging this equality, if $\model\sigma$ is the empty
 substitution.
 % The idea is that we will first prove that there is atmost one semantic type
@@ -528,21 +528,21 @@ substitution.
 % semantic type under the hypothesis that the contexts are related.
 
 Let us mention another possible solution for avoiding recursion-recursion:
-defining $A\sim\model{A}$ so that it is equivalent to $(e:\rec\,\Gamma
-= \model{\Gamma})\times (\rec\,A = _{e\#}\model{A})$.
-% whereas the right hand side is of type $\model\Ty\model{\Gamma}$.
-% For a substitution $\sigma$ between contexts $\Gamma$ and $\Delta$,
-% a first idea consists in defining a relation $\sigma \sim_{\blank} \model{\sigma} : \Gamma
-% \sim \model\Gamma \to \Set $ where $\model{A}$ is a semantic type in the
-% semantic context $\model{\Gamma}$. We define the relation on types under the hypothesis
+defining $A\sim\model{A}$ so that it is equivalent to $(e:\rec\,\GG
+= \model{\GG})\times (\rec\,A = _{e\#}\model{A})$.
+% whereas the right hand side is of type $\model\Ty\model{\GG}$.
+% For a substitution $\sigma$ between contexts $\GG$ and $\GD$,
+% a first idea consists in defining a relation $\sigma \sim_{\blank} \model{\sigma} : \GG
+% \sim \model\GG \to \Set $ where $\model{A}$ is a semantic type in the
+% semantic context $\model{\GG}$. We define the relation on types under the hypothesis
 % that the contexts are already related.
 % it is natural to define the relation with a semantic type $\model{A}$ in a
-% semantic context $\model{\Gamma}$ such that it is equivalent to  $(\rec\,\Gamma = \model{\Gamma})\times (\rec\,A = \model{A})$ (note that the first equality is
+% semantic context $\model{\GG}$ such that it is equivalent to  $(\rec\,\GG = \model{\GG})\times (\rec\,A = \model{A})$ (note that the first equality is
 % required for the second one to be well-typed).
 % The discussion is similar for terms.
 % Then, the ultimate goal is to prove that
-% $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
-% $\sum_{\model{\Gamma}}({\model{A}:\model{\Ty}\,\model{\Gamma}})\times(A\sim\model{A})$
+% $\sum_{\model{\GG}}\GG\sim\model{\GG}$ and
+% $\sum_{\model{\GG}}({\model{A}:\model{\Ty}\,\model{\GG}})\times(A\sim\model{A})$
 % are contractible, i.e., have a unique inhabitant.
 %The first step consists in showing that these types are propositions.
 In comparison, our approach
@@ -551,13 +551,13 @@ In comparison, our approach
 yields a more concise definition of the relation.
 For example, in the case of the universe, this would lead
 to the definition
-  $  \Uw\,\wf{\Gamma} \sim \model{A} := (\wf{\Gamma}\sim\model{\Gamma}) \times (\model{A} = \model{\U})$,
+  $  \Uw\,\wf{\GG} \sim \model{A} := (\wf{\GG}\sim\model{\GG}) \times (\model{A} = \model{\U})$,
   instead of
   our definition
-  $  \Uw\,\wf{\Gamma} \sim \model{A} := (\model{A} = \model{\U})$.
+  $  \Uw\,\wf{\GG} \sim \model{A} := (\model{A} = \model{\U})$.
 % Recall that our adapted goal, for types, is to prove that
 % $\sum_{\model{A}}A\sim\model{A}$ is a proposition, and
-% is inhabited if $\Gamma \sim \model{\Gamma}$ is.
+% is inhabited if $\GG \sim \model{\GG}$ is.
 %  This means that in the definition of the relation, we assume
 % that contexts are already related, so that we don't need to enforce them to be,
 % as it is the case in the original approach.
@@ -578,41 +578,41 @@ to the definition
 % extensionality are needed to construct any IIT from the universal one).
 
 We define the relation by recursion on the typing judgments.
-In the following, we abbreviate $\relT{\wf{A}}{\model\Gamma}{\model{A}}$ by
-$\wf{A}\sim\model{A}$ when $\model{\Gamma}$ can be inferred, and similarly for
+In the following, we abbreviate $\relT{\wf{A}}{\model\GG}{\model{A}}$ by
+$\wf{A}\sim\model{A}$ when $\model{\GG}$ can be inferred, and similarly for
 terms and substitutions.
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
-  & \blank \sim{ \blank} && :  \Gamma \vdash \, \ra \model{\Con} \ra \Set \\
-  & \relT{\blank}{\model{\Gamma}}{\blank} && :  \Gamma \vdash A \, \ra \model{\Ty}\,\model{\Gamma} \ra \Set \\
-  & \relt{\blank}{\model{\Gamma}}{\model{A}}{\blank} && :  \Gamma \vdash t \in A \, \ra \model{\Tm}\,\model{\Gamma}\,\model{A} \ra \Set \\
-  & \relV{\blank}{\model{\Gamma}}{\model{A}}{\blank}&& :  \Gamma \vdash x \invar A \, \ra \model{\Tm}\,\model{\Gamma}\,\model{A} \ra \Set \\
-  & \relS{\blank}{\model{\Gamma}}{\model{\Delta}}{ \blank} && :  \Gamma \vdash \sigma \Rightarrow \Delta \, \ra \model{\Sub}\,\model{\Gamma}\,\model{\Delta} \ra \Set \\
+  & \blank \sim{ \blank} && :  \GG \vdash \, \ra \model{\Con} \ra \Set \\
+  & \relT{\blank}{\model{\GG}}{\blank} && :  \GG \vdash A \, \ra \model{\Ty}\,\model{\GG} \ra \Set \\
+  & \relt{\blank}{\model{\GG}}{\model{A}}{\blank} && :  \GG \vdash t \in A \, \ra \model{\Tm}\,\model{\GG}\,\model{A} \ra \Set \\
+  & \relV{\blank}{\model{\GG}}{\model{A}}{\blank}&& :  \GG \vdash x \invar A \, \ra \model{\Tm}\,\model{\GG}\,\model{A} \ra \Set \\
+  & \relS{\blank}{\model{\GG}}{\model{\GD}}{ \blank} && :  \GG \vdash \sigma \Rightarrow \GD \, \ra \model{\Sub}\,\model{\GG}\,\model{\GD} \ra \Set \\
   \\
-  & \emptyw\sim \model{\Gamma} && := \model{\Gamma}=\model{\boldsymbol{\cdot}} \\
-  & \relS{\epsilonw}{\model{\Gamma}}{\model{E}}{\model{\delta}}
+  & \emptyw\sim \model{\GG} && := \model{\GG}=\model{\boldsymbol{\cdot}} \\
+  & \relS{\epsilonw}{\model{\GG}}{\model{E}}{\model{\delta}}
   % (  \vdash \model{\delta}\Rightarrow \model{E})
   &&
  := (e_E : \model{E} = \model{\boldsymbol{\cdot}})\times (\model{\delta} = _{e_E \#}
  \model{\epsilon})
   \\
-  & (\wf{\Gamma}\extw \wf{A})\sim \model{\Delta} &&
+  & (\wf{\GG}\extw \wf{A})\sim \model{\GD} &&
    :=
-    \sum_{\model{\Gamma}} (\wf{\Gamma}\sim\model{\Gamma}) \times
+    \sum_{\model{\GG}} (\wf{\GG}\sim\model{\GG}) \times
     \sum_{\model{A}} (\wf{A}\sim\model{A}) \times
     \\
     & && \qquad
-    (\model{\Delta} = \model{\Gamma} \model{\ext} \model{A})
+    (\model{\GD} = \model{\GG} \model{\ext} \model{A})
     \\
     &
-    \relS{(\consw\wf{\Delta}\wf{\sigma}\wf{A}\wf{t})}{\model{\Gamma}}{\model{E}}{\model{\delta}}
-    % (\consw \wf{\Delta}\wf{\sigma}\wf{A}\wf{t})\sim
+    \relS{(\consw\wf{\GD}\wf{\sigma}\wf{A}\wf{t})}{\model{\GG}}{\model{E}}{\model{\delta}}
+    % (\consw \wf{\GD}\wf{\sigma}\wf{A}\wf{t})\sim
     % \\
     % & \qquad
-    % ( \model{\Gamma} \vdash \model{\delta}\Rightarrow \model{E})
+    % ( \model{\GG} \vdash \model{\delta}\Rightarrow \model{E})
     &&
    :=
-    \sum_{\model{\Delta}} (\wf{\Delta}\sim\model{\Delta}) \times
+    \sum_{\model{\GD}} (\wf{\GD}\sim\model{\GD}) \times
     \sum_{\model{\sigma}} (\wf{\sigma}\sim\model{\sigma}) \times
     \\
     & && \qquad
@@ -620,39 +620,39 @@ terms and substitutions.
     \sum_{\model{t}} (\wf{t}\sim\model{t}) \times
     \\
     & && \qquad
-    (e_E : \model{E} = \model{\Delta} \model{\ext} \model{A}) \times
+    (e_E : \model{E} = \model{\GD} \model{\ext} \model{A}) \times
     \\
     & && \qquad
     (\delta = _{e_E \#} \model\sigma \model{\cons} \model{t} )
     \\
   & \varw\,\wf{x} \sim \model{t}
    && := \wf{x}\sim \model{t} \\
-   & \relV{\vzw\wf{\Gamma}\wf{A}}{\model{\Delta}}{\model{B}}{\model{t}}
-  %  \vzw\wf{\Gamma}\wf{A}
+   & \relV{\vzw\wf{\GG}\wf{A}}{\model{\GD}}{\model{B}}{\model{t}}
+  %  \vzw\wf{\GG}\wf{A}
   % \sim \\
-  % & \qquad (\model{\Delta}\vdash \model{t}\in \model{B} )
+  % & \qquad (\model{\GD}\vdash \model{t}\in \model{B} )
    && :=
-    \sum_{\model{\Gamma}} (\wf{\Gamma}\sim\model{\Gamma}) \times
+    \sum_{\model{\GG}} (\wf{\GG}\sim\model{\GG}) \times
     \sum_{\model{A}} (\wf{A}\sim\model{A}) \times \\
     & &&
     \qquad
-  (e_\Delta : \model{\Delta} = \model{\Gamma} \model{\ext} \model{A})
+  (e_\GD : \model{\GD} = \model{\GG} \model{\ext} \model{A})
      \times
     \\
     & && \qquad
-     (e_B : \model{B} = _{e_\Delta \#} \model{\wk}\,\model{A}) \times
+     (e_B : \model{B} = _{e_\GD \#} \model{\wk}\,\model{A}) \times
      % \\
      % & && \qquad
-     (\model{t} = _{e_\Delta,e_B \#} \model{\vz})
+     (\model{t} = _{e_\GD,e_B \#} \model{\vz})
   \\
   &
-   \relV{\vsw \wf{\Gamma} \wf{A} \wf{n} \wf{B}}{\model\Delta}{\model{C}}{\model{t}}
-  % \vsw \wf{\Gamma} \wf{A} \wf{n} \wf{B} \sim
+   \relV{\vsw \wf{\GG} \wf{A} \wf{n} \wf{B}}{\model\GD}{\model{C}}{\model{t}}
+  % \vsw \wf{\GG} \wf{A} \wf{n} \wf{B} \sim
   % \\
   % & \qquad
-  %    (\model{\Delta}\vdash \model{t}\in \model{C} )
+  %    (\model{\GD}\vdash \model{t}\in \model{C} )
    && :=
-    \sum_{\model{\Gamma}} (\wf{\Gamma}\sim\model{\Gamma}) \times
+    \sum_{\model{\GG}} (\wf{\GG}\sim\model{\GG}) \times
     \sum_{\model{A}} (\wf{A}\sim\model{A}) \times
     \\
     & &&\qquad
@@ -661,26 +661,26 @@ terms and substitutions.
     \\
     & &&
     \qquad
-  (e_\Delta : \model{\Delta} = \model{\Gamma} \model{\ext} \model{B})
+  (e_\GD : \model{\GD} = \model{\GG} \model{\ext} \model{B})
      \times
     \\
     & && \qquad
-     (e_C : \model{C} = _{e_\Delta \#} \model{\wk}\,\model{A}) \times
+     (e_C : \model{C} = _{e_\GD \#} \model{\wk}\,\model{A}) \times
      \\
      & && \qquad
-     (\model{t} = _{e_\Delta,e_C \#} \model{\vs} \, \model{n})
+     (\model{t} = _{e_\GD,e_C \#} \model{\vs} \, \model{n})
   \\
   & \rlap{(2) Universe} \\[0.5em]
-  & \Uw\, \wf{\Gamma} \wf{A} \sim \model{A} &&
+  & \Uw\, \wf{\GG} \wf{A} \sim \model{A} &&
    := \model{A} = \model{\U}
   \\
-  & \Elw\, \wf{\Gamma} \wf{a} \sim \model{A}
+  & \Elw\, \wf{\GG} \wf{a} \sim \model{A}
   && :=
   \sum_{\model{a}} (\wf{a}\sim  \model{a}) \times
     (\model{A} = \model{\El}\,\model{a})
   \\
   & \rlap{(3) Inductive parameters} \\[0.5em]
-  & \Piw\,\wf{\Gamma} \wf{a} \wf{B} \sim \model{C} &&
+  & \Piw\,\wf{\GG} \wf{a} \wf{B} \sim \model{C} &&
    :=
       \sum_{\model{a}} (\wf{a}\sim\model{a})
       \times
@@ -689,9 +689,9 @@ terms and substitutions.
       &&& \qquad \times (\model{C}= \model{\Pi}\,\model{a}\,\model{B})
   \\
   &
-  \relt{\appw\, \wf{\Gamma} \wf{a} \wf{B} \wf{t} \wf{u}}{\model{\Gamma}}{\model{C}}{\model{x}}  &&
-  % & \appw \wf{\Gamma} \wf{a} \wf{B} \wf{t} \wf{u} \sim \\
-  % & \qquad (\model{\Gamma}\vdash x\in \model{C})  &&
+  \relt{\appw\, \wf{\GG} \wf{a} \wf{B} \wf{t} \wf{u}}{\model{\GG}}{\model{C}}{\model{x}}  &&
+  % & \appw \wf{\GG} \wf{a} \wf{B} \wf{t} \wf{u} \sim \\
+  % & \qquad (\model{\GG}\vdash x\in \model{C})  &&
     :=
       \sum_{\model{a}} (\wf{a}\sim\model{a})
       \times
@@ -713,17 +713,17 @@ terms and substitutions.
       (\model{x} = _{e_C \#} \model{t} \model{\oldapp}\model{u})
     \\
   & \rlap{(4) Metatheoretic parameters} \\[0.5em]
-  & \Pimw T\,A\,\wf{\Gamma}\wf{A} \sim \model{B} &&
+  & \Pimw T\,A\,\wf{\GG}\wf{A} \sim \model{B} &&
     :=
       \sum_{\model{A}} ((t : T) \ra \wf{A}\sim\model{A}\, t)
       \times
       (\model{B} = \model{\Pim}\,T\,\model{A})
     \\
-    & \relt{\appmw T\,A\,\wf{\Gamma}\wf{A} \wf{t} u}{\model{\Gamma}}{\model{B}}{\model{x}}
-    % & \appmw T\,A\,\wf{\Gamma}\wf{A} \wf{t} u \sim
+    & \relt{\appmw T\,A\,\wf{\GG}\wf{A} \wf{t} u}{\model{\GG}}{\model{B}}{\model{x}}
+    % & \appmw T\,A\,\wf{\GG}\wf{A} \wf{t} u \sim
     % \\
     % & \qquad
-    % (\model{\Gamma}\vdash x\in \model{B})
+    % (\model{\GG}\vdash x\in \model{B})
      &&
      :=
       \sum_{\model{A}} ((t : T) \ra \wf{A}\sim\model{A}\, t)
@@ -744,10 +744,10 @@ terms and substitutions.
 % would rather enforce them to be related.
 % In the case of $\U$, this would lead
 % to the definition
-%   $  \Uw\wf{\Gamma} \sim \model{A} := (\wf{\Gamma}\sim\model{\Gamma}) \times (\model{A} = \model{\U})$,
+%   $  \Uw\wf{\GG} \sim \model{A} := (\wf{\GG}\sim\model{\GG}) \times (\model{A} = \model{\U})$,
 %   instead of
 %   the current definition
-%   $  \Uw\wf{\Gamma} \sim \model{A} := (\model{A} = \model{\U})$.
+%   $  \Uw\wf{\GG} \sim \model{A} := (\model{A} = \model{\U})$.
 %   Our choice makes the definitions more concise, and similarly
 %  in the definition of the term components we assume that the input semantic
 %  context and type are already related to their associated well-formedness judgments.
@@ -764,10 +764,10 @@ terms and substitutions.
 % Let us comment the first variable case:
   % Another example is the first variable case, where we follow the first verbose
   % approach:
-  % the relation gives a semantic context $\model\Gamma$ that must be related
-  % to the syntactic $\Gamma$, and a semantic
+  % the relation gives a semantic context $\model\GG$ that must be related
+  % to the syntactic $\GG$, and a semantic
   % type $\model{A}$ related to the syntactic $A$. The input semantic context is
-  % then required to equal $\model{\Gamma}\model{\ext}\model{A}$.   As
+  % then required to equal $\model{\GG}\model{\ext}\model{A}$.   As
   % $\blank \model{\ext}\blank$ is not guaranteed to be injective, these
   % relations are required to show that the relation is right unique.
 Next, we prove that this relation is right unique.  Then, we show that the
@@ -781,27 +781,27 @@ judgments.
   \begin{alignat*}{5}
     &
     \isp{\Sigma{\sim}}
-    && : (\wf\Gamma : \Gamma \vdash ) && \ra
-    \isaprop\, (\sum_{\model{\Gamma}} \wf{\Gamma} \sim \model{\Gamma})
+    && : (\wf\GG : \GG \vdash ) && \ra
+    \isaprop\, (\sum_{\model{\GG}} \wf{\GG} \sim \model{\GG})
     \\
     &
     \isp{\Sigma{\sim}}
-    && : (\wf A : \Gamma \vdash A) && \ra
+    && : (\wf A : \GG \vdash A) && \ra
     \isaprop\, (\sum_{\model{A}} \wf{A} \sim \model{A})
     \\
     &
     \isp{\Sigma{\sim}}
-    && : (\wf t : \Gamma \vdash t \in A) && \ra
+    && : (\wf t : \GG \vdash t \in A) && \ra
     \isaprop\, (\sum_{\model{t}} \wf{t} \sim \model{t})
     \\
     &
     \isp{\Sigma{\sim}}
-    && : (\wf x : \Gamma \vdash x \invar A) && \ra
+    && : (\wf x : \GG \vdash x \invar A) && \ra
     \isaprop\, (\sum_{\model{x}} \wf{x} \sim \model{x})
     \\
     &
     \isp{\Sigma{\sim}}
-    && : (\wf \sigma : \Gamma \vdash \sigma \Rightarrow \Delta) && \ra
+    && : (\wf \sigma : \GG \vdash \sigma \Rightarrow \GD) && \ra
     \isaprop\, (\sum_{\model{\sigma}} \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
   We mentioned that in order to avoid a recursive-recursive definition, we
@@ -809,14 +809,14 @@ judgments.
   hypotheses are sometimes missed, for example in the case of the empty
   substitution or in the case of variables, requiring us to state additional
   equalities. Because of this, we need UIP to show that
-  $\sum_{\model{\Gamma}}\Gamma\sim\model{\Gamma}$ and
+  $\sum_{\model{\GG}}\GG\sim\model{\GG}$ and
   $\sum_{\model{A}}A\sim\model{A}$ are propositions.  One may think that the use
   of UIP could be avoided by using the alternative verbose definition that we
   suggested before, expecting that
-  $\sum_{\model{\Gamma}}\sum_{\model{A}}A\sim\model{A}$, rather than
+  $\sum_{\model{\GG}}\sum_{\model{A}}A\sim\model{A}$, rather than
   $\sum_{\model{A}}A\sim\model{A}$, is a proposition.  However, this is not
   obvious. For example, we were not able to define
-  $\Elw\,\wf{\Gamma}\,\wf{a}\sim \model{A}$ in this fashion. In related work,
+  $\Elw\,\wf{\GG}\,\wf{a}\sim \model{A}$ in this fashion. In related work,
   Hugunin investigated constructing IITs without
   UIP \cite{jasper} in cubical type theory, and demonstrated
   that well-formedness predicates used in syntactic models can subtly break
@@ -874,48 +874,48 @@ judgments.
 \begin{alignat*}{5}
   & \model{\Sigma\wkO{\Rightarrow}}  && :
    % & && \qquad
-  (\wf{\Gamma} : \Gamma \vdash) \ra
-  (\wf\Gamma \sim \model{\Gamma}) \ra
+  (\wf{\GG} : \GG \vdash) \ra
+  (\wf\GG \sim \model{\GG}) \ra
   \\
   & && \qquad
-  (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  (\wf\Delta \sim \model{\Delta}) \ra
+  (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  (\wf\GD \sim \model{\GD}) \ra
   \\ &&& \qquad
-  (\model{A} : \model\Ty\model\Gamma)\ra
-  (\model{\Delta'} : \model{\Con}) \times (\model{\Sub}\model{\Delta'}{\model{\Delta}})
+  (\model{A} : \model\Ty\model\GG)\ra
+  (\model{\GD'} : \model{\Con}) \times (\model{\Sub}\model{\GD'}{\model{\GD}})
 \end{alignat*}
-Here, $\model{\Delta'}$ should be thought of as the context $\model\Delta$ where
+Here, $\model{\GD'}$ should be thought of as the context $\model\GD$ where
 the weakening has happened in the middle of the context, by inserting the type
-$\model{A}$ after the prefix $\model{\Gamma}$. Indeed, we expect that
-$\model{\Gamma}$ is a prefix of $\model{\Delta}$, as $\model{\Gamma}$ relates to
-$\Gamma$ and $\model{\Delta}$ to $\Gamma\merge\Delta$.
-% $\wf{\Gamma}\sim\model\Gamma$
-% and $\wf\Delta\sim\model\Delta$, and $\Gamma$ is a prefix of $\Gamma\merge\Delta$.
+$\model{A}$ after the prefix $\model{\GG}$. Indeed, we expect that
+$\model{\GG}$ is a prefix of $\model{\GD}$, as $\model{\GG}$ relates to
+$\GG$ and $\model{\GD}$ to $\GG\merge\GD$.
+% $\wf{\GG}\sim\model\GG$
+% and $\wf\GD\sim\model\GD$, and $\GG$ is a prefix of $\GG\merge\GD$.
 The substitution from the weakened context to the original one must
 be computed at the same time otherwise the recursion hypothesis is not strong enough.
 Then, we seperate the two components under the same (implicit) hypotheses:
 \begin{alignat*}{5}
-  & \model{\wkO}\,\model{A}\,\model\Delta  && :
-  % (\model{A} : \model\Ty\model\Gamma)\ra
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
+  & \model{\wkO}\,\model{A}\,\model\GD  && :
+  % (\model{A} : \model\Ty\model\GG)\ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
   % \\
   % & && \qquad
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\ &&& \qquad
    \model{\Con}
    \\
-  & \model{\wk{\Rightarrow}}\,\model{A}\,\model\Delta  && :
-  % (\model{A} : \model\Ty\model\Gamma)\ra
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
+  & \model{\wk{\Rightarrow}}\,\model{A}\,\model\GD  && :
+  % (\model{A} : \model\Ty\model\GG)\ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
   % \\
   % & && \qquad
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\ &&& \qquad
-   \model{\Sub}(\model{\wkO}\model{A}\,\model\Delta)\model\Delta
+   \model{\Sub}(\model{\wkO}\model{A}\,\model\GD)\model\GD
 \end{alignat*}
 Note that if recursion-recursion is available in the metatheory, $\model\wkO$
 and $\wk\model{\Rightarrow}$ can be defined directly without introducing this
@@ -925,109 +925,109 @@ intermediate $\model{\Sigma\wkO\Rightarrow}$.
 Now, we are ready to prove by mutual recursion on well-typed judgments that
 weakening preserves typing. The following statements are all under the
 hypotheses
-  $(\wf{\Gamma} : \Gamma \vdash)$,
-  $(\wf\Gamma \sim \model{\Gamma})$,
-  $(\wf{\Delta} : \Gamma\merge\Delta \vdash)$,
-  $(\wf\Delta \sim \model{\Delta})$,
-  $(\wf{A} : \Gamma \vdash A)$,
+  $(\wf{\GG} : \GG \vdash)$,
+  $(\wf\GG \sim \model{\GG})$,
+  $(\wf{\GD} : \GG\merge\GD \vdash)$,
+  $(\wf\GD \sim \model{\GD})$,
+  $(\wf{A} : \GG \vdash A)$,
   and
   $(\wf{A} \sim \model{A})$.
   % , except the last one about weakening substitutions,
-  % which do not require that $\model\Delta$ is related to any well-formed context.
+  % which do not require that $\model\GD$ is related to any well-formed context.
 \begin{alignat*}{5}
   & \wkO{\sim}  &&
    :
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
   % \\
   %  & && \qquad
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\
   % & && \qquad
-  % (\wf{A} : \Gamma \vdash A) \ra
+  % (\wf{A} : \GG \vdash A) \ra
   % (\wf{A} \sim \model{A}) \ra
   % \\
   % & && \qquad
-  \wf{\wkO}\,\wf{A}\,\wf{\Delta}\sim\model{\wkO}\model{A}\model{\Delta}
+  \wf{\wkO}\,\wf{A}\,\wf{\GD}\sim\model{\wkO}\model{A}\model{\GD}
   \\
   % wk
   & \wk{\sim} && :
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
   % \\
   %  & && \qquad
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\
   % & && \qquad
-  % (\wf{A} : \Gamma \vdash A) \ra
+  % (\wf{A} : \GG \vdash A) \ra
   % (\wf{A} \sim \model{A}) \ra
   % \\
   % &&& \qquad
-  (\wf{T} : \Gamma\merge\Delta \vdash T) \ra
+  (\wf{T} : \GG\merge\GD \vdash T) \ra
   (\wf{T} \sim \model{T}) \ra
   % \\ &&& \qquad
-  \wf{\wk}\,\wf{A}\,\wf{T}\sim\model{T}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\Delta}]}
+  \wf{\wk}\,\wf{A}\,\wf{T}\sim\model{T}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\GD}]}
   \\
     % wk
   & \wk{\sim} && :
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
   % \\
   %  & && \qquad
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\
   % & && \qquad
-  % (\wf{A} : \Gamma \vdash A) \ra
+  % (\wf{A} : \GG \vdash A) \ra
   % (\wf{A} \sim \model{A}) \ra
   % \\
   % &&& \qquad
-  (\wf{t} : \Gamma\merge\Delta \vdash t\in T) \ra
+  (\wf{t} : \GG\merge\GD \vdash t\in T) \ra
   (\wf{t} \sim \model{t}) \ra
   % \\ &&& \qquad
-  \wf{\wk}\,\wf{A}\,\wf{t}\sim\model{t}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\Delta}]}
+  \wf{\wk}\,\wf{A}\,\wf{t}\sim\model{t}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\GD}]}
   \\
     % wk
   & \wk{\sim} && :
-  % (\wf{\Gamma} : \Gamma \vdash) \ra
-  % (\wf\Gamma \sim \model{\Gamma}) \ra
+  % (\wf{\GG} : \GG \vdash) \ra
+  % (\wf\GG \sim \model{\GG}) \ra
   % \\
   %  & && \qquad
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\
   % & && \qquad
-  % (\wf{A} : \Gamma \vdash A) \ra
+  % (\wf{A} : \GG \vdash A) \ra
   % (\wf{A} \sim \model{A}) \ra
   % \\
   % &&& \qquad
-  (\wf{x} : \Gamma\merge\Delta \vdash t\invar T) \ra
+  (\wf{x} : \GG\merge\GD \vdash t\invar T) \ra
   (\wf{x} \sim \model{x}) \ra
   % \\ &&& \qquad
-  \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\Delta}]}
+  \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\GD}]}
   % \\ &&& \qquad
-  % \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\Delta}]}
+  % \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\GD}]}
 \end{alignat*}
 Then we deduce, still by induction, that weakening of substitution preserves the
 relation:
 \begin{alignat*}{5}
     % wk
   & \wkO{\sim} && :
-  (\wf{\Gamma} : \Gamma \vdash) \ra
-  (\wf\Gamma \sim \model{\Gamma}) \ra
+  (\wf{\GG} : \GG \vdash) \ra
+  (\wf\GG \sim \model{\GG}) \ra
   % \\
   %  & && \qquad
-  % (\wf{\Delta} : \Gamma\merge\Delta \vdash) \ra
-  % (\wf\Delta \sim \model{\Delta}) \ra
+  % (\wf{\GD} : \GG\merge\GD \vdash) \ra
+  % (\wf\GD \sim \model{\GD}) \ra
   % \\
   % & && \qquad
-  (\wf{A} : \Gamma \vdash A) \ra
+  (\wf{A} : \GG \vdash A) \ra
   (\wf{A} \sim \model{A}) \ra
   \\
   &&& \qquad
-  (\wf{\sigma} : \Gamma\vdash \sigma \Rightarrow \Delta) \ra
+  (\wf{\sigma} : \GG\vdash \sigma \Rightarrow \GD) \ra
   (\wf{\sigma} \sim \model{\sigma}) \ra
   % \\
   % &&& \qquad
@@ -1042,51 +1042,51 @@ relation:
 %   First, we define the notion of being a prefix:
 % \begin{alignat*}{5}
 %   & \blank\leq\blank  && : \model\Con\ra \model\Con\ra\Set \\
-%   & {\leq}\boldsymbol{\cdot}  && : \model{\Gamma} \leq \model{\Gamma} \\
-%   & \blank{\leq}{\ext}\blank  && : \model{\Gamma} \leq \model{\Delta} \ra (A :
-%   \model{\Ty}\Delta) \ra \model{\Gamma}\leq\model{\Delta}\model{\ext}\model{A}
+%   & {\leq}\boldsymbol{\cdot}  && : \model{\GG} \leq \model{\GG} \\
+%   & \blank{\leq}{\ext}\blank  && : \model{\GG} \leq \model{\GD} \ra (A :
+%   \model{\Ty}\GD) \ra \model{\GG}\leq\model{\GD}\model{\ext}\model{A}
 % \end{alignat*}
-% Now, a telescope on a semantic context $\model{\Gamma}$ is a semantic context
-% $\model{\Delta}$ such that $\model{\Gamma}\leq \model{\Delta}$.
+% Now, a telescope on a semantic context $\model{\GG}$ is a semantic context
+% $\model{\GD}$ such that $\model{\GG}\leq \model{\GD}$.
 
 % \begin{alignat*}{5}
-%   & \Tel\,\model{\Gamma}  && := (\model{\Delta} : \model{\Con})\times (\model{\Gamma}\leq \model{\Delta})
+%   & \Tel\,\model{\GG}  && := (\model{\GD} : \model{\Con})\times (\model{\GG}\leq \model{\GD})
 % \end{alignat*}
 % Similarly to the untyped case, we define the merging of a context and a telescope by recursion on the telescope:
 % \begin{alignat*}{5}
-%   & \blank\model{\merge}\blank  && := (\model{\Gamma} : \model{\Con}) \ra
-%   (\model{\Delta} : \Tel\,\model\Gamma) \ra \model{\Con} \\
-%   & \model\Gamma \merge (\model\Gamma,{\leq}\boldsymbol{\cdot}) && :=  \model\Gamma \\
-%   & \model\Gamma \merge (\model\Delta\model{\ext}\model{A}, \Delta_{\leq} {\leq}{\ext} \model{A}) && :=  (\model\Gamma \model\merge \model\Delta)\model\ext \model{A}\\
+%   & \blank\model{\merge}\blank  && := (\model{\GG} : \model{\Con}) \ra
+%   (\model{\GD} : \Tel\,\model\GG) \ra \model{\Con} \\
+%   & \model\GG \merge (\model\GG,{\leq}\boldsymbol{\cdot}) && :=  \model\GG \\
+%   & \model\GG \merge (\model\GD\model{\ext}\model{A}, \GD_{\leq} {\leq}{\ext} \model{A}) && :=  (\model\GG \model\merge \model\GD)\model\ext \model{A}\\
 % \end{alignat*}
 % We then define a relevant relation between syntactic telescopes and semantic telescopes.
 % Untyped syntactic telescopes are modeled by untyped contexts, because they are
 % list of types.
-% A syntactic telescope $\Delta$ is then well formed in a context $\Gamma$ if
-% $\Gamma\merge\Delta$ is well formed.
+% A syntactic telescope $\GD$ is then well formed in a context $\GG$ if
+% $\GG\merge\GD$ is well formed.
 % The relation is defined by recursion on the untyped syntactic telescope:
 % \begin{alignat*}{5}
-%   & \blank\sim\blank  && := ( \Gamma \merge \Delta \vdash) \ra (\model\Gamma\leq\model\Delta)
+%   & \blank\sim\blank  && := ( \GG \merge \GD \vdash) \ra (\model\GG\leq\model\GD)
 %   \ra \Set \\
-%   & (\wf\Gamma : \Gamma \merge \emptyu \vdash)\sim\model\Delta  && :=
-%   \model\Delta =  {\leq}\boldsymbol{\cdot}\\
-%   & (\wf\Delta \extw \wf{A} : \Gamma \merge (\Delta \extu A) \vdash)\sim\model{E}  && :=
-%   \sum_{\model\Delta} (\wf\Delta\sim\model\Delta)
+%   & (\wf\GG : \GG \merge \emptyu \vdash)\sim\model\GD  && :=
+%   \model\GD =  {\leq}\boldsymbol{\cdot}\\
+%   & (\wf\GD \extw \wf{A} : \GG \merge (\GD \extu A) \vdash)\sim\model{E}  && :=
+%   \sum_{\model\GD} (\wf\GD\sim\model\GD)
 %   \times
 %   \sum_{\model A} (\wf{A}\sim\model{A}) \times
 %   \\
 %   & && \qquad
-%   \model{E} = \model\Delta {\leq}{\ext} \model{A}
+%   \model{E} = \model\GD {\leq}{\ext} \model{A}
 % \end{alignat*}
 
 \subsubsection{Stability under substitution}
 
  We want to prove that given any well-typed substitution $\sigma
-: \Sub\,\Gamma\,\Delta$ and semantic contexts $\model{\Gamma}$ and
-$\model{\Delta}$, respectively related to $\Gamma$ and $\Delta$, there exists a
+: \Sub\,\GG\,\GD$ and semantic contexts $\model{\GG}$ and
+$\model{\GD}$, respectively related to $\GG$ and $\GD$, there exists a
 semantic substitution which is related to $\sigma$.  In the extension case
-$\Gamma\vdash \sigma \consu\,t\Rightarrow \Delta\,\extu\,A$, the induction
-hypothesis provides $\model{\sigma}$, $\model{\Delta}$, $\model{A}$ related to
+$\GG\vdash \sigma \consu\,t\Rightarrow \GD\,\extu\,A$, the induction
+hypothesis provides $\model{\sigma}$, $\model{\GD}$, $\model{A}$ related to
 their syntactic counterpart. However, the premises of the induction hypothesis
 for getting a relevant $\model{t}$ require showing that the type
 $\model{A}\model{[\model{\sigma}]}$ is related to the syntactic type
@@ -1095,9 +1095,9 @@ variables:
 \begin{alignat*}{5}
     % []V~
   & []{\sim} && :
-  (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta) \ra
+  (\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD) \ra
   (\wf\sigma \sim \model{\sigma}) \ra
-  (\wf{x} : \Delta \vdash x \invar A) \ra
+  (\wf{x} : \GD \vdash x \invar A) \ra
   (\wf{x} \sim \model{x}) \ra
   \\ & && \qquad
   % \\
@@ -1106,29 +1106,29 @@ variables:
 \end{alignat*}
 Then we show it for terms and types  by mutual induction
 under the common hypotheses
-  $(\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta)$,
+  $(\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD)$,
   $(\wf\sigma \sim \model{\sigma})$,
-  $(\wf{\Gamma} : \Gamma \vdash )$,
-  $(\wf{\Gamma} \sim \model{\Gamma})$,
+  $(\wf{\GG} : \GG \vdash )$,
+  $(\wf{\GG} \sim \model{\GG})$,
   % \\
   % &&&\qquad
-    $(\wf{\Delta} : \Delta \vdash )$,
+    $(\wf{\GD} : \GD \vdash )$,
     and
-  $(\wf{\Delta} \sim \model{\Delta})$:
+  $(\wf{\GD} \sim \model{\GD})$:
 \begin{alignat*}{5}
      & []{\sim} && :
-    (\wf{A} : \Delta \vdash A) \ra
+    (\wf{A} : \GD \vdash A) \ra
   (\wf{A} \sim \model{A}) \ra
   % \\
   % & && \qquad
-   \wf{[]}\wf{\Gamma}\wf{A}\wf{\sigma} \sim \model{A}\model{[\model{\sigma}]}
+   \wf{[]}\wf{\GG}\wf{A}\wf{\sigma} \sim \model{A}\model{[\model{\sigma}]}
    \\
      & []{\sim} && :
-    (\wf{t} : \Delta \vdash t \in A ) \ra
+    (\wf{t} : \GD \vdash t \in A ) \ra
   (\wf{t} \sim \model{t}) \ra
   % \\
   % & && \qquad
-   \wf{[]}\wf{\Gamma}\wf{t}\wf{\sigma} \sim \model{t}\model{[\model{\sigma}]}
+   \wf{[]}\wf{\GG}\wf{t}\wf{\sigma} \sim \model{t}\model{[\model{\sigma}]}
   \end{alignat*}
   Eventually, we show under the same hypotheses the following statement
   \begin{alignat*}{5}
@@ -1137,18 +1137,18 @@ under the common hypotheses
   (\wf{E} \sim \model{E}) \ra
   % \\
   % &&&  \qquad
-    (\wf{\delta} : \Delta \vdash \delta \Rightarrow E) \ra
+    (\wf{\delta} : \GD \vdash \delta \Rightarrow E) \ra
   (\wf{\delta} \sim \model{\delta}) \ra
   \\
   & && \qquad
-   \wf{{\circ}}\,\wf{\Gamma}\,\wf{\delta}\,\wf{\sigma} \sim \model{\delta}\mathbin{\model{\circ}}\model{\sigma}
+   \wf{{\circ}}\,\wf{\GG}\,\wf{\delta}\,\wf{\sigma} \sim \model{\delta}\mathbin{\model{\circ}}\model{\sigma}
   \end{alignat*}
   and the fact that identity preserves the relation:
   \begin{alignat*}{5}
      & {\id}{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-  (\wf{\Gamma} \sim \model{\Gamma}) \ra
-   \wf{{\id}}\,\wf{\Gamma} \sim {\id}_{\model{\Gamma}}
+    (\wf{\GG} : \GG \vdash ) \ra
+  (\wf{\GG} \sim \model{\GG}) \ra
+   \wf{{\id}}\,\wf{\GG} \sim {\id}_{\model{\GG}}
   \end{alignat*}
 % $\model{t}\model\oldapp\model{u}$, but it has type
 % $\model{B}\model{[0 := \model{u}]}$
@@ -1170,41 +1170,41 @@ Thus, as a first step, we use induction on well-formedness judgments to construc
 semantic counterparts:
   \begin{alignat*}{5}
      & \Sigma\Con{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-    \sum_{\model{\Gamma}} \wf{\Gamma} \sim \model{\Gamma}
+    (\wf{\GG} : \GG \vdash ) \ra
+    \sum_{\model{\GG}} \wf{\GG} \sim \model{\GG}
     \\
      & \Sigma\Ty{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-    (\wf{\Gamma}\sim \model\Gamma) \ra
-    (\wf{A} : \Gamma \vdash A ) \ra
-    ({\model{A}:\model{\Ty}\model\Gamma})\times ( \wf{A} \sim \model{A})
+    (\wf{\GG} : \GG \vdash ) \ra
+    (\wf{\GG}\sim \model\GG) \ra
+    (\wf{A} : \GG \vdash A ) \ra
+    ({\model{A}:\model{\Ty}\model\GG})\times ( \wf{A} \sim \model{A})
     \\
      & \Sigma\Tm{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-    (\wf{\Gamma}\sim \model\Gamma) \ra
-    (\wf{A} : \Gamma \vdash A ) \ra
+    (\wf{\GG} : \GG \vdash ) \ra
+    (\wf{\GG}\sim \model\GG) \ra
+    (\wf{A} : \GG \vdash A ) \ra
     ( \wf{A} \sim \model{A}) \ra
     \\ & && \qquad
-    (\wf{t} : \Gamma \vdash t \in A ) \ra
-    ({\model{t}:\model{\Tm}\model\Gamma}\model{A})\times ( \wf{t} \sim \model{t})
+    (\wf{t} : \GG \vdash t \in A ) \ra
+    ({\model{t}:\model{\Tm}\model\GG}\model{A})\times ( \wf{t} \sim \model{t})
     \\
      & \Sigma\Var{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-    (\wf{\Gamma}\sim \model\Gamma) \ra
-    (\wf{A} : \Gamma \vdash A ) \ra
+    (\wf{\GG} : \GG \vdash ) \ra
+    (\wf{\GG}\sim \model\GG) \ra
+    (\wf{A} : \GG \vdash A ) \ra
     ( \wf{A} \sim \model{A}) \ra
     \\ & && \qquad
-    (\wf{x} : \Gamma \vdash x \invar A ) \ra
-    ({\model{x}:\model{\Tm}\model\Gamma}\model{A})\times ( \wf{x} \sim \model{x})
+    (\wf{x} : \GG \vdash x \invar A ) \ra
+    ({\model{x}:\model{\Tm}\model\GG}\model{A})\times ( \wf{x} \sim \model{x})
     \\
      & \Sigma\Sub{\sim} && :
-    (\wf{\Gamma} : \Gamma \vdash ) \ra
-    (\wf{\Gamma}\sim \model\Gamma) \ra
-    (\wf{\Delta} : \Delta \vdash  ) \ra
-    ( \wf{\Delta} \sim \model{\Delta}) \ra
+    (\wf{\GG} : \GG \vdash ) \ra
+    (\wf{\GG}\sim \model\GG) \ra
+    (\wf{\GD} : \GD \vdash  ) \ra
+    ( \wf{\GD} \sim \model{\GD}) \ra
     \\ & && \qquad
-    (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta ) \ra
-    ({\model{\sigma}:\model{\Sub}\model\Gamma}\model{\Delta})\times ( \wf{\sigma} \sim \model{\sigma})
+    (\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD ) \ra
+    ({\model{\sigma}:\model{\Sub}\model\GG}\model{\GD})\times ( \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
   The right uniqueness of the relation is used in this induction. It is then
 straightforward to show (without induction, but using right uniqueness) that the
@@ -1224,34 +1224,34 @@ syntax to the model, inducing the following maps:
   &
   \mor{\Con}
   && :
-   (\Gamma \vdash) \ra \model\Con
+   (\GG \vdash) \ra \model\Con
    \\
   &
   \mor{\Ty}
   && :
-   (\wf\Gamma:\Gamma \vdash) \ra (\Gamma\vdash A)\ra\model\Ty\,(\mor\Con\wf\Gamma)
+   (\wf\GG:\GG \vdash) \ra (\GG\vdash A)\ra\model\Ty\,(\mor\Con\wf\GG)
    \\
   &
   \mor{\Tm}
   && :
-  (\wf\Gamma:\Gamma \vdash) \ra (\wf{A}:\Gamma\vdash A)\ra
-  (\Gamma\vdash t \in A)\ra\model\Tm\,(\mor\Con\wf\Gamma)\,
-  (\mor\Ty\wf\Gamma\,\wf{A})
+  (\wf\GG:\GG \vdash) \ra (\wf{A}:\GG\vdash A)\ra
+  (\GG\vdash t \in A)\ra\model\Tm\,(\mor\Con\wf\GG)\,
+  (\mor\Ty\wf\GG\,\wf{A})
    \\
   &
   \mor{\Var}
   && :
-  (\wf\Gamma:\Gamma \vdash) \ra (\wf{A}:\Gamma\vdash A)\ra
-  (\Gamma\vdash x \invar A)\ra\model\Tm\,(\mor\Con\wf\Gamma)\,
-  (\mor\Ty\wf\Gamma\,\wf{A})
+  (\wf\GG:\GG \vdash) \ra (\wf{A}:\GG\vdash A)\ra
+  (\GG\vdash x \invar A)\ra\model\Tm\,(\mor\Con\wf\GG)\,
+  (\mor\Ty\wf\GG\,\wf{A})
    \\
   &
   \mor{\Sub}
   && :
-  (\wf\Gamma:\Gamma \vdash) \ra
-  (\wf\Delta:\Delta \vdash) \ra
-  (\Gamma\vdash \sigma \Rightarrow \Delta)\ra\model\Sub\,(\mor\Con\wf\Gamma)\,
-  (\mor\Con\wf\Delta)
+  (\wf\GG:\GG \vdash) \ra
+  (\wf\GD:\GD \vdash) \ra
+  (\GG\vdash \sigma \Rightarrow \GD)\ra\model\Sub\,(\mor\Con\wf\GG)\,
+  (\mor\Con\wf\GD)
 \end{alignat*}
 Then, we show by induction on typing judgments that
 the image is related:
@@ -1259,38 +1259,38 @@ the image is related:
   &
   {\sim}\mor{\Con}
   && :
-  (\wf\Gamma : \Gamma \vdash) \ra \wf\Gamma\sim \mor\Con\,\wf\Gamma
+  (\wf\GG : \GG \vdash) \ra \wf\GG\sim \mor\Con\,\wf\GG
   \\
   &
   {\sim}\mor{\Ty}
   && :
-  (\wf\Gamma : \Gamma \vdash) \ra
-  (\wf{A} : \Gamma \vdash A) \ra
-  \wf\Gamma\sim \mor\Ty\,\wf\Gamma\,\wf{A}
+  (\wf\GG : \GG \vdash) \ra
+  (\wf{A} : \GG \vdash A) \ra
+  \wf\GG\sim \mor\Ty\,\wf\GG\,\wf{A}
   \\
   &
   {\sim}\mor{\Tm}
   && :
-  (\wf\Gamma : \Gamma \vdash) \ra
-  (\wf{A} : \Gamma \vdash A) \ra
-  (\wf{t} : \Gamma \vdash t \in A) \ra
-  \wf\Gamma\sim \mor\Tm\,\wf\Gamma\,\wf{A}\,\wf{t}
+  (\wf\GG : \GG \vdash) \ra
+  (\wf{A} : \GG \vdash A) \ra
+  (\wf{t} : \GG \vdash t \in A) \ra
+  \wf\GG\sim \mor\Tm\,\wf\GG\,\wf{A}\,\wf{t}
   \\
   &
   {\sim}\mor{\Var}
   && :
-  (\wf\Gamma : \Gamma \vdash) \ra
-  (\wf{A} : \Gamma \vdash A) \ra
-  (\wf{x} : \Gamma \vdash x \invar A) \ra
-  \wf\Gamma\sim \mor\Var\,\wf\Gamma\,\wf{A}\,\wf{x}
+  (\wf\GG : \GG \vdash) \ra
+  (\wf{A} : \GG \vdash A) \ra
+  (\wf{x} : \GG \vdash x \invar A) \ra
+  \wf\GG\sim \mor\Var\,\wf\GG\,\wf{A}\,\wf{x}
   \\
   &
   {\sim}\mor{\Sub}
   && :
-  (\wf\Gamma : \Gamma \vdash) \ra
-  (\wf{\Delta} : \Delta \vdash) \ra
-  (\wf{\sigma} : \Gamma \vdash \sigma \Rightarrow \Delta) \ra
-  \wf\Gamma\sim \mor\Sub\,\wf\Gamma\,\wf{\Delta}\,\wf{\sigma}
+  (\wf\GG : \GG \vdash) \ra
+  (\wf{\GD} : \GD \vdash) \ra
+  (\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD) \ra
+  \wf\GG\sim \mor\Sub\,\wf\GG\,\wf{\GD}\,\wf{\sigma}
 \end{alignat*}
 This justifies the uniqueness of the morphism, by right uniqueness of
 $\blank\sim\blank$.

@@ -132,10 +132,10 @@ is the IIT of contexts and types given by the following constructors.
   & \Con && : \Set \\
   & \Ty && : \Con\ra\Set \\
   & \mathsf{empty} && : \Con \\
-  & \mathsf{ext} && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
-  & \mathsf{U} && : (\Gamma:\Con)\ra\Ty\,\Gamma \\
-  & \mathsf{El} && : (\Gamma:\Con)\ra\Ty\,(\mathsf{ext}\,\Gamma\,(\mathsf{U}\,\Gamma))
-%  & \mathsf{Pi} && : (\Gamma:\Con)(A:\Ty\,\Gamma)\ra\Ty\,(\mathsf{ext}\,\Gamma\,A)\ra\,\Ty\,\Gamma
+  & \mathsf{ext} && : (\GG:\Con)\ra\Ty\,\GG\ra\Con \\
+  & \mathsf{U} && : (\GG:\Con)\ra\Ty\,\GG \\
+  & \mathsf{El} && : (\GG:\Con)\ra\Ty\,(\mathsf{ext}\,\GG\,(\mathsf{U}\,\GG))
+%  & \mathsf{Pi} && : (\GG:\Con)(A:\Ty\,\GG)\ra\Ty\,(\mathsf{ext}\,\GG\,A)\ra\,\Ty\,\GG
 \end{alignat*}
 This type has two sorts, $\Con$ and $\Ty$. The $\mathsf{ext}$ constructor of
 $\Con$ refers to $\Ty$ and the $\Ty$-constructor $\mathsf{U}$ refers to $\Con$,
@@ -155,30 +155,30 @@ motives (one for each sort) and four methods (one for each
 constructor).
 \begin{alignat*}{5}
   & Con^D && : \Con\ra\Set \\
-  & Ty^D && : Con^D\,\Gamma\ra\Ty\,\Gamma\ra\Set \\
+  & Ty^D && : Con^D\,\GG\ra\Ty\,\GG\ra\Set \\
   & {empty}^D && : Con^D\,\mathsf{empty} \\
-  & {ext}^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,A\ra Con^D\,(\mathsf{ext}\,\Gamma\,A) \\
-  & U^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
-  & El^D && : (\Gamma^D:Con^D\,\Gamma)\ra\,Ty^D\,({ext}^D\,\Gamma^D\,(U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
-%  & Pi^D && : (\Gamma^D:Con^D\,\Gamma)(A^D:\Ty^D\,\Gamma^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,A^D)\ra\,\Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
+  & {ext}^D && : (\GG^D:Con^D\,\GG)\ra Ty^D\,\GG^D\,A\ra Con^D\,(\mathsf{ext}\,\GG\,A) \\
+  & U^D && : (\GG^D:Con^D\,\GG)\ra Ty^D\,\GG^D\,(\mathsf{U}\,\GG) \\
+  & El^D && : (\GG^D:Con^D\,\GG)\ra\,Ty^D\,({ext}^D\,\GG^D\,(U^D\,\GG^D))\,(\mathsf{El}\,\GG)
+%  & Pi^D && : (\GG^D:Con^D\,\GG)(A^D:\Ty^D\,\GG^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\GG^D\,A^D)\ra\,\Ty^D\,\GG^D\,(\mathsf{Pi}\,\GG\,A\,B)
 \end{alignat*} xxx
-Above we used implicit quantifications for $\Gamma:\Con$ and
-$A:\Ty\,\Gamma$ to ease readability, e.g.\ $Ty^D$ has an implicit
-parameter $\Gamma$ before its explicit parameter of type
-$Con^D\,\Gamma$.
+Above we used implicit quantifications for $\GG:\Con$ and
+$A:\Ty\,\GG$ to ease readability, e.g.\ $Ty^D$ has an implicit
+parameter $\GG$ before its explicit parameter of type
+$Con^D\,\GG$.
 
 Given the above motives and methods the elimination principle provides
 two functions
 \begin{alignat*}{5}
-  & \mathsf{elimCon} && : (\Gamma:\Con)\ra Con^D\,\Gamma \\
-  & \mathsf{elimTy} && : (A:\Ty\,\Gamma)\ra Ty^D\,(\mathsf{elimCon}\,\Gamma)\,A
+  & \mathsf{elimCon} && : (\GG:\Con)\ra Con^D\,\GG \\
+  & \mathsf{elimTy} && : (A:\Ty\,\GG)\ra Ty^D\,(\mathsf{elimCon}\,\GG)\,A
 \end{alignat*}
 with the following computation rules.
 \begin{alignat*}{5}
   & \mathsf{elimCon}\,\mathsf{empty} && = {empty}^D \\
-  & \mathsf{elimCon}\,(\mathsf{ext}\,\Gamma\,A) && = {ext}^D\,(\mathsf{elimCon}\,\Gamma)\,(\mathsf{elimTy}\,A) \\
-  & \mathsf{elimTy}\,(\mathsf{U}\,\Gamma) && = U^D\,(\mathsf{elimCon}\,\Gamma) \\
-  & \mathsf{elimTy}\,(\mathsf{El}\,\Gamma) && = El^D\,(\mathsf{elimCon}\,\Gamma)
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\GG\,A) && = {ext}^D\,(\mathsf{elimCon}\,\GG)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\GG) && = U^D\,(\mathsf{elimCon}\,\GG) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\GG) && = El^D\,(\mathsf{elimCon}\,\GG)
 \end{alignat*}
 The functions $\mathsf{elimCon}$ and $\mathsf{elimTy}$ are an example
 of a \emph{recursive-recursive} definition (using nomenclature from
@@ -200,13 +200,13 @@ simple elimination principle for the $\Con$--$\Ty$ example. Again, we
 use implicit quantifications.
 \begin{alignat*}{5}
   & Con^S && : \Con\ra\Set \\
-  & Ty^S && : \Ty\,\Gamma\ra\Set \\
+  & Ty^S && : \Ty\,\GG\ra\Set \\
   & {empty}^S && : Con^S\,\mathsf{empty} \\
-  & {ext}^S && : Con^S\,\Gamma\ra Ty^S\,\,A\ra Con^S\,(\mathsf{ext}\,\Gamma\,A) \\
-  & U^S && : Con^S\,\Gamma\ra Ty^S\,(\mathsf{U}\,\Gamma) \\
-  & El^S && : Con^S\,\Gamma\ra\,Ty^S\,(\mathsf{El}\,\Gamma) \\
-  & \mathsf{selimCon} && : (\Gamma:\Con)\ra Con^S\,\Gamma \\
-  & \mathsf{selimTy} && : (A:\Ty\,\Gamma)\ra Ty^S\,A
+  & {ext}^S && : Con^S\,\GG\ra Ty^S\,\,A\ra Con^S\,(\mathsf{ext}\,\GG\,A) \\
+  & U^S && : Con^S\,\GG\ra Ty^S\,(\mathsf{U}\,\GG) \\
+  & El^S && : Con^S\,\GG\ra\,Ty^S\,(\mathsf{El}\,\GG) \\
+  & \mathsf{selimCon} && : (\GG:\Con)\ra Con^S\,\GG \\
+  & \mathsf{selimTy} && : (A:\Ty\,\GG)\ra Ty^S\,A
 \end{alignat*}
 This simple elimination principle is too weak e.g.\ to define the
 standard (metacircular) interpretation of our small syntax
@@ -214,11 +214,11 @@ standard (metacircular) interpretation of our small syntax
 the following:
 \begin{alignat*}{5}
   & \ll\blank\rr && : \Con\ra\Set_1 \\
-  & \ll\blank\rr && : \ll\Gamma\rr\ra\Set_1 \\
+  & \ll\blank\rr && : \ll\GG\rr\ra\Set_1 \\
   & \ll\mathsf{empty}\rr && := \top \\
-  & \ll\mathsf{ext}\,\Gamma\,A\rr && := (\gamma:\ll\Gamma\rr)\times\ll A\rr\,\gamma \\
-  & \ll\mathsf{U}\,\Gamma\rr\,\gamma && := \Set \\
-  & \ll\mathsf{El}\,\Gamma\rr\,(\gamma,X) && := X
+  & \ll\mathsf{ext}\,\GG\,A\rr && := (\gamma:\ll\GG\rr)\times\ll A\rr\,\gamma \\
+  & \ll\mathsf{U}\,\GG\rr\,\gamma && := \Set \\
+  & \ll\mathsf{El}\,\GG\rr\,(\gamma,X) && := X
 \end{alignat*}
 The reason that we need the general elimination principle is that
 $\ll\blank\rr$ for types refers to $\ll\blank\rr$ for contexts, hence
@@ -256,7 +256,7 @@ Just as ibid., we only consider finitary IITs, that is, constructors
 can only have a finite number of recursive arguments. An example
 constructor for $\Con$--$\Ty$ which is not allowed is the following:
 \[
-  \Pi_\infty : (\Gamma : \Con) \rightarrow (\mathbb{N} \rightarrow \Ty\,\Gamma) \rightarrow \Ty\,\Gamma
+  \Pi_\infty : (\GG : \Con) \rightarrow (\mathbb{N} \rightarrow \Ty\,\GG) \rightarrow \Ty\,\GG
 \]
 
 TODO: list of contributions here. Notion of signature free from encoding.
@@ -447,43 +447,43 @@ of these type formers through examples after the definition.
   & \Con && : \Set \\
   & \Ty  && : \Con\ra\Set \\
   & \Sub  && : \Con\ra\Con\ra\Set \\
-  & \Tm  && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Set \\
-  & \id && : \Sub\,\Gamma\,\Gamma \\
-  & \blank\circ\blank && : \Sub\,\Theta\,\Delta\ra\Sub\,\Gamma\,\Theta\ra\Sub\,\Gamma\,\Delta \\
+  & \Tm  && : (\GG:\Con)\ra\Ty\,\GG\ra\Set \\
+  & \id && : \Sub\,\GG\,\GG \\
+  & \blank\circ\blank && : \Sub\,\GT\,\GD\ra\Sub\,\GG\,\GT\ra\Sub\,\GG\,\GD \\
   & \ass && : (\sigma \circ \delta) \circ \nu = \sigma \circ (\delta \circ \nu) \\
   & \idl && : \id\circ\sigma = \sigma \\
   & \idr && : \sigma\circ\id = \sigma \\
-  & \blank[\blank] && : \Ty\,\Delta\ra\Sub\,\Gamma\,\Delta\ra\Ty\,\Gamma \\
-  & \blank[\blank] && : \Tm\,\Delta\,A\ra(\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma]) \\
+  & \blank[\blank] && : \Ty\,\GD\ra\Sub\,\GG\,\GD\ra\Ty\,\GG \\
+  & \blank[\blank] && : \Tm\,\GD\,A\ra(\sigma:\Sub\,\GG\,\GD)\ra\Tm\,\GG\,(A[\sigma]) \\
   & [\id] && : A[\id] = A \\
   & [\circ] && : A[\sigma \circ \delta] = A[\sigma][\delta] \\
   & [\id] && : t[\id] = t \\
   & [\circ] && : t[\sigma \circ \delta] = t[\sigma][\delta] \\
   & \boldsymbol{\cdot} && : \Con \\
-  & \epsilon && : \Sub\,\Gamma\,\boldsymbol{\cdot} \\
-  & {\boldsymbol{\cdot}\eta} && : (\sigma : \Sub\,\Gamma\,\boldsymbol{\cdot}) \ra \sigma = \epsilon \\
-  & \blank\ext\blank && : (\Gamma:\Con)\ra\Ty\,\Gamma\ra\Con \\
-  & \blank,\blank && : (\sigma:\Sub\,\Gamma\,\Delta)\ra\Tm\,\Gamma\,(A[\sigma])\ra\Sub\,\Gamma\,(\Delta\ext A) \\
-  & \pi_1 && : \Sub\,\Gamma\,(\Delta\ext A)\ra \Sub\,\Gamma\,\Delta \\
-  & \pi_2 && : (\sigma : \Sub\,\Gamma\,(\Delta\ext A))\ra \Tm\,\Gamma\,(A[\pi_1 \sigma]) \\
+  & \epsilon && : \Sub\,\GG\,\boldsymbol{\cdot} \\
+  & {\boldsymbol{\cdot}\eta} && : (\sigma : \Sub\,\GG\,\boldsymbol{\cdot}) \ra \sigma = \epsilon \\
+  & \blank\ext\blank && : (\GG:\Con)\ra\Ty\,\GG\ra\Con \\
+  & \blank,\blank && : (\sigma:\Sub\,\GG\,\GD)\ra\Tm\,\GG\,(A[\sigma])\ra\Sub\,\GG\,(\GD\ext A) \\
+  & \pi_1 && : \Sub\,\GG\,(\GD\ext A)\ra \Sub\,\GG\,\GD \\
+  & \pi_2 && : (\sigma : \Sub\,\GG\,(\GD\ext A))\ra \Tm\,\GG\,(A[\pi_1 \sigma]) \\
   & {\pi_1\beta} && : \pi_1(\sigma, t) = \sigma \\
   & {\pi_2\beta} && : \pi_2(\sigma, t) = t \\
   & {\pi\eta} && : (\pi_1\,\sigma, \pi_2\,\sigma) = \sigma \\
   & {,\circ} && : (\sigma, t)\circ\delta = (\sigma\circ\delta, t[\delta]) \\
   & \rlap{(2) Universe} \\
-  & \U && : \Ty\,\Gamma \\
-  & \El && : \Tm\,\Gamma\,\U\ra\Ty\,\Gamma \\
+  & \U && : \Ty\,\GG \\
+  & \El && : \Tm\,\GG\,\U\ra\Ty\,\GG \\
   & {\U[]} && : \U[\sigma] = \U \\
   & {\El[]} && : (\El\,a)[\sigma] = \El\,(a[\sigma]) \\
   & \rlap{(3) Inductive parameters} \\
-  & \Pi && : (a:\Tm\,\Gamma\,\U)\ra\Ty\,(\Gamma\ext\El\,a)\ra\Ty\,\Gamma \\
-  & \blank\oldapp\blank && : \Tm\,\Gamma\,(\Pi\,a\,B)\ra (u : \Tm\,\Gamma\,(\El\,a))
-  \ra \Tm\,\Gamma\,(\El\,(B[\id,\,u])) \\
+  & \Pi && : (a:\Tm\,\GG\,\U)\ra\Ty\,(\GG\ext\El\,a)\ra\Ty\,\GG \\
+  & \blank\oldapp\blank && : \Tm\,\GG\,(\Pi\,a\,B)\ra (u : \Tm\,\GG\,(\El\,a))
+  \ra \Tm\,\GG\,(\El\,(B[\id,\,u])) \\
   & {\Pi[]} && : (\Pi\,a\,B)[\sigma] = \Pi\,(a[\sigma])\,(B[\sigma\circ\p,\q]) \\
   & {\oldapp[]} && : (t\oldapp\alpha)[\sigma] = (t[\sigma])\mathop{\oldapp}(\alpha[\sigma]) \\
   & \rlap{(4) External parameters} \\
-  & \Pim && : (T:\Set)\ra(T\ra\Ty\,\Gamma)\ra\Ty\,\Gamma \\
-  & \blank\appm \blank && : \Tm\,\Gamma\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\Gamma\,(B\,\alpha) \\
+  & \Pim && : (T:\Set)\ra(T\ra\Ty\,\GG)\ra\Ty\,\GG \\
+  & \blank\appm \blank && : \Tm\,\GG\,(\Pim\,T\,B)\ra(\alpha:T) \ra\Tm\,\GG\,(B\,\alpha) \\
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha
 \end{alignat*}
@@ -494,7 +494,7 @@ only one signature algebra in scope (e.g.\ in
 \end{definition}
 
 \begin{definition}[Abbreviations]\label{def:abbrevs}
-  For a signature algebra, we use $\wk : \Sub\,(\Gamma\ext A)\,\Gamma$
+  For a signature algebra, we use $\wk : \Sub\,(\GG\ext A)\,\GG$
   to mean $\pi_1\,\id$. We recover de Bruijn indices by setting
   $0:= \pi_2 \,\id$ and $1+n := n[\wk]$. $\Pi\,a\,(B[\wk])$ is
   abbreviated by $a\Ra B$, $\Pim\,T\,(\lambda\_.B)$ by $T\Ram B$.
@@ -536,9 +536,9 @@ only one signature algebra in scope (e.g.\ in
     & \U\,\ext                                                                  && Con && : \U\,\ext                                                                        \\
     & 0\Ra\U\,\ext                                                              && Ty && : Con\Ra\U\,\ext                                                                   \\
     & \El\,1\,\ext                                                              && empty && : \El\,Con\,\ext                                                                \\
-    & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\Gamma : Con)\,(Ty\oldapp\Gamma \Ra \El\,Con)\ext                         \\
-    & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\Gamma:Con)\,(\El\,(Ty\oldapp\Gamma))\,\ext                                 \\
-    & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\Gamma : Con)\,(\El\,(Ty\oldapp(ext\oldapp\Gamma\oldapp (U\oldapp\Gamma))))
+    & \Pi\,2\,(2\oldapp 0 \Ra \El\,3)\ext                                       && ext && : \Pi\,(\GG : Con)\,(Ty\oldapp\GG \Ra \El\,Con)\ext                         \\
+    & \Pi\,3\,(\El\,(3\oldapp 0))\,\ext                                         && U && : \Pi\,(\GG:Con)\,(\El\,(Ty\oldapp\GG))\,\ext                                 \\
+    & \Pi\,4\,(\El\,(4\oldapp(2\oldapp 0\oldapp (1\oldapp 0)))) \hspace{4.79em} && El && : \Pi\,(\GG : Con)\,(\El\,(Ty\oldapp(ext\oldapp\GG\oldapp (U\oldapp\GG))))
   \end{alignat*}
 \end{example}
 
@@ -565,16 +565,16 @@ The notion of morphism is determined by the notion of algebra
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\
   & \Con && : \Con^M && \ra\Con^N \\
-  & \Ty  && : \Ty^M\,\Gamma && \ra\Ty^N\,(\Con\,\Gamma) \\
-  & \Sub  && : \Sub^M\,\Gamma\,\Delta && \ra\Sub^N(\Con\,\Gamma)\,(\Con\,\Delta) \\
-  & \Tm  && : \Tm^M\,\Gamma\,A && \ra\Tm^N\,(\Con\,\Gamma)\,(\Ty\,A) \\
+  & \Ty  && : \Ty^M\,\GG && \ra\Ty^N\,(\Con\,\GG) \\
+  & \Sub  && : \Sub^M\,\GG\,\GD && \ra\Sub^N(\Con\,\GG)\,(\Con\,\GD) \\
+  & \Tm  && : \Tm^M\,\GG\,A && \ra\Tm^N\,(\Con\,\GG)\,(\Ty\,A) \\
   & \id && : \Sub\,\id^M && = \id^N \\
   & {\circ} && : \sigma\circ^M\delta && = \Sub\,\sigma\circ^N\Sub\,\delta \\
   & [] && : A[\sigma]^M && = \Ty\,A[\Sub\,\sigma]^N \\
   & [] && : t[\sigma]^M && = \Tm\,t[\Sub\,\sigma]^N \\
   & \boldsymbol{\cdot} && : \Con\,\boldsymbol{\cdot}^M && = \boldsymbol{\cdot}^N \\
   & \epsilon && : \Sub\,\epsilon^M && = \epsilon^N \\
-  & \ext && : \Con\,(\Gamma\ext^M A) && = \Con\,\Gamma\ext^N\Ty\,A \\
+  & \ext && : \Con\,(\GG\ext^M A) && = \Con\,\GG\ext^N\Ty\,A \\
   & , && : \Sub\,(\sigma,^M t) && = \Sub\,\sigma ,^N\Tm\,t \\
   & \pi_1 && : \Sub\,(\pi_1^M\,\sigma) && = \pi_1^N\,(\Sub\,\sigma) \\
   & \pi_2 && : \Tm\,(\pi_2^M\,\sigma) && = \pi_2^N\,(\Sub\,\sigma) \\
@@ -683,12 +683,12 @@ illustrate its usage by an example.
   equality components of $\SignAlg$ are omitted as they are all
   reflexivity.
   \begin{alignat*}{10}
-    & (\Gamma^\A:\Set) && \hspace{-0.3em}\times && (\Gamma^\D:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (\Gamma^\S:(\gamma:\Gamma^\A)\ra\Gamma^\D\,\gamma\ra\Set) \\
-    & (A^\A:\Gamma^\A\ra\Set) && \hspace{-0.3em}\times && (A^\D:\Gamma^\D\,\gamma\ra A^\A\,\gamma\ra\Set) && \hspace{-0.3em}\times && (A^\S:\Gamma^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra \\
+    & (\GG^\A:\Set) && \hspace{-0.3em}\times && (\GG^\D:\GG^\A\ra\Set) && \hspace{-0.3em}\times && (\GG^\S:(\gamma:\GG^\A)\ra\GG^\D\,\gamma\ra\Set) \\
+    & (A^\A:\GG^\A\ra\Set) && \hspace{-0.3em}\times && (A^\D:\GG^\D\,\gamma\ra A^\A\,\gamma\ra\Set) && \hspace{-0.3em}\times && (A^\S:\GG^\S\,\gamma\,\gamma^D\ra(\alpha:A^\A\,\gamma)\ra \\
     & && && && && \hspace{1em} A^\D\,\gamma^D\,\alpha\ra\Set) \\
-    & (\sigma^\A:\Gamma^\A\ra\Delta^\A) && \hspace{-0.3em}\times && (\sigma^\D:\Gamma^\D\,\gamma\ra\Delta^\D\,(\sigma^\A\,\gamma)) && \hspace{-0.3em}\times && (\sigma^\S:\Gamma^\S\,\gamma\,\gamma^D\ra \\
-    & && && && && \hspace{1em} \Delta^\S\,(\sigma^\A\,\gamma)\,(\sigma^\D\,\gamma^D)) \\
-    & (t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma) && \hspace{-0.3em}\times && (t^\D:(\gamma^D:\Gamma^\D\,\gamma)\ra && \hspace{-0.3em}\times && (t^\S:(\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\ra \\
+    & (\sigma^\A:\GG^\A\ra\GD^\A) && \hspace{-0.3em}\times && (\sigma^\D:\GG^\D\,\gamma\ra\GD^\D\,(\sigma^\A\,\gamma)) && \hspace{-0.3em}\times && (\sigma^\S:\GG^\S\,\gamma\,\gamma^D\ra \\
+    & && && && && \hspace{1em} \GD^\S\,(\sigma^\A\,\gamma)\,(\sigma^\D\,\gamma^D)) \\
+    & (t^\A:(\gamma:\GG^\A)\ra A^\A\,\gamma) && \hspace{-0.3em}\times && (t^\D:(\gamma^D:\GG^\D\,\gamma)\ra && \hspace{-0.3em}\times && (t^\S:(\gamma^S:\GG^\S\,\gamma\,\gamma^D)\ra \\
     & && && \hspace{1em} A^\D\,\gamma^D\,(t^\A\,\gamma)) && && \hspace{1em}  A^\S\,(t^\A\,\gamma)\,(t^\D\,\gamma^D)) \\
     & \id^\A\,\gamma := \gamma && && \id^\D\,\gamma^D:=\gamma^D && && \id^\S\,\gamma^S := \gamma^S \\
     & (\sigma\circ\delta)^\A\,\gamma := \sigma^\A\,(\delta^\A\,\gamma) && && (\sigma\circ\delta)^\D\,\gamma^D := \sigma^\D\,(\delta^\D\,\gamma^D) && && (\sigma\circ\delta)^\S\,\gamma^S := \sigma^\S\,(\delta^\S\,\gamma^S) \\
@@ -696,8 +696,8 @@ illustrate its usage by an example.
     & (t[\sigma])^\A\,\gamma := t^\A\,(\sigma^\A\,\gamma) && && (t[\sigma])^\D\,\gamma^D := t^\D\,(\sigma^\D\,\gamma^D) && && (t[\sigma])^\S\,\gamma^S := t^\S\,(\sigma^\S\,\gamma^S) \\
     & \cdot^\A := \top && && \cdot^\D\,\_ := \top && && \cdot^\S\,\_\,\_ := \top \\
     & \epsilon^\A\,\_ := \tt && && \epsilon^\D\,\_ := \tt && && \epsilon^\S\,\_ := \tt \\
-    & (\Gamma\rhd A)^\A := && && (\Gamma\rhd A)^\D\,(\gamma,\alpha) :=  && && (\Gamma\rhd A)^\S\,(\gamma,\alpha)\,(\gamma^D,\alpha^D) := \\
-    & \hspace{1em} (\gamma:\Gamma^\A)\times A^\A\,\gamma && && \hspace{1em} (\gamma^D:\Gamma^\D\,\gamma)\times A^\D\,\gamma^D\,\alpha && && \hspace{1em} (\gamma^S:\Gamma^\S\,\gamma\,\gamma^D)\times A^\S\,\gamma^S\,\alpha\,\alpha^D \\
+    & (\GG\rhd A)^\A := && && (\GG\rhd A)^\D\,(\gamma,\alpha) :=  && && (\GG\rhd A)^\S\,(\gamma,\alpha)\,(\gamma^D,\alpha^D) := \\
+    & \hspace{1em} (\gamma:\GG^\A)\times A^\A\,\gamma && && \hspace{1em} (\gamma^D:\GG^\D\,\gamma)\times A^\D\,\gamma^D\,\alpha && && \hspace{1em} (\gamma^S:\GG^\S\,\gamma\,\gamma^D)\times A^\S\,\gamma^S\,\alpha\,\alpha^D \\
     & (\sigma,t)^\A\,\gamma := (\sigma^\A\,\gamma,t^\A\,\gamma) && && (\sigma,t)^\D\,\gamma^D := (\sigma^\D\,\gamma^D,t^\D\,\gamma^D) && && (\sigma,t)^\S\,\gamma^S := (\sigma^\S\,\gamma^S,t^\S\,\gamma^S) \\
     & (\pi_1\,\sigma)^\A\,\gamma := \proj_1\,(\sigma^\A\,\gamma) && && (\pi_1\,\sigma)^\D\,\gamma^D := \proj_1\,(\sigma^\D\,\gamma^D) && && (\pi_1\,\sigma)^\S\,\gamma^S := \proj_1\,(\sigma^\S\,\gamma^S) \\
     & (\pi_2\,\sigma)^\A\,\gamma := \proj_2\,(\sigma^\A\,\gamma) && && (\pi_2\,\sigma)^\D\,\gamma^D := \proj_2\,(\sigma^\D\,\gamma^D) && && (\pi_2\,\sigma)^\S\,\gamma^S := \proj_2\,(\sigma^\S\,\gamma^S) \\
@@ -749,20 +749,20 @@ When viewing $\ADS$ by rows, we can see that it is a part of the CwF
 model of type theory \cite[Section
 7.4]{Kaposi:2019:CQI:3302515.3290315}. In the CwF model, a context is
 given by a CwF. Now, from the category part of the CwF, we only have
-objects ($\Gamma^\A$), and from the families, we have the families for
-types $\Gamma^\D$ and terms $\Gamma^\S$. Types are the corresponding
+objects ($\GG^\A$), and from the families, we have the families for
+types $\GG^\D$ and terms $\GG^\S$. Types are the corresponding
 parts of displayed CwFs, substitutions are parts of CwF morphisms,
 terms are parts of CwF sections. $\U$ is part of the CwF of sets,
 $\El\,a$ is the part of the discrete displayed CwF coming from $a$
-(which is a CwF-morphism from $\Gamma$ to the CwF of sets). $\Pi$ is
+(which is a CwF-morphism from $\GG$ to the CwF of sets). $\Pi$ is
 given by a dependent product of displayed CwFs where it is essential
 that the domain is discrete, $\Pim$ is the pointwise direct product.
 
 \begin{definition}[The set signature algebra $\A$]\label{def:a}
   $\A : \SignAlg$ is given by the first $^\A$ components of $\ADS$
   (\Cref{def:ads}), that is, $\Con^\A := \Set$,
-  $\Ty^\A\,\Gamma := \Gamma\ra\Set$,
-  $\Sub^\A\,\Gamma\,\Delta := \Gamma\ra\Delta$, and so on. There is a
+  $\Ty^\A\,\GG := \GG\ra\Set$,
+  $\Sub^\A\,\GG\,\GD := \GG\ra\GD$, and so on. There is a
   morphism from $\ADS$ to $\A$ defined by $\blank^\A$ at each
   component, which we also denote by $\blank^\A : \SignMor\,\ADS\,\A$.
 \end{definition}
@@ -874,17 +874,17 @@ signatures.
 \end{lemma}
 \begin{proof}
   We can turn a $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$
-  and an $\Omega:\Con^\I$ into a $\Sign$ by
-  $\Big(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.\big(f\,\ll\Omega\rr_M =
-  (f\circ\ll\blank\rr_M)\,\Omega = \ll\Omega\rr_N\big)\Big)$ where the equality
+  and an $\GO:\Con^\I$ into a $\Sign$ by
+  $\Big(\lambda M.\ll\GO\rr_M, \lambda M\,N\,f.\big(f\,\ll\GO\rr_M =
+  (f\circ\ll\blank\rr_M)\,\GO = \ll\GO\rr_N\big)\Big)$ where the equality
   proof in the second component comes from uniqueness of the recursor
   (we have to define composition of morphisms $\circ$ for this). The
   compositions of these two maps are the identities: $({sig},{sigc})$
   is mapped to
   $(\lambda M.\ll{sig}\,I\rr_M,\dots) = (\lambda
   M.\ll\blank\rr_M\,({sig}\,I),\dots)$ which is equal to
-  $(\lambda M.{sig}\,M,\dots)$ because of ${sigc}$; $\Omega$ is mapped
-  to $\ll\Omega\rr_\I = \Omega$ by uniqueness of $\ll\blank\rr$.
+  $(\lambda M.{sig}\,M,\dots)$ because of ${sigc}$; $\GO$ is mapped
+  to $\ll\GO\rr_\I = \GO$ by uniqueness of $\ll\blank\rr$.
 \end{proof}
 
 We will define the term signature algebra using which we obtain the
@@ -923,9 +923,9 @@ we illustrate the idea of both constructions on natural numbers.
 \end{example}
 
 \begin{definition}[Term signature algebra $\IC_{\blank}$]
-  For an $\Omega:\Con^I$, we define $\IC_\Omega:\SignAlg$ which we
+  For an $\GO:\Con^I$, we define $\IC_\GO:\SignAlg$ which we
   call the term signature algebra. It is equipped with a morphism
-  $\blank^\I : \SignMor\,(\IC_\Omega)\,\I$. We define $\IC_{\Omega}$
+  $\blank^\I : \SignMor\,(\IC_\GO)\,\I$. We define $\IC_{\GO}$
   by listing its components $\Con$, $\Ty$, $\Sub$, and so on, one per
   row. Each component has two parts denoted by $^\I$ and $^\C$. The
   $^\I$ part just reuses the corresponding components from $\I$, and
@@ -935,52 +935,52 @@ we illustrate the idea of both constructions on natural numbers.
   substitutions as their $^\C$ parts are uninformative equational
   reasonings.
   \begin{alignat*}{10}
-    & \Gamma^\I:\Con^\I && \hspace{1em} && \Gamma^\C: \Sub^\I\,\Omega\,\Gamma^\I\ra \ll\Gamma\rr_\A \\
-    & A^\I:\Ty^\I\,\Gamma^\I && && A^\C:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)\ra\Tm^\I\,\Omega\,(A^\I[\nu])\ra \ll A\rr_\A\,(\Gamma^\C\,\nu) \\
-    & \sigma^\I:\Sub^\I\,\Gamma^\I\,\Delta^\I && && \sigma^\C:\Delta^\C\,(\sigma^\I\circ\nu)=\ll\sigma\rr_\A\,(\Gamma^\C\,\nu) \\
-    & t^\I:\Tm^\I\,\Gamma^\I\,A^\I && && t^\C : A^\C\,\nu\,(t^\I[\nu])= \ll t\rr_\A\,(\Gamma^\C\,\nu) \\
+    & \GG^\I:\Con^\I && \hspace{1em} && \GG^\C: \Sub^\I\,\GO\,\GG^\I\ra \ll\GG\rr_\A \\
+    & A^\I:\Ty^\I\,\GG^\I && && A^\C:(\nu:\Sub^\I\,\GO\,\GG^\I)\ra\Tm^\I\,\GO\,(A^\I[\nu])\ra \ll A\rr_\A\,(\GG^\C\,\nu) \\
+    & \sigma^\I:\Sub^\I\,\GG^\I\,\GD^\I && && \sigma^\C:\GD^\C\,(\sigma^\I\circ\nu)=\ll\sigma\rr_\A\,(\GG^\C\,\nu) \\
+    & t^\I:\Tm^\I\,\GG^\I\,A^\I && && t^\C : A^\C\,\nu\,(t^\I[\nu])= \ll t\rr_\A\,(\GG^\C\,\nu) \\
     & (A[\sigma])^\I := A^\I[\sigma^\I]^\I && && (A[\sigma])^\C\,\nu\,t := A^\C\,(\sigma^\I\circ\nu)\,t \\
     & \cdot^\I := \cdot^\I && && \cdot^\C\,\nu := \tt \\
-    & (\Gamma\rhd A)^\I := \Gamma^\I\rhd^\I A^\I && && (\Gamma\rhd A)^\C\,\nu := (\Gamma^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
-    & \U^\I := \U^\I && && \U^\C\nu\,a := \Tm^\I\,\Omega\,(\El^\I\,a) \\
+    & (\GG\rhd A)^\I := \GG^\I\rhd^\I A^\I && && (\GG\rhd A)^\C\,\nu := (\GG^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & \U^\I := \U^\I && && \U^\C\nu\,a := \Tm^\I\,\GO\,(\El^\I\,a) \\
     & (\El\,a)^\I := \El^\I\,a^\I && && (\El\,a)^\C\,\nu\,t := _{a^\C\,\nu\#}t \\
     & (\Pi\,a\,B)^\I := \Pi^\I\,a^\I\,B^\I && && (\Pi\,a\,B)^\C\,\nu\,t := \lambda\alpha.B^\C\,(\nu, _{a^\C\,\nu\#}\alpha)\,(t\oldapp {_{a^\C\,\nu\#}\alpha}) \\
     & (\Pim\,T\,B)^\I := \Pim^\I\,T\,B^\I && && (\Pim\,T\,B)^\C\,\nu\,t := \lambda\alpha.(B\,\alpha)^\C\,\nu\,(t\appm\alpha)
   \end{alignat*}
 \end{definition}
 \begin{example}\label{ex:constructors}
-  Now given a syntactic signature $\Omega:\Con^\I$, we get the
-  constructors as an $\Omega$-algebra by
-  $\omega:=(\ll\Omega\rr_{\IC_\Omega})^\C\,\id^\I :
-  \ll\Omega\rr_\A$. If $\Omega$ is the syntactic signature for natural
+  Now given a syntactic signature $\GO:\Con^\I$, we get the
+  constructors as an $\GO$-algebra by
+  $\omega:=(\ll\GO\rr_{\IC_\GO})^\C\,\id^\I :
+  \ll\GO\rr_\A$. If $\GO$ is the syntactic signature for natural
   numbers, we get the constructors as in \Cref{eg:nat_con}.
 
-  An $a : \Tm^\I\,\Omega\,\U$ is a sort term for the syntactic
-  signature $\Omega$. If $\Omega$ is the syntactic signature for
+  An $a : \Tm^\I\,\GO\,\U$ is a sort term for the syntactic
+  signature $\GO$. If $\GO$ is the syntactic signature for
   natural numbers, $a$ can only be $N$ ($1$ as a de Bruijn index). If
-  $\Omega$ is the syntactic signature for $\Con$--$\Ty$
+  $\GO$ is the syntactic signature for $\Con$--$\Ty$
   (\Cref{ex:contexts}), $a$ can be $Con$, $Ty\oldapp{empty}$,
   $Ty\oldapp({ext}\oldapp {empty}\oldapp(U\oldapp{empty}))$, and so
   on. In any case, for such an $a$, we obtain
-  $(\ll a\rr_{\IC_\Omega})^\C\,\id^\I : \Tm^\I\,\Omega\,(\El\,a) = \ll
+  $(\ll a\rr_{\IC_\GO})^\C\,\id^\I : \Tm^\I\,\GO\,(\El\,a) = \ll
   a\rr_\A\,\omega$. That is, the algebra interpretation of a sort term
   at the constructors is equal to terms of that sort.
 
-  A $t : \Tm^\I\,\Omega\,(\El\,a)$ is a term of a sort type $a$
-  constructed using the constructors in $\Omega$. For natural numbers,
+  A $t : \Tm^\I\,\GO\,(\El\,a)$ is a term of a sort type $a$
+  constructed using the constructors in $\GO$. For natural numbers,
   such a $t$ can only be $s$ applied iteratively to $z$. For such a
   $t$, we obtain
-  $(\ll t\rr_{\IC_\Omega})^\C\,\id^\I : (t = \ll
+  $(\ll t\rr_{\IC_\GO})^\C\,\id^\I : (t = \ll
   t\rr_\A\,\omega)$. That is, a constructor term is equal to its
   algebra interpretation at the constructors. This is exactly the
   equation needed at the end of \Cref{eg:nat_con}.
 \end{example}
 
 \begin{definition}[Eliminator signature algebra $\IE_{\blank}$]
-  Given an $\Omega:\Con^\I$, we use the abbreviation
-  $\omega := \ll\Omega\rr_{\IC_\Omega}\,\id^\I$ as in
+  Given an $\GO:\Con^\I$, we use the abbreviation
+  $\omega := \ll\GO\rr_{\IC_\GO}\,\id^\I$ as in
   \Cref{ex:constructors}. Assuming an
-  $\omega^D : (\ll\Omega\rr_{\ADS})^\D\,\omega$, we define the
+  $\omega^D : (\ll\GO\rr_{\ADS})^\D\,\omega$, we define the
   signature algebra $\IE_{\omega^\D}$. It is equipped with a morphism
   $\blank^\I : \SignMor\,\IE_{\omega^D}\,\I$. We define
   $\IE_{\omega^D}$ by listing its components $\Con$, $\Ty$, $\Sub$,
@@ -992,35 +992,35 @@ we illustrate the idea of both constructions on natural numbers.
   substitutions as their $^\E$ parts are uninformative equational
   reasonings.
   \begin{alignat*}{10}
-    & \Gamma^\I:\Con^\I && \hspace{1em} && \Gamma^\E:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)\ra \ll\Gamma\rr^\S\,(\ll\nu\rr^\A\,\omega)\,(\ll\nu\rr^\D\,\omega^D) \\
-    & A^\I:\Ty^\I\,\Gamma^\I && && A^\E:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)(t:\Tm^\I\,\Omega\,(A^\I[\nu]))\ra \\
-    & && && \hspace{1em} \ll A\rr^\S\,(\Gamma^\E\,\nu)\,(\ll t\rr^\A\,\omega)\,(\ll t\rr^\D\,\omega^D) \\
-    & \sigma^\I:\Sub^\I\,\Gamma^\I\,\Delta^\I && && \sigma^\E:\Delta^\E\,(\sigma^\I\circ\nu)=\ll\sigma\rr^\S\,(\Gamma^\E\,\nu) \\
-    & t^\I:\Tm^\I\,\Gamma^\I\,A^\I && && t^\E : A^\E\,\nu\,(t^\I[\nu])= \ll t\rr^\S\,(\Gamma^\E\,\nu) \\
+    & \GG^\I:\Con^\I && \hspace{1em} && \GG^\E:(\nu:\Sub^\I\,\GO\,\GG^\I)\ra \ll\GG\rr^\S\,(\ll\nu\rr^\A\,\omega)\,(\ll\nu\rr^\D\,\omega^D) \\
+    & A^\I:\Ty^\I\,\GG^\I && && A^\E:(\nu:\Sub^\I\,\GO\,\GG^\I)(t:\Tm^\I\,\GO\,(A^\I[\nu]))\ra \\
+    & && && \hspace{1em} \ll A\rr^\S\,(\GG^\E\,\nu)\,(\ll t\rr^\A\,\omega)\,(\ll t\rr^\D\,\omega^D) \\
+    & \sigma^\I:\Sub^\I\,\GG^\I\,\GD^\I && && \sigma^\E:\GD^\E\,(\sigma^\I\circ\nu)=\ll\sigma\rr^\S\,(\GG^\E\,\nu) \\
+    & t^\I:\Tm^\I\,\GG^\I\,A^\I && && t^\E : A^\E\,\nu\,(t^\I[\nu])= \ll t\rr^\S\,(\GG^\E\,\nu) \\
     & (A[\sigma])^\I := A^\I[\sigma^\I]^\I && && (A[\sigma])^\E\,\nu\,t := A^\E\,(\sigma^\I\circ\nu)\,t \\
     & \cdot^\I := \cdot^\I && && \cdot^\E\,\nu := \tt \\
-    & (\Gamma\rhd A)^\I := \Gamma^\I\rhd^\I A^\I && && (\Gamma\rhd A)^\E\,\nu := (\Gamma^\E\,(\pi_1\,\nu), A^\E\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & (\GG\rhd A)^\I := \GG^\I\rhd^\I A^\I && && (\GG\rhd A)^\E\,\nu := (\GG^\E\,(\pi_1\,\nu), A^\E\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
     & \U^\I := \U^\I && && \U^\E\nu\,a := \lambda\alpha . _{\ll\alpha\rr^\C\,\id\#}\big(\ll_{\ll\alpha\rr^\C\,\id\#}\alpha\rr^\D\,\omega^D\big) \\
-    & (\El\,a)^\I := \El^\I\,a^\I && && (\El\,a)^\E\,\nu\,t := \big(\ll a\rr^\S\,(\Gamma^\E\,\nu)\,(\ll t\rr^\A\,\omega) \overset{\ll t\rr^\C\,\id}{=} \ll a\rr^\S\,(\Gamma^\E\,\nu)\,t \overset{a^\E\,\nu}{=} \ll t\rr^\D\,\omega^D\big) \\
+    & (\El\,a)^\I := \El^\I\,a^\I && && (\El\,a)^\E\,\nu\,t := \big(\ll a\rr^\S\,(\GG^\E\,\nu)\,(\ll t\rr^\A\,\omega) \overset{\ll t\rr^\C\,\id}{=} \ll a\rr^\S\,(\GG^\E\,\nu)\,t \overset{a^\E\,\nu}{=} \ll t\rr^\D\,\omega^D\big) \\
     & (\Pi\,a\,B)^\I := \Pi^\I\,a^\I\,B^\I && && (\Pi\,a\,B)^\E\,\nu\,t := \\
     & && && \hspace{1em} \lambda\alpha.{_{\ll\alpha\rr^\C\,\id\#}}\big(B^\E\,(\nu,_{\ll a\rr^\C\,\id,\ll\nu\rr^\C\,\id\#}\alpha)\,(t\oldapp {_{\ll a\rr^\C\,\id,\ll\nu\rr^\C\,\id\#}u})\big) \\
     & (\Pim\,T\,B)^\I := \Pim^\I\,T\,B^\I && && (\Pim\,T\,B)^\E\,\nu\,t := \lambda\alpha.(B\,\alpha)^\E\,\nu\,(t\appm\alpha)
   \end{alignat*}
 \end{definition}
 \begin{example}
-  Given the assumptions $\Omega$, $\omega^D$ of $\IE$, we obtain the
+  Given the assumptions $\GO$, $\omega^D$ of $\IE$, we obtain the
   eliminator by
-  $\ll\Omega\rr_{\IE_{\omega^\D}}\,\id^\I :
-  \ll\Omega\rr^\S\,\omega\,\omega^D$. The eliminator is a section of
+  $\ll\GO\rr_{\IE_{\omega^\D}}\,\id^\I :
+  \ll\GO\rr^\S\,\omega\,\omega^D$. The eliminator is a section of
   the displayed algebra $\omega^D$, that is, a dependent function
   together with equalities witnessing that all the operations are
-  preserved. If $\Omega$ is the syntactic signature for natural
+  preserved. If $\GO$ is the syntactic signature for natural
   numbers, we get the eliminator of \Cref{eg:nat_con}.
 
-  For a sort term $a:\Tm^\I\,\Omega\,\U$, the interpretation
+  For a sort term $a:\Tm^\I\,\GO\,\U$, the interpretation
   $(\ll a\rr_{\IE_{\omega^D}})^\E\,\id$ says that
   $(\lambda\alpha.\ll\alpha\rr^\D\,\omega^D) = \ll
-  a\rr^\S\,(\ll\Omega\rr^\E\,\id)$, that is, the function for the sort
+  a\rr^\S\,(\ll\GO\rr^\E\,\id)$, that is, the function for the sort
   $a$ in the eliminator section is the displayed algebra
   interpretation at $\omega^D$ (motives and methods). For natural
   numbers, this is the same as
@@ -1028,7 +1028,7 @@ we illustrate the idea of both constructions on natural numbers.
   n.\mathsf{elimNat}\,(N^D,z^D,s^D)\,n)\big)$.
 
   The interpretation of a constructor term
-  $t:\Tm^\I\,\Omega\,(\El\,a)$ is uninteresting as it provides an
+  $t:\Tm^\I\,\GO\,(\El\,a)$ is uninteresting as it provides an
   equality between two different equality proofs of the computation
   ($\beta$) rule for $t$.
 \end{example}
