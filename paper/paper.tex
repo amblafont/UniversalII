@@ -127,7 +127,7 @@ $\mathsf{isEven?}\,\mathsf{false}$ represent $\mathsf{isOdd}$.
 Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
 definition of a type and a family of types over the first one. IITs
 were originally introduced to represent the well-typed syntax of type
-theory itself, and the main example is still the Chapman-style
+theory itself, and a prominent example is still Chapman's
 \cite{chapman09eatitself} syntax for a type theory. A minimised version
 is the IIT of contexts and types given by the following constructors.
 \begin{alignat*}{5}
@@ -192,8 +192,8 @@ assistant supporting IITs\footnote{An experimental version of Coq with
   IITs is also available on GitHub.}.
 
 Reducing IITs to inductive types (more precisely, to indexed W-types)
-is an open problem. Forsberg \cite{forsberg-phd} showed a reduction in
-extensional type theory however this only provides a simpler,
+is an open problem. Forsberg \cite{forsberg-phd} presented a reduction in
+extensional type theory, however, this only provides a simpler,
 non-recursive-recursive elimination principle. Hugunin \cite{jasper}
 reduced several IITs to inductive types, working inside a cubical type
 theory, but he also only constructed the simple eliminator. To
@@ -210,7 +210,7 @@ use implicit quantifications.
   & \mathsf{selimCon} && : (\GG:\Con)\ra Con^S\,\GG \\
   & \mathsf{selimTy} && : (A:\Ty\,\GG)\ra Ty^S\,A
 \end{alignat*}
-This simple elimination principle is too weak e.g.\ to define the
+This simple elimination principle is too weak, e.g.\ to define the
 standard (metacircular) interpretation of our small syntax
 \cite{ttintt}. Using pattern matching notation, this interpretation is
 the following:
@@ -228,8 +228,8 @@ $\ll\blank\rr$ for contexts, hence this function is
 recursive-recursive.
 
 Kaposi, Kov{\'a}cs, and Altenkirch
-\cite{Kaposi:2019:CQI:3302515.3290315} introduced a small type theory
-called the theory of signatures to describe quotient
+\cite{Kaposi:2019:CQI:3302515.3290315} introduced a small type theory,
+ called the theory of signatures, to describe quotient
 inductive-inductive types (QIIT). QIITs are generalisations of IITs
 where equality constructors are also allowed. A QIIT signature is a
 context in the theory of QIIT signatures, for example natural numbers
@@ -248,7 +248,7 @@ In this paper we show that any model of extensional type theory with
 indexed W-types supports the theory of IIT signatures, and as a
 consequence all IITs. The difficulty in this construction is that the
 theory of IIT signatures is itself a QIIT, it is both
-inductive-inductive and has equality constructors. However it can be
+inductive-inductive and has equality constructors. However, it can be
 seen as the well-typed syntax of a small type theory without any
 computation rules. Hence we can represent the syntax of normal forms
 without quotienting. We construct this well-typed normal syntax using
@@ -275,10 +275,10 @@ following three sections describe our three contributions:
   all inductive-inductive types (IITs): \Cref{def:hasiits}. The novel
   contribution here is a (predicative) Church encoding of signatures
   following \cite{DBLP:conf/lics/AwodeyFS18}.
-\item \Cref{sec:constructingiits}. We show that if a model of ETT
-  supports the theory of IIT signatures
-  (\Cref{def:theoryofsignatures}), then it supports IITs in the above
-  sense: \Cref{thm:ToSToIITs}. This is an adaptation of a proof in
+\item \Cref{sec:constructingiits}. In \Cref{thm:ToSToIITs}, we show that if a
+  model of ETT supports the theory of IIT signatures
+  (\Cref{def:theoryofsignatures}), then it supports IITs in the previously
+  given. This is an adaptation of a proof in
   \cite{Kaposi:2019:CQI:3302515.3290315}.
 \item \Cref{sec:ambroise}. Our main contribution is showing that if a
   model of ETT supports indexed W-types, then it supports the theory
@@ -296,11 +296,11 @@ The current work builds heavily on the work of Kaposi et al.\
 \cite{Kaposi:2019:CQI:3302515.3290315} on finitary quotient
 inductive-inductive types (QIITs); we reuse both QIIT syntax and
 semantics by restricting to IITs, and we reuse the term model
-construction of QIITs as well. We also make use of the extesion to
+construction of QIITs as well. We also make use of the extension to
 infinitary QIITs \cite{large_inf_qiit} to derive the specification of
 the elimination principle for the theory of IIT signatures.
 
-IITs (however not by this name) were first used to describe the
+IITs (although not by this name) were first used to describe the
 well-typed syntax of type theory \cite{nisse,chapman09eatitself}. Agda
 supported these general inductive definitions even before they were
 named IITs and given semantics by Nordvall Forsberg and Setzer
@@ -313,14 +313,14 @@ types, however only constructs the simple elimination principle as
 opposed to the general one. Altenkirch et al.\ \cite{gabe} define
 signatures for QIITs (thus IITs as well) and their categorical
 semantics, however without proving existence of initial
-algebras. Their notion of signature, just as Nordvall Forsberg's
+algebras. Their notion of signature, like Nordvall Forsberg's,
 involves more encoding overhead than ours.
 
 Cartmell \cite{gat} introduced generalised algebraic theories using a
-type-theoretic syntax. Removing equations from his signatures, we
-obtain finitary IIT signatures similar to ours. He does not consider
-constructing initial algebras using simpler classes of inductive
-types.
+type-theoretic syntax. Removing equations from his signatures and only
+considering finite signatures, we obtain finitary IIT signatures similar to
+ours. He does not consider constructing initial algebras using simpler classes
+of inductive types.
 
 Hugunin \cite{jasper} constructs several IITs in cubical Agda from
 inductive types. In this setting, the lack of UIP makes constructions
@@ -328,7 +328,7 @@ significantly more involved, and essentially involves
 coinductive-coinductive well-formedness predicates defined as homotopy
 limits. Hugunin does not consider a generic syntax of IITs and only
 works on specific examples (although the examples vary greatly). He
-also only constructs the simple elimination principle.
+also only constructs simple elimination principles.
 
 Streicher \cite{streichersemantics} presents an interpretation of the well-formed
 presyntax of a type theory into a categorical model, which is an important
@@ -341,11 +341,11 @@ Voevodsky was interested in constructing initial models of type
 theories from presyntaxes. Inspired by this, Brunerie et al.\ \cite{brunerie}
 formalised Streicher's proof in Agda for a type theory with $\Pi$,
 $\Sigma$, $\mathbb{N}$, identity types and an infinite hierarchy of
-universes. He used UIP, function extensionality and quotient types in
-his formalisation. In this paper we construct a type theory without
+universes. They used UIP, function extensionality and quotient types in
+the formalisation. In this paper we construct a type theory without
 computation rules, hence we avoid using quotients.
 
-Intrinsic (well-typed) syntax for type theories were constructed using
+Intrinsic (well-typed) syntaxes for type theories were constructed using
 IITs \cite{chapman09eatitself}, inductive-recursive types
 \cite{nisse,Altenkirch:2014:CO:2631172.2631176} and QIITs
 \cite{ttintt}. In this paper we avoid using such general classes of
@@ -381,7 +381,7 @@ intermediate step.
 
 \begin{definition}[Model of extensional type theory (ETT)]\label{def:ett}
   By a model of ETT we mean a category with families (CwF)
-  \cite{Dybjer96internaltype,Hofmann97syntaxand} with an infinite
+  \cite{Dybjer96internaltype,Hofmann97syntaxand} with a countable
   predicative hierarchy of universes closed under the following type
   formers: $\Pi$, $\Sigma$, $\top$ and an identity type with
   uniqueness of identity proofs and equality reflection.
@@ -425,16 +425,16 @@ function extensionality as an axiom and used rewrite rules
 \section{A Definition of Inductive-Inductive Types}
 \label{sec:theory_of_signatures}
 
-In this section we say what it means that a model of ETT supports
+In this section we specify what it means that a model of ETT supports
 IITs. We first define the notion of IIT signature. Signatures for
 algebraic theories are usually given by inductive definitions. On the
 one hand, we take this even further: our notion of signature is given
-by a small type theory tailer-made to describe signatures, we call
-this the \emph{theory of IIT signatures}. On the other hand we would
+by a small type theory tailor-made to describe signatures, which we call
+the \emph{theory of IIT signatures}. On the other hand we would
 like to avoid using a complicated inductive definition (a type theory
 is a quotient inductive-inductive type \cite{ttintt}) to describe a
 simpler class of inductive types. Hence we use a Church encoding
-\cite{DBLP:conf/lics/AwodeyFS18} of the theory of IIT signatures thus
+\cite{DBLP:conf/lics/AwodeyFS18} of the theory of IIT signatures, thereby
 avoiding the need for pre-existing inductive definitions. Another
 feature of our signatures is that they can include types from the
 model of ETT (such as $\N$ in the
@@ -444,7 +444,7 @@ specified internally to the particular model of ETT.\footnote{There is
   stating what it means that any CwF $\mathcal{C}$ (not necessarily a
   model of ETT) supports IITs with definitional computation rules. In
   this method, signatures are described in the internal language of
-  $\hat{\mathcal{C}}$, the presheaf model over $\mathcal{C}$. We don't
+  $\hat{\mathcal{C}}$, the presheaf model over $\mathcal{C}$. We do not
   use this approach because it is more technical, and it would not
   strengthen our main result \Cref{thm:WToIITs} as the proof of
   \Cref{thm:WToToS} needs $\mathcal{C}$ to be a model of ETT.}
@@ -521,8 +521,8 @@ only one signature algebra in scope (e.g.\ in
 \end{definition}
 
 \begin{example}[Example contexts in a signature algebra]\label{ex:contexts}
-  Given a signature algebra, we can define a context in which
-  specifies natural numbers. For readability, the an informal version
+  Given a signature algebra, we can define a context which
+  specifies natural numbers. For readability, an informal version
   of the same context is displayed on the right using variable names.
   \[
     \boldsymbol{\cdot}\,\ext\,\U\,\ext\,z : \El\,0\,\ext\,s : 1 \Ra \El\,1
@@ -534,21 +534,21 @@ only one signature algebra in scope (e.g.\ in
   element of the sort denoted by $\El\,0$ where $0$ is the de Bruijn
   index referring to the sort. Finally, we declare an operator which
   takes as input an element of the sort (now it became de Bruijn index
-  $1$) and produces an element of the same sort. Note the assymetry of
-  the function type $\Ra$: on the left there needs to be an element of
-  $\U$, while on the right any type can appear (including another
+  $1$) and produces an element of the same sort. Note the asymmetry of
+  the function type $\Ra$: the domain needs to be an element of
+  $\U$, while the codomain can be any type (including another
   function type). This ensures strict positivity of the operators.
 
   Lists with elements of a given $T : \Set$ type are given by the
   following context. Here we use the function space with external
   domain $\Ram$ to include a $T$ in the signature. For readability, we
-  omit the $\lambda$ and the superscripts and we don't write the
+  omit the $\lambda$ and the superscripts and we do not write the
   compatibility condition. On the right we list the same signature
   with variable names.
   \begin{alignat*}{10}
     & \boldsymbol{\cdot}\,\ext\,\U\,\ext\,\El\,0\,\ext\,T\Ram 1\Ra \El\,1 \hspace{3.56em} \boldsymbol{\cdot}\,\ext\,L:\U\,\ext\,nil : \El\,L\,\ext\,cons : T\Ram L\Ra \El\,L
   \end{alignat*}
- 
+
   The $\Con$--$\Ty$ example from \Cref{sec:intro} is given by the
   following context.
   \begin{alignat*}{5}
@@ -570,9 +570,9 @@ would be too strong. Another approach would be to assume that there is
 a syntax for signature algebras (an initial signature algebra), and
 then a signature would be a context in this signature algebra. We will
 define syntactic signatures using this approach in the next section
-(\Cref{def:syntacticsignature}), but for now we don't want to assume
+(\Cref{def:syntacticsignature}), but for now we do not want to assume
 the existence of any inductive type. Instead, we will use a restricted
-Church encoding which needs the notion of morphism of signatures.
+Church encoding. This requires the notion of morphism of signatures.
 
 The notion of morphism is determined by the notion of algebra
 \cite{large_inf_qiit}, but we include it here for completeness.
@@ -613,14 +613,21 @@ by $f_\Con$, $f_\Ty$, $f_\Sub$, $f_\Tm$ or just write $f$ if it is
 clear which one is meant.
 \end{definition}
 
-We define IIT signatures using the Church encoding introduced by
-Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}. A
-difference is that we avoid the usage of impredicativity because it is
-not a problem for our use case that signatures are not in the lowest
-universe.
+We define IIT signatures using the Church encoding introduced by Awodey, Frey
+and Speight \cite{DBLP:conf/lics/AwodeyFS18}. A difference is that we avoid
+impredicativity. This restricts the possible eliminations on signatures: we can
+only eliminate into a universe which is smaller than the level of
+signatures. However, this still covers all eliminations in this paper, and it is
+also not an issue for us that signatures do not live in the smallest universe.
+
+%% We define IIT signatures using the Church encoding introduced by
+%% Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}. A
+%% difference is that we avoid the usage of impredicativity because it is
+%% not a problem for our use case that signatures are not in the lowest
+%% universe.
 \begin{definition}[IIT signature]\label{defn:sign}
-  An IIT signature is a context in an arbitrary signature algebra that
-  is compatible with morphisms:
+  An IIT signature is a context in an arbitrary signature algebra, which is also
+  compatible with morphisms:
   \begin{alignat*}{6}
     & \Sign :=\,\, && \big({sig}:(M:\SignAlg)\ra\Con^M\big)\times \\
     & && \big((M\,N:\SignAlg)(f:\SignMor\,M\,N)\ra f_\Con\,({sig}\,M) = {sig}\,N \big).
@@ -630,7 +637,8 @@ The compatibility condition says that if we obtain an $M$-context
 using ${sig}$ in model $M$ and then we transport it to $N$ using $f$,
 we get the same $N$-context as directly applying ${sig}$ to $N$.
 
-Our notion of signatures don't form a signature algebra.
+The lack of impredicativity implies that our notion of signatures do not form a
+signature algebra.
 \begin{lemma}
   There is no $M : \SignAlg$, in which $\Con^M = \Sign$.
 \end{lemma}
@@ -643,7 +651,7 @@ Our notion of signatures don't form a signature algebra.
 
 Note that the notion of IIT signature is relative to a model of ETT:
 it is expressed as a term (of a function type) in the model. This is
-necessary because of the function space $\Pim$ which has as domain an
+necessary because of the function space $\Pim$, which has as domain an
 arbitrary type in the model. We make use of $\Pim$ in signatures with
 external parameters, like the type of the elements in lists.
 
@@ -695,7 +703,7 @@ illustrate its usage by an example.
   over the initial algebra is the eliminator together with its
   computation rules.
 \end{example}
-  
+
 \begin{definition}[The signature algebra $\ADS$]\label{def:ads}
   We define an element of $\SignAlg$ by listing all its components
   $\Con$, $\Ty$, $\Sub$, and so on, one per row. Each such component
@@ -756,7 +764,7 @@ this, terms say that the relation is respected by $^\A$ and $^\D$,
 respectively. $\U$ is however not relation space, but a function and
 $(\El\,a)^\S$ is the graph of the function $a^\S$. $\Pi^\S$ for a
 function again says that the function respects the relation, however
-we don't simply say
+we do not simply say
 \[
   (\Pi\,a\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:a^\A\,\gamma)(\alpha^D:a^\D\,\gamma^D\,\alpha)(\alpha^\S:(\El\,a)^\S\,\gamma^S\,\alpha\,\alpha^D)\ra B^\S\,\dots,
 \]
@@ -865,7 +873,7 @@ In the previous section, using the notions of signature algebras and
 signature morphisms, we defined IIT signatures and what it means for a
 model of ETT to support all IITs. In this section we show that if a
 model of ETT supports the theory of IIT signatures, then it supports
-all IITs. In the sense of the Church encoding of \Cref{defn:sign},
+all IITs. Using the Church encoding of \Cref{defn:sign},
 every model of ETT can describe ITT signatures. In contrast, in
 \Cref{def:theoryofsignatures}, we will require existence of an initial
 signature algebra.
@@ -907,10 +915,10 @@ signatures.
   to $\ll\GO\rr_\I = \GO$ by uniqueness of $\ll\blank\rr$.
 \end{proof}
 
-We will define the term signature algebra using which we obtain the
-constructors $\con$ for any IIT signature. Then we will define another
-signature algebra which provides the eliminator. Before doing these,
-we illustrate the idea of both constructions on natural numbers.
+We will define the term signature algebra by which we obtain the constructors
+$\con$ for any IIT signature. Then we will define another signature algebra
+which provides the eliminator. Before doing these, we illustrate the idea of
+both constructions on natural numbers.
 \begin{example}\label{eg:nat_con}
   For natural numbers, we will define the constructors $\con$ as the
   following natural number algebra
@@ -952,8 +960,8 @@ we illustrate the idea of both constructions on natural numbers.
   thus the morphism $\blank^\I$ is defined as the obvious
   projection. We omit the equality components, as they come from UIP
   or are trivial. We also omit the components for terms and
-  substitutions as their $^\C$ parts are uninformative equational
-  reasonings.
+  substitutions as their $^\C$ parts consist of uninformative equational
+  reasoning.
   \begin{alignat*}{10}
     & \GG^\I:\Con^\I && \hspace{1em} && \GG^\C: \Sub^\I\,\GO\,\GG^\I\ra \ll\GG\rr_\A \\
     & A^\I:\Ty^\I\,\GG^\I && && A^\C:(\nu:\Sub^\I\,\GO\,\GG^\I)\ra\Tm^\I\,\GO\,(A^\I[\nu])\ra \ll A\rr_\A\,(\GG^\C\,\nu) \\
@@ -969,7 +977,7 @@ we illustrate the idea of both constructions on natural numbers.
   \end{alignat*}
 \end{definition}
 \begin{example}\label{ex:constructors}
-  Now given a syntactic signature $\GO:\Con^\I$, we get the
+  Now, given a syntactic signature $\GO:\Con^\I$, we get the
   constructors as an $\GO$-algebra by
   $\omega:=(\ll\GO\rr_{\IC_\GO})^\C\,\id^\I :
   \ll\GO\rr_\A$. If $\GO$ is the syntactic signature for natural
@@ -1094,16 +1102,15 @@ we illustrate the idea of both constructions on natural numbers.
 \section{Constructing the Theory of IIT Signatures}
 \label{sec:ambroise}
 
-In this section we show that any model of ETT which supports indexed
-W-types also supports the theory of signatures, and as a consequence
-of \Cref{thm:ToSToIITs}, all IITs. For this, we work in the internal
-language of a model of ETT supporting indexed W-types
-\cite{indexedcont}. Indexed W-types correspond to the usual notion of
-(possibly mutual) indexed inductive types. We will use Agda-style
-notation for defining such inductive families: we list the sorts and
-constructors and use pattern matching when eliminating from them. For
-an encoding of mutual inductive families as families as indexed
-W-types, see e.g.\ \cite{mutual}.
+In this section we show that any model of ETT which supports indexed W-types
+also supports the theory of signatures, and as a consequence of
+\Cref{thm:ToSToIITs}, all IITs. For this, we work in the internal language of a
+model of ETT supporting indexed W-types \cite{indexedcont}. Indexed W-types
+correspond to the usual notion of (possibly mutual) indexed inductive types. We
+use Agda-style notation to define such inductive families: we list the sorts and
+constructors and use pattern matching when eliminating from them. For an
+encoding of mutual inductive families as indexed W-types, see
+e.g.\ \cite{mutual}.
 
 \input{universaliit}
 
