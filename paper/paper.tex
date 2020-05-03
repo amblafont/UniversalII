@@ -487,7 +487,7 @@ of these type formers through examples after the definition.
   & {\Pim[]} && : (\Pim\,T\,B)[\sigma] = \Pim\,T\,(\lambda \alpha.(B\,\alpha)[\sigma]) \\
   & {\appm[]} && : (t\appm\alpha)[\sigma] = (t[\sigma])\mathop{\appm}\alpha
 \end{alignat*}
-Given an $M:\SignAlg$, we denote its components as $\Con^M$, $\Ty^M$,
+Given an $M:\SignAlg$, we denote its components by $\Con^M$, $\Ty^M$,
 $\Sub^M$, $\Tm^M$, $\id^M$, and so on. We omit the indices if there is
 only one signature algebra in scope (e.g.\ in
 \Cref{def:abbrevs,ex:contexts}).
@@ -595,23 +595,31 @@ clear which one is meant.
 
 We define IIT signatures using the Church encoding introduced by
 Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}. A
-difference is that we avoid the usage of impredicativity as we don't
-require that signatures form a signature algebra. It is also not a
-problem for our use case that signatures are not in the lowest
+difference is that we avoid the usage of impredicativity because it is
+not a problem for our use case that signatures are not in the lowest
 universe.
-\begin{definition}[IIT signature]
-  An IIT signature is a context in an arbitrary signature algebra
-  which is compatible with morphisms:
+\begin{definition}[IIT signature]\label{defn:sign}
+  An IIT signature is a context in an arbitrary signature algebra that
+  is compatible with morphisms:
   \begin{alignat*}{6}
     & \Sign :=\,\, && \big({sig}:(M:\SignAlg)\ra\Con^M\big)\times \\
     & && \big((M\,N:\SignAlg)(f:\SignMor\,M\,N)\ra f_\Con\,({sig}\,M) = {sig}\,N \big).
   \end{alignat*}
 \end{definition}
-Note that as $\Sign$ refers to $\SignAlg$, it lives in a higher
-universe level than $\SignAlg$. The compatibility condition says that
-if we obtain an $M$-context using ${sig}$ in model $M$ and then we
-transport it to $N$ using $f$, we get the same $N$-context as directly
-applying ${sig}$ to $N$.
+The compatibility condition says that if we obtain an $M$-context
+using ${sig}$ in model $M$ and then we transport it to $N$ using $f$,
+we get the same $N$-context as directly applying ${sig}$ to $N$.
+
+Our notion of signatures don't form a signature algebra.
+\begin{lemma}
+  There is no $M : \SignAlg$, in which $\Con^M = \Sign$.
+\end{lemma}
+\begin{proof}
+  If the $\Con$ component in $\SignAlg$ is $\Set_i$, then $\SignAlg$
+  is in $\Set_{i+1}$, but as $\Sign$ is defined as
+  $(\SignAlg\ra\dots)\times\dots$, it is at least in $\Set_{i+1}$, so
+  we can't choose $\Con^M : \Set_i$ to be $\Sign : \Set_{i+1}$.
+\end{proof}
 
 Note that the notion of IIT signature is relative to a model of ETT:
 it is expressed as a term (of a function type) in the model. This is
@@ -837,7 +845,10 @@ In the previous section, using the notions of signature algebras and
 signature morphisms, we defined IIT signatures and what it means for a
 model of ETT to support all IITs. In this section we show that if a
 model of ETT supports the theory of IIT signatures, then it supports
-all IITs.
+all IITs. In the sense of the Church encoding of \Cref{defn:sign},
+every model of ETT can describe ITT signatures. In contrast, in
+\Cref{def:theoryofsignatures}, we will require existence of an initial
+signature algebra.
 
 The contents of this section are an adjustment of \cite[Sections 4 and
 6]{Kaposi:2019:CQI:3302515.3290315} to our setting.
@@ -851,14 +862,28 @@ The contents of this section are an adjustment of \cite[Sections 4 and
 \end{definition}
 
 \begin{definition}[Syntactic signatures]\label{def:syntacticsignature}
-  In a model of ETT supporting the theory of ITT signatures, elements
-  of $\Con^\I$ are called syntactic signatures. We can turn a
-  $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$ and an
-  $\Omega:\Con^\I$ into a $\Sign$ by
-  $(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.f\,(\ll\Omega\rr_M) =
-  \ll\Omega\rr_N)$ where the equality in the second component comes
-  from uniqueness of the recursor.
+  In a model of ETT supporting the theory of ITT signatures, we call
+  elements of $\Con^\I$ syntactic signatures.
 \end{definition}
+
+\begin{lemma}
+  In a model of ETT supporting the theory of ITT signatures,
+  signatures and syntactic signatures are isomorphic.
+\end{lemma}
+\begin{proof}
+  We can turn a $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$
+  and an $\Omega:\Con^\I$ into a $\Sign$ by
+  $(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.f\,(\ll\Omega\rr_M) =
+  (f\circ\ll\rr_M)\,\Omega = \ll\Omega\rr_N)$ where the equality in
+  the second component comes from uniqueness of the recursor (we have
+  to define composition of morphisms $\circ$ for this). The
+  compositions of these two maps are the identities: $({sig},{sigc})$
+  is mapped to
+  $(\lambda M.\ll{sig}\,I\rr_M,\dots) = (\lambda
+  M.\ll\blank\rr_M\,({sig}\,I),\dots)$ which is equal to
+  $(\lambda M.{sig}\,M,\dots)$ because of ${sigc}$; $\Omega$ is mapped
+  to $\ll\Omega\rr_\I = \Omega$ by uniqueness of $\ll\blank\rr$.
+\end{proof}
 
 First we define the term signature algebra using which we obtain the
 constructors $\con$ for any IIT signature. Then we will define another
