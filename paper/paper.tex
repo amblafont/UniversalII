@@ -81,18 +81,20 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
 \maketitle
 
 \begin{abstract}
-  xxx: rewrite. Inductive-inductive types (IITs) are a generalisation of inductive types in
-  type theory. They allow the mutual definition of types with multiple sorts
-  where later sorts can be indexed by previous ones. An example is the
-  Chapman-style syntax of type theory with conversion relations for each sort
-  where e.g.\ the sort of types is indexed by contexts. It follows from previous
-  work by Altenkirch, Kaposi, and Kov{\'a}cs, that all finitary IITs can be constructed from a quotient
-  inductive-inductive type (QIIT), namely the theory of IIT signatures. This is
-  a small domain-specific type theory where a context is a signature for an
-  IIT. In this paper we construct the theory of IIT signatures using only inductive types,
-  thereby showing a reduction of all finitary IITs to inductive types.  We rely
-  on function extensionality and uniqueness of identity proofs. We formalised
-  the construction of the theory of IIT signatures in Agda.
+  Inductive-inductive types (IITs) are a generalisation of inductive
+  types in type theory. They allow the mutual definition of types with
+  multiple sorts where later sorts can be indexed by previous ones. An
+  example is the Chapman-style syntax of type theory with conversion
+  relations for each sort where e.g.\ the sort of types is indexed by
+  contexts. In this paper we show that if a model of extensional type
+  theory (ETT) supports indexed W-types, then it supports finitely
+  branching IITs. We use a small internal type theory called the
+  theory of signatures to specify signatures for IITs. We show that if
+  a model of ETT supports the syntax for the theory of signatures,
+  then it supports all IITs. We construct this syntax from indexed
+  W-types using preterms and typing relations and prove its initiality
+  following Streicher. The construction of the syntax and its
+  initiality proof were formalised in Agda.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
