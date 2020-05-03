@@ -594,8 +594,8 @@ The notion of morphism is determined by the notion of algebra
   & \epsilon && : \Sub\,\epsilon^M && = \epsilon^N \\
   & \ext && : \Con\,(\GG\ext^M A) && = \Con\,\GG\ext^N\Ty\,A \\
   & , && : \Sub\,(\sigma,^M t) && = \Sub\,\sigma ,^N\Tm\,t \\
-  & \pi_1 && : \Sub\,(\pi_1^M\,\sigma) && = \pi_1^N\,(\Sub\,\sigma) \\
-  & \pi_2 && : \Tm\,(\pi_2^M\,\sigma) && = \pi_2^N\,(\Sub\,\sigma) \\
+  & \pi_1 && : \Sub\,({\pi_1}^M\,\sigma) && = {\pi_1}^N\,(\Sub\,\sigma) \\
+  & \pi_2 && : \Tm\,({\pi_2}^M\,\sigma) && = {\pi_2}^N\,(\Sub\,\sigma) \\
   & \rlap{(2) Universe} \\
   & \U && : \Ty\,\U^M && = \U^N \\
   & \El && : \Ty\,(\El^M\,a) && = \El^N\,(\Tm\,a) \\
@@ -1093,7 +1093,7 @@ language of a model of ETT supporting indexed W-types
 \cite{indexedcont}. Indexed W-types correspond to the usual notion of
 (possibly mutual) indexed inductive types. We will use Agda-style
 notation for defining such inductive families: we list the sorts and
-constructors and use pattern matching when eliminating from them. qFor
+constructors and use pattern matching when eliminating from them. For
 an encoding of mutual inductive families as families as indexed
 W-types, see e.g.\ \cite{mutual}.
 

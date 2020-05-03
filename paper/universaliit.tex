@@ -3,19 +3,20 @@
 % We are also careful to explain where UIP or functional extensionality that is
 % available in extensional type theory are used.
 
-The construction consists of the following steps:
-
+We construct the theory of IIT signatures in the following steps:
 \begin{enumerate}
-\item Definition of untyped syntax (as a family of inductive datatypes) together
-  with typing judgments (as inductive relations on the untyped syntax), and
-  construction of a model of the theory of IIT signatures from well-formed
-  terms, denoted $\mathsf{S}$.
-\item Construction of a morphism $\rec:\mathsf{S}\to M$ for arbitrary $M$, by:
+\item We view the theory of signatures as a type theory, and we define
+  its untyped syntax as mutual inductive types together with typing
+  judgments given by inductive predicates on the untyped syntax. Then
+  the syntax $\I : \SignAlg$ is constructed using those untyped terms
+  for which the typing predicate holds.
+\item We construct $\ll\blank\rr:\SignMor\,\I\,M$ for arbitrary
+  $M : \SignAlg$, by:
   \begin{enumerate}
   \item defining a relation $\blank \sim \blank$ between the well-typed syntax
     and a given model. The idea is that given a syntactic context $\GG$ and a
     semantic context $\model{\GG}$ of the model $M$, we have
-    $\GG \sim \model{\GG}$ if and only if $\rec\,\,\GG
+    $\GG \sim \model{\GG}$ if and only if $\ll\GG\rr
     = \model{\GG}$, and similarly for types, terms, and substitutions;
     % semantic context $\model{\GG}$ of
     % the model $M$ if and only if $\GG$ relates to $\rec\,{\GG}$;
@@ -24,41 +25,36 @@ The construction consists of the following steps:
   \item showing that this relation is functional.
     \end{enumerate}
   \item Proving the uniqueness of this morphism by showing that any morphism
-    $f:\mathsf{S}\to M$ satisfies the relation. For example, for any syntactic context
+    $f:\SignMor\,\I\,M$ satisfies the relation. For example, for any syntactic context
     $\GG$ we have $\GG\sim f\,\GG$.
       % TODO donner composantes sur les contextes
 \end{enumerate}
 The next sections detail each of these steps.
-\subsection{Syntactic Model}
 
-The goal is to define the syntactic model where contexts are pairs of a
-precontext together with a well-formedness proof, and similarly for types, terms
-and substitutions.
+\subsection{Syntax}
 
-Crucially, we do not have conversion relations for typed syntax, nor do we need
-to use quotients when giving the syntactic model. This is possible because there
-are no $\beta$-rules in the theory of signatures. Hence, we consider only normal
-terms in the untyped syntax, and define weakening and substitution by recursion.
-Avoiding quotients is important for two reasons. First, it greatly simplifies
-formalisation. Second, we aim to reduce IITs to a minimal feature set, and we
-get a stronger result if we do not use quotients.
+The goal is to define the syntactic signature algebra where contexts
+are pairs of a precontext together with a well-formedness proof, and
+similarly for types, terms and substitutions.
 
-The next sections present the definition of the untyped syntax and the
+Crucially, we do not have conversion relations for typed syntax, nor
+do we need to use quotients when giving the syntactic model. This is
+possible because there are no $\beta$-rules in the theory of
+signatures. Hence, we consider only normal terms in the untyped
+syntax, and define weakening and substitution by recursion.  Avoiding
+quotients is important for two reasons. First, it greatly simplifies
+formalisation. Second, we aim to reduce the theory of signatures only
+to inductive types, thus making \Cref{TODO} stronger.
+
+Now we present the definition of the untyped syntax and the
 associated typing judgments.
 
-\subsubsection{Untyped syntax}
-The untyped syntax is defined as the following inductive datatype. Variables are
-modeled as de Bruijn indices, i.e.\ as natural numbers pointing to a position in
-the context. We use the additional default constructor $\erru:\Tmu$ in case of
-error (ill-scoped substitution). The typing judgments will not mention $\erru$.
-The main interest of $\erru$ is that it behaves like a closed term (which the
-theory of signatures lacks), in the sense that it is
-invariant under substitution. This makes expected equalities about 
-substitution true even in the ill-typed case,
-thus reducing the number of hypotheses for the corresponding lemmas
-(see Section~\ref{ss:exch-laws}).
+\subsubsection{Untyped syntax and its properties}
+
+\begin{definition}[Untyped syntax]
+The untyped syntax is defined as the following inductive datatype.
 \begin{alignat*}{5}
-  & \rlap{(1) Substitution calculus} \\[0.5em]
+  & \rlap{(1) Substitution calculus} \\
   & \Conu && : \Set \\
   & \Tyu  && : \Set \\
   & \Subu  && : \Set \\
@@ -69,64 +65,84 @@ thus reducing the number of hypotheses for the corresponding lemmas
   & \blank\extu\blank && : \Conu\ra\Tyu\ra\Conu \\
   & \blank\consu\blank && : \Subu\ra\Tmu\ra\Subu \\
   & \varu  && : \N \ra \Tmu \\
-  & \rlap{(2) Universe} \\[0.5em]
+  & \rlap{(2) Universe} \\
   & \Uu && : \Tyu \\
   & \Elu && : \Tmu\ra\Tyu \\
-  & \rlap{(3) Inductive parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\
   & \Piu && : \Tmu\ra\Tyu\ra\Tyu \\
   & \blank\appu\blank && : \Tmu\ra\Tmu\ra \Tmu \\
-  & \rlap{(4-5) Metatheoretic parameters} \\[0.5em]
+  & \rlap{(4) Metatheoretic parameters} \\
   & \Pimu && : (T:\Set)\ra(T\ra\Tyu)\ra\Tyu \\
   & \Piiu && : (T:\Set)\ra(T\ra\Tmu)\ra\Tmu \\
   & \blank\appmu \blank && : \Tmu\ra(\alpha:T) \ra\Tmu\\
-  & \rlap{(6) Default value} \\[0.5em]
+  & \rlap{(5) Default value} \\
   & \erru && : \Tmu
 \end{alignat*}
-
+\end{definition}
+Variables are modeled as de Bruijn indices, i.e.\ as natural numbers
+pointing to a position in the context. We use the additional default
+constructor $\erru:\Tmu$ in case of error (ill-scoped
+substitution). The typing judgments will not mention $\erru$.  The
+main interest of $\erru$ is that it behaves like a closed term (which
+the theory of signatures lacks), in the sense that it is invariant
+under substitution. This makes expected equalities about substitution
+true even in the ill-typed case, thus reducing the number of
+hypotheses for the corresponding lemmas (see
+\Cref{lem:exch-laws}).
 
 % The type of (untyped) substitution is then defined as $\Subu = \List\,\Tmu$.
 % Note that $\Conu$ could also be defined as a list of types in a similar fashion.
 
-\subsubsection{Untyped weakening}
+We will define substitutions $\blank[\blank]$ of types and terms
+recursively.
 
+Note that $(\Piu \,A\,B)[\sigma]$ should be defined as
+$\Piu \,(A[\sigma])\,(B[\wkO\,\sigma \,\consu\, \varu\,\mathsf{0}])$,
+and thus we need to define $\wkO$, the weakening of substitutions.
+The basic idea is to increment the de Bruijn indices of all the
+variables.  Actually, this is not so simple because of the $\Piu$
+type: we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type of the
+weakening of $A$ and $B$, but here, $B$ must be weakened with respect
+to the second last variable of the context, rather than the last one.
+For this reason, we need to generalise the weakening as occuring
+anywhere in the context.
 
-% Substitutions of types and terms are defined recursively.
-
-
-Note that $(\Piu \,A\,B)[\sigma]$ should be defined as $\Piu
-\,(A[\sigma])\,(B[\wkO\,\sigma \,\consu\, \varu\,\mathsf{0}])$, and thus we need to define
-$\wkO$, the weakening of substitutions.  The basic idea is to increment the de
-Bruijn indices of all the variables.  Actually, this is not so simple because of
-the $\Piu$ type: we want to define $\wkO\,(\Piu\,A\,B)$ as the $\Pi$ type
-of the weakening of $A$ and $B$, but here, $B$ must be weakened with respect to
-the second last variable of the context, rather than the last one.  For this
-reason, we need to generalise the weakening as occuring anywhere in the context.
-\begin{alignat*}{5}
-  & \wk_n && :  \Tyu\ra\Tyu \\
-  & \wk_n && :  \Tmu\ra\Tmu \\
-  % & \wk && : \N \ra \N\ra\N \\
-  & \wkO && : \Subu\ra \Subu
+\begin{definition}[Untyped weakening]
+  We define untyped weaking recursively on terms by the following
+  functions.
+  \begin{alignat*}{5}
+    & \wk_n && :  \Tyu\ra\Tyu \\
+    & \wk_n && :  \Tmu\ra\Tmu \\
+    % & \wk && : \N \ra \N\ra\N \\
+    & \wkO && : \Subu\ra \Subu
   \end{alignat*}
   The natural number $n$ specifies at which position of the context the
   weakening occurs.
   Here, $\wkO$ weakens with respect to the last variable.
+\end{definition}
 
-Later, in Section~\ref{ss:weaken-typing}, we show that weakening preserves
-typing. Stating a typing rule for this operation requires weakening at the
-middle of a context. We consider pairs of untyped contexts, which should be
-thought of as a splitting of a context at some position. The full context is
-recovered by merging the two components:
+Later, in \Cref{lem:weaken-typing}, we show that weakening preserves
+typing.  Stating a typing rule for this operation requires weakening
+at the middle of a context. This is why we define pairs of untyped
+contexts, which should be thought of as a splitting of a context at
+some position. We call the second context a telescope over the first
+one.
 % (which appears in the typing rule of a weakening occuring in the middle of a context),
 % and the length $\length{\GG}$ of a
 % context $\GG$:
+\begin{definition}[Untyped telescopes]
+  An untyped telescope is given simply by a $\Conu$.
+\end{definition}
+\begin{definition}[Merging of a context and a telescope]
 \begin{alignat*}{5}
   & \blank \merge \blank && :  \Conu\ra\Conu\ra\Conu \\
   & \GG \merge \cdot && :=  \GG \\
   & \GG \merge (\GD \extu A) && :=  (\GG \merge \GD)\extu A
 \end{alignat*}
-We think of the second context as a telescope over the first one. We also define
-weakening for telescopes, which will be used to give typing rules for telescopes
-in Section \ref{sec:typing_judgments}:
+\end{definition}
+\begin{definition}[Weakening for telescopes]
+Weakening for telescopes is defined pointwise. $\length{\GG}$ denotes
+the length of the context $\GG$.
 \begin{alignat*}{5}
   & \wkO && : \Conu\ra \Conu
   \\
@@ -134,57 +150,57 @@ in Section \ref{sec:typing_judgments}:
   \\
   & \wkO\,(\GD\,\extu A) && := \wkO\,\GD\,\extu \wk_{\length{\GD}}\,A
   \end{alignat*}
-$\length{\GG}$ denotes the length of a the context $\GG$.
+\end{definition}
+This will be used to give typing rules for telescopes
+in \Cref{def:typing_judgments}.
 
-\subsubsection{Untyped substitution}
-  We define single substitution by recursion on presyntax:
+\begin{definition}[Untyped unary substitution]
+  We define single substitution by recursion on the presyntax:
   % & \rlap{(1) Substitution calculus} \\[0.5em]
 \begin{alignat*}{5}
   & \blank[\blank := \blank] && : \Tyu\ra\N\ra\Tmu\ra\Tyu \\
   & \blank[\blank := \blank] && : \Tmu\ra\N\ra\Tmu\ra\Tmu
   % \\
   % & \blank[\blank := \blank] && : \N\ra\N\ra\Tmu\ra\Tmu
-  \end{alignat*}
-  This is enough to define the typing judgments: indeed, the typing rule for application
+\end{alignat*}
+\end{definition}
+  This is enough to state the typing judgments: indeed, the typing rule for application
   involves only a unary substitution.
 
-  However, to construct the initial model of the QIIT, we need to define
-  the full substitution calculus:
-\begin{alignat*}{5}
+  However, to construct the syntax as a signature algebra, we need to define
+  parallel substitutions:
+\begin{definition}[Untyped substitution calculus]
+  \begin{alignat*}{5}
   & \blank[\blank] && : \Tyu\ra\Subu\ra\Tyu \\
   & \blank[\blank] && : \Tmu\ra\Subu\ra\Tmu \\
   & \blank \circ \blank && : \Subu\ra\Subu\ra \Subu
   \end{alignat*}
 These can be defined either by iterating unary substitutions, or by recursion
 on untyped syntax: the two ways yield provably equal definitions. In the
-following, we assume that it is defined by recursion. We also make use of the
+following, we assume that they are defined by recursion. We also make use of the
 following definition:
   \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \keep && : \Subu \ra \Subu \\
-   &&& := \lambda \sigma. (\varu\, \mathsf{0} \,\consu\, \wkO\,\sigma)
+   &&& := \lambda \sigma. (\wkO\,\sigma \,\consu\, \varu\, \mathsf{0})
   \end{alignat*}
-  The idea is that if $\sigma$ is a substitution between contexts $\GG$ and
+  The idea is that if $\sigma$ is a substitution from $\GG$ to
   $\GD$, then $\keep\,\sigma$ is a substitution between contexts $\GG\ext A[\sigma]$
-  and $\GD\ext A$ for any type $A$. This occurs when defining
+  and $\GD\ext A$ for any type $A$ where the last term is just a de Bruijn index $0$. This occurs when defining
   $(\Piu\,A\,B)[\sigma]$ as $\Piu\,(A[\sigma])\,(B[\keep \,\sigma])$.
 
-
-
-
-  We can define the identity substitution on a context $\GG$ as
+  We define the identity substitution on a context $\GG$ as
   follows, where $\keep^{\length{\GG}}$ is $\keep$ iterated
   $\length{\GG}$ times:
 \begin{alignat*}{5}
   & \idu && : \Conu \ra \Subu \\
   & && := \lambda \GG.\keep^{\length{\GG}} \epsilonu
   \end{alignat*}
+\end{definition}
 
-
-  \subsubsection{Exchange laws: weakening and substitution}
-  \label{ss:exch-laws}
-  Many lemmas for types and terms are shown by induction on the untyped syntax.
-  Below, $Z$ denotes either a term or a type.
+\begin{lemma}[Exchange laws for weakening and substitution]\label{lem:exch-laws}
+  Below, $Z$ denotes either a term or a type and $\keep^n$ denotes
+  the $n$ times iteration of $\keep$.
 \begin{alignat*}{5}
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   & \wk\mhyphen\wk && : \wk_{n+p+1} (\wk_n\,Z) = \wk_n(\wk_{n+p}\,Z)\\
@@ -195,10 +211,7 @@ following definition:
   % l-subV-lifZV : ∀ Δ u n x → (lifZV n x) [ (S (n + Δ)) ↦ u ]V  ≡ lifZZ n (x [ (n + Δ) ↦ u ]V)
   & \wk[+] && : (\wk_{n}\,Z)[ n+p+1 :=  u] = \wk_{n}\,(Z[n+p := u]) \\
   % l-subV-l-subV : ∀ n p z u x →  (x [ n ↦ u ]V) [ (n + p) ↦ z ]Z  ≡ (x [ (S (n + p)) ↦ z ]V) [ n ↦ (u [ p ↦ z ]Z) ]Z
-  & [][+] && : Z[n :=u][n+p:=z] = Z[n+p+1:=z][n:= (u[p:=z])]
-  \end{alignat*}
-  Below, $\keep^n$ denotes $\keep$ iterated $n$ times.
-\begin{alignat*}{5}
+  & [][+] && : Z[n :=u][n+p:=z] = Z[n+p+1:=z][n:= (u[p:=z])] \\
   % liftV (S (n + p)) (liftV n q) ≡ liftV n (liftV (n + p) q)
   % liftV=wkS
   & [\keep^n\mhyphen \wkO] && : Z[\keep^n\,(\wkO\,\sigma)] = \wk_n (Z[\keep^n\,\sigma])
@@ -206,26 +219,36 @@ following definition:
   % lifZₛV : ∀ n xp σp Zp → (lifZV n xp [ iZer n keep (Zp ∷ σp) ]V) ≡ (xp [ iZer n keep σp ]V)
   & \wk_n[\keep^n\mhyphen\cons]  & &
   :
-  (\wk_n\,Z) [\keep^n\, (u \consu \sigma)] = Z [ \keep^n \sigma]
+  (\wk_n\,Z) [\keep^n\, (\sigma \consu u)] = Z [ \keep^n \sigma]
   \\
   % l-sub[]V : ∀ n x z σ
     % ((x [ n := z ]V) [ iZer n keep σ ]Z) = (x [ iZer (S n) keep σ ]V) [ n := (z [ σ ]Z) ]Z
    & [:=][\keep] && : Z [ n:= u][\keep^n\,\sigma] =  Z[\keep^{n+1}\,\sigma][n := u[\sigma]]
   \end{alignat*}
+\end{lemma}
+\begin{proof}
+By induction on the untyped syntax.
+\end{proof}
+
+\begin{corollary}
 As particular cases for $n=0$, we get
 \begin{alignat*}{5}
   & {}{\circ}{}\wkO & & : \sigma \circ (\wkO \tau) = \wkO (\sigma \circ \tau) \\
-  & \wkO{}{\circ}{}, && : \wkO\,\sigma \circ (t \consu \tau ) = \sigma \circ \tau \\
+  & \wkO{}{\circ}{}, && : \wkO\,\sigma \circ (\tau \consu t) = \sigma \circ \tau \\
   & [\wkO] && : t[\wkO\,\sigma] = \wk_0 (t[\sigma]) \\
-  & \wk_0[\cons] && : (\wk_0 Z)[u \consu \sigma] = Z[\sigma] \\
-  & [0:=][] && : Z [ 0:= u][ \sigma] =  Z[\keep\,\sigma][0 := u[\sigma]]
+  & \wk_0[\cons] && : (\wk_0\,Z)[\sigma \consu u] = Z[\sigma] \\
+  & [0:=][] && : Z [ 0:= u][\sigma] =  Z[\keep\,\sigma][0 := u[\sigma]]
 \end{alignat*}
-Finally, we show the following:
+\end{corollary}
+
+\begin{lemma}[Composition functor law and associativity]
 \begin{alignat*}{5}
   & [][] && : Z[\sigma][\tau] = Z[\sigma\circ\tau]
   \\
   & \ass && : (\sigma\circ \delta)\circ\tau = \sigma\circ (\delta\circ\tau)
-  \end{alignat*}
+\end{alignat*}
+\end{lemma}
+
 We defer laws for identity substitutions after the definition of the typing
 judgments, as the proofs require that some inputs are well-typed.
 
@@ -237,10 +260,10 @@ judgments, as the proofs require that some inputs are well-typed.
   % \\
   % & \blank[\blank := \blank] && : \N\ra\N\ra\Tmu\ra\Tmu
 
+\subsubsection{Typing judgments and their properties}
 
-  \subsubsection{Typing judgments}
-  \label{sec:typing_judgments}
-  The typing judgments are defined as the following inductive datatype indexed over the
+\begin{definition}[Typing judgements]\label{def:typing_judgments}
+  The typing judgments are defined as the following inductive type indexed over the
   untyped syntax:
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
@@ -295,16 +318,17 @@ judgments, as the proofs require that some inputs are well-typed.
     & &&
     \ra(\GG \vdash t \in \Pimu \,T\,A)
     \ra (u : T) \ra \GG \vdash t\,\appmu\,u \in A\,u
-\end{alignat*}
+  \end{alignat*}
+\end{definition}
 There is possibility of redundancy in the arguments of the constructors. Here,
-we are ``{paranoid}'', so that we get more inductive hypotheses when performing
+we are ``{paranoid}'' (following nomenclature from xxx), so that we get more inductive hypotheses when performing
 recursion.
 
 % The substitution part could be moved after the mutual definition of terms, types,
 % and contexts.
 
 \subsubsection{Weakening preserves typing}
-\label{ss:weaken-typing}
+\label{lem:weaken-typing}
 We prove by mutual induction that typing judgments are stable under weakening,
 for contexts, types, terms, and substitutions.
 % wkTelw : ∀ {Γp}{Ap}(Aw : Γp ⊢ Ap)Δp (Δw : (Γp ^^ Δp) ⊢) → ((Γp ▶p Ap) ^^ wkTel Δp) ⊢
