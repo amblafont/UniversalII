@@ -529,7 +529,7 @@ substitution.
 
 Let us mention another possible solution for avoiding recursion-recursion:
 defining $A\sim\model{A}$ so that it is equivalent to $(e:\rec\,\Gamma
-= \model{\Gamma})\times (\rec\,A = e\#\model{A})$.
+= \model{\Gamma})\times (\rec\,A = _{e\#}\model{A})$.
 % whereas the right hand side is of type $\model\Ty\model{\Gamma}$.
 % For a substitution $\sigma$ between contexts $\Gamma$ and $\Delta$,
 % a first idea consists in defining a relation $\sigma \sim_{\blank} \model{\sigma} : \Gamma
@@ -593,7 +593,7 @@ terms and substitutions.
   & \relS{\epsilonw}{\model{\Gamma}}{\model{E}}{\model{\delta}}
   % (  \vdash \model{\delta}\Rightarrow \model{E})
   &&
- := (e_E : \model{E} = \model{\boldsymbol{\cdot}})\times (\model{\delta} = e_E \#
+ := (e_E : \model{E} = \model{\boldsymbol{\cdot}})\times (\model{\delta} = _{e_E \#}
  \model{\epsilon})
   \\
   & (\wf{\Gamma}\extw \wf{A})\sim \model{\Delta} &&
@@ -623,7 +623,7 @@ terms and substitutions.
     (e_E : \model{E} = \model{\Delta} \model{\ext} \model{A}) \times
     \\
     & && \qquad
-    (\delta = e_E \# \model\sigma \model{\cons} \model{t} )
+    (\delta = _{e_E \#} \model\sigma \model{\cons} \model{t} )
     \\
   & \varw\,\wf{x} \sim \model{t}
    && := \wf{x}\sim \model{t} \\
@@ -640,10 +640,10 @@ terms and substitutions.
      \times
     \\
     & && \qquad
-     (e_B : \model{B} = e_\Delta \# \model{\wk}\,\model{A}) \times
+     (e_B : \model{B} = _{e_\Delta \#} \model{\wk}\,\model{A}) \times
      % \\
      % & && \qquad
-     (\model{t} = e_\Delta,e_B \# \model{\vz})
+     (\model{t} = _{e_\Delta,e_B \#} \model{\vz})
   \\
   &
    \relV{\vsw \wf{\Gamma} \wf{A} \wf{n} \wf{B}}{\model\Delta}{\model{C}}{\model{t}}
@@ -665,10 +665,10 @@ terms and substitutions.
      \times
     \\
     & && \qquad
-     (e_C : \model{C} = e_\Delta \# \model{\wk}\,\model{A}) \times
+     (e_C : \model{C} = _{e_\Delta \#} \model{\wk}\,\model{A}) \times
      \\
      & && \qquad
-     (\model{t} = e_\Delta,e_C \# \model{\vs} \, \model{n})
+     (\model{t} = _{e_\Delta,e_C \#} \model{\vs} \, \model{n})
   \\
   & \rlap{(2) Universe} \\[0.5em]
   & \Uw\, \wf{\Gamma} \wf{A} \sim \model{A} &&
@@ -710,7 +710,7 @@ terms and substitutions.
       \\
       & &&
       \qquad
-      (\model{x} = e_C \# \model{t} \model{\oldapp}\model{u})
+      (\model{x} = _{e_C \#} \model{t} \model{\oldapp}\model{u})
     \\
   & \rlap{(4) Metatheoretic parameters} \\[0.5em]
   & \Pimw T\,A\,\wf{\Gamma}\wf{A} \sim \model{B} &&
@@ -734,7 +734,7 @@ terms and substitutions.
       \qquad
       (e_B : \model{B} = \model{\Pim}\,T\,\model{A})
       \times
-      (\model{x} = e_B \# \model{t}\model{\hat{\oldapp}}u)
+      (\model{x} = _{e_B \#} \model{t}\model{\hat{\oldapp}}u)
 \end{alignat*}
 
 % As discussed above, when writing the definition of the type components, we assume that the input semantic context is already

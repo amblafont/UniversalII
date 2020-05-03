@@ -386,7 +386,7 @@ language of models of ETT:
 \item The equality (identity) type is written $t = u$, it has a
   constructor $\refl : t = t$, and equality reflection, hence we use
   the same $=$ sign for definitional equality. We occasionally
-  indicate by $e_1,\dots,e_n \#t$ that $t$ is well-typed thanks to the
+  indicate by $_{e_1,\dots,e_n \#}t$ that $t$ is well-typed thanks to the
   equalities $e_1$,\dots,$e_n$. We also have uniqueness of identity
   proofs (UIP), expressing $(e : t = t)\ra e = \refl$. Note that
   function extensionality, expressing
@@ -706,7 +706,7 @@ illustrate its usage by an example.
     & (\Pi\,a\,B)^\A\,\gamma := && && (\Pi\,a\,B)^\D\,\gamma^D\,f := && && (\Pi\,a\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:a^\A\,\gamma)\ra \\
     & \hspace{1em} (\alpha:a^\A\,\gamma)\ra B^\A\,(\gamma,\alpha) && && \hspace{1em}  (\alpha^D:a^\D\,\gamma^D\,\alpha)\ra && && \hspace{1em} B^\S\,(\gamma^S,\refl_{a^\S\,\gamma^S\,\alpha})\,(f\,\alpha)\,\\
     & && && \hspace{1em}  B^\D\,(\gamma^D,\alpha^D)\,(f\,\alpha) && && \hspace{1em}\hphantom{B^\S\,}(f^D\,(a^\S\,\gamma^S\,\alpha)) \\
-    & (t\oldapp u)^\A\,\gamma := t^\A\,\gamma\,(u^\A\,\gamma) && &&  (t\oldapp u)^\D\,\gamma^D := t^\D\,\gamma^D\,(u^\D\,\gamma^D) && &&  (t\oldapp u)^\S\,\gamma^S := u^\S\,\gamma^S \# t^\S\,\gamma^\S\,(u^\A\,\gamma) \\
+    & (t\oldapp u)^\A\,\gamma := t^\A\,\gamma\,(u^\A\,\gamma) && &&  (t\oldapp u)^\D\,\gamma^D := t^\D\,\gamma^D\,(u^\D\,\gamma^D) && &&  (t\oldapp u)^\S\,\gamma^S := _{u^\S\,\gamma^S \#} t^\S\,\gamma^\S\,(u^\A\,\gamma) \\
     & (\Pim\,T\,B)^\A\,\gamma := && && (\Pim\,T\,B)^\D\,\gamma^D\,f := && && (\Pim\,T\,B)^\S\,\gamma^S\,f\,f^D := (\alpha:T)\ra \\
     & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\D\,\gamma^D\,(f\,\alpha) && && \hspace{1em} (B\,\alpha)^\S\,\gamma^S\,(f\,\alpha)\,(f^D\,\alpha) \\
     & (t\appm \alpha)^\A\,\gamma := t^\A\,\gamma\,\alpha && && (t\appm \alpha)^\D\,\gamma^D := t^\D\,\gamma^D\,\alpha && && (t\appm \alpha)^\S\,\gamma^S := t^\S\,\gamma^S\,\alpha
@@ -866,6 +866,8 @@ The contents of this section are an adjustment of \cite[Sections 4 and
   elements of $\Con^\I$ syntactic signatures.
 \end{definition}
 
+One may wonder what is the relationship between the two notion of
+signatures.
 \begin{lemma}
   In a model of ETT supporting the theory of ITT signatures,
   signatures and syntactic signatures are isomorphic.
@@ -873,10 +875,10 @@ The contents of this section are an adjustment of \cite[Sections 4 and
 \begin{proof}
   We can turn a $({sig},{sigc}) : \Sign$ into $\Con^\I$ by ${sig}\,\I$
   and an $\Omega:\Con^\I$ into a $\Sign$ by
-  $(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.f\,(\ll\Omega\rr_M) =
-  (f\circ\ll\rr_M)\,\Omega = \ll\Omega\rr_N)$ where the equality in
-  the second component comes from uniqueness of the recursor (we have
-  to define composition of morphisms $\circ$ for this). The
+  $\Big(\lambda M.\ll\Omega\rr_M, \lambda M\,N\,f.\big(f\,\ll\Omega\rr_M =
+  (f\circ\ll\blank\rr_M)\,\Omega = \ll\Omega\rr_N\big)\Big)$ where the equality
+  proof in the second component comes from uniqueness of the recursor
+  (we have to define composition of morphisms $\circ$ for this). The
   compositions of these two maps are the identities: $({sig},{sigc})$
   is mapped to
   $(\lambda M.\ll{sig}\,I\rr_M,\dots) = (\lambda
@@ -885,7 +887,7 @@ The contents of this section are an adjustment of \cite[Sections 4 and
   to $\ll\Omega\rr_\I = \Omega$ by uniqueness of $\ll\blank\rr$.
 \end{proof}
 
-First we define the term signature algebra using which we obtain the
+We will define the term signature algebra using which we obtain the
 constructors $\con$ for any IIT signature. Then we will define another
 signature algebra which provides the eliminator. Before doing these,
 we illustrate the idea of both constructions on natural numbers.
@@ -920,98 +922,119 @@ we illustrate the idea of both constructions on natural numbers.
   $n = \ll n\rr^\A\,\con$.
 \end{example}
 
-\begin{definition}[Term signature algebra $\A\blank\C_{\blank}$]
-  For an $M:\SignAlg$ and $\Omega:\Con^M$, we define ${\A M\C}_\Omega$
-  which we call the term signature algebra. It is equipped with
-  morphisms $\blank^\A : \SignMor\,({\A M\C}_\Omega)\,\A$ and
-  $\blank^M : \SignMor\,({\A M\C}_\Omega)\,M$.
-
-  We define ${\A M\C}_\Omega$ by listing its components $\Con$, $\Ty$,
-  $\Sub$, and so on, one per row. Each component has three parts
-  denoted by $^\A$, $^M$ and $^\C$. The $^\A$ and $^M$ parts are just
-  reusing the corresponding components from $\A$ and $M$,
-  respectively, and thus the morphisms $\blank^\A$ and $\blank^M$ are
-  defined as the obvious projections. We omit the equality components,
-  as they come from UIP or are trivial. We also omit the components
-  for terms and substitutions as their $^\C$ parts are uninformative
-  equational reasonings.
+\begin{definition}[Term signature algebra $\IC_{\blank}$]
+  For an $\Omega:\Con^I$, we define $\IC_\Omega:\SignAlg$ which we
+  call the term signature algebra. It is equipped with a morphism
+  $\blank^\I : \SignMor\,(\IC_\Omega)\,\I$. We define $\IC_{\Omega}$
+  by listing its components $\Con$, $\Ty$, $\Sub$, and so on, one per
+  row. Each component has two parts denoted by $^\I$ and $^\C$. The
+  $^\I$ part just reuses the corresponding components from $\I$, and
+  thus the morphism $\blank^\I$ is defined as the obvious
+  projection. We omit the equality components, as they come from UIP
+  or are trivial. We also omit the components for terms and
+  substitutions as their $^\C$ parts are uninformative equational
+  reasonings.
   \begin{alignat*}{10}
-    & \Gamma^\A:\Set && \hspace{0.4em} && \Gamma^M:\Con^M && \hspace{0.4em} && \Gamma^\C: \Sub^M\,\Omega\,\Gamma^M\ra \Gamma^\A \\
-    & A^\A:\Gamma^\A\ra\Set && && A^M:\Ty^M\,\Gamma^M && && A^\C:(\nu:\Sub^M\,\Omega\,\Gamma^M)\ra \\
-    & && && && && \hspace{1em} \Tm^M\,\Omega\,(A^M[\nu])\ra A^\A\,(\Gamma^\C\,\nu) \\
-    & \sigma^\A:\Gamma^\A\ra\Delta^\A && && \sigma^M:\Sub^M\,\Gamma^M\,\Delta^M && && \sigma^\C:\Delta^\C\,(\sigma^M\circ\nu)=\sigma^A\,(\Gamma^\C\,\nu) \\
-    & t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma && && t^M:\Tm^M\,\Gamma^M\,A^M && && t^\C : A^\C\,\nu\,(t^M[\nu])= t^A\,(\Gamma^\C\,\nu) \\
-    & (A[\sigma])^\A\,\gamma := A^\A\,(\sigma^\A\,\gamma) && && (A[\sigma])^M := A^M[\sigma^M]^M && && (A[\sigma])^\C\,\nu\,t := A^\C\,(\sigma^M\circ\nu)\,t \\
-    & \cdot^\A := \top && && \cdot^M := \cdot^M && && \cdot^\C\,\nu := \tt \\
-    & (\Gamma\rhd A)^\A := && && (\Gamma\rhd A)^M :=  && && (\Gamma\rhd A)^\C\,\nu := \\
-    & \hspace{1em} (\gamma:\Gamma^\A)\times A^\A\,\gamma && && \hspace{1em} \Gamma^M\rhd^M A^M && && \hspace{1em} (\Gamma^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
-    & \U^\A\,\gamma := \Set && && \U^M := \U^M && && \U^\C\nu\,a := \Tm^M\,\Omega\,(\El^M\,a) \\
-    & (\El\,a)^\A\,\gamma := a^\A\,\gamma && && (\El\,a)^M := \El^M\,a^M && && (\El\,a)^\C\,\nu\,t := (a^\C\,\nu) \# t \\
-    & (\Pi\,a\,B)^\A\,\gamma := && && (\Pi\,a\,B)^M := && && (\Pi\,a\,B)^\C\,\nu\,t :=  \\
-    & \hspace{1em} (\alpha:a^\A\,\gamma)\ra B^\A\,(\gamma,\alpha) && && \hspace{1em} \Pi^M\,a^M\,B^M && && \hspace{1em} \lambda\alpha.B^\C\,\big(\nu, (a^\C\,\nu)\#\alpha\big)\,\big(t\oldapp ((a^\C\,\nu) \#\alpha)\big) \\
-    & (\Pim\,T\,B)^\A\,\gamma := && && (\Pim\,T\,B)^M := && && (\Pim\,T\,B)^\C\,\nu\,t := \lambda\alpha.(B\,\alpha)^\C\,\nu\,(t\appm\alpha) \\
-    & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} \Pim^M\,T\,B^M && && 
+    & \Gamma^\I:\Con^\I && \hspace{1em} && \Gamma^\C: \Sub^\I\,\Omega\,\Gamma^\I\ra \ll\Gamma\rr_\A \\
+    & A^\I:\Ty^\I\,\Gamma^\I && && A^\C:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)\ra\Tm^\I\,\Omega\,(A^\I[\nu])\ra \ll A\rr_\A\,(\Gamma^\C\,\nu) \\
+    & \sigma^\I:\Sub^\I\,\Gamma^\I\,\Delta^\I && && \sigma^\C:\Delta^\C\,(\sigma^\I\circ\nu)=\ll\sigma\rr_\A\,(\Gamma^\C\,\nu) \\
+    & t^\I:\Tm^\I\,\Gamma^\I\,A^\I && && t^\C : A^\C\,\nu\,(t^\I[\nu])= \ll t\rr_\A\,(\Gamma^\C\,\nu) \\
+    & (A[\sigma])^\I := A^\I[\sigma^\I]^\I && && (A[\sigma])^\C\,\nu\,t := A^\C\,(\sigma^\I\circ\nu)\,t \\
+    & \cdot^\I := \cdot^\I && && \cdot^\C\,\nu := \tt \\
+    & (\Gamma\rhd A)^\I := \Gamma^\I\rhd^\I A^\I && && (\Gamma\rhd A)^\C\,\nu := (\Gamma^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & \U^\I := \U^\I && && \U^\C\nu\,a := \Tm^\I\,\Omega\,(\El^\I\,a) \\
+    & (\El\,a)^\I := \El^\I\,a^\I && && (\El\,a)^\C\,\nu\,t := _{a^\C\,\nu\#}t \\
+    & (\Pi\,a\,B)^\I := \Pi^\I\,a^\I\,B^\I && && (\Pi\,a\,B)^\C\,\nu\,t := \lambda\alpha.B^\C\,(\nu, _{a^\C\,\nu\#}\alpha)\,(t\oldapp {_{a^\C\,\nu\#}\alpha}) \\
+    & (\Pim\,T\,B)^\I := \Pim^\I\,T\,B^\I && && (\Pim\,T\,B)^\C\,\nu\,t := \lambda\alpha.(B\,\alpha)^\C\,\nu\,(t\appm\alpha)
   \end{alignat*}
 \end{definition}
-\begin{example}
+\begin{example}\label{ex:constructors}
   Now given a syntactic signature $\Omega:\Con^\I$, we get the
   constructors as an $\Omega$-algebra by
-  $(\ll\Omega\rr_{{\A\I\C}_\Omega})^\C\,\id^\I : \ll\Omega\rr^\A$. If
-  $\Omega$ is the syntactic signature for natural numbers, we get the
-  constructors as in \Cref{eg:nat_con}.
+  $\omega:=(\ll\Omega\rr_{\IC_\Omega})^\C\,\id^\I :
+  \ll\Omega\rr_\A$. If $\Omega$ is the syntactic signature for natural
+  numbers, we get the constructors as in \Cref{eg:nat_con}.
 
-  An $a : \Tm\,\Omega\,\U$ is a sort term for a signature $\Omega$. If
-  $\Omega$ is the syntactic signature for natural numbers, $a$ can
-  only be $N$ ($1$ as a de Bruijn index). If $\Omega$ is the syntactic
-  signature for $\Con$--$\Ty$ (\Cref{ex:contexts}), $a$ can be
-  $Con$, $Ty\oldapp{empty}$,
+  An $a : \Tm^\I\,\Omega\,\U$ is a sort term for the syntactic
+  signature $\Omega$. If $\Omega$ is the syntactic signature for
+  natural numbers, $a$ can only be $N$ ($1$ as a de Bruijn index). If
+  $\Omega$ is the syntactic signature for $\Con$--$\Ty$
+  (\Cref{ex:contexts}), $a$ can be $Con$, $Ty\oldapp{empty}$,
   $Ty\oldapp({ext}\oldapp {empty}\oldapp(U\oldapp{empty}))$, and so
   on. In any case, for such an $a$, we obtain
-  $(\ll a\rr_{{\A\I\C}_\Omega})^\C\,\id^\I : \Tm^\I\,\Omega\,(\El\,a)
-  = \ll a\rr^\A\,(\ll\Omega\rr^\C\,\id^\I)$. That is, the algebra
-  interpretation of a sort term at the constructors is equal to terms
-  of that sort.
+  $(\ll a\rr_{\IC_\Omega})^\C\,\id^\I : \Tm^\I\,\Omega\,(\El\,a) = \ll
+  a\rr_\A\,\omega$. That is, the algebra interpretation of a sort term
+  at the constructors is equal to terms of that sort.
 
-  A $t : \Tm\,\Omega\,(\El\,a)$ is a term of a sort type $a$
+  A $t : \Tm^\I\,\Omega\,(\El\,a)$ is a term of a sort type $a$
   constructed using the constructors in $\Omega$. For natural numbers,
   such a $t$ can only be $s$ applied iteratively to $z$. For such a
   $t$, we obtain
-  $\ll t\rr^\C\,\id^\I : t = \ll
-  t\rr^\A\,(\ll\Omega\rr^\C\,\id^\I)$. That is, a constructor term is
-  equal to its algebra interpretation at the constructors. This is
-  exactly the equation needed at the end of \Cref{eg:nat_con}.
+  $(\ll t\rr_{\IC_\Omega})^\C\,\id^\I : (t = \ll
+  t\rr_\A\,\omega)$. That is, a constructor term is equal to its
+  algebra interpretation at the constructors. This is exactly the
+  equation needed at the end of \Cref{eg:nat_con}.
 \end{example}
-\begin{remark}
-  Given a syntactic signature $\Omega : \Con^\I$, we can use the term
-  signature algebra with choices other than $M = \I$. For example, if
-  $M = \A$, we usual get the Church encoding by
-  $(\ll\Omega\rr_{{\A\A\C}_{\ll\Omega\rr^\A}})^\C\,\id^\A$. In the
-  case of natural numbers, this computes (up to curry-uncurry) to
-  $(N:\Set)(z:N)(s:N\ra N)\ra N$. Using $M = {\A\M}$ (the signature
-  algebra $\A$ extended with the binary version of $\D$ also called
-  logical relations, see \cite[Section
-  5]{Kaposi:2019:CQI:3302515.3290315}), we obtain the Church encoding
-  of Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}.
-\end{remark}
 
 \begin{definition}[Eliminator signature algebra $\IE_{\blank}$]
-  Given an $\Omega:\Con^\I$,
-  $\omega^D : \ll\Omega\rr^\D\,(\ll\Omega\rr^\C\,\id^\I)$, we define a
-  the signature algebra $\IE_{\omega^\D}$ as follows. It is equipped
-  with a morphism $\blank^\I : \SignMor\,\IE_{\omega^D}\,\I$.
-
-  We define $\IE_{\omega^D}$ by listing its components $\Con$, $\Ty$,
-  $\Sub$, and so on, one per row. Each component has two parts denoted
-  by $^\I$, and $^\E$. The $^\I$ part just reuses the corresponding
+  Given an $\Omega:\Con^\I$, we use the abbreviation
+  $\omega := \ll\Omega\rr_{\IC_\Omega}\,\id^\I$ as in
+  \Cref{ex:constructors}. Assuming an
+  $\omega^D : (\ll\Omega\rr_{\ADS})^\D\,\omega$, we define the
+  signature algebra $\IE_{\omega^\D}$. It is equipped with a morphism
+  $\blank^\I : \SignMor\,\IE_{\omega^D}\,\I$. We define
+  $\IE_{\omega^D}$ by listing its components $\Con$, $\Ty$, $\Sub$,
+  and so on, one per row. Each component has two parts denoted by
+  $^\I$ and $^\E$. The $^\I$ part just reuses the corresponding
   components of $\I$, thus the morphism $\blank^\I$ is defined as the
   obvious projection. We omit the equality components, as they come
   from UIP or are trivial. We also omit the components for terms and
   substitutions as their $^\E$ parts are uninformative equational
   reasonings.
+  \begin{alignat*}{10}
+    & \Gamma^\I:\Con^\I && \hspace{1em} && \Gamma^\E:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)\ra \ll\Gamma\rr^\S\,(\ll\nu\rr^\A\,\omega)\,(\ll\nu\rr^\D\,\omega^D) \\
+    & A^\I:\Ty^\I\,\Gamma^\I && && A^\E:(\nu:\Sub^\I\,\Omega\,\Gamma^\I)(t:\Tm^\I\,\Omega\,(A^\I[\nu]))\ra \\
+    & && && \hspace{1em} \ll A\rr^\S\,(\Gamma^\E\,\nu)\,(\ll t\rr^\A\,\omega)\,(\ll t\rr^\D\,\omega^D) \\
+    & \sigma^\I:\Sub^\I\,\Gamma^\I\,\Delta^\I && && \sigma^\E:\Delta^\E\,(\sigma^\I\circ\nu)=\ll\sigma\rr^\S\,(\Gamma^\E\,\nu) \\
+    & t^\I:\Tm^\I\,\Gamma^\I\,A^\I && && t^\E : A^\E\,\nu\,(t^\I[\nu])= \ll t\rr^\S\,(\Gamma^\E\,\nu) \\
+    & (A[\sigma])^\I := A^\I[\sigma^\I]^\I && && (A[\sigma])^\E\,\nu\,t := A^\E\,(\sigma^\I\circ\nu)\,t \\
+    & \cdot^\I := \cdot^\I && && \cdot^\E\,\nu := \tt \\
+    & (\Gamma\rhd A)^\I := \Gamma^\I\rhd^\I A^\I && && (\Gamma\rhd A)^\E\,\nu := (\Gamma^\E\,(\pi_1\,\nu), A^\E\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & \U^\I := \U^\I && && \U^\E\nu\,a := \lambda\alpha . _{\ll\alpha\rr^\C\,\id\#}\big(\ll_{\ll\alpha\rr^\C\,\id\#}\alpha\rr^\D\,\omega^D\big) \\
+    & (\El\,a)^\I := \El^\I\,a^\I && && (\El\,a)^\E\,\nu\,t := \big(\ll a\rr^\S\,(\Gamma^\E\,\nu)\,(\ll t\rr^\A\,\omega) \overset{\ll t\rr^\C\,\id}{=} \ll a\rr^\S\,(\Gamma^\E\,\nu)\,t \overset{a^\E\,\nu}{=} \ll t\rr^\D\,\omega^D\big) \\
+    & (\Pi\,a\,B)^\I := \Pi^\I\,a^\I\,B^\I && && (\Pi\,a\,B)^\E\,\nu\,t := \\
+    & && && \hspace{1em} \lambda\alpha.{_{\ll\alpha\rr^\C\,\id\#}}\big(B^\E\,(\nu,_{\ll a\rr^\C\,\id,\ll\nu\rr^\C\,\id\#}\alpha)\,(t\oldapp {_{\ll a\rr^\C\,\id,\ll\nu\rr^\C\,\id\#}u})\big) \\
+    & (\Pim\,T\,B)^\I := \Pim^\I\,T\,B^\I && && (\Pim\,T\,B)^\E\,\nu\,t := \lambda\alpha.(B\,\alpha)^\E\,\nu\,(t\appm\alpha)
+  \end{alignat*}
+\end{definition}
+\begin{example}
+  Given the assumptions $\Omega$, $\omega^D$ of $\IE$, we obtain the
+  eliminator by
+  $\ll\Omega\rr_{\IE_{\omega^\D}}\,\id^\I :
+  \ll\Omega\rr^\S\,\omega\,\omega^D$. The eliminator is a section of
+  the displayed algebra $\omega^D$, that is, a dependent function
+  together with equalities witnessing that all the operations are
+  preserved. If $\Omega$ is the syntactic signature for natural
+  numbers, we get the eliminator of \Cref{eg:nat_con}.
+
+  For a sort term $a:\Tm^\I\,\Omega\,\U$, the interpretation
+  $(\ll a\rr_{\IE_{\omega^D}})^\E\,\id$ says that
+  $(\lambda\alpha.\ll\alpha\rr^\D\,\omega^D) = \ll
+  a\rr^\S\,(\ll\Omega\rr^\E\,\id)$, that is, the function for the sort
+  $a$ in the eliminator section is the displayed algebra
+  interpretation at $\omega^D$ (motives and methods). For natural
+  numbers, this is the same as
+  $\big(\lambda n.\ll n\rr^D\,(N^D,z^D,s^D)\big) = \big(\lambda
+  n.\mathsf{elimNat}\,(N^D,z^D,s^D)\,n)\big)$.
+
+  The interpretation of a constructor term
+  $t:\Tm^\I\,\Omega\,(\El\,a)$ is uninteresting as it provides an
+  equality between two different equality proofs of the computation
+  ($\beta$) rule for $t$.
+\end{example}
+
 
 xxx
-\end{definition}
-
 
 
 We construct all IITs describable by the theory of IIT signatures through the
