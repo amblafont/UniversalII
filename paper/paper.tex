@@ -81,7 +81,7 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
 \maketitle
 
 \begin{abstract}
-  TODO: rewrite. Inductive-inductive types (IITs) are a generalisation of inductive types in
+  xxx: rewrite. Inductive-inductive types (IITs) are a generalisation of inductive types in
   type theory. They allow the mutual definition of types with multiple sorts
   where later sorts can be indexed by previous ones. An example is the
   Chapman-style syntax of type theory with conversion relations for each sort
@@ -92,7 +92,7 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
   IIT. In this paper we construct the theory of IIT signatures using only inductive types,
   thereby showing a reduction of all finitary IITs to inductive types.  We rely
   on function extensionality and uniqueness of identity proofs. We formalised
-  the construction of the theory of IIT signatures in Agda. TODO: rewrite
+  the construction of the theory of IIT signatures in Agda.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -276,11 +276,11 @@ following three sections describe our three contributions:
 \item \Cref{sec:constructingiits}. We show that if a model of ETT
   supports the theory of IIT signatures
   (\Cref{def:theoryofsignatures}), then it supports IITs in the above
-  sense: \Cref{th:tosToIITs}. This is an adaptation of a proof in
+  sense: \Cref{thm:ToSToIITs}. This is an adaptation of a proof in
   \cite{Kaposi:2019:CQI:3302515.3290315}.
 \item \Cref{sec:ambroise}. Our main contribution is showing that if a
   model of ETT supports indexed W-types, then it supports the theory
-  of IIT signatures (\Cref{TODO}), and hence, all IITs (\Cref{TODO}).
+  of IIT signatures (\Cref{thm:WToToS}), and hence, all IITs (\Cref{thm:WToIITs}).
 \end{itemize}
 We conclude in \Cref{sec:conclusions}.
 
@@ -444,8 +444,8 @@ specified internally to the particular model of ETT.\footnote{There is
   this method, signatures are described in the internal language of
   $\hat{\mathcal{C}}$, the presheaf model over $\mathcal{C}$. We don't
   use this approach because it is more technical, and it would not
-  strengthen our main theorem (TODO: refer) as theorem (TODO: refer)
-  needs $\mathcal{C}$ to be a model of ETT.}
+  strengthen our main result \Cref{thm:WToIITs} as the proof of
+  \Cref{thm:WToToS} needs $\mathcal{C}$ to be a model of ETT.}
 
 We define the theory of IIT signatures by saying what its algebras
 (models) are. We call the \emph{theory of IIT signatures algebras}
@@ -562,12 +562,12 @@ only one signature algebra in scope (e.g.\ in
 
 The above examples are contexts in any signature algebra, and we could
 take this as a definition of signature: $(M:\SignAlg)\ra\Con^M$ is the
-usual Church-encoding of contexts. However (as we will see in TODO)
-the notion of constructor for such signatures would be too
-strong. Another approach would be to assume that there is a syntax for
-signature algebras (an initial signature algebra), and then a
-signature would be a context in this signature algebra. We will define
-syntactic signatures using this approach in the next section
+usual Church-encoding of contexts. However (as we will see in
+\Cref{remark:sigc}) the notion of constructor for such signatures
+would be too strong. Another approach would be to assume that there is
+a syntax for signature algebras (an initial signature algebra), and
+then a signature would be a context in this signature algebra. We will
+define syntactic signatures using this approach in the next section
 (\Cref{def:syntacticsignature}), but for now we don't want to assume
 the existence of any inductive type. Instead, we will use a restricted
 Church encoding which needs the notion of morphism of signatures.
@@ -1051,7 +1051,7 @@ we illustrate the idea of both constructions on natural numbers.
   ($\beta$) rule for $t$.
 \end{example}
 
-\begin{theorem}\label{th:tosToIITs}
+\begin{theorem}\label{thm:ToSToIITs}
   If a model of type theory supports the theory of IIT signatures,
   then it supports all IITs.
 \end{theorem}
@@ -1081,6 +1081,12 @@ we illustrate the idea of both constructions on natural numbers.
   \]
 \end{proof}
 
+\begin{remark}\label{remark:sigc}
+  In the above proof, we crucially relied on the ${sigc}$ property to
+  define the constructors (and the eliminator). This is why the simple
+  Church encoding of signatures is not sufficient.
+\end{remark}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Constructing the Theory of IIT Signatures}
@@ -1088,7 +1094,7 @@ we illustrate the idea of both constructions on natural numbers.
 
 In this section we show that any model of ETT which supports indexed
 W-types also supports the theory of signatures, and as a consequence
-of \Cref{th:tosToIITs}, all IITs. For this, we work in the internal
+of \Cref{thm:ToSToIITs}, all IITs. For this, we work in the internal
 language of a model of ETT supporting indexed W-types
 \cite{indexedcont}. Indexed W-types correspond to the usual notion of
 (possibly mutual) indexed inductive types. We will use Agda-style

@@ -22,7 +22,7 @@ We construct the theory of IIT signatures in the following steps:
     % the model $M$ if and only if $\GG$ relates to $\rec\,{\GG}$;
     % enjoyed by the initial morphism from the
     % syntax to a given model;
-  \item showing that this relation is functional.
+  \item showing that this relation is functional and thus obtaining a function.
     \end{enumerate}
   \item Proving the uniqueness of this morphism by showing that any morphism
     $f:\SignMor\,\I\,M$ satisfies the relation. For example, for any syntactic context
@@ -44,12 +44,12 @@ signatures. Hence, we consider only normal terms in the untyped
 syntax, and define weakening and substitution by recursion.  Avoiding
 quotients is important for two reasons. First, it greatly simplifies
 formalisation. Second, we aim to reduce the theory of signatures only
-to inductive types, thus making \Cref{TODO} stronger.
+to inductive types, thus making \Cref{thm:WToToS} stronger.
 
 Now we present the definition of the untyped syntax and the
 associated typing judgments.
 
-\subsubsection{Untyped syntax and its properties}
+\subsubsection{Untyped Syntax and its Properties}
 
 \begin{definition}[Untyped syntax]
 The untyped syntax is defined as the following inductive datatype.
@@ -260,10 +260,10 @@ judgments, as the proofs require that some inputs are well-typed.
   % \\
   % & \blank[\blank := \blank] && : \N\ra\N\ra\Tmu\ra\Tmu
 
-\subsubsection{Typing judgments and their properties}
+\subsubsection{Typing Relations and Their Properties}
 
-\begin{definition}[Typing judgements]\label{def:typing_judgments}
-  The typing judgments are defined as the following inductive type indexed over the
+\begin{definition}[Typing relations]\label{def:typing_judgments}
+  The typing relations are defined as the following inductive type indexed over the
   untyped syntax:
 \begin{alignat*}{5}
   & \rlap{(1) Substitution calculus} \\[0.5em]
@@ -452,7 +452,7 @@ of $t$.
  % , which is not applyable without
  % functional extensionality.
 
-\subsubsection{The syntax as a signature algebra}
+\subsubsection{The Syntax as a Signature Algebra}
 
 \begin{definition}[Syntax for the theory of signatures]\label{def:syntax}
   We define the syntax as an element of $\SignAlg$ by pairs of untyped
@@ -488,7 +488,7 @@ automatically equal.
   $(t:T)\ra (A\,t)[\id]=A\,t$.
 \end{remark}
 
-\subsection{Relating the Syntax to a Model}
+\subsection{Relating the Syntax to a Signature Algebra}
 \label{sec:streicher}
 
 It remains to show that the constructed syntax $\I$ is the initial
@@ -519,29 +519,27 @@ latter require carrying around auxiliary propositional equalities.
 
 \subsubsection{The functional relation}
 
-xxx
-
 Given an $M : \SignAlg$, we define the functional relation satisfied by
-the initial morphism $\rec : \mathsf{S}\to M$ by recursion on the typing judgments.
+the  $\ll\blank\rr : \SignMor\,\I\, M$ by recursion on the typing judgments.
 % As these judgments are propositions, we will sometimes
-If $\GG$ is a context in $S$ and $\model{\GG}$ is a semantic context
-(i.e.\ a context of the model $M$), we want to define a type
-$\GG\sim \model{\GG}$ equivalent to $\rec\,\,\GG=\model{\GG}$. Of
-course, at this stage, $\rec$ is not available yet since the point of
-defining this relation is to construct $\rec$ in the end.
+If $\GG$ is a context in $\I$ and $\model{\GG}$ is a semantic context
+(i.e.\ a context in the signature algebra $M$), we want to define a type
+$\GG\sim \model{\GG}$ equivalent to $\ll\GG\rr =\model{\GG}$. Of
+course, at this stage, $\ll\blank\rr$ is not available yet since the point of
+defining this relation is to construct $\ll\blank\rr$ in the end.
 
 For a type $A$ in a context $\GG$, we want to define a relation
-$A\sim \model{A}$ that is equivalent to $\rec\,\,A=\model{A}$.
+$A\sim \model{A}$ that is equivalent to $\ll A\rr=\model{A}$.
 % where $\model{A}$ is a
 % semantic type in a semantic context $\model{\GG}$.
 For this equality to make sense, the semantic type $\model{A}$ must live
-in the semantic context $\rec\,\,\GG$. But again, $\rec$ is not
+in the semantic context $\ll\GG\rr$. But again, $\ll\blank\rr$ is not
 yet available at this stage. Exploiting the expected equivalence between
-$\GG\sim\model\GG$ and $\rec\,\,\GG=\model\GG$, we may consider defining $A\sim\model{A}$ under the
+$\GG\sim\model\GG$ and $\ll\GG\rr=\model\GG$, we may consider defining $A\sim\model{A}$ under the
 hypotheses that $\model{A}$ lies in a semantics context $\model\GG$ which is
 related to $\GG$. Then, the type of the relation for types is
 \[
-  (\GG : \syn\Con)\ra (A : \syn\Ty\,\syn\GG) \ra
+  (\GG : \syn\Con)\ra (A : \syn\Ty\,\GG) \ra
   (\model\GG : \model\Con)
   \ra
   (\GG \sim \model\GG)
@@ -574,8 +572,8 @@ substitution.
 % semantic type under the hypothesis that the contexts are related.
 
 Let us mention another possible solution for avoiding recursion-recursion:
-defining $A\sim\model{A}$ so that it is equivalent to $(e:\rec\,\GG
-= \model{\GG})\times (\rec\,A = _{e\#}\model{A})$.
+defining $A\sim\model{A}$ so that it is equivalent to $(e:\ll\GG\rr
+= \model{\GG})\times (\ll A\rr = _{e\#}\model{A})$.
 % whereas the right hand side is of type $\model\Ty\model{\GG}$.
 % For a substitution $\sigma$ between contexts $\GG$ and $\GD$,
 % a first idea consists in defining a relation $\sigma \sim_{\blank} \model{\sigma} : \GG
@@ -623,12 +621,13 @@ to the definition
 % construct any IIT from the universal one (and anyway, UIP and functional
 % extensionality are needed to construct any IIT from the universal one).
 
+\begin{definition}[Relation $\blank\sim\blank$]
 We define the relation by recursion on the typing judgments.
 In the following, we abbreviate $\relT{\wf{A}}{\model\GG}{\model{A}}$ by
 $\wf{A}\sim\model{A}$ when $\model{\GG}$ can be inferred, and similarly for
 terms and substitutions.
 \begin{alignat*}{5}
-  & \rlap{(1) Substitution calculus} \\[0.5em]
+  & \rlap{(1) Substitution calculus} \\
   & \blank \sim{ \blank} && :  \GG \vdash \, \ra \model{\Con} \ra \Set \\
   & \relT{\blank}{\model{\GG}}{\blank} && :  \GG \vdash A \, \ra \model{\Ty}\,\model{\GG} \ra \Set \\
   & \relt{\blank}{\model{\GG}}{\model{A}}{\blank} && :  \GG \vdash t \in A \, \ra \model{\Tm}\,\model{\GG}\,\model{A} \ra \Set \\
@@ -716,7 +715,7 @@ terms and substitutions.
      & && \qquad
      (\model{t} = _{e_\GD,e_C \#} \model{\vs} \, \model{n})
   \\
-  & \rlap{(2) Universe} \\[0.5em]
+  & \rlap{(2) Universe} \\
   & \Uw\, \wf{\GG} \wf{A} \sim \model{A} &&
    := \model{A} = \model{\U}
   \\
@@ -725,7 +724,7 @@ terms and substitutions.
   \sum_{\model{a}} (\wf{a}\sim  \model{a}) \times
     (\model{A} = \model{\El}\,\model{a})
   \\
-  & \rlap{(3) Inductive parameters} \\[0.5em]
+  & \rlap{(3) Inductive parameters} \\
   & \Piw\,\wf{\GG} \wf{a} \wf{B} \sim \model{C} &&
    :=
       \sum_{\model{a}} (\wf{a}\sim\model{a})
@@ -758,7 +757,7 @@ terms and substitutions.
       \qquad
       (\model{x} = _{e_C \#} \model{t} \model{\oldapp}\model{u})
     \\
-  & \rlap{(4) Metatheoretic parameters} \\[0.5em]
+  & \rlap{(4) Metatheoretic parameters} \\
   & \Pimw T\,A\,\wf{\GG}\wf{A} \sim \model{B} &&
     :=
       \sum_{\model{A}} ((t : T) \ra \wf{A}\sim\model{A}\, t)
@@ -782,6 +781,7 @@ terms and substitutions.
       \times
       (\model{x} = _{e_B \#} \model{t}\model{\hat{\oldapp}}u)
 \end{alignat*}
+\end{definition}
 
 % As discussed above, when writing the definition of the type components, we assume that the input semantic context is already
 % related to the typing judgment of the syntactic context.
@@ -816,14 +816,17 @@ terms and substitutions.
   % then required to equal $\model{\GG}\model{\ext}\model{A}$.   As
   % $\blank \model{\ext}\blank$ is not guaranteed to be injective, these
   % relations are required to show that the relation is right unique.
+
+\subsubsection{Right Uniqueness}
+
 Next, we prove that this relation is right unique.  Then, we show that the
 relation is stable under weakening and substitution.  The last step consists of
 showing left-totality, i.e.\ giving a related semantic counterpart to any
 well-typed context, type or term.  Everything is proved by induction on the typing
 judgments.
-  \subsubsection{Right uniqueness}
-  \label{sec:right_uniqueness}
-  We show by induction that the relation is right unique in the following sense:
+
+\begin{lemma}[Right uniqueness]\label{lem:right_uniqueness}
+The relation is right unique in the following sense:
   \begin{alignat*}{5}
     &
     \isp{\Sigma{\sim}}
@@ -850,6 +853,9 @@ judgments.
     && : (\wf \sigma : \GG \vdash \sigma \Rightarrow \GD) && \ra
     \isaprop\, (\sum_{\model{\sigma}} \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
+\end{lemma}
+
+\begin{remark}
   We mentioned that in order to avoid a recursive-recursive definition, we
   removed some hypotheses in the list of arguments of the relation. Such
   hypotheses are sometimes missed, for example in the case of the empty
@@ -866,13 +872,13 @@ judgments.
   Hugunin investigated constructing IITs without
   UIP \cite{jasper} in cubical type theory, and demonstrated
   that well-formedness predicates used in syntactic models can subtly break
-  in that setting. Also, while Hugunin does not use UIP, he only shows a
-  weak version of dependent elimination for the constructed IITs. Hence, the
+  in that setting. Also, while Hugunin does not use UIP, he only shows the simple version
+  version of dependent elimination for the constructed IITs. Hence, the
   question whether IITs are reducible to inductive types in a UIP-free setting
   remains open.
+\end{remark}
 
-
-
+\subsubsection{Stability under Weakening and Substitution}
 
 %% in this fashion so that
 %%   UIP can be avoided to prove this statement.
@@ -881,7 +887,6 @@ judgments.
   % \todo[inline]{András: Hugunin's paper has an example (which is
   %    likely generalizable) that a notion of redundancy in
   %    well-formedness relations implies that UIP is required.}
-  \subsubsection{Stability under weakening}
   % Let us argue that it is necessary to show s
   Stability of the relation under
   weakening must be proved before stability under substitution.
@@ -890,10 +895,10 @@ judgments.
   $\model{\Pi}\,(\model{A}\model{[\sigma]})\,
   (\model{B}\model{[\model{\keep}\,\sigma]})$.
   We would like to apply the induction hypothesis, so we need to show that
-  $\keep\,\sigma=\varu\,\mathsf{0}\consu\wkO\,\sigma$ is related to
+  $\keep\,\sigma=\wkO\,\sigma\consu \varu\,\mathsf{0}$ is related to
   $\model{\keep}\,\model{\sigma}$, knowing that $\sigma$ is
   related to $\model{\sigma}$.
-  As $\keep\,\sigma=\varu\, \mathsf{0}\consu \wkO\,\sigma$, we are left with showing that
+  As $\keep\,\sigma=\wkO\,\sigma\consu \varu\, \mathsf{0}$, we are left with showing that
   $\wkO\,\sigma=\sigma\circ\wk$ (where $\wk=\wkO\,\id$)
   relates to its semantic counterpart.
 
@@ -938,8 +943,8 @@ $\GG$ and $\model{\GD}$ to $\GG\merge\GD$.
 % $\wf{\GG}\sim\model\GG$
 % and $\wf\GD\sim\model\GD$, and $\GG$ is a prefix of $\GG\merge\GD$.
 The substitution from the weakened context to the original one must
-be computed at the same time otherwise the recursion hypothesis is not strong enough.
-Then, we seperate the two components under the same (implicit) hypotheses:
+be computed at the same time otherwise the induction hypothesis is not strong enough.
+Then, we separate the two components under the same (implicit) hypotheses:
 \begin{alignat*}{5}
   & \model{\wkO}\,\model{A}\,\model\GD  && :
   % (\model{A} : \model\Ty\model\GG)\ra
@@ -967,9 +972,8 @@ Note that if recursion-recursion is available in the metatheory, $\model\wkO$
 and $\wk\model{\Rightarrow}$ can be defined directly without introducing this
 intermediate $\model{\Sigma\wkO\Rightarrow}$.
 
-
-Now, we are ready to prove by mutual recursion on well-typed judgments that
-weakening preserves typing. The following statements are all under the
+\begin{lemma}[Weakening preserves typing]
+The following statements are all under the
 hypotheses
   $(\wf{\GG} : \GG \vdash)$,
   $(\wf\GG \sim \model{\GG})$,
@@ -1056,8 +1060,12 @@ hypotheses
   % \\ &&& \qquad
   % \wf{\wk}\,\wf{A}\,\wf{x}\sim\model{x}\model{[\model{\wkO{\Rightarrow}}\model{A}\model{\GD}]}
 \end{alignat*}
-Then we deduce, still by induction, that weakening of substitution preserves the
-relation:
+\end{lemma}
+\begin{proof}
+By mutual induction on the typing judgments.
+\end{proof}
+
+\begin{lemma}[Weakening of substitution preserves $\blank\sim\blank$]
 \begin{alignat*}{5}
     % wk
   & \wkO{\sim} && :
@@ -1079,6 +1087,10 @@ relation:
   % &&& \qquad
   (\wf{\wkO}\wf{A}\wf\sigma \sim \model{\sigma}\model{\circ}\model{\wk})
   \end{alignat*}
+\end{lemma}
+\begin{proof}
+By induction on the typing judgments.
+\end{proof}
 
 
 
@@ -1125,19 +1137,17 @@ relation:
 %   \model{E} = \model\GD {\leq}{\ext} \model{A}
 % \end{alignat*}
 
-\subsubsection{Stability under substitution}
-
- We want to prove that given any well-typed substitution $\sigma
+Next, we want to prove that given any well-typed substitution $\sigma
 : \Sub\,\GG\,\GD$ and semantic contexts $\model{\GG}$ and
-$\model{\GD}$, respectively related to $\GG$ and $\GD$, there exists a
-semantic substitution which is related to $\sigma$.  In the extension case
+$\model{\GD}$, related to $\GG$ and $\GD$, respectively, there is a
+semantic substitution related to $\sigma$.  In the extension case
 $\GG\vdash \sigma \consu\,t\Rightarrow \GD\,\extu\,A$, the induction
 hypothesis provides $\model{\sigma}$, $\model{\GD}$, $\model{A}$ related to
 their syntactic counterpart. However, the premises of the induction hypothesis
 for getting a relevant $\model{t}$ require showing that the type
 $\model{A}\model{[\model{\sigma}]}$ is related to the syntactic type
-$A[\sigma]$. We first establish preservation of the relation by substitution for
-variables:
+$A[\sigma]$.
+\begin{lemma}[Preservation of the relation by substitution for variables]
 \begin{alignat*}{5}
     % []V~
   & []{\sim} && :
@@ -1150,8 +1160,13 @@ variables:
   % & && \qquad
    \wf{[]}\wf{x}\wf{\sigma} \sim \model{x}\model{[\model{\sigma}]}
 \end{alignat*}
-Then we show it for terms and types  by mutual induction
-under the common hypotheses
+\end{lemma}
+\begin{proof}
+  Induction on typing.
+\end{proof}
+
+\begin{lemma}[Preservation of the relation by substitution for types and terms]
+We assume
   $(\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD)$,
   $(\wf\sigma \sim \model{\sigma})$,
   $(\wf{\GG} : \GG \vdash )$,
@@ -1175,8 +1190,13 @@ under the common hypotheses
   % \\
   % & && \qquad
    \wf{[]}\wf{\GG}\wf{t}\wf{\sigma} \sim \model{t}\model{[\model{\sigma}]}
-  \end{alignat*}
-  Eventually, we show under the same hypotheses the following statement
+ \end{alignat*}
+\end{lemma}
+\begin{proof}
+  Mutual induction on typing.
+\end{proof}
+\begin{lemma}[The relation is preserved by composition and identity]
+  We have the same hypotheses as in the previous lemma.
   \begin{alignat*}{5}
      & {\circ}{\sim} && :
     (\wf{E} : E \vdash ) \ra
@@ -1187,15 +1207,13 @@ under the common hypotheses
   (\wf{\delta} \sim \model{\delta}) \ra
   \\
   & && \qquad
-   \wf{{\circ}}\,\wf{\GG}\,\wf{\delta}\,\wf{\sigma} \sim \model{\delta}\mathbin{\model{\circ}}\model{\sigma}
-  \end{alignat*}
-  and the fact that identity preserves the relation:
-  \begin{alignat*}{5}
+   \wf{{\circ}}\,\wf{\GG}\,\wf{\delta}\,\wf{\sigma} \sim \model{\delta}\mathbin{\model{\circ}}\model{\sigma} \\
      & {\id}{\sim} && :
     (\wf{\GG} : \GG \vdash ) \ra
   (\wf{\GG} \sim \model{\GG}) \ra
    \wf{{\id}}\,\wf{\GG} \sim {\id}_{\model{\GG}}
-  \end{alignat*}
+ \end{alignat*}
+ \end{lemma}
 % $\model{t}\model\oldapp\model{u}$, but it has type
 % $\model{B}\model{[0 := \model{u}]}$
 % instead of type $\model{T}$. Fortunately, we know by hypothesis that $\model{T}$
@@ -1204,17 +1222,18 @@ under the common hypotheses
 % Thus, we need to show that $\model{T}=\model{B}\model{[0 := \model{u}]}$ if we
 % know that this last type is related to $B[0 := u]$.
 
-\subsection{Left-Totality and the Recursor}
-For the recursor, we build a morphism from the syntactic model to the semantic
-one. The image of a syntactic context is a unique semantic context which is
-related to it, and similarly for types and terms.
+\subsubsection{Left-Totality and the Recursor}
+
+Before defining the recursor $\ll\blank\rr$, we show left totality of
+the relation: that is, the image of a syntactic context is a unique
+semantic context which is related to it, and similarly for types and
+terms.
 % We construct it as the semantic
 % Induction on the typing judgments shows that any QIIT morphism from the
 % syntactic model $S$  to a semantic model $M$ sends well-typed syntax on a related
 % semantic counter-part.
-Thus, as a first step, we use induction on well-formedness judgments to construct
-semantic counterparts:
-  \begin{alignat*}{5}
+\begin{lemma}[Left totality of $\blank\sim\blank$]
+\begin{alignat*}{5}
      & \Sigma\Con{\sim} && :
     (\wf{\GG} : \GG \vdash ) \ra
     \sum_{\model{\GG}} \wf{\GG} \sim \model{\GG}
@@ -1252,20 +1271,31 @@ semantic counterparts:
     (\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD ) \ra
     ({\model{\sigma}:\model{\Sub}\model\GG}\model{\GD})\times ( \wf{\sigma} \sim \model{\sigma})
   \end{alignat*}
-  The right uniqueness of the relation is used in this induction. It is then
-straightforward to show (without induction, but using right uniqueness) that the
-first projection of these constructions yields a model morphism from the syntax
-to the model.
+\end{lemma}
+\begin{proof}
+  By induction on well-formedness judgments. The right uniqueness of
+  the relation is used in this induction.
+\end{proof}
+
+\begin{lemma}[Existence of the recursor]\label{lem:rec}
+  For any $M:\SignAlg$ there is a $\ll\blank\rr : \SignMor\,\I\,M$
+  where $\I$ is given in \Cref{def:syntax}.
+\end{lemma}
+\begin{proof}
+  Using the first projections in the construction of the left-totality
+  construction and right uniqueness.
+\end{proof}
 
 \subsection{Uniqueness}
-Our goal is to show that the syntactic model is initial. Thus, it remains to
-show that the morphism constructed in the previous section is unique. We exploit
-right uniqueness of the relation: it is enough to show that any such morphism
-maps a syntactic context to a related semantic context, and similarly for types
-and terms.
 
-More formally, we assume an arbitrary morphism $f$ from the
-syntax to the model, inducing the following maps:
+It remains to show that the morphism constructed in \Cref{lem:rec} is
+unique. We exploit right uniqueness of the relation: it is enough to
+show that any such morphism maps a syntactic context to a related
+semantic context, and similarly for types and terms.
+
+\begin{lemma}
+  We assume an arbitrary signature morphism $f$ from $\I$ to $M$. This
+  induces the following maps:
 \begin{alignat*}{5}
   &
   \mor{\Con}
@@ -1299,8 +1329,7 @@ syntax to the model, inducing the following maps:
   (\GG\vdash \sigma \Rightarrow \GD)\ra\model\Sub\,(\mor\Con\wf\GG)\,
   (\mor\Con\wf\GD)
 \end{alignat*}
-Then, we show by induction on typing judgments that
-the image is related:
+The images of the above maps are related by $\blank\sim\blank$:
 \begin{alignat*}{5}
   &
   {\sim}\mor{\Con}
@@ -1338,9 +1367,32 @@ the image is related:
   (\wf{\sigma} : \GG \vdash \sigma \Rightarrow \GD) \ra
   \wf\GG\sim \mor\Sub\,\wf\GG\,\wf{\GD}\,\wf{\sigma}
 \end{alignat*}
-This justifies the uniqueness of the morphism, by right uniqueness of
-$\blank\sim\blank$.
+\end{lemma}
+\begin{proof}
+  By induction on typing relations.
+\end{proof}
 
+\begin{corollary}[Uniqueness of the recursor]\label{lem:uniq}
+  By right uniqueness of $\blank\sim\blank$, there is only one
+  morphism $\SignMor\,\I\,M$ for any $M$.
+\end{corollary}
+
+\begin{theorem}\label{thm:WToToS}
+  If a model of ETT supports indexed W-types, it supports the theory
+  of IIT signatures.
+\end{theorem}
+\begin{proof}
+  We define the syntax $\I$ by \Cref{def:syntax} which only used
+  indexed W-types, the recursor by \Cref{lem:rec} and we prove its
+  uniqueness property by \Cref{lem:uniq}.
+\end{proof}
+
+\begin{corollary}\label{thm:WToIITs}
+  If a model of ETT supports indexed W-types, it supports all IITs.
+\end{corollary}
+\begin{proof}
+  Combining \Cref{thm:WToToS} and \Cref{thm:ToSToIITs}.
+\end{proof}
 
 % \begin{description}
 %   \item[untyped syntax and well typed judgments as an algebra]
