@@ -282,7 +282,7 @@ judgments, as the proofs require that some inputs are well-typed.
     (\GG\vdash \sigma \Rightarrow\GD)\ra
     ( \GD \vdash A) \ra
     ( \GG \vdash t \in A[\sigma]) \ra
-    \GG \vdash t \consu \sigma \Rightarrow \GD\extu A
+    \GG \vdash \sigma\consu t \Rightarrow \GD\extu A
    \\
   & \varw  && : (\GG \vdash n \invar A) \ra \GG \vdash \varu n \in A \\
   & \vzw  && : (\GG\vdash)\ra(\GG\vdash A)\ra\GG \extu  A \vdash \mathsf{0} \invar \wku \, A \\
@@ -321,7 +321,7 @@ judgments, as the proofs require that some inputs are well-typed.
   \end{alignat*}
 \end{definition}
 There is possibility of redundancy in the arguments of the constructors. Here,
-we are ``{paranoid}'' (following nomenclature from xxx), so that we get more inductive hypotheses when performing
+we are ``{paranoid}'' (nomenclature from xxx), so that we get more inductive hypotheses when performing
 recursion.
 
 % The substitution part could be moved after the mutual definition of terms, types,
