@@ -28,11 +28,11 @@
 \author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by the National Research,
 Development and Innovation Fund of Hungary, financed under the
 Thematic Excellence Programme funding scheme, Project
-no. ED18-1-2019-0030 (Application-specific highly reliable IT
+no.\ ED18-1-2019-0030 (Application-specific highly reliable IT
 solutions), by the New National Excellence Program of the Ministry
-for Innovation and Technology, Project no. ÚNKP-19-4-ELTE-874, and
+for Innovation and Technology, Project no.\ ÚNKP-19-4-ELTE-874, and
 by the Bolyai Fellowship of the Hungarian Academy of Sciences,
-Project no. BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
+Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
 \author{Andr{\'a}s Kov{\'a}cs}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{kovacsandras@inf.elte.hu}{https://orcid.org/0000-0002-6375-9781}{this author was supported by the European Union, co-financed by the European Social Fund (EFOP-3.6.3-VEKOP-16-2017-00002).}
 \author{Ambroise Lafont}{IMT Atlantique, Inria, LS2N CNRS, Nantes, France}{ambroise.lafont@inria.fr}{https://orcid.org/0000-0002-9299-641X}{}
 
@@ -53,7 +53,7 @@ Project no. BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author 
 
 %\funding{(Optional) general funding statement \dots}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
 
-\acknowledgements{The authors would like to thank Thorsten Altenkirch, Simon Boulier, Fredrik Nordvall-Forsberg and Jakob von Raumer for discussions on the topics of this paper.}%optional
+\acknowledgements{The authors would like to thank Thorsten Altenkirch, Rafa{\"e}l Bocquet, Simon Boulier, Fredrik Nordvall-Forsberg and Jakob von Raumer for discussions on the topics of this paper. We also thank the anonymous reviewers for their helpful comments and suggestions.}%optional
 
 %\nolinenumbers %uncomment to disable line numbering
 
@@ -81,7 +81,7 @@ Project no. BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author 
 \maketitle
 
 \begin{abstract}
-  Inductive-inductive types (IITs) are a generalisation of inductive types in
+  TODO: rewrite. Inductive-inductive types (IITs) are a generalisation of inductive types in
   type theory. They allow the mutual definition of types with multiple sorts
   where later sorts can be indexed by previous ones. An example is the
   Chapman-style syntax of type theory with conversion relations for each sort
@@ -126,7 +126,7 @@ Inductive-inductive types (IITs \cite{forsberg-phd}) allow the mutual
 definition of a type and a family of types over the first one. IITs
 were originally introduced to represent the well-typed syntax of type
 theory itself, and the main example is still the Chapman-style
-\cite{chapman09eatitself} syntax for a type theory. A minimsed version
+\cite{chapman09eatitself} syntax for a type theory. A minimised version
 is the IIT of contexts and types given by the following constructors.
 \begin{alignat*}{5}
   & \Con && : \Set \\
@@ -142,7 +142,7 @@ $\Con$ refers to $\Ty$ and the $\Ty$-constructor $\mathsf{U}$ refers to $\Con$,
 hence the two sorts have to be defined simultaneously. Moreover, $\Ty$ is
 indexed over $\Con$. This precludes a reduction analogous to the reduction of
 $\mathsf{isEven}$--$\mathsf{isOdd}$, as we would get a type indexed over
-itself. Another unique feature of IITs (which also shows up in higher inductive
+itself. Another unique feature of IITs (which also holds for higher inductive
 types \cite{HoTTbook}) is that later constructors can refer to previous
 constructors: in our case, $\mathsf{El}$ mentions
 $\mathsf{ext}$.
@@ -161,7 +161,7 @@ constructor).
   & U^D && : (\Gamma^D:Con^D\,\Gamma)\ra Ty^D\,\Gamma^D\,(\mathsf{U}\,\Gamma) \\
   & El^D && : (\Gamma^D:Con^D\,\Gamma)\ra\,Ty^D\,({ext}^D\,\Gamma^D\,(U^D\,\Gamma^D))\,(\mathsf{El}\,\Gamma)
 %  & Pi^D && : (\Gamma^D:Con^D\,\Gamma)(A^D:\Ty^D\,\Gamma^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\Gamma^D\,A^D)\ra\,\Ty^D\,\Gamma^D\,(\mathsf{Pi}\,\Gamma\,A\,B)
-\end{alignat*}
+\end{alignat*} xxx
 Above we used implicit quantifications for $\Gamma:\Con$ and
 $A:\Ty\,\Gamma$ to ease readability, e.g.\ $Ty^D$ has an implicit
 parameter $\Gamma$ before its explicit parameter of type
@@ -838,7 +838,7 @@ notion of constructors and elimination principle for the signatures in
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Constructing IITs from the Theory of IIT Signatures}
+\section{Constructing all IITs from the Theory of IIT Signatures}
 \label{sec:constructingiits}
 
 In the previous section, using the notions of signature algebras and
@@ -1033,7 +1033,7 @@ we illustrate the idea of both constructions on natural numbers.
   ($\beta$) rule for $t$.
 \end{example}
 
-\begin{theorem}
+\begin{theorem}\label{th:tosToIITs}
   If a model of type theory supports the theory of IIT signatures,
   then it supports all IITs.
 \end{theorem}
@@ -1067,6 +1067,17 @@ we illustrate the idea of both constructions on natural numbers.
 
 \section{Constructing the Theory of IIT Signatures}
 \label{sec:ambroise}
+
+In this section we show that any model of ETT which supports indexed
+W-types also supports the theory of signatures, and as a consequence
+of \Cref{th:tosToIITs}, all IITs. For this, we work in the internal
+language of a model of ETT supporting indexed W-types
+\cite{indexedcont}. Indexed W-types correspond to the usual notion of
+(possibly mutual) indexed inductive types. We will use Agda-style
+notation for defining such inductive families: we list the sorts and
+constructors and use pattern matching when eliminating from them. qFor
+an encoding of mutual inductive families as families as indexed
+W-types, see e.g.\ \cite{mutual}.
 
 \input{universaliit}
 
