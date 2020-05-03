@@ -1033,58 +1033,35 @@ we illustrate the idea of both constructions on natural numbers.
   ($\beta$) rule for $t$.
 \end{example}
 
-
-xxx
-
-
-We construct all IITs describable by the theory of IIT signatures through the
-term model construction of \cite{Kaposi:2019:CQI:3302515.3290315}. There, it is
-shown that from the syntax of the theory of signatures for finitary QIITs, one
-can construct any particular finitary QIIT. The idea is that for a signature
-$\Gamma$, the initial algebra can be built from sets of terms of the form
-$\Tm\,\Gamma\,(\El\,a)$. For example, considering the signature for natural
-numbers
-\[
-  \Gamma := \big(\boldsymbol{\cdot}\,\ext\,N:\U\,\ext\,z : \El\,N\,\ext\,s : N \Ra \El\,N\big),
-\]
-we have that $\Tm\,\Gamma\,(\El\,N)$ is the set of natural numbers up to isomorphism,
-since the only way to construct these terms is by using $s$ and $z$ from $\Gamma$.
-
-In this section, we only need to check that the signatures and term model
-construction in \cite{Kaposi:2019:CQI:3302515.3290315} restrict to IITs,
-i.e.\ that from a syntax for the theory of IIT signatures all finitary IITs are
-constructible.
-
-\begin{enumerate}
-\item
-  Finitary IIT signatures are obtained exactly by dropping equality constructors from
-  finitary QIIT signatures. It follows that any model for the theory of QIIT signatures
-  restricts to IITs, hence we inherit the categorical semantics of QIITs.
-\item
-  The term model construction also restricts in a straightforward way. For QIITs,
-  term algebras are constructed by induction on the syntax of signatures, and
-  then another induction constructs the eliminator (i.e.\ dependent induction
-  principle). In both cases, simply dropping equality constructors from the
-  induction yields restriction to IITs.
-\end{enumerate}
-
-However, we shall mention that the Agda formalisation for the current paper
-cannot be directly plugged into the Agda code for
-\cite{Kaposi:2019:CQI:3302515.3290315} (which includes most of the term model
-construction). One reason is that the QIIT formalisation uses strict computation
-rules (given by Agda rewrite rules) for induction over signatures, while here we show propositional
-computation. This mismatch can be in principle remedied by noting that both
-formalisations use UIP and function extensionality, hence we can switch between
-strict and propositional equalities, via the known translations between
-extensional and intensional type
-theories \cite{hofmann95extensional,winterhalter2019eliminating}.
-
-Also, the current paper proves initiality, i.e.\ unique recursion for
-signatures, while \cite{Kaposi:2019:CQI:3302515.3290315} uses dependent
-elimination. We expect that the two notions are equivalent. An extension of
-\cite{Kaposi:2019:CQI:3302515.3290315} to large infinitary QIITs would entail
-this equivalence, since that would cover the (large, infinitary) theory of IIT
-signatures.
+\begin{theorem}
+  If a model of type theory supports the theory of IIT signatures,
+  then it supports all IITs.
+\end{theorem}
+\begin{proof}
+  For a signature $({sig},{sigc})$, we define constructors as
+  \[
+    \con_{sig}:= (\ll{sig}\,\I\rr_{\IC_{{sig}\,\I}})^\C\,\id^\I : ({sig}\,\ADS)^\A
+  \]
+  This typechecks as
+  $\ll{sig}\,\I\rr_\A = \ll\blank\rr_\A\,({sig}\,\I)
+  \overset{{sigc}}{=} {{sig}\,\A} = ({sig}\,\ADS)^\A$. We define the
+  eliminator by
+  and an
+  \[
+    \elim_{sig}\,\gamma^D := (\ll{sig}\,\I\rr_{\IE_{\gamma^D}})^\E\,\id^\I  : ({sig}\,\ADS)^\S\,\con_{sig}\,\gamma^D.
+  \]
+  This typechecks firstly because the type of $\gamma^D$ matches the
+  type of the parameter of $\IE$:
+  \[
+    ({sig}\,\ADS)^\D\,\con_{sig} \overset{{sigc}}{=}
+    (\ll\blank\rr_{\ADS}\,({sig}\,\I))^\D\,\con_{sig} =
+    (\ll{sig}\,\I\rr_{\ADS})^\D\,\con_{sig},
+  \]
+  and the result also has the correct type:
+  \[
+    \ll{sig}\,\I\rr^\S\,\con_{sig}\,\gamma^D = (\ll\blank\rr_{\ADS}\,({sig}\,\I))^\S\,\con_{sig}\,\gamma^D \overset{{sigc}}{=} ({sig}\,\ADS)^\S\,\con_{sig}\,\gamma^D.
+  \]
+\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
