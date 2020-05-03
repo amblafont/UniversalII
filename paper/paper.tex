@@ -161,7 +161,7 @@ constructor).
   & U^D && : (\GG^D:Con^D\,\GG)\ra Ty^D\,\GG^D\,(\mathsf{U}\,\GG) \\
   & El^D && : (\GG^D:Con^D\,\GG)\ra\,Ty^D\,({ext}^D\,\GG^D\,(U^D\,\GG^D))\,(\mathsf{El}\,\GG)
 %  & Pi^D && : (\GG^D:Con^D\,\GG)(A^D:\Ty^D\,\GG^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\GG^D\,A^D)\ra\,\Ty^D\,\GG^D\,(\mathsf{Pi}\,\GG\,A\,B)
-\end{alignat*} xxx
+\end{alignat*}
 Above we used implicit quantifications for $\GG:\Con$ and
 $A:\Ty\,\GG$ to ease readability, e.g.\ $Ty^D$ has an implicit
 parameter $\GG$ before its explicit parameter of type
@@ -220,9 +220,10 @@ the following:
   & \ll\mathsf{U}\,\GG\rr\,\gamma && := \Set \\
   & \ll\mathsf{El}\,\GG\rr\,(\gamma,X) && := X
 \end{alignat*}
-The reason that we need the general elimination principle is that
-$\ll\blank\rr$ for types refers to $\ll\blank\rr$ for contexts, hence
-this function is recursive-recursive.
+The reason that we need the general elimination principle to define
+$\ll\blank\rr$ is that $\ll\blank\rr$ for types refers to
+$\ll\blank\rr$ for contexts, hence this function is
+recursive-recursive.
 
 Kaposi, Kov{\'a}cs, and Altenkirch
 \cite{Kaposi:2019:CQI:3302515.3290315} introduced a small type theory
@@ -242,39 +243,52 @@ is still valid. It follows that if a model of extensional type theory
 supports the theory of IIT signatures, it supports all IITs.
 
 In this paper we show that any model of extensional type theory with
-indexed W-types supports the theory of IIT signatures, hence all
-IITs. The difficulty is that the theory of IIT signatures is a QIIT,
-it is both inductive-inductive and has equality constructors. However
-it can be seen as the well-typed syntax of a small type theory without
-any computation rules. Hence we can represent the syntax of normal
-forms without quotienting. We construct this well-typed normal syntax
-using preterms and typing relations from indexed W-types. Finally, we
-prove the elimination principle in the style of the initiality proof
-of Streicher \cite{streichersemantics}.
+indexed W-types supports the theory of IIT signatures, and as a
+consequence all IITs. The difficulty in this construction is that the
+theory of IIT signatures is itself a QIIT, it is both
+inductive-inductive and has equality constructors. However it can be
+seen as the well-typed syntax of a small type theory without any
+computation rules. Hence we can represent the syntax of normal forms
+without quotienting. We construct this well-typed normal syntax using
+preterms and typing relations from indexed W-types. Finally, we prove
+the elimination principle in the style of the initiality proof of
+Streicher \cite{streichersemantics}.
 
-Just as ibid., we only consider finitary IITs, that is, constructors
-can only have a finite number of recursive arguments. An example
-constructor for $\Con$--$\Ty$ which is not allowed is the following:
+Just as \cite{Kaposi:2019:CQI:3302515.3290315}, we only consider
+finitary IITs, that is, constructors can only have a finite number of
+recursive arguments. An example constructor for $\Con$--$\Ty$ which is
+not allowed is the following:
 \[
   \Pi_\infty : (\GG : \Con) \rightarrow (\mathbb{N} \rightarrow \Ty\,\GG) \rightarrow \Ty\,\GG
 \]
 
-TODO: list of contributions here. Notion of signature free from encoding.
+\paragraph*{Structure of paper and list of contributions}
+
+We describe related work in \Cref{sec:related}, and explain our
+notation and Agda formalisaton in \Cref{sec:notation}. Then the
+following three sections describe our three contributions:
+\begin{itemize}
+\item \Cref{sec:theory_of_signatures}. We define what it means for a
+  model of extensional type theory (ETT, \Cref{def:ett}) to support
+  all inductive-inductive types (IITs): \Cref{def:hasiits}. The novel
+  contribution here is a (predicative) Church encoding of signatures
+  following \cite{DBLP:conf/lics/AwodeyFS18}.
+\item \Cref{sec:constructingiits}. We show that if a model of ETT
+  supports the theory of IIT signatures
+  (\Cref{def:theoryofsignatures}), then it supports IITs in the above
+  sense: \Cref{th:tosToIITs}. This is an adaptation of a proof in
+  \cite{Kaposi:2019:CQI:3302515.3290315}.
+\item \Cref{sec:ambroise}. Our main contribution is showing that if a
+  model of ETT supports indexed W-types, then it supports the theory
+  of IIT signatures (\Cref{TODO}), and hence, all IITs (\Cref{TODO}).
+\end{itemize}
+We conclude in \Cref{sec:conclusions}.
 
 The contents of this paper were presented at the TYPES 2019 conference
 in Oslo \cite{types}.
 
-\subsection{Structure of the Paper}
-
-We first define a theory of IIT signatures in which every context is a signature
-(Section \ref{sec:theory_of_signatures}). We present this as an algebraic
-\cite{ttintt} theory, specifically as a quotient inductive-inductive type
-(QIIT). In Section \ref{sec:ambroise} we show that this QIIT can be constructed
-using inductive types, UIP and function extensionality. In Section
-\ref{sec:constructingiits} we describe the construction of IITs from the syntax
-of IIT signatures.
-
 \subsection{Related Work}
+\label{sec:related}
 
 The current work builds heavily on the work of Kaposi et al.\
 \cite{Kaposi:2019:CQI:3302515.3290315} on finitary quotient
@@ -282,8 +296,7 @@ inductive-inductive types (QIITs); we reuse both QIIT syntax and
 semantics by restricting to IITs, and we reuse the term model
 construction of QIITs as well. We also make use of the extesion to
 infinitary QIITs \cite{large_inf_qiit} to derive the specification of
-the elimination principle for the theory of IIT signatures. TODO: also
-for specifying signatures.
+the elimination principle for the theory of IIT signatures.
 
 IITs (however not by this name) were first used to describe the
 well-typed syntax of type theory \cite{nisse,chapman09eatitself}. Agda
@@ -349,6 +362,11 @@ algebraic theories \cite{gat}. Using the same reduction as mutual
 inductive types to indexed inductive types, (Q)IITs with more than two
 sorts can be reduced to (Q)IITs with only two sorts \cite{szumiemail}.
 
+Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18} construct
+inductive types using a restricted Church encoding in a type theory
+with an impredicative universe. We use the predicative version of
+their encoding to define IIT signatures.
+
 Our reduction of IITs to indexed inductive types goes through two
 steps: first we construct a concrete QIIT using inductive types, then
 we construct all IITs from this particular QIIT. A more direct
@@ -357,15 +375,14 @@ be constructed directly for any IIT signature without going through an
 intermediate step.
 
 \subsection{Notation and Formalisation}
+\label{sec:notation}
 
-\begin{definition}[Model of extensional type theory (ETT)]
+\begin{definition}[Model of extensional type theory (ETT)]\label{def:ett}
   By a model of ETT we mean a category with families (CwF)
   \cite{Dybjer96internaltype,Hofmann97syntaxand} with an infinite
   predicative hierarchy of universes closed under the following type
-  formers: $\Pi$, $\Sigma$, $\bot$, $\top$, $\Bool$, indexed W-types
-  \cite{indexedcont} and an identity type with uniqueness of identity
-  proofs and equality reflection. TODO: remove indexed W-types, bot
-  and bool.
+  formers: $\Pi$, $\Sigma$, $\top$ and an identity type with
+  uniqueness of identity proofs and equality reflection.
 \end{definition}
 
 We will use Agda-like type theoretic syntax to work in the internal
@@ -380,24 +397,25 @@ language of models of ETT:
   projection implicit. Projections are either named or given by
   $\proj_1$ and $\proj_2$. We use $A \times B$ for non-dependent
   pairs.
-\item We will define indexed W-types \cite{indexedcont} by listing
-  their constructors and using pattern matching to eliminate from
-  them.
+\item The unit type $\top$ has the constructor $\tt$ which is
+  definitionally equal to all elements of $\top$.
 \item The equality (identity) type is written $t = u$, it has a
   constructor $\refl : t = t$, and equality reflection, hence we use
   the same $=$ sign for definitional equality. We occasionally
-  indicate by $_{e_1,\dots,e_n \#}t$ that $t$ is well-typed thanks to the
-  equalities $e_1$,\dots,$e_n$. We also have uniqueness of identity
-  proofs (UIP), expressing $(e : t = t)\ra e = \refl$. Note that
-  function extensionality, expressing
-  $((x : A) \ra f\,x = g\,x) \ra f = g$ is derivable.
+  indicate by $_{e_1,\dots,e_n \#}t$ that $t$ is well-typed thanks to
+  the equalities $e_1$,\dots,$e_n$. To construct proofs, sometimes we
+  write equational reasoning, e.g. $f a \overset{e}{=} f b$ where
+  $e : a = b$. We also have uniqueness of identity proofs (UIP),
+  expressing $(e : t = t)\ra e = \refl$. Note that function
+  extensionality, expressing $((x : A) \ra f\,x = g\,x) \ra f = g$ is
+  derivable.
 \end{itemize}
 
-The contents of Sections \ref{sec:theory_of_signatures} and
-\ref{sec:ambroise} were formalised in Agda, the formalisation is
-available at \url{https://github.com/amblafont/UniversalII}. Agda's
-pattern matching mechanism implies uniqueness of identity proofs, we
-assumed function extensionality as an axiom and used rewrite rules
+The contents of Section \ref{sec:ambroise} were formalised in Agda,
+the formalisation is available at
+\url{https://github.com/amblafont/UniversalII}. Agda's pattern
+matching mechanism implies uniqueness of identity proofs, we assumed
+function extensionality as an axiom and used rewrite rules
 \cite{cockxsprinkles} to obtain limited equality reflection.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -767,7 +785,7 @@ that the domain is discrete, $\Pim$ is the pointwise direct product.
   component, which we also denote by $\blank^\A : \SignMor\,\ADS\,\A$.
 \end{definition}
 
-\begin{definition}[A model of ETT supports IITs]\label{sec:hasiits}
+\begin{definition}[A model of ETT supports IITs]\label{def:hasiits}
   A model of ETT supports IITs if for any signature $(sig,sigc):\Sign$
   there is a
   \[
@@ -782,7 +800,7 @@ In other words, for any signature, we have an algebra called $\con$
 (constructors) and for any displayed algebra over the constructors, we
 have a section (called the eliminator).
 
-One can check that \Cref{sec:hasiits} gives the right
+One can check that \Cref{def:hasiits} gives the right
 notion of constructors and elimination principle for the signatures in
 \Cref{ex:signatures}.
 \begin{example}[A model of ETT supports natural numbers]
@@ -1083,7 +1101,10 @@ W-types, see e.g.\ \cite{mutual}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Further Work}
+\section{Conclusions}
+\label{sec:conclusions}
+
+TODO
 
 The current work only concerns finitary IITs. An extension would be to also
 allow infinitely branching inductive types such as W-types. This would first
