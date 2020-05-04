@@ -156,31 +156,31 @@ The elimination principle for the above IIT has the following two
 motives (one for each sort) and four methods (one for each
 constructor).
 \begin{alignat*}{5}
-  & \Con^D && : \Con\ra\Set \\
-  & \Ty^D && : \Con^D\,\GG\ra\Ty\,\GG\ra\Set \\
-  & \mathsf{empty}^D && : \Con^D\,\mathsf{empty} \\
-  & \mathsf{ext}^D && : (\GG^D:\Con^D\,\GG)\ra \Ty^D\,\GG^D\,A\ra \Con^D\,(\mathsf{ext}\,\GG\,A) \\
-  & \U^D && : (\GG^D:\Con^D\,\GG)\ra \Ty^D\,\GG^D\,(\mathsf{U}\,\GG) \\
-  & \El^D && : (\GG^D:\Con^D\,\GG)\ra\,\Ty^D\,(\mathsf{ext}^D\,\GG^D\,(\U^D\,\GG^D))\,(\mathsf{El}\,\GG)
-%  & Pi^D && : (\GG^D:\Con^D\,\GG)(A^D:\Ty^D\,\GG^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\GG^D\,A^D)\ra\,\Ty^D\,\GG^D\,(\mathsf{Pi}\,\GG\,A\,B)
+  & Con^D && : \Con\ra\Set \\
+  & Ty^D && : Con^D\,\GG\ra\Ty\,\GG\ra\Set \\
+  & {empty}^D && : Con^D\,\mathsf{empty} \\
+  & {ext}^D && : (\GG^D:Con^D\,\GG)\ra Ty^D\,\GG^D\,A\ra Con^D\,(\mathsf{ext}\,\GG\,A) \\
+  & U^D && : (\GG^D:Con^D\,\GG)\ra Ty^D\,\GG^D\,(\mathsf{U}\,\GG) \\
+  & El^D && : (\GG^D:Con^D\,\GG)\ra\,Ty^D\,({ext}^D\,\GG^D\,(U^D\,\GG^D))\,(\mathsf{El}\,\GG)
+%  & Pi^D && : (\GG^D:Con^D\,\GG)(A^D:\Ty^D\,\GG^D\,A)\ra \Ty^D\,(\mathsf{ext}^D\,\GG^D\,A^D)\ra\,\Ty^D\,\GG^D\,(\mathsf{Pi}\,\GG\,A\,B)
 \end{alignat*}
 Above we used implicit quantifications for $\GG:\Con$ and
-$A:\Ty\,\GG$ to ease readability, e.g.\ $\Ty^D$ has an implicit
+$A:\Ty\,\GG$ to ease readability, e.g.\ $Ty^D$ has an implicit
 parameter $\GG$ before its explicit parameter of type
-$\Con^D\,\GG$.
+$Con^D\,\GG$.
 
 Given the above motives and methods the elimination principle provides
 two functions
 \begin{alignat*}{5}
-  & \mathsf{elimCon} && : (\GG:\Con)\ra \Con^D\,\GG \\
-  & \mathsf{elimTy} && : (A:\Ty\,\GG)\ra \Ty^D\,(\mathsf{elimCon}\,\GG)\,A
+  & \mathsf{elimCon} && : (\GG:\Con)\ra Con^D\,\GG \\
+  & \mathsf{elimTy} && : (A:\Ty\,\GG)\ra Ty^D\,(\mathsf{elimCon}\,\GG)\,A
 \end{alignat*}
 with the following computation rules.
 \begin{alignat*}{5}
-  & \mathsf{elimCon}\,\mathsf{empty} && = \mathsf{empty}^D \\
-  & \mathsf{elimCon}\,(\mathsf{ext}\,\GG\,A) && = \mathsf{ext}^D\,(\mathsf{elimCon}\,\GG)\,(\mathsf{elimTy}\,A) \\
-  & \mathsf{elimTy}\,(\mathsf{U}\,\GG) && = \U^D\,(\mathsf{elimCon}\,\GG) \\
-  & \mathsf{elimTy}\,(\mathsf{El}\,\GG) && = \El^D\,(\mathsf{elimCon}\,\GG)
+  & \mathsf{elimCon}\,\mathsf{empty} && = {empty}^D \\
+  & \mathsf{elimCon}\,(\mathsf{ext}\,\GG\,A) && = {ext}^D\,(\mathsf{elimCon}\,\GG)\,(\mathsf{elimTy}\,A) \\
+  & \mathsf{elimTy}\,(\mathsf{U}\,\GG) && = U^D\,(\mathsf{elimCon}\,\GG) \\
+  & \mathsf{elimTy}\,(\mathsf{El}\,\GG) && = El^D\,(\mathsf{elimCon}\,\GG)
 \end{alignat*}
 The functions $\mathsf{elimCon}$ and $\mathsf{elimTy}$ are an example
 of a \emph{recursive-recursive} definition (using nomenclature from
@@ -201,14 +201,14 @@ illustrate the difference, we list the motives and methods and the
 simple elimination principle for the $\Con$--$\Ty$ example. Again, we
 use implicit quantifications.
 \begin{alignat*}{5}
-  & \Con^S && : \Con\ra\Set \\
-  & \Ty^S && : \Ty\,\GG\ra\Set \\
-  & \mathsf{empty}^S && : \Con^S\,\mathsf{empty} \\
-  & \mathsf{ext}^S && : \Con^S\,\GG\ra \Ty^S\,\,A\ra \Con^S\,(\mathsf{ext}\,\GG\,A) \\
-  & \U^S && : \Con^S\,\GG\ra \Ty^S\,(\mathsf{U}\,\GG) \\
-  & \El^S && : \Con^S\,\GG\ra\,\Ty^S\,(\mathsf{El}\,\GG) \\
-  & \mathsf{selimCon} && : (\GG:\Con)\ra \Con^S\,\GG \\
-  & \mathsf{selimTy} && : (A:\Ty\,\GG)\ra \Ty^S\,A
+  & Con^S && : \Con\ra\Set \\
+  & Ty^S && : \Ty\,\GG\ra\Set \\
+  & {empty}^S && : Con^S\,\mathsf{empty} \\
+  & {ext}^S && : Con^S\,\GG\ra Ty^S\,\,A\ra Con^S\,(\mathsf{ext}\,\GG\,A) \\
+  & U^S && : Con^S\,\GG\ra Ty^S\,(\mathsf{U}\,\GG) \\
+  & El^S && : Con^S\,\GG\ra\,Ty^S\,(\mathsf{El}\,\GG) \\
+  & \mathsf{selimCon} && : (\GG:\Con)\ra Con^S\,\GG \\
+  & \mathsf{selimTy} && : (A:\Ty\,\GG)\ra Ty^S\,A
 \end{alignat*}
 This simple elimination principle is too weak, e.g.\ to define the
 standard (metacircular) interpretation of our small syntax
