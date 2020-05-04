@@ -14,8 +14,8 @@ We construct the theory of IIT signatures in the following steps:
   $M : \SignAlg$, by:
   \begin{enumerate}
   \item defining a relation $\blank \sim \blank$ between the well-typed syntax
-    and a given model. The idea is that given a syntactic context $\GG$ and a
-    semantic context $\model{\GG}$ of the model $M$, we have
+    and a given signature algebra. The idea is that given a syntactic context $\GG$ and a
+    semantic context $\model{\GG}$ of the signature algebra $M$, we have
     $\GG \sim \model{\GG}$ if and only if $\ll\GG\rr
     = \model{\GG}$, and similarly for types, terms, and substitutions;
     % semantic context $\model{\GG}$ of
@@ -38,7 +38,7 @@ are pairs of a precontext together with a well-formedness proof, and
 similarly for types, terms and substitutions.
 
 Crucially, we do not have conversion relations for typed syntax, nor
-do we need to use quotients when giving the syntactic model. This is
+do we need to use quotients when constructing the syntax. This is
 possible because there are no $\beta$-rules in the theory of
 signatures. Hence, we consider only normal terms in the untyped
 syntax, and define weakening and substitution by recursion.  Avoiding
@@ -871,7 +871,7 @@ The relation is right unique in the following sense:
   $\Elw\,\wf{\GG}\,\wf{a}\sim \model{A}$ in this fashion. In related work,
   Hugunin investigated constructing IITs without
   UIP \cite{jasper} in cubical type theory, and demonstrated
-  that well-formedness predicates used in syntactic models can subtly break
+  that well-formedness predicates used in syntactic algebras can subtly break
   in that setting. Also, while Hugunin does not use UIP, he only shows the simple version
   version of dependent elimination for the constructed IITs. Hence, the
   question whether IITs are reducible to inductive types in a UIP-free setting
