@@ -28,8 +28,7 @@
 \author{Ambrus Kaposi}{E{\"o}tv{\"o}s Lor{\'a}nd University, Budapest, Hungary}{akaposi@inf.elte.hu}{https://orcid.org/0000-0001-9897-8936}{this author was supported by the National Research,
 Development and Innovation Fund of Hungary, financed under the
 Thematic Excellence Programme funding scheme, Project
-no.\ ED18-1-2019-0030 (Application-specific highly reliable IT
-solutions), by the New National Excellence Program of the Ministry
+no.\ ED\_18-1-2019-0030, by the New National Excellence Program of the Ministry
 for Innovation and Technology, Project no.\ ÚNKP-19-4-ELTE-874, and
 by the Bolyai Fellowship of the Hungarian Academy of Sciences,
 Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
@@ -38,13 +37,13 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
 
 \authorrunning{A. Kaposi, A. Kov{\'a}cs and A. Lafont}%TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
-\Copyright{A. Kaposi, A. Kov{\'a}cs and A. Lafont}%TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+\Copyright{Ambrus Kaposi, Andr{\'a}s Kov{\'a}cs and Ambroise Lafont}%TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
 \ccsdesc[500]{Theory of computation~Logic~Type theory}%TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm
 
 \keywords{type theory, inductive types, inductive-inductive types}%TODO mandatory; please add comma-separated list of keywords
 
-\category{}%optional, e.g. invited paper
+%\category{}%optional, e.g. invited paper
 
 \relatedversion{}%optional, e.g. full version hosted on arXiv, HAL, or other respository/website
 %\relatedversion{A full version of the paper is available at \url{...}.}
@@ -60,17 +59,17 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
 %\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\EventEditors{John Q. Open and Joan R. Access}
+\EventEditors{Marc Bezem and Assia Mahboubi}
 \EventNoEds{2}
-\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
-\EventShortTitle{CVIT 2016}
-\EventAcronym{CVIT}
-\EventYear{2016}
-\EventDate{December 24--27, 2016}
-\EventLocation{Little Whinging, United Kingdom}
+\EventLongTitle{25th International Conference on Types for Proofs and Programs (TYPES 2019)}
+\EventShortTitle{TYPES 2019}
+\EventAcronym{TYPES}
+\EventYear{2019}
+\EventDate{June 11--14, 2019}
+\EventLocation{Oslo, Norway}
 \EventLogo{}
-\SeriesVolume{42}
-\ArticleNo{23}
+\SeriesVolume{175}
+\ArticleNo{6}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \input{abbrevs.tex}
@@ -89,12 +88,12 @@ Project no.\ BO/00659/19/3.}%TODO mandatory, please use full name; only 1 author
   contexts. In this paper we show that if a model of extensional type
   theory (ETT) supports indexed W-types, then it supports finitely
   branching IITs. We use a small internal type theory called the
-  theory of signatures to specify signatures for IITs. We show that if
-  a model of ETT supports the syntax for the theory of signatures,
-  then it supports all IITs. We construct this syntax from indexed
-  W-types using preterms and typing relations and prove its initiality
-  following Streicher. The construction of the syntax and its
-  initiality proof were formalised in Agda.
+  theory of signatures to specify IITs. We show that if a model of ETT
+  supports the syntax for the theory of signatures, then it supports
+  all IITs. We construct this syntax from indexed W-types using
+  preterms and typing relations and prove its initiality following
+  Streicher. The construction of the syntax and its initiality proof
+  were formalised in Agda.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,7 +186,7 @@ of a \emph{recursive-recursive} definition (using nomenclature from
 \cite{forsberg-phd}). This means two mutually defined functions where
 the type of the second function depends on the first function. The
 proof assistant Agda \cite{norell07thesis} allows defining such
-functions (even from non-IITs) and it is currently the only proof
+functions (even from non-IITs) and is currently the only proof
 assistant supporting IITs\footnote{An experimental version of Coq with
   IITs is also available on GitHub.}.
 
@@ -197,7 +196,7 @@ extensional type theory, however, this only provides a simpler,
 non-recursive-recursive elimination principle. Hugunin \cite{jasper}
 reduced several IITs to inductive types, working inside a cubical type
 theory, but he also only constructed the simple eliminator. To
-illustrate the difference, we list the motives and methods and the
+illustrate the difference, we list the motives, methods and the
 simple elimination principle for the $\Con$--$\Ty$ example. Again, we
 use implicit quantifications.
 \begin{alignat*}{5}
@@ -210,10 +209,9 @@ use implicit quantifications.
   & \mathsf{selimCon} && : (\GG:\Con)\ra Con^S\,\GG \\
   & \mathsf{selimTy} && : (A:\Ty\,\GG)\ra Ty^S\,A
 \end{alignat*}
-This simple elimination principle is too weak, e.g.\ to define the
-standard (metacircular) interpretation of our small syntax
-\cite{ttintt}. Using pattern matching notation, this interpretation is
-the following:
+This simple elimination principle is not capable of defining standard
+(metacircular) interpretation \cite{ttintt} of our small syntax. Using
+pattern matching notation, this interpretation is the following:
 \begin{alignat*}{5}
   & \ll\blank\rr && : \Con\ra\Set_1 \\
   & \ll\blank\rr && : \ll\GG\rr\ra\Set_1 \\
@@ -254,7 +252,17 @@ computation rules. Hence we can represent the syntax of normal forms
 without quotienting. We construct this well-typed normal syntax using
 preterms and typing relations from indexed W-types. Finally, we prove
 the elimination principle in the style of the initiality proof of
-Streicher \cite{streichersemantics}.
+Streicher.
+
+Streicher \cite{streichersemantics} constructs the syntactic model of
+type theory using well-typed preterms and then shows initiality of
+this model by (1) defining a partial map to any other model by
+induction on preterms and (2) showing that whenever this partial
+function receives a well-typed preterm on its input it actually gives
+an output. Instead of defining a partial function, we define the graph
+of the same function as a relation and then show that it is functional
+as a second step. This can be seen as an indexed variant of the
+construction using partial functions.
 
 Just as \cite{Kaposi:2019:CQI:3302515.3290315}, we only consider
 finitary IITs, that is, constructors can only have a finite number of
@@ -277,8 +285,7 @@ following three sections describe our three contributions:
   following \cite{DBLP:conf/lics/AwodeyFS18}.
 \item \Cref{sec:constructingiits}. In \Cref{thm:ToSToIITs}, we show that if a
   model of ETT supports the theory of IIT signatures
-  (\Cref{def:theoryofsignatures}), then it supports IITs in the previously
-  given. This is an adaptation of a proof in
+  (\Cref{def:theoryofsignatures}), then it supports IITs. This is an adaptation of a proof in
   \cite{Kaposi:2019:CQI:3302515.3290315}.
 \item \Cref{sec:ambroise}. Our main contribution is showing that if a
   model of ETT supports indexed W-types, then it supports the theory
