@@ -1,0 +1,67 @@
+\documentclass[a4paper,UKenglish,cleveref, autoref]{lipics-v2019}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{todonotes}
+\presetkeys{todonotes}{inline}{}
+\usepackage{csquotes} %for \llbracket and \rrbracket
+\usepackage{stmaryrd}
+% \usepackage{pdflscape} % if we want \begin{landscape} ... \end{landscape}
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+
+\begin{document}
+
+\input{abbrevs.tex}
+
+\begin{definition}[Term signature algebra $\A\blank\C_{\blank}$]
+  For an $M:\SignAlg$ and $\Omega:\Con^M$, we define ${\A M\C}_\Omega$
+  which we call the term signature algebra. It is equipped with
+  morphisms $\blank^\A : \SignMor\,({\A M\C}_\Omega)\,\A$ and
+  $\blank^M : \SignMor\,({\A M\C}_\Omega)\,M$.
+
+  We define ${\A M\C}_\Omega$ by listing its components $\Con$, $\Ty$,
+  $\Sub$, and so on, one per row. Each component has three parts
+  denoted by $^\A$, $^M$ and $^\C$. The $^\A$ and $^M$ parts are just
+  reusing the corresponding components from $\A$ and $M$,
+  respectively, and thus the morphisms $\blank^\A$ and $\blank^M$ are
+  defined as the obvious projections. We omit the equality components,
+  as they come from UIP or are trivial. We also omit the components
+  for terms and substitutions as their $^\C$ parts are uninformative
+  equational reasonings.
+  \begin{alignat*}{10}
+    & \Gamma^\A:\Set && \hspace{0.4em} && \Gamma^M:\Con^M && \hspace{0.4em} && \Gamma^\C: \Sub^M\,\Omega\,\Gamma^M\ra \Gamma^\A \\
+    & A^\A:\Gamma^\A\ra\Set && && A^M:\Ty^M\,\Gamma^M && && A^\C:(\nu:\Sub^M\,\Omega\,\Gamma^M)\ra \\
+    & && && && && \hspace{1em} \Tm^M\,\Omega\,(A^M[\nu])\ra A^\A\,(\Gamma^\C\,\nu) \\
+    & \sigma^\A:\Gamma^\A\ra\Delta^\A && && \sigma^M:\Sub^M\,\Gamma^M\,\Delta^M && && \sigma^\C:\Delta^\C\,(\sigma^M\circ\nu)=\sigma^A\,(\Gamma^\C\,\nu) \\
+    & t^\A:(\gamma:\Gamma^\A)\ra A^\A\,\gamma && && t^M:\Tm^M\,\Gamma^M\,A^M && && t^\C : A^\C\,\nu\,(t^M[\nu])= t^A\,(\Gamma^\C\,\nu) \\
+    & (A[\sigma])^\A\,\gamma := A^\A\,(\sigma^\A\,\gamma) && && (A[\sigma])^M := A^M[\sigma^M]^M && && (A[\sigma])^\C\,\nu\,t := A^\C\,(\sigma^M\circ\nu)\,t \\
+    & \cdot^\A := \top && && \cdot^M := \cdot^M && && \cdot^\C\,\nu := \tt \\
+    & (\Gamma\rhd A)^\A := && && (\Gamma\rhd A)^M :=  && && (\Gamma\rhd A)^\C\,\nu := \\
+    & \hspace{1em} (\gamma:\Gamma^\A)\times A^\A\,\gamma && && \hspace{1em} \Gamma^M\rhd^M A^M && && \hspace{1em} (\Gamma^\C\,(\pi_1\,\nu), A^\C\,(\pi_1\,\nu)\,(\pi_2\,\nu)) \\
+    & \U^\A\,\gamma := \Set && && \U^M := \U^M && && \U^\C\nu\,a := \Tm^M\,\Omega\,(\El^M\,a) \\
+    & (\El\,a)^\A\,\gamma := a^\A\,\gamma && && (\El\,a)^M := \El^M\,a^M && && (\El\,a)^\C\,\nu\,t := (a^\C\,\nu) \# t \\
+    & (\Pi\,a\,B)^\A\,\gamma := && && (\Pi\,a\,B)^M := && && (\Pi\,a\,B)^\C\,\nu\,t :=  \\
+    & \hspace{1em} (\alpha:a^\A\,\gamma)\ra B^\A\,(\gamma,\alpha) && && \hspace{1em} \Pi^M\,a^M\,B^M && && \hspace{1em} \lambda\alpha.B^\C\,\big(\nu, (a^\C\,\nu)\#\alpha\big)\,\big(t\oldapp ((a^\C\,\nu) \#\alpha)\big) \\
+    & (\Pim\,T\,B)^\A\,\gamma := && && (\Pim\,T\,B)^M := && && (\Pim\,T\,B)^\C\,\nu\,t := \lambda\alpha.(B\,\alpha)^\C\,\nu\,(t\appm\alpha) \\
+    & \hspace{1em} (\alpha:T)\ra(B\,\alpha)^\A\,\gamma && && \hspace{1em} \Pim^M\,T\,B^M && && 
+  \end{alignat*}
+\end{definition}
+
+\begin{remark}
+  Given a syntactic signature $\Omega : \Con^\I$, we can use the term
+  signature algebra with choices other than $M = \I$. For example, if
+  $M = \A$, we usual get the Church encoding by
+  $(\ll\Omega\rr_{{\A\A\C}_{\ll\Omega\rr^\A}})^\C\,\id^\A$. In the
+  case of natural numbers, this computes (up to curry-uncurry) to
+  $(N:\Set)(z:N)(s:N\ra N)\ra N$. Using $M = {\A\M}$ (the signature
+  algebra $\A$ extended with the binary version of $\D$ also called
+  logical relations, see \cite[Section
+  5]{Kaposi:2019:CQI:3302515.3290315}), we obtain the Church encoding
+  of Awodey, Frey and Speight \cite{DBLP:conf/lics/AwodeyFS18}.
+\end{remark}
+
+\end{document}
